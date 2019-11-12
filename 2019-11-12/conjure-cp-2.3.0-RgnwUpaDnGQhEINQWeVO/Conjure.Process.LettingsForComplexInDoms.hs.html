@@ -1,0 +1,107 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Process.LettingsForComplexInDoms
+<span class="lineno">    2 </span>    ( lettingsForComplexInDoms
+<span class="lineno">    3 </span>    , inlineLettingDomainsForDecls
+<span class="lineno">    4 </span>    , removeDomainLettings
+<span class="lineno">    5 </span>    ) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>import Conjure.Prelude
+<span class="lineno">    8 </span>import Conjure.Language.Definition
+<span class="lineno">    9 </span>import Conjure.Language.Domain
+<span class="lineno">   10 </span>import Conjure.Language.Pretty
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>-- | if the domain of a declaration contains a reference to another declaration (a given)
+<span class="lineno">   14 </span>--   that needs a representation, hell breaks loose.
+<span class="lineno">   15 </span>--   specifically, name-resolution needs to be rerun after representation selection.
+<span class="lineno">   16 </span>--   however, this transformation (as part of `Conjure.UI.Model.prologue`) cleans this up by introducing
+<span class="lineno">   17 </span>--   extra letting statements.
+<span class="lineno">   18 </span>lettingsForComplexInDoms
+<span class="lineno">   19 </span>    :: (MonadFail m, NameGen m)
+<span class="lineno">   20 </span>    =&gt; Model
+<span class="lineno">   21 </span>    -&gt; m Model
+<span class="lineno">   22 </span><span class="decl"><span class="istickedoff">lettingsForComplexInDoms m = do</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">expressionExtract expr@Constant{}        = return expr</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">expressionExtract expr@AbstractLiteral{} = <span class="nottickedoff">return expr</span></span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">expressionExtract expr@Reference{}       = return expr</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">expressionExtract expr = do</span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">newLetting &lt;- nextName &quot;let&quot;</span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">tell [Declaration (Letting newLetting expr)]        -- new declarations</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">return (Reference newLetting Nothing)               -- the replacement expression</span>
+<span class="lineno">   31 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">statements &lt;- forM (mStatements m) $ \ st -&gt;</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">case st of</span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">Declaration (FindOrGiven forg name domain) -&gt; do</span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">(domain', newLettings) &lt;- runWriterT (mapM expressionExtract domain)</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">return (newLettings ++ [Declaration (FindOrGiven forg name domain')])</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">Declaration (LettingDomainDefnUnnamed name expr) -&gt; do</span>
+<span class="lineno">   38 </span><span class="spaces">                </span><span class="istickedoff">(expr', newLettings) &lt;- runWriterT (expressionExtract expr)</span>
+<span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff">return (newLettings ++ [Declaration (LettingDomainDefnUnnamed name expr')])</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return [st]</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat statements }</span></span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>-- | inline letting domains for declarations, before saving the original domain in the logs
+<span class="lineno">   45 </span>inlineLettingDomainsForDecls :: MonadFail m =&gt; Model -&gt; m Model
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">inlineLettingDomainsForDecls m = do</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">f (DomainReference name Nothing) = do</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff">(ctxt, unnameds) &lt;- gets id</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">case name `lookup` ctxt of</span>
+<span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff">Just d -&gt; transformM f d</span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; if <span class="tickonlytrue">name `elem` unnameds</span></span>
+<span class="lineno">   53 </span><span class="spaces">                        </span><span class="istickedoff">then return (DomainReference name Nothing)</span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff">else <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">   55 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
+<span class="lineno">   56 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
+<span class="lineno">   57 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">f d = return d</span>
+<span class="lineno">   59 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">flip evalStateT ( []    -- name, domain pairs for letting domains.</span>
+<span class="lineno">   61 </span><span class="spaces">                    </span><span class="istickedoff">, <span class="nottickedoff">[]</span>    -- names for unnamed types. so they can be skipped.</span>
+<span class="lineno">   62 </span><span class="spaces">                    </span><span class="istickedoff">) $ do</span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">statements &lt;- forM (mStatements m) $ \ st -&gt;</span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">case st of</span>
+<span class="lineno">   65 </span><span class="spaces">                </span><span class="istickedoff">Declaration (Letting name (Domain domain)) -&gt; do</span>
+<span class="lineno">   66 </span><span class="spaces">                    </span><span class="istickedoff">modify (([(name, domain)], <span class="nottickedoff">[]</span>) `mappend`)</span>
+<span class="lineno">   67 </span><span class="spaces">                    </span><span class="istickedoff">return st</span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff">Declaration (LettingDomainDefnUnnamed name _) -&gt; do</span>
+<span class="lineno">   69 </span><span class="spaces">                    </span><span class="istickedoff">modify (([], [name]) `mappend`)</span>
+<span class="lineno">   70 </span><span class="spaces">                    </span><span class="istickedoff">return st</span>
+<span class="lineno">   71 </span><span class="spaces">                </span><span class="istickedoff">Declaration (FindOrGiven forg name domain) -&gt; do</span>
+<span class="lineno">   72 </span><span class="spaces">                    </span><span class="istickedoff">domain' &lt;- transformM f domain</span>
+<span class="lineno">   73 </span><span class="spaces">                    </span><span class="istickedoff">return (Declaration (FindOrGiven forg name domain'))</span>
+<span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; return st</span>
+<span class="lineno">   75 </span><span class="spaces">        </span><span class="istickedoff">return m { mStatements = statements }</span></span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>-- | remove domain lettings, only after name resolution
+<span class="lineno">   78 </span>removeDomainLettings :: Monad m =&gt; Model -&gt; m Model
+<span class="lineno">   79 </span><span class="decl"><span class="istickedoff">removeDomainLettings m =</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat [ case st of</span>
+<span class="lineno">   81 </span><span class="spaces">                                        </span><span class="istickedoff">Declaration (Letting _ (Domain _)) -&gt; []</span>
+<span class="lineno">   82 </span><span class="spaces">                                        </span><span class="istickedoff">_ -&gt; [st]</span>
+<span class="lineno">   83 </span><span class="spaces">                                    </span><span class="istickedoff">| st &lt;- mStatements m</span>
+<span class="lineno">   84 </span><span class="spaces">                                    </span><span class="istickedoff">] }</span></span>
+
+</pre>
+</body>
+</html>

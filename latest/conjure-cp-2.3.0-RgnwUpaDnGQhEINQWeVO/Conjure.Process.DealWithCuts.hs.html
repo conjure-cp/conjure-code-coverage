@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Process.DealWithCuts ( dealWithCuts ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Conjure.UserError
+<span class="lineno">    7 </span>import Conjure.Language.Definition
+<span class="lineno">    8 </span>import Conjure.Language.Domain
+<span class="lineno">    9 </span>import Conjure.Language.TH
+<span class="lineno">   10 </span>import Conjure.Language.ModelStats ( finds )
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>dealWithCuts
+<span class="lineno">   14 </span>    :: (MonadFail m, NameGen m, MonadUserError m)
+<span class="lineno">   15 </span>    =&gt; Model
+<span class="lineno">   16 </span>    -&gt; m Model
+<span class="lineno">   17 </span><span class="decl"><span class="istickedoff">dealWithCuts m = do</span>
+<span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">statements &lt;- forM (mStatements m) $ \ statement -&gt;</span>
+<span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff">case statement of</span>
+<span class="lineno">   20 </span><span class="spaces">            </span><span class="istickedoff">SearchOrder orders0 -&gt; do</span>
+<span class="lineno">   21 </span><span class="spaces">                </span><span class="istickedoff">(orders1, (newVars, newCons)) &lt;- runWriterT $ forM orders0 $ \ order -&gt;</span>
+<span class="lineno">   22 </span><span class="spaces">                    </span><span class="istickedoff">case order of</span>
+<span class="lineno">   23 </span><span class="spaces">                        </span><span class="istickedoff">Cut x -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno">   24 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">varName &lt;- nextName &quot;cut&quot;</span></span>
+<span class="lineno">   25 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let varDecl = Declaration (FindOrGiven Find varName DomainBool)</span></span>
+<span class="lineno">   26 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let varRef  = Reference varName (Just (DeclNoRepr Find varName DomainBool NoRegion))</span></span>
+<span class="lineno">   27 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">tell ( [ varDecl ]</span></span>
+<span class="lineno">   28 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ [essence| !&amp;varRef &lt;-&gt; &amp;x |] ]</span></span>
+<span class="lineno">   29 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   30 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">return $ BranchingOn varName</span></span>
+<span class="lineno">   31 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; return order</span>
+<span class="lineno">   32 </span><span class="spaces">                </span><span class="istickedoff">orders2 &lt;-</span>
+<span class="lineno">   33 </span><span class="spaces">                        </span><span class="istickedoff">if null [ <span class="nottickedoff">()</span> | BranchingOn{} &lt;- orders0 ]     -- no variables were given, all assumed non-aux</span>
+<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">then return [ <span class="nottickedoff">BranchingOn nm</span> | (nm, _) &lt;- finds m ]</span>
+<span class="lineno">   35 </span><span class="spaces">                            </span><span class="istickedoff">else return []</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">return $ concat</span>
+<span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">[ newVars</span>
+<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff">, [SearchOrder (orders1++orders2)]</span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff">, [SuchThat newCons]</span>
+<span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff">]</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return [statement]</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat statements }</span></span>
+
+</pre>
+</body>
+</html>

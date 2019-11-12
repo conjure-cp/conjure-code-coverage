@@ -1,0 +1,123 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.CategoryOf
+<span class="lineno">    2 </span>    ( Category(..)
+<span class="lineno">    3 </span>    , categoryOf
+<span class="lineno">    4 </span>    , categoryChecking
+<span class="lineno">    5 </span>    , initInfo_Lettings
+<span class="lineno">    6 </span>    ) where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>-- conjure
+<span class="lineno">    9 </span>import Conjure.Prelude
+<span class="lineno">   10 </span>import Conjure.UserError
+<span class="lineno">   11 </span>import Conjure.Language.Definition
+<span class="lineno">   12 </span>import Conjure.Language.Domain
+<span class="lineno">   13 </span>import Conjure.Language.Pretty
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>data Category = CatBottom | CatConstant | CatParameter | CatQuantified | CatDecision
+<span class="lineno">   17 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>instance Pretty Category where
+<span class="lineno">   20 </span>    <span class="decl"><span class="istickedoff">pretty CatBottom = <span class="nottickedoff">&quot;_|_&quot;</span></span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">pretty CatConstant = <span class="nottickedoff">&quot;constant&quot;</span></span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">pretty CatParameter = <span class="nottickedoff">&quot;parameter&quot;</span></span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">pretty CatQuantified = <span class="nottickedoff">&quot;quantified&quot;</span></span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">pretty CatDecision = &quot;decision&quot;</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>class CategoryOf a where
+<span class="lineno">   27 </span>    categoryOf :: a -&gt; Category
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>instance CategoryOf Expression where
+<span class="lineno">   30 </span>    <span class="decl"><span class="istickedoff">categoryOf (Reference _ (Just ref)) = categoryOf ref</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">-- TODO: the following should check for which variable we quantify over</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">categoryOf x@Comprehension{} = maximum $ filter (CatQuantified/=) $ CatBottom : map categoryOf (children x)</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">categoryOf x                 = maximum                            $ CatBottom : map categoryOf (children x)</span></span>
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>instance CategoryOf ReferenceTo where
+<span class="lineno">   36 </span>    <span class="decl"><span class="istickedoff">categoryOf (Alias                x) = categoryOf x</span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">categoryOf (InComprehension      _) = CatQuantified</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">categoryOf (DeclNoRepr  forg _ _ _) = categoryOf forg</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">categoryOf (DeclHasRepr forg _ _  ) = categoryOf forg</span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">categoryOf RecordField{}            = <span class="nottickedoff">CatBottom</span></span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">categoryOf VariantField{}           = <span class="nottickedoff">CatBottom</span></span></span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>instance CategoryOf Generator where
+<span class="lineno">   44 </span>     <span class="decl"><span class="nottickedoff">categoryOf (GenDomainNoRepr  _ x) = categoryOf x</span>
+<span class="lineno">   45 </span><span class="spaces">     </span><span class="nottickedoff">categoryOf (GenDomainHasRepr _ x) = categoryOf x</span>
+<span class="lineno">   46 </span><span class="spaces">     </span><span class="nottickedoff">categoryOf (GenInExpr        _ x) = categoryOf x</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>instance CategoryOf x =&gt; CategoryOf (Domain r x) where
+<span class="lineno">   49 </span>    <span class="decl"><span class="istickedoff">categoryOf dom = maximum (CatBottom : toList (fmap categoryOf dom))</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance CategoryOf FindOrGiven where
+<span class="lineno">   52 </span>    <span class="decl"><span class="istickedoff">categoryOf Find = CatDecision</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">categoryOf Given = CatParameter</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">categoryOf Quantified = CatQuantified</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">categoryOf CutFind = <span class="nottickedoff">CatDecision</span></span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">categoryOf LocalFind = CatDecision</span></span>
+<span class="lineno">   57 </span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>-- | Category checking to check if domains have anything &gt;CatParameter in them.
+<span class="lineno">   60 </span>--   Run only after name resolution.
+<span class="lineno">   61 </span>categoryChecking :: (MonadFail m, MonadUserError m) =&gt; Model -&gt; m Model
+<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">categoryChecking m = do</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">errors1 &lt;- fmap concat $ forM (mStatements m) $ \ st -&gt; case st of</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven _forg name domain) -&gt; do</span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">let cat = categoryOf domain</span>
+<span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff">return [<span class="nottickedoff">(domain, (name, cat))</span> | <span class="tickonlyfalse">cat &gt; CatParameter</span>]</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return []</span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">errors2 &lt;- fmap concat $ forM (universeBi (mStatements m) :: [Domain () Expression]) $ \ domain -&gt; do</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">let cat = categoryOf domain</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">return [ (domain, cat)</span>
+<span class="lineno">   71 </span><span class="spaces">               </span><span class="istickedoff">| cat &gt; CatQuantified</span>
+<span class="lineno">   72 </span><span class="spaces">               </span><span class="istickedoff">, <span class="tickonlytrue"><span class="nottickedoff">domain</span> `notElem` map <span class="nottickedoff">fst</span> errors1</span>        -- only if this is a new error</span>
+<span class="lineno">   73 </span><span class="spaces">               </span><span class="istickedoff">]</span>
+<span class="lineno">   74 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">if null errors1 &amp;&amp; null errors2</span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">then return m</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">else userErr1 $ vcat</span>
+<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff">$  [ &quot;Category checking failed.&quot; ]</span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff">++ concat ( nub [ <span class="nottickedoff">[ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">   80 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its category :&quot; &lt;+&gt; pretty cat</span></span>
+<span class="lineno">   81 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;In the definition of:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">   82 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;&quot;</span></span>
+<span class="lineno">   83 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   84 </span><span class="spaces">                            </span><span class="istickedoff">| (domain, (name, cat)) &lt;- errors1</span>
+<span class="lineno">   85 </span><span class="spaces">                            </span><span class="istickedoff">] )</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">++ concat ( nub [ [ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span>
+<span class="lineno">   87 </span><span class="spaces">                              </span><span class="istickedoff">, &quot;Its category :&quot; &lt;+&gt; pretty cat</span>
+<span class="lineno">   88 </span><span class="spaces">                              </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   89 </span><span class="spaces">                              </span><span class="istickedoff">]</span>
+<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff">| (domain, cat) &lt;- errors2</span>
+<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff">] )</span></span>
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>initInfo_Lettings :: Model -&gt; Model
+<span class="lineno">   94 </span><span class="decl"><span class="istickedoff">initInfo_Lettings model = model { mInfo = info }</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">info = (mInfo model)</span>
+<span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff">{ miLettings = [ (nm,x) | Declaration (Letting nm x) &lt;- mStatements model</span>
+<span class="lineno">   98 </span><span class="spaces">                                    </span><span class="istickedoff">, categoryOf x &lt;= CatParameter</span>
+<span class="lineno">   99 </span><span class="spaces">                                    </span><span class="istickedoff">]</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">}</span></span>
+
+</pre>
+</body>
+</html>
