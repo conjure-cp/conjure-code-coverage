@@ -1,0 +1,93 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.Vertical.Set.ExplicitVarSizeWithFlags where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_Comprehension :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;set-comprehension{ExplicitVarSizeWithFlags}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, s), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} s) -&gt; return (<span class="nottickedoff">pat</span>, matchDefs [opToSet,opToMSet] s)</span>
+<span class="lineno">   13 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{}                    &lt;- typeOf s</span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">Set_ExplicitVarSizeWithFlags &lt;- representationOf s</span>
+<span class="lineno">   16 </span><span class="spaces">        </span><span class="istickedoff">[flags, values]              &lt;- <span class="nottickedoff">downX1 s</span></span>
+<span class="lineno">   17 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix index _         &lt;- <span class="nottickedoff">domainOf values</span></span>
+<span class="lineno">   18 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction pat old val</span></span>
+<span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   20 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for set-comprehension, ExplicitVarSizeWithFlags representation&quot;</span></span>
+<span class="lineno">   21 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">   22 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">   23 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let val = [essence| &amp;values[&amp;j] |]</span></span>
+<span class="lineno">   24 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension (upd val body)</span></span>
+<span class="lineno">   25 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">   26 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenDomainNoRepr jPat index)</span></span>
+<span class="lineno">   27 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;flags[&amp;j] |]</span></span>
+<span class="lineno">   28 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   29 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ transformBi (upd val) gocAfter</span></span>
+<span class="lineno">   30 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   32 </span>
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>rule_PowerSet_Comprehension :: Rule
+<span class="lineno">   35 </span><span class="decl"><span class="istickedoff">rule_PowerSet_Comprehension = <span class="nottickedoff">&quot;set-powerSet-comprehension{ExplicitVarSizeWithFlags}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (setPat, setPatNum, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr setPat@(AbsPatSet pats) expr) -&gt; return (<span class="nottickedoff">setPat</span>, <span class="nottickedoff">length pats</span>, expr)</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_PowerSet_Comprehension&quot;</span></span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">s                            &lt;- match opPowerSet expr</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{}                    &lt;- typeOf s</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">Set_ExplicitVarSizeWithFlags &lt;- representationOf s</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">[flags, values]              &lt;- <span class="nottickedoff">downX1 s</span></span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix index _         &lt;- <span class="nottickedoff">domainOf values</span></span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction setPat old val</span></span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for set-comprehension, ExplicitVarSizeWithFlags representation&quot;</span></span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">outPats &lt;- replicateM setPatNum quantifiedVar</span></span>
+<span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let val = AbstractLiteral $ AbsLitSet</span></span>
+<span class="lineno">   51 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;values[&amp;j] |] | (_,j) &lt;- outPats ]</span></span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension (upd val body) $ concat</span></span>
+<span class="lineno">   53 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ gocBefore</span></span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat</span></span>
+<span class="lineno">   55 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ [ Generator (GenDomainNoRepr pat index)</span></span>
+<span class="lineno">   56 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;flags[&amp;patX] |]</span></span>
+<span class="lineno">   57 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   58 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| (pat,patX) &lt;- take 1 outPats</span></span>
+<span class="lineno">   59 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   60 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat</span></span>
+<span class="lineno">   61 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ [ Generator (GenDomainNoRepr pat index)</span></span>
+<span class="lineno">   62 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;patX &gt; &amp;beforeX |]</span></span>
+<span class="lineno">   63 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;flags[&amp;patX] |]</span></span>
+<span class="lineno">   64 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   65 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| ((_, beforeX), (pat, patX)) &lt;- zip outPats (tail outPats)</span></span>
+<span class="lineno">   66 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   67 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, transformBi (upd val) gocAfter</span></span>
+<span class="lineno">   68 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PowerSet_Comprehension&quot;</span></span>
+
+</pre>
+</body>
+</html>
