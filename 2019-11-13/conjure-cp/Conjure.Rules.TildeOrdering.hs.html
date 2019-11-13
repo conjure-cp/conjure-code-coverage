@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.TildeOrdering where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_BoolInt :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_BoolInt = <span class="nottickedoff">&quot;tildeOrd-bool-int&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyx &lt;- typeOf x</span></span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyy &lt;- typeOf y</span></span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case mostDefined [tyx, tyy] of</span></span>
+<span class="lineno">   14 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeBool  -&gt; return ()</span></span>
+<span class="lineno">   15 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeInt _ -&gt; return ()</span></span>
+<span class="lineno">   16 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_BoolInt&quot;</span></span>
+<span class="lineno">   17 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   18 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;~&lt; to &lt;&quot;</span></span>
+<span class="lineno">   19 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;x &lt; &amp;y |]</span></span>
+<span class="lineno">   20 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt;= &amp;y |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyx &lt;- typeOf x</span></span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyy &lt;- typeOf y</span></span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case mostDefined [tyx, tyy] of</span></span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeBool  -&gt; return ()</span></span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeInt _ -&gt; return ()</span></span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_BoolInt&quot;</span></span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;~&lt;= to &lt;=&quot;</span></span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;x &lt;= &amp;y |]</span></span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_BoolInt&quot;</span></span>
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>rule_MSet :: Rule
+<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">rule_MSet = <span class="nottickedoff">&quot;tildeLt-mset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyY &lt;- typeOf y</span></span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case mostDefined [tyX, tyY] of</span></span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMSet{} -&gt; return ()</span></span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_MSet&quot;</span></span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;mset ~&lt;&quot;</span></span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">   46 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">   47 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">   48 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let z = [essence| &amp;x union &amp;y |]</span></span>
+<span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- there exists an i, where freq_x is smaller than freq_y</span></span>
+<span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- and all j's (s.t. j&lt;i), freq_x = freq_y</span></span>
+<span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- i.e. all those that are smaller than the ith occur equal nb times</span></span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [essence|</span></span>
+<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">exists &amp;iPat in &amp;z .</span></span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">freq(&amp;x, &amp;i) &lt; freq(&amp;y, &amp;i) /\</span></span>
+<span class="lineno">   55 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(forAll &amp;jPat in &amp;z , &amp;j ~&lt; &amp;i . freq(&amp;x, &amp;j) = freq(&amp;y, &amp;j))</span></span>
+<span class="lineno">   56 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_MSet&quot;</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>rule_ViaMSet :: Rule
+<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">rule_ViaMSet = <span class="nottickedoff">&quot;tildeLt-via-mset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
+<span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyY &lt;- typeOf y</span></span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">f   &lt;- case mostDefined [tyX, tyY] of</span></span>
+<span class="lineno">   67 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeSet{}       -&gt; return $ \ i -&gt;</span></span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case match opToSetWithFlag i of</span></span>
+<span class="lineno">   69 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">-- if i is a toSet, that doesn't contain any duplicates anyway, stip the toSet</span></span>
+<span class="lineno">   70 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">Just (True, j) -&gt; [essence| toMSet(&amp;j) |]</span></span>
+<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_              -&gt; [essence| toMSet(&amp;i) |]</span></span>
+<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{}  -&gt; return $ \ i -&gt; [essence| toMSet(&amp;i) |]</span></span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeRelation{}  -&gt; return $ \ i -&gt; [essence| toMSet(&amp;i) |]</span></span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypePartition{} -&gt; return $ \ i -&gt; [essence| toMSet(parts(&amp;i)) |]</span></span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; na &quot;rule_ViaMSet&quot;</span></span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let fx = f x</span></span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let fy = f y</span></span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;set, function, relation, partition ~&lt;&quot;</span></span>
+<span class="lineno">   80 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;fx ~&lt; &amp;fy |]</span></span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ViaMSet&quot;</span></span>
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>rule_TildeLeq :: Rule
+<span class="lineno">   86 </span><span class="decl"><span class="istickedoff">rule_TildeLeq = <span class="nottickedoff">&quot;tildeLeq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt;= &amp;y |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyY &lt;- typeOf y</span></span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case mostDefined [tyX, tyY] of</span></span>
+<span class="lineno">   91 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeSet{}       -&gt; return ()</span></span>
+<span class="lineno">   92 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMSet{}      -&gt; return ()</span></span>
+<span class="lineno">   93 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{}  -&gt; return ()</span></span>
+<span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeRelation{}  -&gt; return ()</span></span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypePartition{} -&gt; return ()</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; na &quot;rule_TildeLeq&quot;</span></span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;~&lt;= to ~&lt;&quot;</span></span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| or([ &amp;x = &amp;y</span></span>
+<span class="lineno">  100 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">, &amp;x ~&lt; &amp;y</span></span>
+<span class="lineno">  101 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
+<span class="lineno">  102 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  104 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_TildeLeq&quot;</span></span>
+
+</pre>
+</body>
+</html>
