@@ -84,14 +84,14 @@ span.spaces    { background: white }
 <span class="lineno">   65 </span><span class="decl"><span class="istickedoff">rule_Tuple_TildeLt = <span class="nottickedoff">&quot;tuple-TildeLt&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opTildeLt p</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf x</span>        -- TODO: check if x and y have the same arity</span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf y</span></span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- <span class="nottickedoff">downX1 x</span></span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- <span class="nottickedoff">downX1 y</span></span>
-<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for tuple .&lt;&quot;</span></span>
-<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ decomposeLexTildeLt p xs ys</span></span>
-<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf y</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- downX1 x</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- downX1 y</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for tuple .&lt;&quot;</span></span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff">, return $ decomposeLexTildeLt <span class="nottickedoff">p</span> xs ys</span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">   76 </span>
 <span class="lineno">   77 </span>
 <span class="lineno">   78 </span>rule_Tuple_TildeLeq :: Rule
@@ -143,12 +143,12 @@ span.spaces    { background: white }
 <span class="lineno">  124 </span>
 <span class="lineno">  125 </span>
 <span class="lineno">  126 </span>decomposeLexTildeLt :: Expression -&gt; [Expression] -&gt; [Expression] -&gt; Expression
-<span class="lineno">  127 </span><span class="decl"><span class="nottickedoff">decomposeLexTildeLt p = unroll</span>
-<span class="lineno">  128 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  129 </span><span class="spaces">        </span><span class="nottickedoff">unroll [a]    [b]    = [essence| &amp;a ~&lt; &amp;b |]</span>
-<span class="lineno">  130 </span><span class="spaces">        </span><span class="nottickedoff">unroll (a:as) (b:bs) = let rest = unroll as bs</span>
-<span class="lineno">  131 </span><span class="spaces">                               </span><span class="nottickedoff">in  [essence| (&amp;a ~&lt; &amp;b) \/ ((&amp;a = &amp;b) /\ &amp;rest) |]</span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="nottickedoff">unroll _ _ = bug (&quot;arity mismatch in:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno">  127 </span><span class="decl"><span class="istickedoff">decomposeLexTildeLt p = unroll</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">unroll [a]    [b]    = [essence| &amp;a ~&lt; &amp;b |]</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">unroll (a:as) (b:bs) = let rest = unroll as bs</span>
+<span class="lineno">  131 </span><span class="spaces">                               </span><span class="istickedoff">in  [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> (&amp;a ~&lt; &amp;b) \/ ((&amp;a = &amp;b) /\ &amp;rest) |]</span></span></span></span></span></span></span></span></span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ = <span class="nottickedoff">bug (&quot;arity mismatch in:&quot; &lt;+&gt; pretty p)</span></span></span>
 <span class="lineno">  133 </span>
 <span class="lineno">  134 </span>decomposeLexTildeLeq :: Expression -&gt; [Expression] -&gt; [Expression] -&gt; Expression
 <span class="lineno">  135 </span><span class="decl"><span class="nottickedoff">decomposeLexTildeLeq p = unroll</span>

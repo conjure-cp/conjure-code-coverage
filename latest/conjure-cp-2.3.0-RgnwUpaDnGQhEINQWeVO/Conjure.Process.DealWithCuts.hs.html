@@ -39,18 +39,18 @@ span.spaces    { background: white }
 <span class="lineno">   20 </span><span class="spaces">            </span><span class="istickedoff">SearchOrder orders0 -&gt; do</span>
 <span class="lineno">   21 </span><span class="spaces">                </span><span class="istickedoff">(orders1, (newVars, newCons)) &lt;- runWriterT $ forM orders0 $ \ order -&gt;</span>
 <span class="lineno">   22 </span><span class="spaces">                    </span><span class="istickedoff">case order of</span>
-<span class="lineno">   23 </span><span class="spaces">                        </span><span class="istickedoff">Cut x -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno">   24 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">varName &lt;- nextName &quot;cut&quot;</span></span>
-<span class="lineno">   25 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let varDecl = Declaration (FindOrGiven Find varName DomainBool)</span></span>
-<span class="lineno">   26 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let varRef  = Reference varName (Just (DeclNoRepr Find varName DomainBool NoRegion))</span></span>
-<span class="lineno">   27 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">tell ( [ varDecl ]</span></span>
-<span class="lineno">   28 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ [essence| !&amp;varRef &lt;-&gt; &amp;x |] ]</span></span>
-<span class="lineno">   29 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">   30 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">return $ BranchingOn varName</span></span>
+<span class="lineno">   23 </span><span class="spaces">                        </span><span class="istickedoff">Cut x -&gt; do</span>
+<span class="lineno">   24 </span><span class="spaces">                            </span><span class="istickedoff">varName &lt;- nextName &quot;cut&quot;</span>
+<span class="lineno">   25 </span><span class="spaces">                            </span><span class="istickedoff">let varDecl = Declaration (FindOrGiven Find varName DomainBool)</span>
+<span class="lineno">   26 </span><span class="spaces">                            </span><span class="istickedoff">let varRef  = Reference varName (Just (DeclNoRepr Find <span class="nottickedoff">varName</span> DomainBool NoRegion))</span>
+<span class="lineno">   27 </span><span class="spaces">                            </span><span class="istickedoff">tell ( [ varDecl ]</span>
+<span class="lineno">   28 </span><span class="spaces">                                 </span><span class="istickedoff">, [ [essence| !&amp;varRef &lt;-&gt; &amp;x |] ]</span>
+<span class="lineno">   29 </span><span class="spaces">                                 </span><span class="istickedoff">)</span>
+<span class="lineno">   30 </span><span class="spaces">                            </span><span class="istickedoff">return $ BranchingOn varName</span>
 <span class="lineno">   31 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; return order</span>
 <span class="lineno">   32 </span><span class="spaces">                </span><span class="istickedoff">orders2 &lt;-</span>
 <span class="lineno">   33 </span><span class="spaces">                        </span><span class="istickedoff">if null [ <span class="nottickedoff">()</span> | BranchingOn{} &lt;- orders0 ]     -- no variables were given, all assumed non-aux</span>
-<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">then return [ <span class="nottickedoff">BranchingOn nm</span> | (nm, _) &lt;- finds m ]</span>
+<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">then return [ BranchingOn nm | (nm, _) &lt;- finds m ]</span>
 <span class="lineno">   35 </span><span class="spaces">                            </span><span class="istickedoff">else return []</span>
 <span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">return $ concat</span>
 <span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">[ newVars</span>

@@ -137,7 +137,7 @@ span.spaces    { background: white }
 <span class="lineno">  118 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainVariant{}   = mkFiniteOutermost d</span>
 <span class="lineno">  119 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMatrix{}    = mkFiniteOutermost d</span>
 <span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSet{}       = mkFiniteOutermost d</span>
-<span class="lineno">  121 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMSet{}      = <span class="nottickedoff">mkFiniteOutermost d</span></span>
+<span class="lineno">  121 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMSet{}      = mkFiniteOutermost d</span>
 <span class="lineno">  122 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSequence{}  = <span class="nottickedoff">mkFiniteOutermost d</span></span>
 <span class="lineno">  123 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainFunction{}  = mkFiniteOutermost d</span>
 <span class="lineno">  124 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainRelation{}  = mkFiniteOutermost d</span>
@@ -247,19 +247,19 @@ span.spaces    { background: white }
 <span class="lineno">  228 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
 <span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return innerValues</span></span>
 <span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  231 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () (MSetAttr _ occurAttr) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () (MSetAttr (SizeAttr_Size (fromName s)) occurAttr) inner'</span></span>
-<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s:innerExtras</span></span>
-<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span></span>
-<span class="lineno">  240 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let setSize = genericLength set</span></span>
-<span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
-<span class="lineno">  242 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerValues ++ [(s, ConstantInt TagInt setSize)]</span></span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  231 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () (MSetAttr _ occurAttr) inner) = do</span>
+<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff">( DomainMSet <span class="nottickedoff">()</span> (MSetAttr (SizeAttr_Size (fromName s)) occurAttr) inner'</span>
+<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
+<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span>
+<span class="lineno">  240 </span><span class="spaces">                </span><span class="istickedoff">let setSize = genericLength set</span>
+<span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">set</span></span>
+<span class="lineno">  242 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setSize)]</span>
+<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">)</span>
 <span class="lineno">  244 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSequence () attr@(SequenceAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
 <span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
 <span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>

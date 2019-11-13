@@ -167,11 +167,11 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span><span class="decl"><span class="istickedoff">domainSizeOfRanges = fmap genericLength . valuesInIntDomain</span></span>
 <span class="lineno">  149 </span>
 <span class="lineno">  150 </span>instance DomainSizeOf Constant Constant where
-<span class="lineno">  151 </span>    <span class="decl"><span class="nottickedoff">domainSizeOf = fmap (ConstantInt TagInt) . domainSizeOf</span></span>
+<span class="lineno">  151 </span>    <span class="decl"><span class="istickedoff">domainSizeOf = fmap (ConstantInt <span class="nottickedoff">TagInt</span>) . domainSizeOf</span></span>
 <span class="lineno">  152 </span>
 <span class="lineno">  153 </span>instance Pretty Constant where
 <span class="lineno">  154 </span>
-<span class="lineno">  155 </span>    <span class="decl"><span class="istickedoff">pretty (TypedConstant (ConstantAbstract (AbsLitMatrix _ [])) ty) | <span class="tickonlyfalse">TypeAny `elem` universe ty</span> = <span class="nottickedoff">&quot;[]&quot;</span></span>
+<span class="lineno">  155 </span>    <span class="decl"><span class="istickedoff">pretty (TypedConstant (ConstantAbstract (AbsLitMatrix _ [])) ty) | TypeAny `elem` universe ty = &quot;[]&quot;</span>
 <span class="lineno">  156 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  157 </span><span class="spaces">    </span><span class="istickedoff">-- hack, oh sweet hack!</span>
 <span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">-- print a domain instead of a type when printing an empty matrix literal.</span>
@@ -297,7 +297,7 @@ span.spaces    { background: white }
 <span class="lineno">  278 </span>
 <span class="lineno">  279 </span>viewConstantTuple     :: MonadFail m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  280 </span><span class="decl"><span class="istickedoff">viewConstantTuple     (ConstantAbstract (AbsLitTuple xs)) = return xs</span>
-<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple     (TypedConstant c _) = <span class="nottickedoff">viewConstantTuple c</span></span>
+<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple     (TypedConstant c _) = viewConstantTuple c</span>
 <span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple    constant = fail <span class="nottickedoff">(&quot;Expecting a tuple, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  283 </span>
 <span class="lineno">  284 </span>viewConstantRecord    :: MonadFail m =&gt; Constant -&gt; m [(Name, Constant)]

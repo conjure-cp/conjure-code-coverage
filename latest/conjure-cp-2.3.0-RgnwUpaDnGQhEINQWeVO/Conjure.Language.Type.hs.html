@@ -195,8 +195,8 @@ span.spaces    { background: white }
 <span class="lineno">  176 </span><span class="spaces">        </span><span class="istickedoff">f x (TypeTuple [TypeAny]) = <span class="nottickedoff">x</span></span>
 <span class="lineno">  177 </span><span class="spaces">        </span><span class="istickedoff">f (TypeTuple as) (TypeTuple bs) | <span class="tickonlytrue">length as == length bs</span> = TypeTuple (zipWith f as bs)</span>
 <span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff">f (TypeRecord as) (TypeRecord bs)</span>
-<span class="lineno">  179 </span><span class="spaces">            </span><span class="istickedoff">| <span class="nottickedoff">sort (map fst as) == sort (map fst bs)</span> =</span>
-<span class="lineno">  180 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeRecord [ case lookup n bs of</span></span>
+<span class="lineno">  179 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">sort (map fst as) == sort (map fst bs)</span> =</span>
+<span class="lineno">  180 </span><span class="spaces">                </span><span class="istickedoff">TypeRecord <span class="nottickedoff">[ case lookup n bs of</span></span>
 <span class="lineno">  181 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; bug &quot;mostDefined.TypeRecord&quot;</span></span>
 <span class="lineno">  182 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Just b  -&gt; (n, f a b)</span></span>
 <span class="lineno">  183 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">| (n,a) &lt;- as</span></span>

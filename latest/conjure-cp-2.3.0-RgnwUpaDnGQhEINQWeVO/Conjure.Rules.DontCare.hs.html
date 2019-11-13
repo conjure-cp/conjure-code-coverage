@@ -51,7 +51,7 @@ span.spaces    { background: white }
 <span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">RangeLowerBounded v -&gt; <span class="nottickedoff">v</span></span>
 <span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">RangeUpperBounded v -&gt; <span class="nottickedoff">v</span></span>
 <span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">RangeBounded v _ -&gt; v</span>
-<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">DomainIntE v -&gt; <span class="nottickedoff">[essence| min(&amp;v) |]</span></span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">DomainIntE v -&gt; [essence| min(&amp;v) |]</span>
 <span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseBug</span></span>
 <span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare value for this integer is&quot; &lt;+&gt; pretty val</span></span>
@@ -76,11 +76,11 @@ span.spaces    { background: white }
 <span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">x            &lt;- match opDontCare p</span>
 <span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">TypeRecord{} &lt;- typeOf x</span>
-<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">xs           &lt;- <span class="nottickedoff">downX1 x</span></span>
-<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;dontCare handling for record&quot;</span></span>
-<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span></span>
-<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">xs           &lt;- downX1 x</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for record&quot;</span></span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">   65 </span>
 <span class="lineno">   66 </span>
 <span class="lineno">   67 </span>rule_Variant :: Rule
@@ -119,7 +119,7 @@ span.spaces    { background: white }
 <span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence {} -&gt; <span class="nottickedoff">return ()</span></span>
 <span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction {} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  102 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation {} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">TypePartition{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">TypePartition{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;not a known abstract domain&quot;</span>
 <span class="lineno">  105 </span><span class="spaces">        </span><span class="istickedoff">hasRepresentation x</span>
 <span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- downX1 x</span>

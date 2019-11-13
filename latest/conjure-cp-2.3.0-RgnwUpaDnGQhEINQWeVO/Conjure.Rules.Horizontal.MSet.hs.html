@@ -84,17 +84,17 @@ span.spaces    { background: white }
 <span class="lineno">   65 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">(x,y)      &lt;- match opEq p</span>
 <span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet{} &lt;- typeOf x</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet{} &lt;- <span class="nottickedoff">typeOf y</span></span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for mset equality&quot;</span></span>
-<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno">   72 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">   73 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">   74 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
-<span class="lineno">   75 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">(forAll &amp;iPat in &amp;x . freq(&amp;x,&amp;i) = freq(&amp;y,&amp;i)) /\</span></span>
-<span class="lineno">   76 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">(forAll &amp;iPat in &amp;y . freq(&amp;x,&amp;i) = freq(&amp;y,&amp;i))</span></span>
-<span class="lineno">   77 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
-<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet{} &lt;- typeOf y</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for mset equality&quot;</span></span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   72 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   73 </span><span class="spaces">                 </span><span class="istickedoff">return</span>
+<span class="lineno">   74 </span><span class="spaces">                     </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span>
+<span class="lineno">   75 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;iPat in &amp;x . freq(&amp;x,&amp;i) = freq(&amp;y,&amp;i)) /\</span></span></span></span></span>
+<span class="lineno">   76 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;iPat in &amp;y . freq(&amp;x,&amp;i) = freq(&amp;y,&amp;i))</span></span></span></span></span>
+<span class="lineno">   77 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span>
+<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">   79 </span>
 <span class="lineno">   80 </span>
 <span class="lineno">   81 </span>rule_Neq :: Rule
@@ -204,11 +204,11 @@ span.spaces    { background: white }
 <span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet{}  &lt;- typeOf mset</span>
 <span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">-- avoid applying this rule when &quot;mset&quot; is of the form &quot;toMSet of set&quot;</span>
 <span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">case mset of</span>
-<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff">[essence| toMSet(&amp;s) |] -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno">  189 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">tyS &lt;- typeOf s</span></span>
-<span class="lineno">  190 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case tyS of</span></span>
-<span class="lineno">  191 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">TypeSet{} -&gt; na &quot;rule_Freq&quot;</span></span>
-<span class="lineno">  192 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_         -&gt; return ()</span></span>
+<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff">[essence| toMSet(&amp;s) |] -&gt; do</span>
+<span class="lineno">  189 </span><span class="spaces">                </span><span class="istickedoff">tyS &lt;- typeOf s</span>
+<span class="lineno">  190 </span><span class="spaces">                </span><span class="istickedoff">case tyS of</span>
+<span class="lineno">  191 </span><span class="spaces">                    </span><span class="istickedoff">TypeSet{} -&gt; na &quot;rule_Freq&quot;</span>
+<span class="lineno">  192 </span><span class="spaces">                    </span><span class="istickedoff">_         -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  193 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for mset-freq.&quot;</span></span>
@@ -224,12 +224,12 @@ span.spaces    { background: white }
 <span class="lineno">  205 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">(x,s)      &lt;- match opIn p</span>
 <span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet{} &lt;- typeOf s</span>
-<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  209 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for mset-in.&quot;</span></span>
-<span class="lineno">  210 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno">  211 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">  212 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">return [essence| exists &amp;iPat in &amp;s . &amp;i = &amp;x |]</span></span>
-<span class="lineno">  213 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  209 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for mset-in.&quot;</span></span>
+<span class="lineno">  210 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  211 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  212 </span><span class="spaces">                 </span><span class="istickedoff">return [essence| exists &amp;iPat in &amp;s . &amp;i = &amp;x |]</span>
+<span class="lineno">  213 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">  214 </span>
 <span class="lineno">  215 </span>
 <span class="lineno">  216 </span>rule_Card :: Rule

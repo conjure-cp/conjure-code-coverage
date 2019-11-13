@@ -160,7 +160,7 @@ span.spaces    { background: white }
 <span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">let occurOK = case occurAttr of</span>
 <span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_None -&gt; True</span>
-<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinOccur (ConstantInt _ s) -&gt; <span class="nottickedoff">and [ s &lt;= occ | (_, occ) &lt;- histogram vals ]</span></span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinOccur (ConstantInt _ s) -&gt; and [ <span class="nottickedoff">s &lt;= occ</span> | (_, occ) &lt;- histogram vals ]</span>
 <span class="lineno">  145 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MaxOccur (ConstantInt _ s) -&gt; and [ occ &lt;= s | (_, occ) &lt;- histogram vals ]</span>
 <span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinMaxOccur (ConstantInt _ smin) (ConstantInt _ smax) -&gt;</span>
 <span class="lineno">  147 </span><span class="spaces">                    </span><span class="istickedoff">and [ smin &lt;= occ &amp;&amp; occ &lt;= smax | (_, occ) &lt;- histogram vals ]</span>

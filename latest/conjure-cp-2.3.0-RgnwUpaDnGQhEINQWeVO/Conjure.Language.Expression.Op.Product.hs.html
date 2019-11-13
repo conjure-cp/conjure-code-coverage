@@ -64,8 +64,8 @@ span.spaces    { background: white }
 <span class="lineno">   45 </span>    <span class="decl"><span class="istickedoff">simplifyOp (OpProduct x)</span>
 <span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
 <span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=0) xs</span>
-<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlyfalse">length filtered /= length xs</span>      -- there were 0's</span>
-<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">return 0</span></span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">, length filtered /= length xs      -- there were 0's</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">= return 0</span>
 <span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (OpProduct x)</span>
 <span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
 <span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=1) xs</span>

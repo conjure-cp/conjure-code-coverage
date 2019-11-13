@@ -30,7 +30,7 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>data OpToMSet x = OpToMSet x
-<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>instance Serialize x =&gt; Serialize (OpToMSet x)
 <span class="lineno">   17 </span>instance Hashable  x =&gt; Hashable  (OpToMSet x)
@@ -41,16 +41,16 @@ span.spaces    { background: white }
 <span class="lineno">   22 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpToMSet x) = do</span>
 <span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">tx &lt;- typeOf x</span>
 <span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">case tx of</span>
-<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation is  -&gt; <span class="nottickedoff">return (TypeMSet (TypeTuple is))</span></span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation is  -&gt; return (TypeMSet (TypeTuple is))</span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">TypeSet i        -&gt; return (TypeMSet i)</span>
-<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction i j -&gt; <span class="nottickedoff">return (TypeMSet (TypeTuple [i,j]))</span></span>
-<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeList i       -&gt; <span class="nottickedoff">return (TypeMSet i)</span></span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction i j -&gt; return (TypeMSet (TypeTuple [i,j]))</span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeList i       -&gt; return (TypeMSet i)</span>
 <span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
 <span class="lineno">   30 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;The argument has type:&quot; &lt;+&gt; pretty tx</span></span>
 <span class="lineno">   31 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
 <span class="lineno">   32 </span>
 <span class="lineno">   33 </span>instance SimplifyOp OpToMSet x where
-<span class="lineno">   34 </span>    <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpToMSet}&quot;</span></span>
+<span class="lineno">   34 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpToMSet}&quot;</span></span>
 <span class="lineno">   35 </span>
 <span class="lineno">   36 </span>instance Pretty x =&gt; Pretty (OpToMSet x) where
 <span class="lineno">   37 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpToMSet a) = &quot;toMSet&quot; &lt;&gt; prParens (pretty a)</span></span>

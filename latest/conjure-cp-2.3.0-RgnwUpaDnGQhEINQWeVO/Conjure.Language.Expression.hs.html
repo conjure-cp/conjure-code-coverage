@@ -559,8 +559,8 @@ span.spaces    { background: white }
 <span class="lineno">  540 </span>    <span class="decl"><span class="istickedoff">fromInteger = fromInt . fromInteger</span></span>
 <span class="lineno">  541 </span>
 <span class="lineno">  542 </span>instance Integral Expression where
-<span class="lineno">  543 </span>    <span class="decl"><span class="nottickedoff">divMod a b = ( Op $ MkOpDiv $ OpDiv a b</span>
-<span class="lineno">  544 </span><span class="spaces">                 </span><span class="nottickedoff">, Op $ MkOpMod $ OpMod a b )</span></span>
+<span class="lineno">  543 </span>    <span class="decl"><span class="istickedoff">divMod a b = ( Op $ MkOpDiv $ OpDiv a b</span>
+<span class="lineno">  544 </span><span class="spaces">                 </span><span class="istickedoff">, <span class="nottickedoff">Op $ MkOpMod $ OpMod a b</span> )</span></span>
 <span class="lineno">  545 </span>    <span class="decl"><span class="nottickedoff">quotRem = divMod</span></span>
 <span class="lineno">  546 </span>    <span class="decl"><span class="nottickedoff">toInteger = bug &quot;toInteger {Expression}&quot;</span></span>
 <span class="lineno">  547 </span>
@@ -586,7 +586,7 @@ span.spaces    { background: white }
 <span class="lineno">  567 </span>    = AuxiliaryVars [Statement]                     -- can only be a LocalFind or a SuchThat
 <span class="lineno">  568 </span>                                                    -- the variable declarations are lifted to top level, eventually
 <span class="lineno">  569 </span>    | DefinednessConstraints [Expression]           -- lifted to the closest relational context
-<span class="lineno">  570 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  570 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
 <span class="lineno">  571 </span>
 <span class="lineno">  572 </span>instance Serialize InBubble
 <span class="lineno">  573 </span>instance Hashable  InBubble
@@ -883,9 +883,9 @@ span.spaces    { background: white }
 <span class="lineno">  864 </span>
 <span class="lineno">  865 </span>emptyCollectionX :: Expression -&gt; Bool
 <span class="lineno">  866 </span><span class="decl"><span class="istickedoff">emptyCollectionX (Constant x) = emptyCollection x</span>
-<span class="lineno">  867 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (AbstractLiteral x) = <span class="nottickedoff">emptyCollectionAbsLit x</span></span>
+<span class="lineno">  867 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (AbstractLiteral x) = emptyCollectionAbsLit x</span>
 <span class="lineno">  868 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (Typed x _) = <span class="nottickedoff">emptyCollectionX x</span></span>
-<span class="lineno">  869 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX _ = <span class="nottickedoff">False</span></span></span>
+<span class="lineno">  869 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX _ = False</span></span>
 <span class="lineno">  870 </span>
 <span class="lineno">  871 </span>
 <span class="lineno">  872 </span>isDomainExpr :: MonadFail m =&gt; Expression -&gt; m ()

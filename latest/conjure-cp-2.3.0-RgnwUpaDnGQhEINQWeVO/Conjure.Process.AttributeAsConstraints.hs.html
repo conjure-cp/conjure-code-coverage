@@ -104,7 +104,7 @@ span.spaces    { background: white }
 <span class="lineno">   85 </span><span class="decl"><span class="istickedoff">attributeToConstraint domain@DomainSet{} = generator where</span>
 <span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span>
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
-<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span>
 <span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
 <span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>

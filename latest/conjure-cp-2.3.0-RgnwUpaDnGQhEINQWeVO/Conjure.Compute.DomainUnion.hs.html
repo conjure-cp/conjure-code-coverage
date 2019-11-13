@@ -83,11 +83,11 @@ span.spaces    { background: white }
 <span class="lineno">   64 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainMatrix x1 x2) (DomainMatrix y1 y2)</span>
 <span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff">= DomainMatrix &lt;$&gt; domainUnion x1 y1 &lt;*&gt; domainUnion x2 y2</span>
 <span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainSet _ xA x) (DomainSet _ yA y)</span>
-<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainSet def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span></span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">= DomainSet def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span>
 <span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainMSet _ xA x) (DomainMSet _ yA y)</span>
 <span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainMSet def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span></span>
 <span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainFunction _ xA x1 x2) (DomainFunction _ yA y1 y2)</span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainFunction def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x1 y1 &lt;*&gt; domainUnion x2 y2</span></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">= DomainFunction def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x1 y1 &lt;*&gt; domainUnion x2 y2</span>
 <span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainSequence _ xA x) (DomainSequence _ yA y)</span>
 <span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainSequence def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span></span>
 <span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainRelation _ _ []) d@DomainRelation{} = return d</span>
@@ -96,7 +96,7 @@ span.spaces    { background: white }
 <span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">length xs == length ys</span></span>
 <span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainRelation def &lt;$&gt; domainUnion xA yA &lt;*&gt; zipWithM domainUnion xs ys</span></span>
 <span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">domainUnion (DomainPartition _ xA x) (DomainPartition _ yA y)</span>
-<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">DomainPartition def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span></span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">= DomainPartition def &lt;$&gt; domainUnion xA yA &lt;*&gt; domainUnion x y</span>
 <span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">domainUnion d1 d2 = <span class="nottickedoff">bug $ vcat [&quot;Domain.domainUnion&quot;, pretty d1, pretty d2]</span></span></span>
 <span class="lineno">   82 </span>
 <span class="lineno">   83 </span>
@@ -105,7 +105,7 @@ span.spaces    { background: white }
 <span class="lineno">   86 </span>    , Op x :&lt; x
 <span class="lineno">   87 </span>    , Pretty x
 <span class="lineno">   88 </span>    ) =&gt; DomainUnion (SetAttr x) where
-<span class="lineno">   89 </span>    <span class="decl"><span class="nottickedoff">domainUnion (SetAttr a) (SetAttr b) = SetAttr &lt;$&gt; domainUnion a b</span></span>
+<span class="lineno">   89 </span>    <span class="decl"><span class="istickedoff">domainUnion (SetAttr a) (SetAttr b) = SetAttr &lt;$&gt; domainUnion a b</span></span>
 <span class="lineno">   90 </span>
 <span class="lineno">   91 </span>
 <span class="lineno">   92 </span>instance
@@ -113,20 +113,20 @@ span.spaces    { background: white }
 <span class="lineno">   94 </span>    , Op x :&lt; x
 <span class="lineno">   95 </span>    , Pretty x
 <span class="lineno">   96 </span>    ) =&gt; DomainUnion (SizeAttr x) where
-<span class="lineno">   97 </span>    <span class="decl"><span class="nottickedoff">domainUnion SizeAttr_None s = return s</span>
-<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">domainUnion s SizeAttr_None = return s</span>
-<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">domainUnion a b = return $ SizeAttr_MinMaxSize</span>
-<span class="lineno">  100 </span><span class="spaces">                        </span><span class="nottickedoff">(make opMin (fromList [minA, minB]))</span>
-<span class="lineno">  101 </span><span class="spaces">                        </span><span class="nottickedoff">(make opMax (fromList [maxA, maxB]))</span>
-<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
-<span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">(minA, maxA) = getMinMax a</span>
-<span class="lineno">  104 </span><span class="spaces">            </span><span class="nottickedoff">(minB, maxB) = getMinMax b</span>
-<span class="lineno">  105 </span><span class="spaces">            </span><span class="nottickedoff">getMinMax p = case p of</span>
-<span class="lineno">  106 </span><span class="spaces">                </span><span class="nottickedoff">SizeAttr_None -&gt; bug &quot;Monoid SizeAttr&quot;</span>
-<span class="lineno">  107 </span><span class="spaces">                </span><span class="nottickedoff">SizeAttr_Size x -&gt; (x,x)</span>
-<span class="lineno">  108 </span><span class="spaces">                </span><span class="nottickedoff">SizeAttr_MinSize x -&gt; (x,x)</span>
-<span class="lineno">  109 </span><span class="spaces">                </span><span class="nottickedoff">SizeAttr_MaxSize x -&gt; (x,x)</span>
-<span class="lineno">  110 </span><span class="spaces">                </span><span class="nottickedoff">SizeAttr_MinMaxSize x y -&gt; (x,y)</span></span>
+<span class="lineno">   97 </span>    <span class="decl"><span class="istickedoff">domainUnion SizeAttr_None s = <span class="nottickedoff">return s</span></span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">domainUnion s SizeAttr_None = <span class="nottickedoff">return s</span></span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">domainUnion a b = return $ SizeAttr_MinMaxSize</span>
+<span class="lineno">  100 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make opMin (fromList [minA, minB]))</span></span>
+<span class="lineno">  101 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make opMax (fromList [maxA, maxB]))</span></span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff">where</span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">(minA, maxA) = <span class="nottickedoff">getMinMax a</span></span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">(minB, maxB) = <span class="nottickedoff">getMinMax b</span></span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMinMax p = case p of</span></span>
+<span class="lineno">  106 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None -&gt; bug &quot;Monoid SizeAttr&quot;</span></span>
+<span class="lineno">  107 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size x -&gt; (x,x)</span></span>
+<span class="lineno">  108 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize x -&gt; (x,x)</span></span>
+<span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize x -&gt; (x,x)</span></span>
+<span class="lineno">  110 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize x y -&gt; (x,y)</span></span></span>
 <span class="lineno">  111 </span>
 <span class="lineno">  112 </span>
 <span class="lineno">  113 </span>instance
@@ -162,19 +162,19 @@ span.spaces    { background: white }
 <span class="lineno">  143 </span>    , Op x :&lt; x
 <span class="lineno">  144 </span>    , Pretty x
 <span class="lineno">  145 </span>    ) =&gt; DomainUnion (FunctionAttr x) where
-<span class="lineno">  146 </span>    <span class="decl"><span class="nottickedoff">domainUnion (FunctionAttr a1 a2 a3) (FunctionAttr b1 b2 b3) =</span>
-<span class="lineno">  147 </span><span class="spaces">        </span><span class="nottickedoff">FunctionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 b2 &lt;*&gt; domainUnion a3 b3</span></span>
+<span class="lineno">  146 </span>    <span class="decl"><span class="istickedoff">domainUnion (FunctionAttr a1 a2 a3) (FunctionAttr b1 b2 b3) =</span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">FunctionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 <span class="nottickedoff">b2</span> &lt;*&gt; domainUnion a3 b3</span></span>
 <span class="lineno">  148 </span>
 <span class="lineno">  149 </span>
 <span class="lineno">  150 </span>instance DomainUnion PartialityAttr where
-<span class="lineno">  151 </span>    <span class="decl"><span class="nottickedoff">domainUnion PartialityAttr_Partial _ = return PartialityAttr_Partial</span>
-<span class="lineno">  152 </span><span class="spaces">    </span><span class="nottickedoff">domainUnion _ PartialityAttr_Partial = return PartialityAttr_Partial</span>
-<span class="lineno">  153 </span><span class="spaces">    </span><span class="nottickedoff">domainUnion PartialityAttr_Total PartialityAttr_Total = return PartialityAttr_Total</span></span>
+<span class="lineno">  151 </span>    <span class="decl"><span class="istickedoff">domainUnion PartialityAttr_Partial _ = return <span class="nottickedoff">PartialityAttr_Partial</span></span>
+<span class="lineno">  152 </span><span class="spaces">    </span><span class="istickedoff">domainUnion _ PartialityAttr_Partial = <span class="nottickedoff">return PartialityAttr_Partial</span></span>
+<span class="lineno">  153 </span><span class="spaces">    </span><span class="istickedoff">domainUnion PartialityAttr_Total PartialityAttr_Total = <span class="nottickedoff">return PartialityAttr_Total</span></span></span>
 <span class="lineno">  154 </span>
 <span class="lineno">  155 </span>
 <span class="lineno">  156 </span>instance DomainUnion JectivityAttr where
-<span class="lineno">  157 </span>    <span class="decl"><span class="nottickedoff">domainUnion x y | x == y = return x</span>
-<span class="lineno">  158 </span><span class="spaces">    </span><span class="nottickedoff">domainUnion _ _ = bug &quot;domainUnion JectivityAttr_Injective&quot;</span></span>
+<span class="lineno">  157 </span>    <span class="decl"><span class="istickedoff">domainUnion x y | <span class="tickonlytrue">x == y</span> = return <span class="nottickedoff">x</span></span>
+<span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">domainUnion _ _ = <span class="nottickedoff">bug &quot;domainUnion JectivityAttr_Injective&quot;</span></span></span>
 <span class="lineno">  159 </span>
 <span class="lineno">  160 </span>
 <span class="lineno">  161 </span>instance
@@ -205,8 +205,8 @@ span.spaces    { background: white }
 <span class="lineno">  186 </span>    , Op x :&lt; x
 <span class="lineno">  187 </span>    , Pretty x
 <span class="lineno">  188 </span>    ) =&gt; DomainUnion (PartitionAttr x) where
-<span class="lineno">  189 </span>    <span class="decl"><span class="nottickedoff">domainUnion (PartitionAttr a1 a2 a3) (PartitionAttr b1 b2 b3) =</span>
-<span class="lineno">  190 </span><span class="spaces">        </span><span class="nottickedoff">PartitionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 b2 &lt;*&gt; pure (a3 || b3)</span></span>
+<span class="lineno">  189 </span>    <span class="decl"><span class="istickedoff">domainUnion (PartitionAttr a1 a2 a3) (PartitionAttr b1 b2 b3) =</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">PartitionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 b2 &lt;*&gt; pure <span class="nottickedoff">(a3 || b3)</span></span></span>
 <span class="lineno">  191 </span>
 
 </pre>

@@ -347,7 +347,7 @@ span.spaces    { background: white }
 <span class="lineno">  328 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">  329 </span>    OccurAttr Expression -&gt; m (OccurAttr Constant)
 <span class="lineno">  330 </span><span class="decl"><span class="istickedoff">instantiateOccurAttr OccurAttr_None = return OccurAttr_None</span>
-<span class="lineno">  331 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinOccur x) = <span class="nottickedoff">OccurAttr_MinOccur &lt;$&gt; instantiateE x</span></span>
+<span class="lineno">  331 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinOccur x) = OccurAttr_MinOccur &lt;$&gt; instantiateE x</span>
 <span class="lineno">  332 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MaxOccur x) = OccurAttr_MaxOccur &lt;$&gt; instantiateE x</span>
 <span class="lineno">  333 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinMaxOccur x y) = OccurAttr_MinMaxOccur &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span>
 <span class="lineno">  334 </span>

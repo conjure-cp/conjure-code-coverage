@@ -44,7 +44,7 @@ span.spaces    { background: white }
 <span class="lineno">   25 </span>--   only use part numbers from 1.._NumParts, never use the others
 <span class="lineno">   26 </span>--      part(i) is used -&gt; part(i-1) is used, forAll i:int(3..maxNumParts)
 <span class="lineno">   27 </span>partitionOccurrence :: forall m . (MonadFail m, NameGen m, EnumerateDomain m) =&gt; Representation m
-<span class="lineno">   28 </span><span class="decl"><span class="istickedoff">partitionOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   28 </span><span class="decl"><span class="istickedoff">partitionOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up symmetryOrdering</span>
 <span class="lineno">   29 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   31 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -93,7 +93,7 @@ span.spaces    { background: white }
 <span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">-- for each part, number of elements in the part</span>
 <span class="lineno">   75 </span><span class="spaces">                </span><span class="istickedoff">, ( namePartSizes domain name</span>
 <span class="lineno">   76 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix</span>
-<span class="lineno">   77 </span><span class="spaces">                      </span><span class="istickedoff">(DomainInt <span class="nottickedoff">TagInt</span> [RangeBounded 1 maxNumParts])</span>
+<span class="lineno">   77 </span><span class="spaces">                      </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 maxNumParts])</span>
 <span class="lineno">   78 </span><span class="spaces">                      </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 0 maxPartSizes])</span>
 <span class="lineno">   79 </span><span class="spaces">                  </span><span class="istickedoff">)</span>
 <span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">-- wtf was this?</span>
@@ -198,17 +198,17 @@ span.spaces    { background: white }
 <span class="lineno">  179 </span><span class="spaces">                </span><span class="istickedoff">fixedPartSize =</span>
 <span class="lineno">  180 </span><span class="spaces">                    </span><span class="istickedoff">case attrs of</span>
 <span class="lineno">  181 </span><span class="spaces">                        </span><span class="istickedoff">PartitionAttr _ SizeAttr_Size{} _ -&gt; True</span>
-<span class="lineno">  182 </span><span class="spaces">                        </span><span class="istickedoff">_                                 -&gt; <span class="nottickedoff">False</span></span>
+<span class="lineno">  182 </span><span class="spaces">                        </span><span class="istickedoff">_                                 -&gt; False</span>
 <span class="lineno">  183 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  184 </span><span class="spaces">                </span><span class="istickedoff">regular numPartsVar partSizesVar | <span class="tickonlyfalse">isRegular attrs &amp;&amp; not fixedPartSize</span> = <span class="nottickedoff">do</span></span>
-<span class="lineno">  185 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">  186 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return $ return -- for list</span></span>
-<span class="lineno">  187 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
-<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">and([ &amp;partSizesVar[&amp;i-1] = &amp;partSizesVar[&amp;i]</span></span>
-<span class="lineno">  189 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">| &amp;iPat : int(2..&amp;maxNumParts)</span></span>
-<span class="lineno">  190 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &amp;i &lt;= &amp;numPartsVar</span></span>
-<span class="lineno">  191 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
-<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">  184 </span><span class="spaces">                </span><span class="istickedoff">regular numPartsVar partSizesVar | isRegular attrs &amp;&amp; not fixedPartSize = do</span>
+<span class="lineno">  185 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  186 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
+<span class="lineno">  187 </span><span class="spaces">                        </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
+<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ &amp;partSizesVar[&amp;i-1] = &amp;partSizesVar[&amp;i]</span></span></span>
+<span class="lineno">  189 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(2..&amp;maxNumParts)</span></span></span>
+<span class="lineno">  190 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar</span></span></span>
+<span class="lineno">  191 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
+<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
 <span class="lineno">  193 </span><span class="spaces">                </span><span class="istickedoff">regular _ _ = return []</span>
 <span class="lineno">  194 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">return $ \ inpPartition -&gt; do</span>
@@ -217,7 +217,7 @@ span.spaces    { background: white }
 <span class="lineno">  198 </span><span class="spaces">                    </span><span class="istickedoff">[ partSizeCons                    numPartsVar partSizesVar</span>
 <span class="lineno">  199 </span><span class="spaces">                    </span><span class="istickedoff">, numPartsCons                    numPartsVar</span>
 <span class="lineno">  200 </span><span class="spaces">                    </span><span class="istickedoff">, noGaps                whichPart numPartsVar</span>
-<span class="lineno">  201 </span><span class="spaces">                    </span><span class="istickedoff">, regular                         <span class="nottickedoff">numPartsVar</span> <span class="nottickedoff">partSizesVar</span></span>
+<span class="lineno">  201 </span><span class="spaces">                    </span><span class="istickedoff">, regular                         numPartsVar partSizesVar</span>
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff">, numPartsChannelling   whichPart numPartsVar</span>
 <span class="lineno">  203 </span><span class="spaces">                    </span><span class="istickedoff">, partSizesChannelling  whichPart             partSizesVar</span>
 <span class="lineno">  204 </span><span class="spaces">                    </span><span class="istickedoff">, firstIndexChannelling whichPart numPartsVar              firstIndexVar</span>
@@ -335,12 +335,12 @@ span.spaces    { background: white }
 <span class="lineno">  316 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  317 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
-<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
-<span class="lineno">  320 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- downX1 inp</span></span>
-<span class="lineno">  321 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just xsDoms' &lt;- downD (&quot;SO&quot;, domain)</span></span>
-<span class="lineno">  322 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let xsDoms = map snd xsDoms'</span></span>
-<span class="lineno">  323 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">soValues &lt;- sequence [ innerSO downX1 x xDom | (x, xDom) &lt;- zip xs xsDoms ]</span></span>
-<span class="lineno">  324 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbstractLiteral $ AbsLitTuple soValues</span></span></span> 
+<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">  320 </span><span class="spaces">            </span><span class="istickedoff">xs &lt;- downX1 inp</span>
+<span class="lineno">  321 </span><span class="spaces">            </span><span class="istickedoff">Just xsDoms' &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">  322 </span><span class="spaces">            </span><span class="istickedoff">let xsDoms = map snd xsDoms'</span>
+<span class="lineno">  323 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- sequence [ innerSO <span class="nottickedoff">downX1</span> x xDom | (x, xDom) &lt;- zip xs xsDoms ]</span>
+<span class="lineno">  324 </span><span class="spaces">            </span><span class="istickedoff">return $ AbstractLiteral $ AbsLitTuple soValues</span></span> 
 <span class="lineno">  325 </span>
 
 </pre>
