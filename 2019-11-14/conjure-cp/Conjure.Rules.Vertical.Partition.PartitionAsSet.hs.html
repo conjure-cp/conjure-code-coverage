@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Rules.Vertical.Partition.PartitionAsSet where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.Rules.Import
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>rule_Comprehension :: Rule
+<span class="lineno">    7 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;partition-comprehension{PartitionAsSet}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    8 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">    9 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   10 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (<span class="nottickedoff">pat</span>, matchDefs [opToSet, opToMSet] expr)</span>
+<span class="lineno">   11 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">let partition_    =  matchDef opParts expr</span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff">TypePartition{}   &lt;- typeOf partition_</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">Partition_AsSet{} &lt;- <span class="nottickedoff">representationOf partition_</span></span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">[s]               &lt;- <span class="nottickedoff">downX1 partition_</span></span>
+<span class="lineno">   16 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction pat old val</span></span>
+<span class="lineno">   17 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   18 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for partition-comprehension, PartitionAsSet representation&quot;</span></span>
+<span class="lineno">   19 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">   20 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">   21 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let val = j</span></span>
+<span class="lineno">   22 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension (upd val body)</span></span>
+<span class="lineno">   23 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">   24 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr jPat s) ]</span></span>
+<span class="lineno">   25 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ transformBi (upd val) gocAfter</span></span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
+
+</pre>
+</body>
+</html>
