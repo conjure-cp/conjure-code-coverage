@@ -31,7 +31,7 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>record :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
-<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   18 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -97,12 +97,12 @@ span.spaces    { background: white }
 <span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up}&quot;</span></span>
 <span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
-<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
-<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- downX1 inp</span></span>
-<span class="lineno">   83 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just xsDoms' &lt;- downD (&quot;SO&quot;, domain)</span></span>
-<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let xsDoms = map snd xsDoms'</span></span>
-<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">soValues &lt;- sequence [ innerSO downX1 x xDom | (x, xDom) &lt;- zip xs xsDoms ]</span></span>
-<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbstractLiteral $ AbsLitTuple soValues</span></span></span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff">xs &lt;- downX1 inp</span>
+<span class="lineno">   83 </span><span class="spaces">            </span><span class="istickedoff">Just xsDoms' &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">let xsDoms = map snd xsDoms'</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- sequence [ innerSO <span class="nottickedoff">downX1</span> x xDom | (x, xDom) &lt;- zip xs xsDoms ]</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">return $ AbstractLiteral $ AbsLitTuple soValues</span></span>
 <span class="lineno">   87 </span>
 
 </pre>

@@ -42,7 +42,7 @@ span.spaces    { background: white }
 <span class="lineno">   23 </span>    -&gt; (forall r x . ReprOptionsFunction m r x)
 <span class="lineno">   24 </span>    -&gt; Bool
 <span class="lineno">   25 </span>    -&gt; Representation m
-<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">partitionAsSet dispatch reprOptions useLevels = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">partitionAsSet dispatch reprOptions useLevels = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   27 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   29 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -218,10 +218,10 @@ span.spaces    { background: white }
 <span class="lineno">  199 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  200 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
-<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
-<span class="lineno">  203 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[inner] &lt;- downX1 inp</span></span>
-<span class="lineno">  204 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
-<span class="lineno">  205 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">  203 </span><span class="spaces">            </span><span class="istickedoff">[inner] &lt;- downX1 inp</span>
+<span class="lineno">  204 </span><span class="spaces">            </span><span class="istickedoff">Just [(_, innerDomain)] &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">  205 </span><span class="spaces">            </span><span class="istickedoff">innerSO downX1 inner innerDomain</span></span>
 
 </pre>
 </body>

@@ -774,7 +774,7 @@ span.spaces    { background: white }
 <span class="lineno">  755 </span>addSearchOrder :: Model -&gt; Model
 <span class="lineno">  756 </span><span class="decl"><span class="istickedoff">addSearchOrder model</span>
 <span class="lineno">  757 </span><span class="spaces">    </span><span class="istickedoff">| let hasSearchOrder = not $ null [ <span class="nottickedoff">()</span> | SearchOrder{} &lt;- mStatements model ]</span>
-<span class="lineno">  758 </span><span class="spaces">    </span><span class="istickedoff">, <span class="tickonlyfalse">hasSearchOrder</span> = <span class="nottickedoff">model</span></span>
+<span class="lineno">  758 </span><span class="spaces">    </span><span class="istickedoff">, hasSearchOrder = model</span>
 <span class="lineno">  759 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> =</span>
 <span class="lineno">  760 </span><span class="spaces">        </span><span class="istickedoff">let finds = [ nm | Declaration (FindOrGiven Find nm _domain) &lt;- mStatements model ]</span>
 <span class="lineno">  761 </span><span class="spaces">        </span><span class="istickedoff">in  model { mStatements = mStatements model ++ [SearchOrder (map BranchingOn finds)] }</span></span>
@@ -810,27 +810,27 @@ span.spaces    { background: white }
 <span class="lineno">  791 </span>    Model -&gt; m Model
 <span class="lineno">  792 </span><span class="decl"><span class="istickedoff">dropTagForSR m = do</span>
 <span class="lineno">  793 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  794 </span><span class="spaces">        </span><span class="istickedoff">replacePredSucc [essence| pred(&amp;x) |] = <span class="nottickedoff">do</span></span>
-<span class="lineno">  795 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">ty &lt;- typeOf x</span></span>
-<span class="lineno">  796 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case ty of</span></span>
-<span class="lineno">  797 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeBool{} -&gt; return [essence| false |]</span></span>
-<span class="lineno">  798 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">-- since True becomes False</span></span>
-<span class="lineno">  799 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">--       False becomes out-of-bounds, hence False</span></span>
-<span class="lineno">  800 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeInt{}  -&gt; do</span></span>
-<span class="lineno">  801 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">let xTagInt = reTag TagInt x</span></span>
-<span class="lineno">  802 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;xTagInt - 1 |]</span></span>
-<span class="lineno">  803 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_          -&gt; bug &quot;predSucc&quot;</span></span>
-<span class="lineno">  804 </span><span class="spaces">        </span><span class="istickedoff">replacePredSucc [essence| succ(&amp;x) |] = <span class="nottickedoff">do</span></span>
-<span class="lineno">  805 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">ty &lt;- typeOf x</span></span>
-<span class="lineno">  806 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case ty of</span></span>
-<span class="lineno">  807 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeBool{} -&gt; return [essence| !&amp;x |]</span></span>
-<span class="lineno">  808 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">-- since False becomes True</span></span>
-<span class="lineno">  809 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">--       True becomes out-of-bounds, hence False</span></span>
-<span class="lineno">  810 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">-- &quot;succ&quot; is exactly &quot;negate&quot; on bools</span></span>
-<span class="lineno">  811 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeInt{}  -&gt; do</span></span>
-<span class="lineno">  812 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">let xTagInt = reTag TagInt x</span></span>
-<span class="lineno">  813 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;xTagInt + 1 |]</span></span>
-<span class="lineno">  814 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_          -&gt; bug &quot;predSucc&quot;</span></span>
+<span class="lineno">  794 </span><span class="spaces">        </span><span class="istickedoff">replacePredSucc [essence| pred(&amp;x) |] = do</span>
+<span class="lineno">  795 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  796 </span><span class="spaces">            </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  797 </span><span class="spaces">                </span><span class="istickedoff">TypeBool{} -&gt; <span class="nottickedoff">return [essence| false |]</span></span>
+<span class="lineno">  798 </span><span class="spaces">                                </span><span class="istickedoff">-- since True becomes False</span>
+<span class="lineno">  799 </span><span class="spaces">                                </span><span class="istickedoff">--       False becomes out-of-bounds, hence False</span>
+<span class="lineno">  800 </span><span class="spaces">                </span><span class="istickedoff">TypeInt{}  -&gt; do</span>
+<span class="lineno">  801 </span><span class="spaces">                    </span><span class="istickedoff">let xTagInt = reTag <span class="nottickedoff">TagInt</span> x</span>
+<span class="lineno">  802 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> &amp;xTagInt - 1 |]</span></span></span>
+<span class="lineno">  803 </span><span class="spaces">                </span><span class="istickedoff">_          -&gt; <span class="nottickedoff">bug &quot;predSucc&quot;</span></span>
+<span class="lineno">  804 </span><span class="spaces">        </span><span class="istickedoff">replacePredSucc [essence| succ(&amp;x) |] = do</span>
+<span class="lineno">  805 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  806 </span><span class="spaces">            </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  807 </span><span class="spaces">                </span><span class="istickedoff">TypeBool{} -&gt; <span class="nottickedoff">return [essence| !&amp;x |]</span></span>
+<span class="lineno">  808 </span><span class="spaces">                                </span><span class="istickedoff">-- since False becomes True</span>
+<span class="lineno">  809 </span><span class="spaces">                                </span><span class="istickedoff">--       True becomes out-of-bounds, hence False</span>
+<span class="lineno">  810 </span><span class="spaces">                                </span><span class="istickedoff">-- &quot;succ&quot; is exactly &quot;negate&quot; on bools</span>
+<span class="lineno">  811 </span><span class="spaces">                </span><span class="istickedoff">TypeInt{}  -&gt; do</span>
+<span class="lineno">  812 </span><span class="spaces">                    </span><span class="istickedoff">let xTagInt = reTag <span class="nottickedoff">TagInt</span> x</span>
+<span class="lineno">  813 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;xTagInt + 1 |]</span></span></span></span></span></span></span>
+<span class="lineno">  814 </span><span class="spaces">                </span><span class="istickedoff">_          -&gt; <span class="nottickedoff">bug &quot;predSucc&quot;</span></span>
 <span class="lineno">  815 </span><span class="spaces">        </span><span class="istickedoff">-- replacePredSucc [essence| &amp;a .&lt; &amp;b |] = return [essence| &amp;a &lt; &amp;b |]</span>
 <span class="lineno">  816 </span><span class="spaces">        </span><span class="istickedoff">-- replacePredSucc [essence| &amp;a .&lt;= &amp;b |] = return [essence| &amp;a &lt;= &amp;b |]</span>
 <span class="lineno">  817 </span><span class="spaces">        </span><span class="istickedoff">replacePredSucc x = return x</span>
@@ -1715,7 +1715,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1696 </span><span class="spaces">                </span><span class="istickedoff">let</span>
 <span class="lineno"> 1697 </span><span class="spaces">                    </span><span class="istickedoff">f (Reference nm _)</span>
 <span class="lineno"> 1698 </span><span class="spaces">                        </span><span class="istickedoff">| nm == name</span>
-<span class="lineno"> 1699 </span><span class="spaces">                        </span><span class="istickedoff">= Reference nm (Just (DeclHasRepr forg <span class="nottickedoff">name</span> domain))</span>
+<span class="lineno"> 1699 </span><span class="spaces">                        </span><span class="istickedoff">= Reference nm (Just (DeclHasRepr forg name domain))</span>
 <span class="lineno"> 1700 </span><span class="spaces">                    </span><span class="istickedoff">f x = x</span>
 <span class="lineno"> 1701 </span><span class="spaces">                </span><span class="istickedoff">in</span>
 <span class="lineno"> 1702 </span><span class="spaces">                    </span><span class="istickedoff">return m { mStatements = transformBi f (mStatements m) }</span>
@@ -1794,7 +1794,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1775 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ChooseReprForComprehension&quot;</span>
 <span class="lineno"> 1776 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1777 </span><span class="spaces">    </span><span class="istickedoff">mkStructurals name domain = do</span>
-<span class="lineno"> 1778 </span><span class="spaces">        </span><span class="istickedoff">let ref = Reference name (Just (DeclHasRepr <span class="nottickedoff">Quantified</span> <span class="nottickedoff">name</span> domain))</span>
+<span class="lineno"> 1778 </span><span class="spaces">        </span><span class="istickedoff">let ref = Reference name (Just (DeclHasRepr Quantified <span class="nottickedoff">name</span> domain))</span>
 <span class="lineno"> 1779 </span><span class="spaces">        </span><span class="istickedoff">gen  &lt;- getStructurals downX1 domain</span>
 <span class="lineno"> 1780 </span><span class="spaces">        </span><span class="istickedoff">gen ref</span></span>
 <span class="lineno"> 1781 </span>
@@ -1832,7 +1832,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1813 </span><span class="spaces">                    </span><span class="istickedoff">structurals &lt;- mkStructurals nm thisDom</span>
 <span class="lineno"> 1814 </span><span class="spaces">                    </span><span class="istickedoff">let updateRepr (Reference nm' _)</span>
 <span class="lineno"> 1815 </span><span class="spaces">                            </span><span class="istickedoff">| nm == nm'</span>
-<span class="lineno"> 1816 </span><span class="spaces">                            </span><span class="istickedoff">= Reference nm (Just (DeclHasRepr LocalFind <span class="nottickedoff">nm</span> thisDom))</span>
+<span class="lineno"> 1816 </span><span class="spaces">                            </span><span class="istickedoff">= Reference nm (Just (DeclHasRepr LocalFind nm thisDom))</span>
 <span class="lineno"> 1817 </span><span class="spaces">                        </span><span class="istickedoff">updateRepr p = p</span>
 <span class="lineno"> 1818 </span><span class="spaces">                    </span><span class="istickedoff">let out' = WithLocals (transform updateRepr body) $ AuxiliaryVars</span>
 <span class="lineno"> 1819 </span><span class="spaces">                                </span><span class="istickedoff">(  stmtBefore</span>
@@ -1994,7 +1994,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1975 </span><span class="spaces">    </span><span class="istickedoff">flatten a = do</span>
 <span class="lineno"> 1976 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
 <span class="lineno"> 1977 </span><span class="spaces">      </span><span class="istickedoff">case ta of</span>
-<span class="lineno"> 1978 </span><span class="spaces">        </span><span class="istickedoff">TypeBool -&gt; return <span class="nottickedoff">[essence| [-toInt(&amp;a)] |]</span></span>
+<span class="lineno"> 1978 </span><span class="spaces">        </span><span class="istickedoff">TypeBool -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [-toInt(&amp;a)] |]</span></span></span></span></span>
 <span class="lineno"> 1979 </span><span class="spaces">        </span><span class="istickedoff">TypeInt{} -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [&amp;a] |]</span></span></span></span></span>
 <span class="lineno"> 1980 </span><span class="spaces">        </span><span class="istickedoff">TypeList TypeInt{} -&gt; return a</span>
 <span class="lineno"> 1981 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix TypeInt{} TypeInt{} -&gt; return a</span>
@@ -2048,8 +2048,8 @@ span.spaces    { background: white }
 <span class="lineno"> 2029 </span><span class="spaces">                      </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> ([] : `matrix indexed by [int()] of int`) |]</span></span></span></span></span>
 <span class="lineno"> 2030 </span><span class="spaces">                    </span><span class="istickedoff">AbsLitMatrix _ xs -&gt; do</span>
 <span class="lineno"> 2031 </span><span class="spaces">                      </span><span class="istickedoff">fxs &lt;- sequence (flatten &lt;$&gt; (Constant &lt;$&gt; xs))</span>
-<span class="lineno"> 2032 </span><span class="spaces">                      </span><span class="istickedoff">let <span class="nottickedoff">flatxs = fromList fxs</span></span>
-<span class="lineno"> 2033 </span><span class="spaces">                      </span><span class="istickedoff">return <span class="nottickedoff">[essence| flatten(&amp;flatxs) |]</span></span>
+<span class="lineno"> 2032 </span><span class="spaces">                      </span><span class="istickedoff">let flatxs = fromList fxs</span>
+<span class="lineno"> 2033 </span><span class="spaces">                      </span><span class="istickedoff">return [essence| flatten(&amp;flatxs) |]</span>
 <span class="lineno"> 2034 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
 <span class="lineno"> 2035 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
 <span class="lineno"> 2036 </span><span class="spaces">                </span><span class="istickedoff">TypedConstant tc _ -&gt; flatten (Constant tc)</span>
@@ -2176,9 +2176,9 @@ span.spaces    { background: white }
 <span class="lineno"> 2157 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Cardinality of a domain&quot;</span></span>
 <span class="lineno"> 2158 </span><span class="spaces">            </span><span class="istickedoff">, case d of</span>
 <span class="lineno"> 2159 </span><span class="spaces">                </span><span class="istickedoff">DomainInt _ [RangeBounded 1 u] -&gt; return u</span>
-<span class="lineno"> 2160 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2161 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(iPat, _) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2162 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return [essence| sum([ 1 | &amp;iPat : &amp;d ]) |]</span></span>
+<span class="lineno"> 2160 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno"> 2161 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, _) &lt;- quantifiedVar</span>
+<span class="lineno"> 2162 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> sum([ 1 | &amp;iPat : &amp;d ]) |]</span></span></span>
 <span class="lineno"> 2163 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 2164 </span>
 <span class="lineno"> 2165 </span>
@@ -2192,10 +2192,10 @@ span.spaces    { background: white }
 <span class="lineno"> 2173 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno"> 2174 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| min(&amp;maybeDomain) |] = do</span>
 <span class="lineno"> 2175 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- getDomain maybeDomain</span>
-<span class="lineno"> 2176 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2177 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;min of a domain&quot;</span></span>
-<span class="lineno"> 2178 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, minOfDomain d</span></span>
-<span class="lineno"> 2179 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2176 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2177 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;min of a domain&quot;</span></span>
+<span class="lineno"> 2178 </span><span class="spaces">            </span><span class="istickedoff">, minOfDomain d</span>
+<span class="lineno"> 2179 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno"> 2180 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_DomainMinMax&quot;</span>
 <span class="lineno"> 2181 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2182 </span><span class="spaces">    </span><span class="istickedoff">getDomain :: MonadFail m =&gt; Expression -&gt; m (Domain () Expression)</span>
@@ -2208,7 +2208,7 @@ span.spaces    { background: white }
 <span class="lineno"> 2189 </span><span class="decl"><span class="istickedoff">rule_ComplexAbsPat = <span class="nottickedoff">&quot;complex-pattern&quot;</span> `namedRule` theRule where</span>
 <span class="lineno"> 2190 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno"> 2191 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, domainOrExpr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno"> 2192 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainNoRepr pat@AbsPatTuple{} domain) -&gt; <span class="nottickedoff">return (pat, Left domain)</span></span>
+<span class="lineno"> 2192 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainNoRepr pat@AbsPatTuple{} domain) -&gt; return (pat, Left domain)</span>
 <span class="lineno"> 2193 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr       pat@AbsPatTuple{} expr)   -&gt; return (pat, Right expr)</span>
 <span class="lineno"> 2194 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_ComplexAbsPat&quot;</span></span>
 <span class="lineno"> 2195 </span><span class="spaces">        </span><span class="istickedoff">return</span>
@@ -2218,11 +2218,11 @@ span.spaces    { background: white }
 <span class="lineno"> 2199 </span><span class="spaces">                </span><span class="istickedoff">let replacements = [ (p, make opMatrixIndexing i (map (fromInt . fromIntegral) is))</span>
 <span class="lineno"> 2200 </span><span class="spaces">                                   </span><span class="istickedoff">| (p, is) &lt;- genMappings pat</span>
 <span class="lineno"> 2201 </span><span class="spaces">                                   </span><span class="istickedoff">]</span>
-<span class="lineno"> 2202 </span><span class="spaces">                </span><span class="istickedoff">let f x@(Reference nm _) = fromMaybe <span class="nottickedoff">x</span> (lookup nm replacements)</span>
+<span class="lineno"> 2202 </span><span class="spaces">                </span><span class="istickedoff">let f x@(Reference nm _) = fromMaybe x (lookup nm replacements)</span>
 <span class="lineno"> 2203 </span><span class="spaces">                    </span><span class="istickedoff">f x = x</span>
 <span class="lineno"> 2204 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (transform f body)</span>
 <span class="lineno"> 2205 </span><span class="spaces">                            </span><span class="istickedoff">$  gocBefore</span>
-<span class="lineno"> 2206 </span><span class="spaces">                            </span><span class="istickedoff">++ [ either <span class="nottickedoff">(Generator . GenDomainNoRepr iPat)</span></span>
+<span class="lineno"> 2206 </span><span class="spaces">                            </span><span class="istickedoff">++ [ either (Generator . GenDomainNoRepr iPat)</span>
 <span class="lineno"> 2207 </span><span class="spaces">                                        </span><span class="istickedoff">(Generator . GenInExpr       iPat)</span>
 <span class="lineno"> 2208 </span><span class="spaces">                                        </span><span class="istickedoff">domainOrExpr ]</span>
 <span class="lineno"> 2209 </span><span class="spaces">                            </span><span class="istickedoff">++ transformBi f gocAfter</span>
@@ -2290,7 +2290,7 @@ span.spaces    { background: white }
 <span class="lineno"> 2271 </span><span class="spaces">                    </span><span class="istickedoff">(_, Just{}, _, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;or&quot;</span> , opOrSkip )</span>
 <span class="lineno"> 2272 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, Just{}, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;sum&quot;</span>, opSumSkip)</span>
 <span class="lineno"> 2273 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, Just{}, _, _, _) -&gt; return (<span class="nottickedoff">&quot;product&quot;</span>, opProductSkip)</span>
-<span class="lineno"> 2274 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, Just{}, _, _) -&gt; <span class="nottickedoff">na &quot;rule_InlineConditions (min)&quot;</span></span>
+<span class="lineno"> 2274 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, Just{}, _, _) -&gt; na &quot;rule_InlineConditions (min)&quot;</span>
 <span class="lineno"> 2275 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, Just{}, _) -&gt; na &quot;rule_InlineConditions (max)&quot;</span>
 <span class="lineno"> 2276 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, _, Just{}) -&gt; <span class="nottickedoff">return (&quot;ordering&quot;, opSumSkip)</span></span>
 <span class="lineno"> 2277 </span><span class="spaces">                    </span><span class="istickedoff">_                          -&gt; na &quot;rule_InlineConditions (meh-2)&quot;</span>
@@ -2319,7 +2319,7 @@ span.spaces    { background: white }
 <span class="lineno"> 2300 </span><span class="spaces">        </span><span class="istickedoff">theGuard &lt;- case toInline of</span>
 <span class="lineno"> 2301 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; na &quot;No condition to inline.&quot;</span>
 <span class="lineno"> 2302 </span><span class="spaces">            </span><span class="istickedoff">[x] -&gt; return x</span>
-<span class="lineno"> 2303 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; <span class="nottickedoff">return $ make opAnd $ fromList xs</span></span>
+<span class="lineno"> 2303 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; return $ make opAnd $ fromList xs</span>
 <span class="lineno"> 2304 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2305 </span><span class="spaces">        </span><span class="istickedoff">domBody &lt;- domainOf body</span>
 <span class="lineno"> 2306 </span><span class="spaces">        </span><span class="istickedoff">let</span>
@@ -2352,12 +2352,12 @@ span.spaces    { background: white }
 <span class="lineno"> 2333 </span><span class="spaces">        </span><span class="istickedoff">(nameQ, binOp, Comprehension body gensOrConds) &lt;-</span>
 <span class="lineno"> 2334 </span><span class="spaces">            </span><span class="istickedoff">case (match opMax p, match opMin p) of</span>
 <span class="lineno"> 2335 </span><span class="spaces">                </span><span class="istickedoff">(Just res, _) -&gt; return (<span class="nottickedoff">&quot;max&quot;</span>, \ a b -&gt; [essence| &amp;a &lt;= &amp;b |], res )</span>
-<span class="lineno"> 2336 </span><span class="spaces">                </span><span class="istickedoff">(_, Just res) -&gt; <span class="nottickedoff">return (&quot;min&quot;, \ a b -&gt; [essence| &amp;a &gt;= &amp;b |], res )</span></span>
+<span class="lineno"> 2336 </span><span class="spaces">                </span><span class="istickedoff">(_, Just res) -&gt; return (<span class="nottickedoff">&quot;min&quot;</span>, \ a b -&gt; [essence| &amp;a &gt;= &amp;b |], res )</span>
 <span class="lineno"> 2337 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na &quot;rule_InlineConditions_MaxMin&quot;</span>
 <span class="lineno"> 2338 </span><span class="spaces">        </span><span class="istickedoff">let</span>
 <span class="lineno"> 2339 </span><span class="spaces">            </span><span class="istickedoff">(toInline, gocInExpr, _toKeep) = mconcat</span>
 <span class="lineno"> 2340 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
-<span class="lineno"> 2341 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | <span class="tickonlytrue">categoryOf x == CatDecision</span> -&gt; ([<span class="nottickedoff">x</span>],<span class="nottickedoff">[]</span>,<span class="nottickedoff">[]</span>)</span>
+<span class="lineno"> 2341 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([<span class="nottickedoff">x</span>],<span class="nottickedoff">[]</span>,<span class="nottickedoff">[]</span>)</span>
 <span class="lineno"> 2342 </span><span class="spaces">                    </span><span class="istickedoff">Generator (GenInExpr {}) -&gt; <span class="nottickedoff">([],[goc],[])</span></span>
 <span class="lineno"> 2343 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[],<span class="nottickedoff">[goc]</span>)</span>
 <span class="lineno"> 2344 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>

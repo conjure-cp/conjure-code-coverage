@@ -54,38 +54,38 @@ span.spaces    { background: white }
 <span class="lineno">   35 </span><span class="decl"><span class="istickedoff">rule_PowerSet_Comprehension = <span class="nottickedoff">&quot;set-powerSet-comprehension{ExplicitVarSizeWithMarker}&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (setPat, setPatNum, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr setPat@(AbsPatSet pats) expr) -&gt; return (<span class="nottickedoff">setPat</span>, <span class="nottickedoff">length pats</span>, expr)</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr setPat@(AbsPatSet pats) expr) -&gt; return (setPat, length pats, expr)</span>
 <span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_PowerSet_Comprehension&quot;</span></span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">s                             &lt;- match opPowerSet expr</span>
 <span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{}                     &lt;- typeOf s</span>
 <span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">Set_ExplicitVarSizeWithMarker &lt;- representationOf s</span>
-<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">[marker, values]              &lt;- <span class="nottickedoff">downX1 s</span></span>
-<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix index _          &lt;- <span class="nottickedoff">domainOf values</span></span>
-<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction setPat old val</span></span>
-<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for set-comprehension, ExplicitVarSizeWithMarker representation&quot;</span></span>
-<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">outPats &lt;- replicateM setPatNum quantifiedVar</span></span>
-<span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let val = AbstractLiteral $ AbsLitSet</span></span>
-<span class="lineno">   51 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;values[&amp;j] |] | (_,j) &lt;- outPats ]</span></span>
-<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension (upd val body) $ concat</span></span>
-<span class="lineno">   53 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ gocBefore</span></span>
-<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat</span></span>
-<span class="lineno">   55 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ [ Generator (GenDomainNoRepr pat index)</span></span>
-<span class="lineno">   56 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;patX &lt;= &amp;marker |]</span></span>
-<span class="lineno">   57 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   58 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| (pat,patX) &lt;- take 1 outPats</span></span>
-<span class="lineno">   59 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   60 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat</span></span>
-<span class="lineno">   61 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ [ Generator (GenDomainNoRepr pat index)</span></span>
-<span class="lineno">   62 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;patX &gt; &amp;beforeX |]</span></span>
-<span class="lineno">   63 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;patX &lt;= &amp;marker |]</span></span>
-<span class="lineno">   64 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   65 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| ((_, beforeX), (pat, patX)) &lt;- zip outPats (tail outPats)</span></span>
-<span class="lineno">   66 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   67 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, transformBi (upd val) gocAfter</span></span>
-<span class="lineno">   68 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">[marker, values]              &lt;- downX1 s</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix index _          &lt;- domainOf values</span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction setPat old val</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for set-comprehension, ExplicitVarSizeWithMarker representation&quot;</span></span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff">outPats &lt;- replicateM setPatNum quantifiedVar</span>
+<span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff">let val = AbstractLiteral $ AbsLitSet</span>
+<span class="lineno">   51 </span><span class="spaces">                        </span><span class="istickedoff">[ [essence| &amp;values[&amp;j] |] | (_,j) &lt;- outPats ]</span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (upd val body) $ concat</span>
+<span class="lineno">   53 </span><span class="spaces">                        </span><span class="istickedoff">[ gocBefore</span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff">, concat</span>
+<span class="lineno">   55 </span><span class="spaces">                            </span><span class="istickedoff">[ [ Generator (GenDomainNoRepr pat index)</span>
+<span class="lineno">   56 </span><span class="spaces">                              </span><span class="istickedoff">, Condition [essence| &amp;patX &lt;= &amp;marker |]</span>
+<span class="lineno">   57 </span><span class="spaces">                              </span><span class="istickedoff">]</span>
+<span class="lineno">   58 </span><span class="spaces">                            </span><span class="istickedoff">| (pat,patX) &lt;- take 1 outPats</span>
+<span class="lineno">   59 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">   60 </span><span class="spaces">                        </span><span class="istickedoff">, concat</span>
+<span class="lineno">   61 </span><span class="spaces">                            </span><span class="istickedoff">[ [ Generator (GenDomainNoRepr pat index)</span>
+<span class="lineno">   62 </span><span class="spaces">                              </span><span class="istickedoff">, Condition [essence| &amp;patX &gt; &amp;beforeX |]</span>
+<span class="lineno">   63 </span><span class="spaces">                              </span><span class="istickedoff">, Condition [essence| &amp;patX &lt;= &amp;marker |]</span>
+<span class="lineno">   64 </span><span class="spaces">                              </span><span class="istickedoff">]</span>
+<span class="lineno">   65 </span><span class="spaces">                            </span><span class="istickedoff">| ((_, beforeX), (pat, patX)) &lt;- zip outPats (tail outPats)</span>
+<span class="lineno">   66 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">   67 </span><span class="spaces">                        </span><span class="istickedoff">, transformBi <span class="nottickedoff">(upd val)</span> gocAfter</span>
+<span class="lineno">   68 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PowerSet_Comprehension&quot;</span></span>
 <span class="lineno">   71 </span>
 <span class="lineno">   72 </span>

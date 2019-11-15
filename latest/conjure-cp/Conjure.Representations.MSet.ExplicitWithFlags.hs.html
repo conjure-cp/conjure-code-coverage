@@ -32,7 +32,7 @@ span.spaces    { background: white }
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>msetExplicitWithFlags :: forall m . (MonadFail m, NameGen m, EnumerateDomain m) =&gt; Representation m
-<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">msetExplicitWithFlags = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up symmetryOrdering</span>
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">msetExplicitWithFlags = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   19 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -53,7 +53,7 @@ span.spaces    { background: white }
 <span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
 <span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">getMinOccur attrs = case attrs of</span>
-<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinOccur x) -&gt; <span class="nottickedoff">Just x</span></span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinOccur x) -&gt; Just x</span>
 <span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinMaxOccur x _) -&gt; Just x</span>
 <span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Nothing</span>
 <span class="lineno">   40 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -146,41 +146,41 @@ span.spaces    { background: white }
 <span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ _ _ = <span class="nottickedoff">na &quot;{structuralCons} ExplicitVarSizeWithFlags&quot;</span></span>
 <span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
-<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC ( name</span></span>
-<span class="lineno">  131 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, domain@(DomainMSet _ attrs innerDomain)</span></span>
-<span class="lineno">  132 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract (AbsLitMSet constants')</span></span>
-<span class="lineno">  133 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">) = do</span></span>
-<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">maxSize &lt;- getMaxSize attrs innerDomain</span></span>
-<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let indexDomain = mkDomainIntB 1 maxSize</span></span>
-<span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let constants = histogram constants'</span></span>
-<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">maxSizeInt &lt;-</span></span>
-<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case maxSize of</span></span>
-<span class="lineno">  141 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">ConstantInt _ x -&gt; return x</span></span>
-<span class="lineno">  142 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail $ vcat</span></span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
+<span class="lineno">  131 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainMSet _ attrs innerDomain)</span>
+<span class="lineno">  132 </span><span class="spaces">              </span><span class="istickedoff">, ConstantAbstract (AbsLitMSet constants')</span>
+<span class="lineno">  133 </span><span class="spaces">              </span><span class="istickedoff">) = do</span>
+<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs <span class="nottickedoff">innerDomain</span></span>
+<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">let indexDomain = mkDomainIntB 1 maxSize</span>
+<span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">let constants = histogram constants'</span>
+<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">maxSizeInt &lt;-</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">case maxSize of</span>
+<span class="lineno">  141 </span><span class="spaces">                    </span><span class="istickedoff">ConstantInt _ x -&gt; return x</span>
+<span class="lineno">  142 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
 <span class="lineno">  143 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer for the maxSize attribute.&quot;</span></span>
 <span class="lineno">  144 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty maxSize</span></span>
 <span class="lineno">  145 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  146 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  147 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">z &lt;- zeroVal innerDomain</span></span>
-<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let zeroes = replicate (fromInteger (maxSizeInt - genericLength constants)) z</span></span>
-<span class="lineno">  150 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  151 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let counts = map (ConstantInt TagInt . snd) constants</span></span>
-<span class="lineno">  152 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let falses = replicate (fromInteger (maxSizeInt - genericLength constants)) (ConstantInt TagInt 0)</span></span>
-<span class="lineno">  153 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ Just</span></span>
-<span class="lineno">  155 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ ( nameFlag domain name</span></span>
-<span class="lineno">  156 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">, DomainMatrix indexDomain DomainBool</span></span>
-<span class="lineno">  157 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitMatrix indexDomain (counts ++ falses)</span></span>
-<span class="lineno">  158 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, ( nameValues domain name</span></span>
-<span class="lineno">  160 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">, DomainMatrix indexDomain innerDomain</span></span>
-<span class="lineno">  161 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitMatrix indexDomain (map fst constants ++ zeroes)</span></span>
-<span class="lineno">  162 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  163 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC _ = na &quot;{downC} ExplicitVarSizeWithFlags&quot;</span></span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">z &lt;- zeroVal innerDomain</span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">let zeroes = replicate (fromInteger (maxSizeInt - genericLength constants)) z</span>
+<span class="lineno">  150 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  151 </span><span class="spaces">            </span><span class="istickedoff">let counts = map (ConstantInt <span class="nottickedoff">TagInt</span> . snd) constants</span>
+<span class="lineno">  152 </span><span class="spaces">            </span><span class="istickedoff">let falses = replicate (fromInteger (maxSizeInt - genericLength constants)) (ConstantInt <span class="nottickedoff">TagInt</span> 0)</span>
+<span class="lineno">  153 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">return $ Just</span>
+<span class="lineno">  155 </span><span class="spaces">                </span><span class="istickedoff">[ ( nameFlag domain name</span>
+<span class="lineno">  156 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix indexDomain DomainBool</span>
+<span class="lineno">  157 </span><span class="spaces">                  </span><span class="istickedoff">, ConstantAbstract $ AbsLitMatrix indexDomain (counts ++ falses)</span>
+<span class="lineno">  158 </span><span class="spaces">                  </span><span class="istickedoff">)</span>
+<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff">, ( nameValues domain name</span>
+<span class="lineno">  160 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix indexDomain innerDomain</span>
+<span class="lineno">  161 </span><span class="spaces">                  </span><span class="istickedoff">, ConstantAbstract $ AbsLitMatrix indexDomain (map fst constants ++ zeroes)</span>
+<span class="lineno">  162 </span><span class="spaces">                  </span><span class="istickedoff">)</span>
+<span class="lineno">  163 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff">downC _ = <span class="nottickedoff">na &quot;{downC} ExplicitVarSizeWithFlags&quot;</span></span>
 <span class="lineno">  165 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
 <span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain) =</span>

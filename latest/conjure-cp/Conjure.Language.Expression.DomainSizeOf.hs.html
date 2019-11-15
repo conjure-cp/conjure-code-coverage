@@ -51,17 +51,17 @@ span.spaces    { background: white }
 <span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainUnnamed _ x) = <span class="nottickedoff">return x</span></span>
 <span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple []) = <span class="nottickedoff">return 1</span></span>
 <span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple xs) = make opProduct . fromList &lt;$&gt; mapM domainSizeOf xs</span>
-<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRecord xs) = <span class="nottickedoff">make opProduct . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span></span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRecord xs) = make opProduct . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
 <span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainVariant xs) = make opSum . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
 <span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMatrix index inner) = make opPow &lt;$&gt; domainSizeOf inner &lt;*&gt; domainSizeOf index</span>
 <span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainSet _ (SetAttr sizeAttr) inner) = do</span>
 <span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">innerSize &lt;- domainSizeOf inner</span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">case sizeAttr of</span>
 <span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_None           -&gt; return (make opPow 2 innerSize)</span>
-<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_Size size      -&gt; <span class="nottickedoff">return (nchoosek (make opFactorial) innerSize size)</span></span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_Size size      -&gt; return (nchoosek (make opFactorial) innerSize size)</span>
 <span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
 <span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MaxSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
-<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ _ -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ _ -&gt; return (make opPow 2 innerSize)              -- TODO: can be better</span>
 <span class="lineno">   46 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMSet _ attrs inner) = <span class="nottickedoff">do</span></span>
 <span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">innerSize &lt;- domainSizeOf inner</span></span>
 <span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
@@ -96,8 +96,8 @@ span.spaces    { background: white }
 <span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRelation _ (RelationAttr sizeAttr _binRelAttr) inners) =</span>
 <span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf (DomainSet <span class="nottickedoff">def</span> (SetAttr sizeAttr) (DomainTuple inners))</span>
 <span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainPartition _ a inner) =</span>
-<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">domainSizeOf $ DomainSet def (SetAttr (partsNum  a))</span></span>
-<span class="lineno">   81 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">$ DomainSet def (SetAttr (partsSize a)) inner</span></span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf $ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsNum  a))</span>
+<span class="lineno">   81 </span><span class="spaces">                      </span><span class="istickedoff">$ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsSize a)) inner</span>
 <span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d = <span class="nottickedoff">bug (&quot;not implemented: domainSizeOf:&quot; &lt;+&gt; vcat [pretty d, pretty (show d)])</span></span></span>
 <span class="lineno">   83 </span>
 <span class="lineno">   84 </span>

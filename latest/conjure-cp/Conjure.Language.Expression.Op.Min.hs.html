@@ -44,7 +44,7 @@ span.spaces    { background: white }
 <span class="lineno">   25 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpMin x) | Just (dom :: Domain () x) &lt;- project x = do</span>
 <span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
 <span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; <span class="nottickedoff">return ty</span></span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return ty</span>
 <span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; return ty</span>
 <span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">return ty</span></span>
 <span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>

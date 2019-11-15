@@ -50,7 +50,7 @@ span.spaces    { background: white }
 <span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">case decl of</span>
 <span class="lineno">   32 </span><span class="spaces">                        </span><span class="istickedoff">FindOrGiven forg nm dom       -&gt; do</span>
 <span class="lineno">   33 </span><span class="spaces">                            </span><span class="istickedoff">dom' &lt;- resolveD dom</span>
-<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">modify ((nm, DeclNoRepr <span class="nottickedoff">forg</span> <span class="nottickedoff">nm</span> dom' <span class="nottickedoff">NoRegion</span>) :)</span>
+<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">modify ((nm, DeclNoRepr forg nm dom' NoRegion) :)</span>
 <span class="lineno">   35 </span><span class="spaces">                        </span><span class="istickedoff">Letting nm x                  -&gt; do</span>
 <span class="lineno">   36 </span><span class="spaces">                            </span><span class="istickedoff">x' &lt;- resolveX x</span>
 <span class="lineno">   37 </span><span class="spaces">                            </span><span class="istickedoff">modify ((nm, Alias x') :)</span>

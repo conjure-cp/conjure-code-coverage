@@ -32,7 +32,7 @@ span.spaces    { background: white }
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>setExplicitVarSizeWithDummy :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
-<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">setExplicitVarSizeWithDummy = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">setExplicitVarSizeWithDummy = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   19 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -48,7 +48,7 @@ span.spaces    { background: white }
 <span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize attrs innerDomain = case attrs of</span>
 <span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MaxSize x -&gt; return x</span>
 <span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ x -&gt; return x</span>
-<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; reTag <span class="nottickedoff">TagInt</span> &lt;$&gt; domainSizeOf innerDomain</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; reTag TagInt &lt;$&gt; domainSizeOf innerDomain</span>
 <span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain :: Pretty r =&gt; Domain r Expression -&gt; Domain r Expression</span>
 <span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain (DomainInt t [RangeBounded lb ub]) =</span>
@@ -187,10 +187,10 @@ span.spaces    { background: white }
 <span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} ExplicitVarSizeWithDummy&quot;</span></span>
 <span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
-<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
-<span class="lineno">  172 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[inner] &lt;- downX1 inp</span></span>
-<span class="lineno">  173 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
-<span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">  172 </span><span class="spaces">            </span><span class="istickedoff">[inner] &lt;- downX1 inp</span>
+<span class="lineno">  173 </span><span class="spaces">            </span><span class="istickedoff">Just [(_, innerDomain)] &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff">innerSO <span class="nottickedoff">downX1</span> inner innerDomain</span></span>
 <span class="lineno">  175 </span>
 
 </pre>

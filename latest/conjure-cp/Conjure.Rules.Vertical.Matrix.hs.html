@@ -40,7 +40,7 @@ span.spaces    { background: white }
 <span class="lineno">   21 </span><span class="spaces">        </span><span class="istickedoff">(_, _index, elems) &lt;- match matrixLiteral expr</span>
 <span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff">notInsideMinMax z</span>
 <span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">tyInner &lt;- typeOf body</span>
-<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">ty = TypeMatrix (TypeInt TagInt) tyInner</span></span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">let ty = TypeMatrix (TypeInt TagInt) tyInner</span>
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">[ RuleResult</span>
 <span class="lineno">   27 </span><span class="spaces">                </span><span class="istickedoff">{ ruleResultDescr = <span class="nottickedoff">&quot;Vertical rule for matrix-comprehension on matrix literal&quot;</span></span>
@@ -48,7 +48,7 @@ span.spaces    { background: white }
 <span class="lineno">   29 </span><span class="spaces">                </span><span class="istickedoff">, ruleResultHook  = Nothing</span>
 <span class="lineno">   30 </span><span class="spaces">                </span><span class="istickedoff">, ruleResult      = return $</span>
 <span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">case elems of</span>
-<span class="lineno">   32 </span><span class="spaces">                        </span><span class="istickedoff">[]   -&gt; <span class="nottickedoff">make matrixLiteral ty (mkDomainIntB 1 0) []</span></span>
+<span class="lineno">   32 </span><span class="spaces">                        </span><span class="istickedoff">[]   -&gt; make matrixLiteral ty (mkDomainIntB 1 0) []</span>
 <span class="lineno">   33 </span><span class="spaces">                        </span><span class="istickedoff">[el] -&gt; Comprehension body</span>
 <span class="lineno">   34 </span><span class="spaces">                                    </span><span class="istickedoff">$  gocBefore</span>
 <span class="lineno">   35 </span><span class="spaces">                                    </span><span class="istickedoff">++ [ComprehensionLetting pat el]</span>
@@ -87,9 +87,9 @@ span.spaces    { background: white }
 <span class="lineno">   68 </span><span class="spaces">            </span><span class="istickedoff">Just{} -&gt; na &quot;rule_Comprehension&quot; -- this case is handled in rule_Comprehension_Literal</span>
 <span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">indexDom:_ &lt;- indexDomainsOf expr</span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case indexDom of</span></span>
-<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainAny{} -&gt; na &quot;rule_Comprehension&quot;</span></span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; return ()</span></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">case indexDom of</span>
+<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff">DomainAny{} -&gt; na &quot;rule_Comprehension&quot;</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">return ()</span></span>
 <span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Comprehension on a matrix&quot;</span></span>
 <span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
@@ -173,50 +173,50 @@ span.spaces    { background: white }
 <span class="lineno">  154 </span><span class="decl"><span class="istickedoff">rule_Comprehension_LiteralIndexed = <span class="nottickedoff">&quot;matrix-comprehension-literal-indexed&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (<span class="nottickedoff">pat</span>, expr)</span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>
 <span class="lineno">  158 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension_LiteralIndexed&quot;</span></span>
 <span class="lineno">  159 </span><span class="spaces">        </span><span class="istickedoff">tyExpr             &lt;- typeOf expr</span>
 <span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indices)  &lt;- match opMatrixIndexing expr</span>
 <span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">(_, _index, elems) &lt;- match matrixLiteral matrix</span>
-<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  163 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for matrix-comprehension on matrix literal&quot;</span></span>
-<span class="lineno">  164 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, case indices of</span></span>
-<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[] -&gt; bug &quot;rule_Comprehension_LiteralIndexed indices=[]&quot;</span></span>
-<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[index] -&gt;</span></span>
-<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return $ make opFlatten $ AbstractLiteral $ AbsLitMatrix</span></span>
-<span class="lineno">  168 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(mkDomainIntB 1 (fromInt $ genericLength elems))</span></span>
-<span class="lineno">  169 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ Comprehension body</span></span>
-<span class="lineno">  170 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
-<span class="lineno">  171 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr pat el)</span></span>
-<span class="lineno">  172 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;num = &amp;index |]</span></span>
-<span class="lineno">  173 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  174 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
-<span class="lineno">  175 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">| (num', el') &lt;- zip [1..] elems</span></span>
-<span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, let num = fromInt num'</span></span>
-<span class="lineno">  177 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">-- let's not lose the type information for empty collections</span></span>
-<span class="lineno">  178 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, let el = if emptyCollectionX el'</span></span>
-<span class="lineno">  179 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">then case el' of Typed{} -&gt; el'</span></span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  163 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for matrix-comprehension on matrix literal&quot;</span></span>
+<span class="lineno">  164 </span><span class="spaces">            </span><span class="istickedoff">, case indices of</span>
+<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">bug &quot;rule_Comprehension_LiteralIndexed indices=[]&quot;</span></span>
+<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">[index] -&gt;</span>
+<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff">return $ make opFlatten $ AbstractLiteral $ AbsLitMatrix</span>
+<span class="lineno">  168 </span><span class="spaces">                        </span><span class="istickedoff">(mkDomainIntB 1 (fromInt $ genericLength elems))</span>
+<span class="lineno">  169 </span><span class="spaces">                        </span><span class="istickedoff">[ Comprehension body</span>
+<span class="lineno">  170 </span><span class="spaces">                            </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  171 </span><span class="spaces">                            </span><span class="istickedoff">++ [ Generator (GenInExpr pat el)</span>
+<span class="lineno">  172 </span><span class="spaces">                               </span><span class="istickedoff">, Condition [essence| &amp;num = &amp;index |]</span>
+<span class="lineno">  173 </span><span class="spaces">                               </span><span class="istickedoff">]</span>
+<span class="lineno">  174 </span><span class="spaces">                            </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  175 </span><span class="spaces">                        </span><span class="istickedoff">| (num', el') &lt;- zip [1..] elems</span>
+<span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff">, let num = fromInt num'</span>
+<span class="lineno">  177 </span><span class="spaces">                        </span><span class="istickedoff">-- let's not lose the type information for empty collections</span>
+<span class="lineno">  178 </span><span class="spaces">                        </span><span class="istickedoff">, let el = if <span class="tickonlyfalse">emptyCollectionX el'</span></span>
+<span class="lineno">  179 </span><span class="spaces">                                    </span><span class="istickedoff">then <span class="nottickedoff">case el' of Typed{} -&gt; el'</span></span>
 <span class="lineno">  180 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">_       -&gt; Typed el' tyExpr</span></span>
-<span class="lineno">  181 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">else el'</span></span>
-<span class="lineno">  182 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  183 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(index:rest) -&gt;</span></span>
-<span class="lineno">  184 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return $ make opFlatten $ AbstractLiteral $ AbsLitMatrix</span></span>
-<span class="lineno">  185 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(mkDomainIntB 1 (fromInt $ genericLength elems))</span></span>
-<span class="lineno">  186 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ Comprehension body</span></span>
-<span class="lineno">  187 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
-<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr pat (make opMatrixIndexing el rest))</span></span>
-<span class="lineno">  189 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;num = &amp;index |]</span></span>
-<span class="lineno">  190 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  191 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
-<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">| (num', el') &lt;- zip [1..] elems</span></span>
-<span class="lineno">  193 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, let num = fromInt num'</span></span>
-<span class="lineno">  194 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">-- let's not lose the type information for empty collections</span></span>
-<span class="lineno">  195 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, let el = if emptyCollectionX el'</span></span>
-<span class="lineno">  196 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">then case el' of Typed{} -&gt; el'</span></span>
+<span class="lineno">  181 </span><span class="spaces">                                    </span><span class="istickedoff">else el'</span>
+<span class="lineno">  182 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">  183 </span><span class="spaces">                </span><span class="istickedoff">(index:rest) -&gt;</span>
+<span class="lineno">  184 </span><span class="spaces">                    </span><span class="istickedoff">return $ make opFlatten $ AbstractLiteral $ AbsLitMatrix</span>
+<span class="lineno">  185 </span><span class="spaces">                        </span><span class="istickedoff">(mkDomainIntB 1 (fromInt $ genericLength elems))</span>
+<span class="lineno">  186 </span><span class="spaces">                        </span><span class="istickedoff">[ Comprehension body</span>
+<span class="lineno">  187 </span><span class="spaces">                            </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff">++ [ Generator (GenInExpr pat (make opMatrixIndexing el rest))</span>
+<span class="lineno">  189 </span><span class="spaces">                               </span><span class="istickedoff">, Condition [essence| &amp;num = &amp;index |]</span>
+<span class="lineno">  190 </span><span class="spaces">                               </span><span class="istickedoff">]</span>
+<span class="lineno">  191 </span><span class="spaces">                            </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff">| (num', el') &lt;- zip [1..] elems</span>
+<span class="lineno">  193 </span><span class="spaces">                        </span><span class="istickedoff">, let num = fromInt num'</span>
+<span class="lineno">  194 </span><span class="spaces">                        </span><span class="istickedoff">-- let's not lose the type information for empty collections</span>
+<span class="lineno">  195 </span><span class="spaces">                        </span><span class="istickedoff">, let el = if <span class="tickonlyfalse">emptyCollectionX el'</span></span>
+<span class="lineno">  196 </span><span class="spaces">                                    </span><span class="istickedoff">then <span class="nottickedoff">case el' of Typed{} -&gt; el'</span></span>
 <span class="lineno">  197 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">_       -&gt; Typed el' tyExpr</span></span>
-<span class="lineno">  198 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">else el'</span></span>
-<span class="lineno">  199 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  198 </span><span class="spaces">                                    </span><span class="istickedoff">else el'</span>
+<span class="lineno">  199 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  201 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_LiteralIndexed&quot;</span></span>
 <span class="lineno">  202 </span>
 <span class="lineno">  203 </span>
@@ -248,46 +248,46 @@ span.spaces    { background: white }
 <span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff">-- we cannot assume that the list is duplciate-free</span>
 <span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff">(False, Comprehension body gensOrConds) &lt;- match opToSetWithFlag p</span>
-<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">bodyDomain &lt;- <span class="nottickedoff">domainOf body</span></span>
-<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">auxDomain = DomainSet () (SetAttr SizeAttr_None) bodyDomain</span></span>
-<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  235 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for comprehension over matrix-toSet, list inside&quot;</span></span>
-<span class="lineno">  236 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno">  237 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(auxName, aux) &lt;- auxiliaryVar</span></span>
-<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ WithLocals aux $</span></span>
-<span class="lineno">  240 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">AuxiliaryVars</span></span>
-<span class="lineno">  241 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind auxName auxDomain)</span></span>
-<span class="lineno">  242 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, SuchThat</span></span>
-<span class="lineno">  243 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">-- forAll i in list . i in aux</span></span>
-<span class="lineno">  244 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension</span></span>
-<span class="lineno">  245 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[essence| &amp;body in &amp;aux |]</span></span>
-<span class="lineno">  246 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">gensOrConds</span></span>
-<span class="lineno">  247 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">-- forAll i in aux . exists j in list . i = j</span></span>
-<span class="lineno">  248 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $ Comprehension</span></span>
-<span class="lineno">  249 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(make opOr (Comprehension [essence| &amp;i = &amp;body |] gensOrConds))</span></span>
-<span class="lineno">  250 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[Generator (GenInExpr iPat aux)]</span></span>
-<span class="lineno">  251 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  252 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  253 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">bodyDomain &lt;- domainOf body</span>
+<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff">let auxDomain = DomainSet <span class="nottickedoff">()</span> (SetAttr SizeAttr_None) bodyDomain</span>
+<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  235 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for comprehension over matrix-toSet, list inside&quot;</span></span>
+<span class="lineno">  236 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  237 </span><span class="spaces">                </span><span class="istickedoff">(auxName, aux) &lt;- auxiliaryVar</span>
+<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals aux $</span>
+<span class="lineno">  240 </span><span class="spaces">                    </span><span class="istickedoff">AuxiliaryVars</span>
+<span class="lineno">  241 </span><span class="spaces">                        </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName auxDomain)</span>
+<span class="lineno">  242 </span><span class="spaces">                        </span><span class="istickedoff">, SuchThat</span>
+<span class="lineno">  243 </span><span class="spaces">                            </span><span class="istickedoff">-- forAll i in list . i in aux</span>
+<span class="lineno">  244 </span><span class="spaces">                            </span><span class="istickedoff">[ make opAnd $ Comprehension</span>
+<span class="lineno">  245 </span><span class="spaces">                                </span><span class="istickedoff">[essence| &amp;body in &amp;aux |]</span>
+<span class="lineno">  246 </span><span class="spaces">                                </span><span class="istickedoff">gensOrConds</span>
+<span class="lineno">  247 </span><span class="spaces">                            </span><span class="istickedoff">-- forAll i in aux . exists j in list . i = j</span>
+<span class="lineno">  248 </span><span class="spaces">                            </span><span class="istickedoff">, make opAnd $ Comprehension</span>
+<span class="lineno">  249 </span><span class="spaces">                                </span><span class="istickedoff">(make opOr (Comprehension [essence| &amp;i = &amp;body |] gensOrConds))</span>
+<span class="lineno">  250 </span><span class="spaces">                                </span><span class="istickedoff">[Generator (GenInExpr iPat aux)]</span>
+<span class="lineno">  251 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  252 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">  253 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">  254 </span>
 <span class="lineno">  255 </span>
 <span class="lineno">  256 </span>rule_Comprehension_ToSet_List_DuplicateFree :: Rule
 <span class="lineno">  257 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List_DuplicateFree = <span class="nottickedoff">&quot;matrix-toSet-listInside-nodups&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  259 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno">  260 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (<span class="nottickedoff">pat</span>, matchDefs [opToMSet] expr)</span>
+<span class="lineno">  260 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToMSet] expr)</span>
 <span class="lineno">  261 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension_ToSet&quot;</span></span>
 <span class="lineno">  262 </span><span class="spaces">        </span><span class="istickedoff">-- we *can* assume that the list is duplicate-free!</span>
 <span class="lineno">  263 </span><span class="spaces">        </span><span class="istickedoff">(True, list) &lt;- match opToSetWithFlag expr</span>
-<span class="lineno">  264 </span><span class="spaces">        </span><span class="istickedoff">TypeList{} &lt;- <span class="nottickedoff">typeOf list</span></span>
-<span class="lineno">  265 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  266 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Vertical rule for comprehension over matrix-toSet, list inside, assumed no duplicates&quot;</span></span>
-<span class="lineno">  267 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension body</span></span>
-<span class="lineno">  268 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
-<span class="lineno">  269 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">++ [Generator (GenInExpr pat list)]</span></span>
-<span class="lineno">  270 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
-<span class="lineno">  271 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  264 </span><span class="spaces">        </span><span class="istickedoff">TypeList{} &lt;- typeOf list</span>
+<span class="lineno">  265 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  266 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for comprehension over matrix-toSet, list inside, assumed no duplicates&quot;</span></span>
+<span class="lineno">  267 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension body</span>
+<span class="lineno">  268 </span><span class="spaces">                     </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  269 </span><span class="spaces">                     </span><span class="istickedoff">++ [Generator (GenInExpr pat list)]</span>
+<span class="lineno">  270 </span><span class="spaces">                     </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  271 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_ToSet_List_DuplicateFree&quot;</span></span>
 <span class="lineno">  273 </span>
 <span class="lineno">  274 </span>
@@ -304,7 +304,7 @@ span.spaces    { background: white }
 <span class="lineno">  285 </span><span class="spaces">            </span><span class="istickedoff">extract (Comprehension innerBody innerGocs) = return (innerBody, innerGocs)</span>
 <span class="lineno">  286 </span><span class="spaces">            </span><span class="istickedoff">extract _ = na &quot;rule_Comprehension_Nested&quot;</span>
 <span class="lineno">  287 </span><span class="spaces">        </span><span class="istickedoff">(innerBody, innerGocs) &lt;- extract expr</span>
-<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction pat old <span class="nottickedoff">val</span></span>
+<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction pat old val</span>
 <span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">let</span>
 <span class="lineno">  290 </span><span class="spaces">            </span><span class="istickedoff">-- update the quantified variable names inside innerBody&amp;innerGocs_ here,</span>
 <span class="lineno">  291 </span><span class="spaces">            </span><span class="istickedoff">-- because they may be shadowed.</span>
@@ -325,16 +325,16 @@ span.spaces    { background: white }
 <span class="lineno">  306 </span><span class="spaces">                </span><span class="istickedoff">Generator (GenDomainNoRepr  pt _) -&gt; <span class="nottickedoff">universeBi pt</span></span>
 <span class="lineno">  307 </span><span class="spaces">                </span><span class="istickedoff">Generator (GenDomainHasRepr nm _) -&gt; [nm]</span>
 <span class="lineno">  308 </span><span class="spaces">                </span><span class="istickedoff">Generator (GenInExpr        pt _) -&gt; <span class="nottickedoff">universeBi pt</span></span>
-<span class="lineno">  309 </span><span class="spaces">                </span><span class="istickedoff">Condition _                       -&gt; <span class="nottickedoff">[]</span></span>
+<span class="lineno">  309 </span><span class="spaces">                </span><span class="istickedoff">Condition _                       -&gt; []</span>
 <span class="lineno">  310 </span><span class="spaces">                </span><span class="istickedoff">ComprehensionLetting pt _         -&gt; <span class="nottickedoff">universeBi pt</span></span>
 <span class="lineno">  311 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">(innerBody', innerGocs') &lt;- updateQuantified innerBody innerGocs</span>
 <span class="lineno">  313 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  314 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Nested matrix comprehension&quot;</span></span>
-<span class="lineno">  315 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension (upd <span class="nottickedoff">innerBody'</span> body)</span>
+<span class="lineno">  315 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension (upd innerBody' body)</span>
 <span class="lineno">  316 </span><span class="spaces">                         </span><span class="istickedoff">$  gocBefore</span>
 <span class="lineno">  317 </span><span class="spaces">                         </span><span class="istickedoff">++ innerGocs'</span>
-<span class="lineno">  318 </span><span class="spaces">                         </span><span class="istickedoff">++ transformBi <span class="nottickedoff">(upd innerBody')</span> gocAfter</span>
+<span class="lineno">  318 </span><span class="spaces">                         </span><span class="istickedoff">++ transformBi (upd innerBody') gocAfter</span>
 <span class="lineno">  319 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  320 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Nested&quot;</span></span>
 <span class="lineno">  321 </span>
@@ -436,7 +436,7 @@ span.spaces    { background: white }
 <span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  418 </span><span class="spaces">        </span><span class="istickedoff">(x,y)           &lt;- case (match opLt p, match opTildeLt p) of</span>
 <span class="lineno">  419 </span><span class="spaces">                                </span><span class="istickedoff">(Just a, _) -&gt; return a</span>
-<span class="lineno">  420 </span><span class="spaces">                                </span><span class="istickedoff">(_, Just a) -&gt; <span class="nottickedoff">return a</span></span>
+<span class="lineno">  420 </span><span class="spaces">                                </span><span class="istickedoff">(_, Just a) -&gt; return a</span>
 <span class="lineno">  421 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; na &quot;rule_Matrix_Lt_Primitive&quot;</span>
 <span class="lineno">  422 </span><span class="spaces">        </span><span class="istickedoff">tx &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
 <span class="lineno">  423 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf y</span>

@@ -30,7 +30,7 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>data OpTildeLt x = OpTildeLt x x
-<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>instance Serialize x =&gt; Serialize (OpTildeLt x)
 <span class="lineno">   17 </span>instance Hashable  x =&gt; Hashable  (OpTildeLt x)
@@ -38,16 +38,16 @@ span.spaces    { background: white }
 <span class="lineno">   19 </span>instance FromJSON  x =&gt; FromJSON  (OpTildeLt x) where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   20 </span>
 <span class="lineno">   21 </span>instance BinaryOperator (OpTildeLt x) where
-<span class="lineno">   22 </span>    <span class="decl"><span class="nottickedoff">opLexeme _ = L_TildeLt</span></span>
+<span class="lineno">   22 </span>    <span class="decl"><span class="istickedoff">opLexeme _ = L_TildeLt</span></span>
 <span class="lineno">   23 </span>
 <span class="lineno">   24 </span>instance (TypeOf x, Pretty x) =&gt; TypeOf (OpTildeLt x) where
 <span class="lineno">   25 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpTildeLt a b) = sameToSameToBool <span class="nottickedoff">p</span> a b [] (const True)</span></span>
 <span class="lineno">   26 </span>
 <span class="lineno">   27 </span>instance SimplifyOp OpTildeLt x where
-<span class="lineno">   28 </span>    <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpTildeLt}&quot;</span></span>
+<span class="lineno">   28 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpTildeLt}&quot;</span></span>
 <span class="lineno">   29 </span>
 <span class="lineno">   30 </span>instance Pretty x =&gt; Pretty (OpTildeLt x) where
-<span class="lineno">   31 </span>    <span class="decl"><span class="nottickedoff">prettyPrec prec op@(OpTildeLt a b) = prettyPrecBinOp prec [op] a b</span></span>
+<span class="lineno">   31 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpTildeLt a b) = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a <span class="nottickedoff">b</span></span></span>
 <span class="lineno">   32 </span>
 <span class="lineno">   33 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpTildeLt x) where
 <span class="lineno">   34 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpTildeLt a b) = JSON.Object $ M.fromList</span>

@@ -109,8 +109,8 @@ span.spaces    { background: white }
 <span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">modify $ \ (st, avoid) -&gt; (M.insert k (i+1) st, avoid)</span>
 <span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff">return $ MachineName k i []</span>
 <span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">avoid &lt;- gets snd</span>
-<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlyfalse">out `S.member` avoid</span></span>
-<span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff">then <span class="nottickedoff">nextName k</span></span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">if out `S.member` avoid</span>
+<span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff">then nextName k</span>
 <span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff">else return out</span></span>
 <span class="lineno">   96 </span>    <span class="decl"><span class="istickedoff">exportNameGenState = gets (M.toList . fst)</span></span>
 <span class="lineno">   97 </span>    <span class="decl"><span class="istickedoff">importNameGenState st = modify $ \ (_, avoid) -&gt; (M.fromList st, avoid)</span></span>

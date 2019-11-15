@@ -690,7 +690,7 @@ span.spaces    { background: white }
 <span class="lineno">  671 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiff x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  672 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiffExcept x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  673 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAnd x) = simplifyOp x</span>
-<span class="lineno">  674 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpApart x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  674 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpApart x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  675 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAttributeAsConstraint x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  676 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpCatchUndef x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  677 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDefined x) = simplifyOp <span class="nottickedoff">x</span></span>
@@ -707,7 +707,7 @@ span.spaces    { background: white }
 <span class="lineno">  688 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpHist x) = <span class="nottickedoff">simplifyOp x</span></span>
 <span class="lineno">  689 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIff x) = simplifyOp x</span>
 <span class="lineno">  690 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImage x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  691 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImageSet x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  691 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImageSet x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  692 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImply x) = simplifyOp x</span>
 <span class="lineno">  693 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIn x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  694 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIndexing x) = simplifyOp <span class="nottickedoff">x</span></span>
@@ -725,13 +725,13 @@ span.spaces    { background: white }
 <span class="lineno">  706 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpNeq x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  707 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpNot x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  708 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpOr x) = simplifyOp x</span>
-<span class="lineno">  709 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParticipants x) = <span class="nottickedoff">simplifyOp x</span></span>
-<span class="lineno">  710 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParts x) = <span class="nottickedoff">simplifyOp x</span></span>
-<span class="lineno">  711 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParty x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  709 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParticipants x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  710 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParts x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  711 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParty x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  712 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPow x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  713 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPowerSet x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  714 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPreImage x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  715 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPred x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  715 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPred x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpProduct x) = simplifyOp x</span>
 <span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpRange x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  718 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpRelationProj x) = simplifyOp <span class="nottickedoff">x</span></span>
@@ -741,17 +741,17 @@ span.spaces    { background: white }
 <span class="lineno">  722 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubset x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  723 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubsetEq x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  724 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubstring x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  725 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSucc x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  725 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSucc x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  726 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSum x) = simplifyOp x</span>
 <span class="lineno">  727 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupset x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  728 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupsetEq x) = <span class="nottickedoff">simplifyOp x</span></span>
 <span class="lineno">  729 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLeq x) = <span class="nottickedoff">simplifyOp x</span></span>
-<span class="lineno">  730 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLt x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  730 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLt x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  731 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToInt x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  732 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToMSet x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  732 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToMSet x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  733 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToRelation x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  734 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToSet x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  735 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTogether x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  735 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTogether x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  736 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTransform x) = <span class="nottickedoff">simplifyOp x</span></span>
 <span class="lineno">  737 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTrue x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  738 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTwoBars x) = simplifyOp <span class="nottickedoff">x</span></span>
@@ -780,7 +780,7 @@ span.spaces    { background: white }
 <span class="lineno">  761 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpHist x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  762 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIff x) = prettyPrec prec x</span>
 <span class="lineno">  763 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImage x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
-<span class="lineno">  764 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImageSet x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  764 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImageSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  765 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImply x) = prettyPrec prec x</span>
 <span class="lineno">  766 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIn x) = prettyPrec prec x</span>
 <span class="lineno">  767 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIndexing x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
@@ -804,7 +804,7 @@ span.spaces    { background: white }
 <span class="lineno">  785 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPow x) = prettyPrec prec x</span>
 <span class="lineno">  786 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPowerSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  787 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPreImage x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
-<span class="lineno">  788 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPred x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  788 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPred x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  789 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpProduct x) = prettyPrec prec x</span>
 <span class="lineno">  790 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpRange x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  791 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpRelationProj x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
@@ -814,12 +814,12 @@ span.spaces    { background: white }
 <span class="lineno">  795 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubset x) = prettyPrec prec x</span>
 <span class="lineno">  796 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubsetEq x) = prettyPrec prec x</span>
 <span class="lineno">  797 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubstring x) = prettyPrec prec x</span>
-<span class="lineno">  798 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSucc x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  798 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSucc x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  799 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSum x) = prettyPrec prec x</span>
 <span class="lineno">  800 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupset x) = prettyPrec prec x</span>
 <span class="lineno">  801 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupsetEq x) = prettyPrec prec x</span>
 <span class="lineno">  802 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLeq x) = <span class="nottickedoff">prettyPrec prec x</span></span>
-<span class="lineno">  803 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLt x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  803 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLt x) = prettyPrec prec x</span>
 <span class="lineno">  804 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToInt x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  805 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToMSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  806 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToRelation x) = prettyPrec <span class="nottickedoff">prec</span> x</span>

@@ -309,7 +309,7 @@ span.spaces    { background: white }
 <span class="lineno">  290 </span>       , x -&gt; m (Bool, x)
 <span class="lineno">  291 </span>       )
 <span class="lineno">  292 </span><span class="decl"><span class="istickedoff">opToSetWithFlag _ =</span>
-<span class="lineno">  293 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ b x -&gt; inject $ MkOpToSet $ OpToSet b x</span></span>
+<span class="lineno">  293 </span><span class="spaces">    </span><span class="istickedoff">( \ b x -&gt; inject $ MkOpToSet $ OpToSet b x</span>
 <span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  295 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  296 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
@@ -332,7 +332,7 @@ span.spaces    { background: white }
 <span class="lineno">  313 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  314 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  315 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  316 </span><span class="spaces">                </span><span class="istickedoff">MkOpToMSet (OpToMSet x) -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno">  316 </span><span class="spaces">                </span><span class="istickedoff">MkOpToMSet (OpToMSet x) -&gt; return x</span>
 <span class="lineno">  317 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opToMSet:&quot; &lt;++&gt; pretty p)</span></span>
 <span class="lineno">  318 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  319 </span>
@@ -366,11 +366,11 @@ span.spaces    { background: white }
 <span class="lineno">  347 </span>       , x -&gt; m x
 <span class="lineno">  348 </span>       )
 <span class="lineno">  349 </span><span class="decl"><span class="istickedoff">opParts _ =</span>
-<span class="lineno">  350 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpParts . OpParts</span></span>
+<span class="lineno">  350 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpParts . OpParts</span>
 <span class="lineno">  351 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  352 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  353 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  354 </span><span class="spaces">                </span><span class="istickedoff">MkOpParts (OpParts x) -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno">  354 </span><span class="spaces">                </span><span class="istickedoff">MkOpParts (OpParts x) -&gt; return x</span>
 <span class="lineno">  355 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParts:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  356 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  357 </span>
@@ -389,7 +389,7 @@ span.spaces    { background: white }
 <span class="lineno">  370 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  371 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  372 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  373 </span><span class="spaces">                </span><span class="istickedoff">MkOpParty (OpParty x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  373 </span><span class="spaces">                </span><span class="istickedoff">MkOpParty (OpParty x y) -&gt; return (x,y)</span>
 <span class="lineno">  374 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParty:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  375 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  376 </span>
@@ -408,7 +408,7 @@ span.spaces    { background: white }
 <span class="lineno">  389 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  390 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  391 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  392 </span><span class="spaces">                </span><span class="istickedoff">MkOpParticipants (OpParticipants x) -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno">  392 </span><span class="spaces">                </span><span class="istickedoff">MkOpParticipants (OpParticipants x) -&gt; return x</span>
 <span class="lineno">  393 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParticipants:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  394 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  395 </span>
@@ -446,7 +446,7 @@ span.spaces    { background: white }
 <span class="lineno">  427 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  428 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  429 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff">MkOpImageSet (OpImageSet x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff">MkOpImageSet (OpImageSet x y) -&gt; return (x,y)</span>
 <span class="lineno">  431 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opImageSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  432 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  433 </span>
@@ -963,7 +963,7 @@ span.spaces    { background: white }
 <span class="lineno">  944 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  945 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  946 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  947 </span><span class="spaces">                </span><span class="istickedoff">MkOpTildeLt (OpTildeLt x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  947 </span><span class="spaces">                </span><span class="istickedoff">MkOpTildeLt (OpTildeLt x y) -&gt; return (x,y)</span>
 <span class="lineno">  948 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opTildeLt:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  949 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  950 </span>
@@ -1185,9 +1185,9 @@ span.spaces    { background: white }
 <span class="lineno"> 1166 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
 <span class="lineno"> 1167 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
 <span class="lineno"> 1168 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; return (<span class="nottickedoff">inject . MkOpToSet      . OpToSet False</span> , x)</span>
-<span class="lineno"> 1169 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; <span class="nottickedoff">return (inject . MkOpToMSet     . OpToMSet      , x)</span></span>
+<span class="lineno"> 1169 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (<span class="nottickedoff">inject . MkOpToMSet     . OpToMSet</span>      , x)</span>
 <span class="lineno"> 1170 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; return (<span class="nottickedoff">inject . MkOpToRelation . OpToRelation</span>  , x)</span>
-<span class="lineno"> 1171 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpParts      (OpParts      x)) -&gt; <span class="nottickedoff">return (inject . MkOpParts      . OpParts       , x)</span></span>
+<span class="lineno"> 1171 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpParts      (OpParts      x)) -&gt; return (<span class="nottickedoff">inject . MkOpParts      . OpParts</span>       , x)</span>
 <span class="lineno"> 1172 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (id                                      , p)</span>
 <span class="lineno"> 1173 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 1174 </span>
@@ -1204,9 +1204,9 @@ span.spaces    { background: white }
 <span class="lineno"> 1185 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
 <span class="lineno"> 1186 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
 <span class="lineno"> 1187 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; <span class="nottickedoff">return (inject . MkOpToSet      . OpToSet False , x)</span></span>
-<span class="lineno"> 1188 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; <span class="nottickedoff">return (inject . MkOpToMSet     . OpToMSet      , x)</span></span>
+<span class="lineno"> 1188 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (inject . MkOpToMSet     . OpToMSet      , x)</span>
 <span class="lineno"> 1189 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; <span class="nottickedoff">return (inject . MkOpToRelation . OpToRelation  , x)</span></span>
-<span class="lineno"> 1190 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (<span class="nottickedoff">id</span>                                      , p)</span>
+<span class="lineno"> 1190 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (id                                      , p)</span>
 <span class="lineno"> 1191 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 1192 </span>
 <span class="lineno"> 1193 </span>
@@ -1270,8 +1270,8 @@ span.spaces    { background: white }
 <span class="lineno"> 1251 </span>       )
 <span class="lineno"> 1252 </span><span class="decl"><span class="istickedoff">matrixLiteral _ =</span>
 <span class="lineno"> 1253 </span><span class="spaces">    </span><span class="istickedoff">( \ ty index elems -&gt;</span>
-<span class="lineno"> 1254 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlyfalse">null elems</span></span>
-<span class="lineno"> 1255 </span><span class="spaces">            </span><span class="istickedoff">then <span class="nottickedoff">Typed (AbstractLiteral (AbsLitMatrix index elems)) ty</span></span>
+<span class="lineno"> 1254 </span><span class="spaces">        </span><span class="istickedoff">if null elems</span>
+<span class="lineno"> 1255 </span><span class="spaces">            </span><span class="istickedoff">then Typed (AbstractLiteral (AbsLitMatrix index elems)) ty</span>
 <span class="lineno"> 1256 </span><span class="spaces">            </span><span class="istickedoff">else        AbstractLiteral (AbsLitMatrix index elems)</span>
 <span class="lineno"> 1257 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno"> 1258 </span><span class="spaces">        </span><span class="istickedoff">ty          &lt;- typeOf p</span>
@@ -1336,7 +1336,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1317 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitSet xs))) = return (map Constant xs)</span>
 <span class="lineno"> 1318 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitSet xs)) = return xs</span>
 <span class="lineno"> 1319 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
-<span class="lineno"> 1320 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
+<span class="lineno"> 1320 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
 <span class="lineno"> 1321 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.setLiteral:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno"> 1322 </span>
 <span class="lineno"> 1323 </span>
@@ -1360,7 +1360,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1341 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitMSet xs))) = <span class="nottickedoff">return (map Constant xs)</span></span>
 <span class="lineno"> 1342 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitMSet xs)) = return xs</span>
 <span class="lineno"> 1343 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
-<span class="lineno"> 1344 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
+<span class="lineno"> 1344 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
 <span class="lineno"> 1345 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.msetLiteral:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno"> 1346 </span>
 <span class="lineno"> 1347 </span>
@@ -1432,7 +1432,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1413 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitRelation xs))) = return (map (map Constant) xs)</span>
 <span class="lineno"> 1414 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitRelation xs)) = <span class="nottickedoff">return xs</span></span>
 <span class="lineno"> 1415 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
-<span class="lineno"> 1416 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
+<span class="lineno"> 1416 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
 <span class="lineno"> 1417 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.relationLiteral:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno"> 1418 </span>
 <span class="lineno"> 1419 </span>
@@ -1456,7 +1456,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitPartition xs))) = <span class="nottickedoff">return (map (map Constant) xs)</span></span>
 <span class="lineno"> 1438 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitPartition xs)) = <span class="nottickedoff">return xs</span></span>
 <span class="lineno"> 1439 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
-<span class="lineno"> 1440 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
+<span class="lineno"> 1440 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
 <span class="lineno"> 1441 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.partitionLiteral:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno"> 1442 </span>
 <span class="lineno"> 1443 </span>
@@ -1526,14 +1526,14 @@ span.spaces    { background: white }
 <span class="lineno"> 1507 </span>    -&gt; ( x -&gt; x
 <span class="lineno"> 1508 </span>       , x -&gt; m x
 <span class="lineno"> 1509 </span>       )
-<span class="lineno"> 1510 </span><span class="decl"><span class="nottickedoff">opFactorial _ =</span>
-<span class="lineno"> 1511 </span><span class="spaces">    </span><span class="nottickedoff">( inject . MkOpFactorial . OpFactorial</span>
-<span class="lineno"> 1512 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
-<span class="lineno"> 1513 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
-<span class="lineno"> 1514 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
-<span class="lineno"> 1515 </span><span class="spaces">                </span><span class="nottickedoff">MkOpFactorial (OpFactorial x) -&gt; return x</span>
-<span class="lineno"> 1516 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opFactorial:&quot; &lt;++&gt; pretty p)</span>
-<span class="lineno"> 1517 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno"> 1510 </span><span class="decl"><span class="istickedoff">opFactorial _ =</span>
+<span class="lineno"> 1511 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpFactorial . OpFactorial</span>
+<span class="lineno"> 1512 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">\ p -&gt; do</span></span>
+<span class="lineno"> 1513 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">op &lt;- project p</span></span>
+<span class="lineno"> 1514 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case op of</span></span>
+<span class="lineno"> 1515 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MkOpFactorial (OpFactorial x) -&gt; return x</span></span>
+<span class="lineno"> 1516 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opFactorial:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1517 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 1518 </span>
 <span class="lineno"> 1519 </span>
 <span class="lineno"> 1520 </span>opLex
@@ -1615,11 +1615,11 @@ span.spaces    { background: white }
 <span class="lineno"> 1596 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainInt _ rs ) = <span class="nottickedoff">do</span></span>
 <span class="lineno"> 1597 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- mapM minOfRange rs</span></span>
 <span class="lineno"> 1598 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return (make opMin (fromList xs))</span></span>
-<span class="lineno"> 1599 </span><span class="spaces"></span><span class="istickedoff">minOfDomain d = <span class="nottickedoff">fail (&quot;rule_DomainMinMax.minOfDomain&quot; &lt;+&gt; pretty d)</span></span></span>
+<span class="lineno"> 1599 </span><span class="spaces"></span><span class="istickedoff">minOfDomain d = fail (&quot;rule_DomainMinMax.minOfDomain&quot; &lt;+&gt; pretty d)</span></span>
 <span class="lineno"> 1600 </span>
 <span class="lineno"> 1601 </span>minOfRange :: MonadFail m =&gt; Range Expression -&gt; m Expression
 <span class="lineno"> 1602 </span><span class="decl"><span class="istickedoff">minOfRange (RangeSingle x) = return <span class="nottickedoff">x</span></span>
-<span class="lineno"> 1603 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeBounded x _) = return <span class="nottickedoff">x</span></span>
+<span class="lineno"> 1603 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeBounded x _) = return x</span>
 <span class="lineno"> 1604 </span><span class="spaces"></span><span class="istickedoff">minOfRange r = <span class="nottickedoff">fail (&quot;rule_DomainMinMax.minOfRange&quot; &lt;+&gt; pretty r)</span></span></span>
 
 </pre>
