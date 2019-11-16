@@ -92,7 +92,7 @@ span.spaces    { background: white }
 <span class="lineno">   73 </span><span class="spaces">                    </span><span class="istickedoff">= DomainInt (TagEnum nmText) &lt;$&gt; mapM (mapM (nameToX nameToIntMapping)) ranges</span>
 <span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainEnum nm Nothing _)</span>
 <span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
-<span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff">= return (DomainReference <span class="nottickedoff">nm</span> (Just d))</span>
+<span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff">= return (DomainReference nm (Just d))</span>
 <span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainReference nm Nothing)</span>
 <span class="lineno">   78 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
 <span class="lineno">   79 </span><span class="spaces">                    </span><span class="istickedoff">= <span class="nottickedoff">return (DomainReference nm (Just d))</span></span>
@@ -124,7 +124,7 @@ span.spaces    { background: white }
 <span class="lineno">  105 </span><span class="spaces">                    </span><span class="istickedoff">= <span class="nottickedoff">DomainInt (TagEnum nmText) ranges</span></span>
 <span class="lineno">  106 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainEnum nm Nothing _)</span>
 <span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
-<span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff">= DomainReference <span class="nottickedoff">nm</span> (Just d)</span>
+<span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff">= DomainReference nm (Just d)</span>
 <span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainReference nm Nothing)</span>
 <span class="lineno">  110 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
 <span class="lineno">  111 </span><span class="spaces">                    </span><span class="istickedoff">= <span class="nottickedoff">DomainReference nm (Just d)</span></span>

@@ -59,7 +59,7 @@ span.spaces    { background: white }
 <span class="lineno">   40 </span>    }
 <span class="lineno">   41 </span>
 <span class="lineno">   42 </span>type TypeOf_ReprCheck (m :: * -&gt; *) =
-<span class="lineno">   43 </span>       forall x . (Pretty x, ExpressionLike x)
+<span class="lineno">   43 </span>       forall x . (Data x, Pretty x, ExpressionLike x)
 <span class="lineno">   44 </span>    =&gt; (Domain () x -&gt; m [DomainX x])               -- other checkers for inner domains
 <span class="lineno">   45 </span>    -&gt; Domain () x                                  -- this domain
 <span class="lineno">   46 </span>    -&gt; m [DomainX x]                                -- with all repr options
@@ -89,38 +89,41 @@ span.spaces    { background: white }
 <span class="lineno">   70 </span>    -&gt; m (Maybe [(Name, DomainC, Constant)])        -- the outputs names, domains, and constants
 <span class="lineno">   71 </span>
 <span class="lineno">   72 </span>type TypeOf_Up (m :: * -&gt; *) =
-<span class="lineno">   73 </span>       [(Name, Constant)]                           -- all known constants, representing a solution at the low level
-<span class="lineno">   74 </span>    -&gt; (Name, DomainC)                              -- the name and domain we are working on
-<span class="lineno">   75 </span>    -&gt; m (Name, Constant)                           -- the output constant, at the high level
+<span class="lineno">   73 </span>        [(Name, Constant)] -&gt;                       -- all known constants, representing a solution at the low level
+<span class="lineno">   74 </span>        (Name, DomainC) -&gt;                          -- the name and domain we are working on
+<span class="lineno">   75 </span>        m (Name, Constant)                          -- the output constant, at the high level
 <span class="lineno">   76 </span>
 <span class="lineno">   77 </span>
-<span class="lineno">   78 </span>type DispatchFunction m x
-<span class="lineno">   79 </span>        =  Pretty x
-<span class="lineno">   80 </span>        =&gt; Domain HasRepresentation x
-<span class="lineno">   81 </span>        -&gt; Representation m
-<span class="lineno">   82 </span>
-<span class="lineno">   83 </span>type ReprOptionsFunction m r x
-<span class="lineno">   84 </span>        =  (Pretty x, ExpressionLike x)
-<span class="lineno">   85 </span>        =&gt; Domain () x
-<span class="lineno">   86 </span>        -&gt; m [Domain HasRepresentation x]
-<span class="lineno">   87 </span>
-<span class="lineno">   88 </span>
-<span class="lineno">   89 </span>rDownToX
-<span class="lineno">   90 </span>    :: Monad m
-<span class="lineno">   91 </span>    =&gt; Representation m                                 -- for a given representation
-<span class="lineno">   92 </span>    -&gt; FindOrGiven                                      -- and a declaration: forg
-<span class="lineno">   93 </span>    -&gt; Name                                             --                  : name
-<span class="lineno">   94 </span>    -&gt; Domain HasRepresentation Expression              --                  : domain
-<span class="lineno">   95 </span>    -&gt; m [Expression]                                   -- expressions referring to the representation
-<span class="lineno">   96 </span><span class="decl"><span class="istickedoff">rDownToX repr forg name domain = do</span>
-<span class="lineno">   97 </span><span class="spaces">    </span><span class="istickedoff">pairs &lt;- rDownD repr (name, domain)</span>
-<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">return [ Reference n (Just (DeclHasRepr forg n d))</span>
-<span class="lineno">   99 </span><span class="spaces">           </span><span class="istickedoff">| (n,d) &lt;- concat pairs</span>
-<span class="lineno">  100 </span><span class="spaces">           </span><span class="istickedoff">]</span></span>
-<span class="lineno">  101 </span>
-<span class="lineno">  102 </span>mkOutName :: Maybe Name -&gt; Domain HasRepresentation x -&gt; Name -&gt; Name
-<span class="lineno">  103 </span><span class="decl"><span class="istickedoff">mkOutName Nothing       domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain)]</span>
-<span class="lineno">  104 </span><span class="spaces"></span><span class="istickedoff">mkOutName (Just suffix) domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain), &quot;_&quot;, suffix]</span></span>
+<span class="lineno">   78 </span>type DispatchFunction m x =
+<span class="lineno">   79 </span>        Data x =&gt;
+<span class="lineno">   80 </span>        Pretty x =&gt;
+<span class="lineno">   81 </span>        Domain HasRepresentation x -&gt;
+<span class="lineno">   82 </span>        Representation m
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>type ReprOptionsFunction m r x =
+<span class="lineno">   85 </span>        Data x =&gt;
+<span class="lineno">   86 </span>        Pretty x =&gt;
+<span class="lineno">   87 </span>        ExpressionLike x =&gt;
+<span class="lineno">   88 </span>        Domain () x -&gt;
+<span class="lineno">   89 </span>        m [Domain HasRepresentation x]
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>
+<span class="lineno">   92 </span>rDownToX ::
+<span class="lineno">   93 </span>    Monad m =&gt;
+<span class="lineno">   94 </span>    Representation m -&gt;                             -- for a given representation
+<span class="lineno">   95 </span>    FindOrGiven -&gt;                                  -- and a declaration: forg
+<span class="lineno">   96 </span>    Name -&gt;                                         --                  : name
+<span class="lineno">   97 </span>    Domain HasRepresentation Expression -&gt;          --                  : domain
+<span class="lineno">   98 </span>    m [Expression]                                  -- expressions referring to the representation
+<span class="lineno">   99 </span><span class="decl"><span class="istickedoff">rDownToX repr forg name domain = do</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="istickedoff">pairs &lt;- rDownD repr (name, domain)</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="istickedoff">return [ Reference n (Just (DeclHasRepr forg n d))</span>
+<span class="lineno">  102 </span><span class="spaces">           </span><span class="istickedoff">| (n,d) &lt;- concat pairs</span>
+<span class="lineno">  103 </span><span class="spaces">           </span><span class="istickedoff">]</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>mkOutName :: Maybe Name -&gt; Domain HasRepresentation x -&gt; Name -&gt; Name
+<span class="lineno">  106 </span><span class="decl"><span class="istickedoff">mkOutName Nothing       domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain)]</span>
+<span class="lineno">  107 </span><span class="spaces"></span><span class="istickedoff">mkOutName (Just suffix) domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain), &quot;_&quot;, suffix]</span></span>
 
 </pre>
 </body>
