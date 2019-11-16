@@ -1,0 +1,420 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.Horizontal.Set where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>import Conjure.Process.Sanity ( isInfinite )
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_Comprehension_Literal :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Literal = <span class="nottickedoff">&quot;set-comprehension-literal&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet, opToMSet] expr)</span>
+<span class="lineno">   13 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@AbsPatSet{} expr) -&gt; <span class="nottickedoff">return (pat, matchDefs [opToSet, opToMSet] expr)</span></span>
+<span class="lineno">   14 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension_Literal&quot;</span></span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">(TypeSet tau, elems) &lt;- match setLiteral expr</span>
+<span class="lineno">   16 </span><span class="spaces">        </span><span class="istickedoff">let outLiteral = make matrixLiteral</span>
+<span class="lineno">   17 </span><span class="spaces">                            </span><span class="istickedoff">(TypeMatrix (TypeInt TagInt) tau)</span>
+<span class="lineno">   18 </span><span class="spaces">                            </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 (fromInt (genericLength elems))])</span>
+<span class="lineno">   19 </span><span class="spaces">                            </span><span class="istickedoff">elems</span>
+<span class="lineno">   20 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   21 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Comprehension on set literals&quot;</span></span>
+<span class="lineno">   22 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension body</span>
+<span class="lineno">   23 </span><span class="spaces">                     </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">   24 </span><span class="spaces">                     </span><span class="istickedoff">++ [Generator (GenInExpr pat outLiteral)]</span>
+<span class="lineno">   25 </span><span class="spaces">                     </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Literal&quot;</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>
+<span class="lineno">   30 </span>rule_Eq :: Rule
+<span class="lineno">   31 </span><span class="decl"><span class="istickedoff">rule_Eq = <span class="nottickedoff">&quot;set-eq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">(x,y)     &lt;- match opEq p</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf x</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf y</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set equality&quot;</span></span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList</span>
+<span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff">[ make opSubsetEq x y</span>
+<span class="lineno">   40 </span><span class="spaces">                </span><span class="istickedoff">, make opSubsetEq y x</span>
+<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>rule_Neq :: Rule
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">rule_Neq = <span class="nottickedoff">&quot;set-neq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x != &amp;y |] = do</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf x</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf y</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set dis-equality&quot;</span></span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   53 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   54 </span><span class="spaces">                 </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span>
+<span class="lineno">   55 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(exists &amp;iPat in &amp;x . !(&amp;i in &amp;y))</span></span></span></span></span>
+<span class="lineno">   56 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">\/</span></span></span></span></span>
+<span class="lineno">   57 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(exists &amp;iPat in &amp;y . !(&amp;i in &amp;x))</span></span></span></span></span>
+<span class="lineno">   58 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Neq&quot;</span></span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>rule_SubsetEq :: Rule
+<span class="lineno">   64 </span><span class="decl"><span class="istickedoff">rule_SubsetEq = <span class="nottickedoff">&quot;set-subsetEq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">(x,y)     &lt;- match opSubsetEq p</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf x</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf y</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set subsetEq&quot;</span></span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   72 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   73 </span><span class="spaces">                 </span><span class="istickedoff">return [essence| forAll &amp;iPat in &amp;x . &amp;i in &amp;y |]</span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>rule_Subset :: Rule
+<span class="lineno">   78 </span><span class="decl"><span class="istickedoff">rule_Subset = <span class="nottickedoff">&quot;set-subset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a subset &amp;b |] = do</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf a</span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf b</span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   83 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set subset&quot;</span></span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">, return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;a subsetEq &amp;b /\ &amp;a != &amp;b |]</span></span></span></span></span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Subset&quot;</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>rule_Supset :: Rule
+<span class="lineno">   90 </span><span class="decl"><span class="istickedoff">rule_Supset = <span class="nottickedoff">&quot;set-supset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a supset &amp;b |] = do</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf a</span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- <span class="nottickedoff">typeOf b</span></span>
+<span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set supset&quot;</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;b subset &amp;a |]</span></span>
+<span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Supset&quot;</span></span>
+<span class="lineno">   99 </span>
+<span class="lineno">  100 </span>
+<span class="lineno">  101 </span>rule_SupsetEq :: Rule
+<span class="lineno">  102 </span><span class="decl"><span class="istickedoff">rule_SupsetEq = <span class="nottickedoff">&quot;set-subsetEq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  103 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a supsetEq &amp;b |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeSet{} &lt;- typeOf a</span></span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeSet{} &lt;- typeOf b</span></span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set supsetEq&quot;</span></span>
+<span class="lineno">  108 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;b subsetEq &amp;a |]</span></span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_SupsetEq&quot;</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>rule_Intersect :: Rule
+<span class="lineno">  114 </span><span class="decl"><span class="istickedoff">rule_Intersect = <span class="nottickedoff">&quot;set-intersect&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, iPat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  117 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@(Single iPat) expr) -&gt;</span>
+<span class="lineno">  118 </span><span class="spaces">                </span><span class="istickedoff">return (pat, iPat, matchDefs [opToSet,opToMSet,opToRelation] expr)</span>
+<span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Intersect&quot;</span></span>
+<span class="lineno">  120 </span><span class="spaces">        </span><span class="istickedoff">(mkModifier, s)    &lt;- match opModifier expr</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">(x, y)             &lt;- match opIntersect s</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">tx                 &lt;- typeOf x</span>
+<span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">case tx of</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">TypeSet{}      -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">fail &quot;type incompatibility in intersect operator&quot;</span></span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">let i = Reference iPat Nothing</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  131 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set intersection&quot;</span></span>
+<span class="lineno">  132 </span><span class="spaces">            </span><span class="istickedoff">, return $</span>
+<span class="lineno">  133 </span><span class="spaces">                </span><span class="istickedoff">Comprehension body</span>
+<span class="lineno">  134 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenInExpr pat (mkModifier x))</span>
+<span class="lineno">  136 </span><span class="spaces">                       </span><span class="istickedoff">, Condition [essence| &amp;i in &amp;y |]</span>
+<span class="lineno">  137 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">  138 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Intersect&quot;</span></span>
+<span class="lineno">  141 </span>
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>rule_Union :: Rule
+<span class="lineno">  144 </span><span class="decl"><span class="istickedoff">rule_Union = <span class="nottickedoff">&quot;set-union&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  146 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, iPat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@(Single iPat) expr) -&gt; return (pat, iPat, matchDef opToSet expr)</span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Union&quot;</span></span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">(mkModifier, s)    &lt;- match opModifier expr</span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff">(x, y)             &lt;- match opUnion s</span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">tx                 &lt;- typeOf x</span>
+<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff">case tx of</span>
+<span class="lineno">  153 </span><span class="spaces">            </span><span class="istickedoff">TypeSet{}      -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  155 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  156 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">fail &quot;type incompatibility in union operator&quot;</span></span>
+<span class="lineno">  158 </span><span class="spaces">        </span><span class="istickedoff">let i = Reference iPat Nothing</span>
+<span class="lineno">  159 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  160 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set union&quot;</span></span>
+<span class="lineno">  161 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opFlatten $ AbstractLiteral $ AbsLitMatrix</span>
+<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 2])</span>
+<span class="lineno">  163 </span><span class="spaces">                </span><span class="istickedoff">[ Comprehension body</span>
+<span class="lineno">  164 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  165 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenInExpr pat (mkModifier x)) ]</span>
+<span class="lineno">  166 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  167 </span><span class="spaces">                </span><span class="istickedoff">, Comprehension body</span>
+<span class="lineno">  168 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  169 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenInExpr pat (mkModifier y))</span>
+<span class="lineno">  170 </span><span class="spaces">                       </span><span class="istickedoff">, Condition [essence| !(&amp;i in &amp;x) |]</span>
+<span class="lineno">  171 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">  172 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  173 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  175 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Union&quot;</span></span>
+<span class="lineno">  176 </span>
+<span class="lineno">  177 </span>
+<span class="lineno">  178 </span>rule_Difference :: Rule
+<span class="lineno">  179 </span><span class="decl"><span class="istickedoff">rule_Difference = <span class="nottickedoff">&quot;set-difference&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, iPat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@(Single iPat) expr) -&gt; return (<span class="nottickedoff">pat</span>, <span class="nottickedoff">iPat</span>, expr)</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Difference&quot;</span></span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">(mkModifier, s)    &lt;- match opModifier expr</span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">(x, y)             &lt;- match opMinus s</span>
+<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">tx                 &lt;- <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case tx of</span></span>
+<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeSet{}      -&gt; return ()</span></span>
+<span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMSet{}     -&gt; return ()</span></span>
+<span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} -&gt; return ()</span></span>
+<span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeRelation{} -&gt; return ()</span></span>
+<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_              -&gt; fail &quot;type incompatibility in difference operator&quot;</span></span>
+<span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">i = Reference iPat Nothing</span></span>
+<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set difference&quot;</span></span>
+<span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $</span></span>
+<span class="lineno">  197 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Comprehension body</span></span>
+<span class="lineno">  198 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">  199 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr pat (mkModifier x))</span></span>
+<span class="lineno">  200 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| !(&amp;i in &amp;y) |]</span></span>
+<span class="lineno">  201 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
+<span class="lineno">  203 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  204 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Difference&quot;</span></span>
+<span class="lineno">  205 </span>
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>rule_PowerSet_Difference :: Rule
+<span class="lineno">  208 </span><span class="decl"><span class="istickedoff">rule_PowerSet_Difference = <span class="nottickedoff">&quot;set-powerSet-difference&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  211 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat expr) -&gt; return (<span class="nottickedoff">pat</span>, expr)</span>
+<span class="lineno">  212 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_PowerSet_Difference&quot;</span></span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">setExpr            &lt;- match opPowerSet expr</span>
+<span class="lineno">  214 </span><span class="spaces">        </span><span class="istickedoff">(x, y)             &lt;- match opMinus setExpr</span>
+<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">patAsExpr = patternToExpr pat</span></span>
+<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  217 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set powerSet difference&quot;</span></span>
+<span class="lineno">  218 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $</span></span>
+<span class="lineno">  219 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Comprehension body</span></span>
+<span class="lineno">  220 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">  221 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr pat (make opPowerSet x))</span></span>
+<span class="lineno">  222 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| !(&amp;patAsExpr subsetEq &amp;y) |]</span></span>
+<span class="lineno">  223 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  224 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
+<span class="lineno">  225 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  226 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PowerSet_Difference&quot;</span></span>
+<span class="lineno">  227 </span>
+<span class="lineno">  228 </span>
+<span class="lineno">  229 </span>rule_PowerSet_Comprehension :: Rule
+<span class="lineno">  230 </span><span class="decl"><span class="istickedoff">rule_PowerSet_Comprehension = <span class="nottickedoff">&quot;set-powerSet-comprehension&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (patName, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  233 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr (Single patName) expr) -&gt; return (patName, expr)</span>
+<span class="lineno">  234 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_PowerSet_Comprehension&quot;</span></span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff">s                             &lt;- match opPowerSet expr</span>
+<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">sDom                          &lt;- domainOf s</span>
+<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff">let sDom' =</span>
+<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff">-- only keep the maxsize attribute</span>
+<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">case sDom of</span>
+<span class="lineno">  240 </span><span class="spaces">                    </span><span class="istickedoff">DomainSet () (SetAttr sAttr) sInner -&gt;</span>
+<span class="lineno">  241 </span><span class="spaces">                        </span><span class="istickedoff">let</span>
+<span class="lineno">  242 </span><span class="spaces">                            </span><span class="istickedoff">sAttr' =</span>
+<span class="lineno">  243 </span><span class="spaces">                                </span><span class="istickedoff">case sAttr of</span>
+<span class="lineno">  244 </span><span class="spaces">                                    </span><span class="istickedoff">SizeAttr_None -&gt; <span class="nottickedoff">SizeAttr_None</span></span>
+<span class="lineno">  245 </span><span class="spaces">                                    </span><span class="istickedoff">SizeAttr_Size x -&gt; <span class="nottickedoff">SizeAttr_MaxSize x</span></span>
+<span class="lineno">  246 </span><span class="spaces">                                    </span><span class="istickedoff">SizeAttr_MinSize _ -&gt; SizeAttr_None</span>
+<span class="lineno">  247 </span><span class="spaces">                                    </span><span class="istickedoff">SizeAttr_MaxSize x -&gt; <span class="nottickedoff">SizeAttr_MaxSize x</span></span>
+<span class="lineno">  248 </span><span class="spaces">                                    </span><span class="istickedoff">SizeAttr_MinMaxSize _ x -&gt; <span class="nottickedoff">SizeAttr_MaxSize x</span></span>
+<span class="lineno">  249 </span><span class="spaces">                        </span><span class="istickedoff">in</span>
+<span class="lineno">  250 </span><span class="spaces">                            </span><span class="istickedoff">DomainSet <span class="nottickedoff">()</span> (SetAttr sAttr') sInner</span>
+<span class="lineno">  251 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">sDom</span></span>
+<span class="lineno">  252 </span><span class="spaces">        </span><span class="istickedoff">let pat = Single patName</span>
+<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff">let patAsExpr = Reference patName Nothing</span>
+<span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  255 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set-comprehension over powerSet&quot;</span></span>
+<span class="lineno">  256 </span><span class="spaces">            </span><span class="istickedoff">, return $</span>
+<span class="lineno">  257 </span><span class="spaces">                </span><span class="istickedoff">Comprehension body</span>
+<span class="lineno">  258 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  259 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenDomainNoRepr pat sDom')</span>
+<span class="lineno">  260 </span><span class="spaces">                       </span><span class="istickedoff">, Condition [essence| &amp;patAsExpr subsetEq &amp;s |]</span>
+<span class="lineno">  261 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">  262 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  263 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  264 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PowerSet_Comprehension&quot;</span></span>
+<span class="lineno">  265 </span>
+<span class="lineno">  266 </span>
+<span class="lineno">  267 </span>rule_MaxMin :: Rule
+<span class="lineno">  268 </span><span class="decl"><span class="istickedoff">rule_MaxMin = <span class="nottickedoff">&quot;set-max-min&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| max(&amp;s) |] = do</span>
+<span class="lineno">  270 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
+<span class="lineno">  271 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  272 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set max&quot;</span></span>
+<span class="lineno">  273 </span><span class="spaces">            </span><span class="istickedoff">, case <span class="nottickedoff">()</span> of</span>
+<span class="lineno">  274 </span><span class="spaces">                </span><span class="istickedoff">_ | Just (_, xs) &lt;- match setLiteral s, <span class="tickonlytrue">length xs &gt; 0</span> -&gt; return $ make opMax $ fromList xs</span>
+<span class="lineno">  275 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno">  276 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  277 </span><span class="spaces">                    </span><span class="istickedoff">return [essence| max([&amp;i | &amp;iPat &lt;- &amp;s]) |]</span>
+<span class="lineno">  278 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| min(&amp;s) |] = do</span>
+<span class="lineno">  280 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
+<span class="lineno">  281 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  282 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set min&quot;</span></span>
+<span class="lineno">  283 </span><span class="spaces">            </span><span class="istickedoff">, case <span class="nottickedoff">()</span> of</span>
+<span class="lineno">  284 </span><span class="spaces">                </span><span class="istickedoff">_ | Just (_, xs) &lt;- match setLiteral s, <span class="tickonlytrue">length xs &gt; 0</span> -&gt; return $ make opMin $ fromList xs</span>
+<span class="lineno">  285 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno">  286 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  287 </span><span class="spaces">                    </span><span class="istickedoff">return [essence| min([&amp;i | &amp;iPat &lt;- &amp;s]) |]</span>
+<span class="lineno">  288 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_MaxMin&quot;</span></span>
+<span class="lineno">  290 </span>
+<span class="lineno">  291 </span>
+<span class="lineno">  292 </span>-- x in s ~~&gt; or([ x = i | i in s ])
+<span class="lineno">  293 </span>rule_In :: Rule
+<span class="lineno">  294 </span><span class="decl"><span class="istickedoff">rule_In = <span class="nottickedoff">&quot;set-in&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  295 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  296 </span><span class="spaces">        </span><span class="istickedoff">(x,s)     &lt;- match opIn p</span>
+<span class="lineno">  297 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf s</span>
+<span class="lineno">  298 </span><span class="spaces">        </span><span class="istickedoff">-- do not apply this rule to quantified variables</span>
+<span class="lineno">  299 </span><span class="spaces">        </span><span class="istickedoff">-- or else we might miss the opportunity to apply a more specific vertical rule</span>
+<span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff">if referenceToComprehensionVar s</span>
+<span class="lineno">  301 </span><span class="spaces">            </span><span class="istickedoff">then na &quot;rule_In&quot;</span>
+<span class="lineno">  302 </span><span class="spaces">            </span><span class="istickedoff">else return <span class="nottickedoff">()</span></span>
+<span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  304 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set-in.&quot;</span></span>
+<span class="lineno">  305 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  306 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  307 </span><span class="spaces">                 </span><span class="istickedoff">return [essence| exists &amp;iPat in &amp;s . &amp;i = &amp;x |]</span>
+<span class="lineno">  308 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  309 </span>
+<span class="lineno">  310 </span>
+<span class="lineno">  311 </span>rule_Card :: Rule
+<span class="lineno">  312 </span><span class="decl"><span class="istickedoff">rule_Card = <span class="nottickedoff">&quot;set-card&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  313 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  314 </span><span class="spaces">        </span><span class="istickedoff">s         &lt;- match opTwoBars p</span>
+<span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">case s of</span>
+<span class="lineno">  316 </span><span class="spaces">            </span><span class="istickedoff">Domain{} -&gt; na &quot;rule_Card&quot;</span>
+<span class="lineno">  317 </span><span class="spaces">            </span><span class="istickedoff">_        -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf s</span>
+<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  320 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set cardinality.&quot;</span></span>
+<span class="lineno">  321 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  322 </span><span class="spaces">                </span><span class="istickedoff">mdom &lt;- runMaybeT $ domainOf s</span>
+<span class="lineno">  323 </span><span class="spaces">                </span><span class="istickedoff">case mdom of</span>
+<span class="lineno">  324 </span><span class="spaces">                    </span><span class="istickedoff">Just (DomainSet _ (SetAttr (SizeAttr_Size n)) _) -&gt; return n</span>
+<span class="lineno">  325 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno">  326 </span><span class="spaces">                        </span><span class="istickedoff">(iPat, _) &lt;- quantifiedVar</span>
+<span class="lineno">  327 </span><span class="spaces">                        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> sum &amp;iPat in &amp;s . 1 |]</span></span></span>
+<span class="lineno">  328 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  329 </span>
+<span class="lineno">  330 </span>
+<span class="lineno">  331 </span>rule_CardViaFreq :: Rule
+<span class="lineno">  332 </span><span class="decl"><span class="istickedoff">rule_CardViaFreq = <span class="nottickedoff">&quot;set-card-via-freq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  333 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| freq(toMSet(&amp;s),&amp;x) |] = do</span>
+<span class="lineno">  334 </span><span class="spaces">        </span><span class="istickedoff">case s of</span>
+<span class="lineno">  335 </span><span class="spaces">            </span><span class="istickedoff">Domain{} -&gt; <span class="nottickedoff">na &quot;rule_CardViaFreq&quot;</span></span>
+<span class="lineno">  336 </span><span class="spaces">            </span><span class="istickedoff">_        -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  337 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf s</span>
+<span class="lineno">  338 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  339 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set cardinality.&quot;</span></span>
+<span class="lineno">  340 </span><span class="spaces">            </span><span class="istickedoff">, return [essence| toInt(&amp;x in &amp;s) |]</span>
+<span class="lineno">  341 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_CardViaFreq&quot;</span></span>
+<span class="lineno">  343 </span>
+<span class="lineno">  344 </span>
+<span class="lineno">  345 </span>rule_Param_MinOfSet :: Rule
+<span class="lineno">  346 </span><span class="decl"><span class="istickedoff">rule_Param_MinOfSet = <span class="nottickedoff">&quot;param-min-of-set&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  347 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| min(&amp;s) |] = do</span>
+<span class="lineno">  348 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
+<span class="lineno">  349 </span><span class="spaces">        </span><span class="istickedoff">unless (categoryOf s == CatParameter) $ na &quot;rule_Param_MinOfSet&quot;</span>
+<span class="lineno">  350 </span><span class="spaces">        </span><span class="istickedoff">isDomainExpr s</span>
+<span class="lineno">  351 </span><span class="spaces">        </span><span class="istickedoff">DomainSet _ _ inner &lt;- <span class="nottickedoff">domainOf s</span></span>
+<span class="lineno">  352 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case inner of</span></span>
+<span class="lineno">  353 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ rs | isInfinite rs -&gt; na &quot;rule_Param_MaxOfSet&quot;</span></span>
+<span class="lineno">  354 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; return ()</span></span>
+<span class="lineno">  355 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  356 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;min of a parameter set&quot;</span></span>
+<span class="lineno">  357 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, case inner of</span></span>
+<span class="lineno">  358 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ [RangeBounded l _] -&gt; return l</span></span>
+<span class="lineno">  359 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; do</span></span>
+<span class="lineno">  360 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  361 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return [essence| min([ &amp;i | &amp;iPat : &amp;inner ]) |]</span></span>
+<span class="lineno">  362 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  363 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Param_MinOfSet&quot;</span></span>
+<span class="lineno">  364 </span>
+<span class="lineno">  365 </span>
+<span class="lineno">  366 </span>rule_Param_MaxOfSet :: Rule
+<span class="lineno">  367 </span><span class="decl"><span class="istickedoff">rule_Param_MaxOfSet = <span class="nottickedoff">&quot;param-max-of-set&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  368 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| max(&amp;s) |] = do</span>
+<span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
+<span class="lineno">  370 </span><span class="spaces">        </span><span class="istickedoff">unless (categoryOf s == CatParameter) $ na &quot;rule_Param_MaxOfSet&quot;</span>
+<span class="lineno">  371 </span><span class="spaces">        </span><span class="istickedoff">isDomainExpr s</span>
+<span class="lineno">  372 </span><span class="spaces">        </span><span class="istickedoff">DomainSet _ _ inner &lt;- <span class="nottickedoff">domainOf s</span></span>
+<span class="lineno">  373 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case inner of</span></span>
+<span class="lineno">  374 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ rs | isInfinite rs -&gt; na &quot;rule_Param_MaxOfSet&quot;</span></span>
+<span class="lineno">  375 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; return ()</span></span>
+<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  377 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;max of a parameter set&quot;</span></span>
+<span class="lineno">  378 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, case inner of</span></span>
+<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ [RangeBounded _ u] -&gt; return u</span></span>
+<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; do</span></span>
+<span class="lineno">  381 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  382 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return [essence| max([ &amp;i | &amp;iPat : &amp;inner ]) |]</span></span>
+<span class="lineno">  383 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  384 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Param_MaxOfSet&quot;</span></span>
+<span class="lineno">  385 </span>
+<span class="lineno">  386 </span>
+<span class="lineno">  387 </span>rule_Param_Card :: Rule
+<span class="lineno">  388 </span><span class="decl"><span class="istickedoff">rule_Param_Card = <span class="nottickedoff">&quot;param-card-of-set&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  389 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| |&amp;s| |] = do</span>
+<span class="lineno">  390 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
+<span class="lineno">  391 </span><span class="spaces">        </span><span class="istickedoff">unless (categoryOf s == CatParameter) $ na &quot;rule_Param_Card&quot;</span>
+<span class="lineno">  392 </span><span class="spaces">        </span><span class="istickedoff">DomainSet _ (SetAttr (SizeAttr_Size n)) _ &lt;- domainOf s</span>
+<span class="lineno">  393 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  394 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;cardinality of a parameter set&quot;</span></span>
+<span class="lineno">  395 </span><span class="spaces">            </span><span class="istickedoff">, return n</span>
+<span class="lineno">  396 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  397 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Param_Card&quot;</span></span>
+
+</pre>
+</body>
+</html>
