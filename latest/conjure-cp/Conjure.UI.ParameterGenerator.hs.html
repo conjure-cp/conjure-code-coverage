@@ -118,7 +118,7 @@ span.spaces    { background: white }
 <span class="lineno">   99 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; return (d, [])</span>
 <span class="lineno">  100 </span><span class="spaces"></span><span class="nottickedoff"></span>
 <span class="lineno">  101 </span><span class="spaces">            </span><span class="nottickedoff">let patX = Reference pat Nothing</span>
-<span class="lineno">  102 </span><span class="spaces">            </span><span class="nottickedoff">(dom', cons) &lt;- go patX domain</span>
+<span class="lineno">  102 </span><span class="spaces">            </span><span class="nottickedoff">(dom', cons) &lt;- go patX (expandDomainReference domain)</span>
 <span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">return $ [Generator (GenDomainNoRepr (Single pat) dom')]</span>
 <span class="lineno">  104 </span><span class="spaces">                   </span><span class="nottickedoff">++ map Condition cons</span>
 <span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; return [goc]</span>
