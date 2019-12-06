@@ -1,0 +1,108 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.ZeroVal ( zeroVal, EnumerateDomain ) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>-- conjure
+<span class="lineno">    4 </span>import Conjure.Prelude
+<span class="lineno">    5 </span>import Conjure.Bug
+<span class="lineno">    6 </span>import Conjure.Language.Definition
+<span class="lineno">    7 </span>import Conjure.Language.Domain
+<span class="lineno">    8 </span>import Conjure.Language.Pretty
+<span class="lineno">    9 </span>import Conjure.Process.Enumerate ( EnumerateDomain, enumerateDomain )
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>zeroVal :: (MonadFail m, EnumerateDomain m, Pretty r) =&gt; Domain r Constant -&gt; m Constant
+<span class="lineno">   13 </span><span class="decl"><span class="istickedoff">zeroVal DomainBool = return $ ConstantBool False</span>
+<span class="lineno">   14 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainInt t []) = return $ ConstantInt <span class="nottickedoff">t</span> 0</span>
+<span class="lineno">   15 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainInt _ (r:_)) = zeroValR r</span>
+<span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainTuple ds) = ConstantAbstract . AbsLitTuple &lt;$&gt; mapM zeroVal ds</span>
+<span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainRecord xs) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">values &lt;- forM xs $ \ (nm, dom) -&gt; do</span></span>
+<span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">z &lt;- zeroVal dom</span></span>
+<span class="lineno">   20 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (nm, z)</span></span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitRecord values</span></span>
+<span class="lineno">   22 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainVariant xs@((nm, dom):_)) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">z &lt;- zeroVal dom</span></span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitVariant (Just [(n, forgetRepr d) | (n,d) &lt;- xs]) nm z</span></span>
+<span class="lineno">   25 </span><span class="spaces"></span><span class="istickedoff">zeroVal (DomainMatrix index inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">z  &lt;- zeroVal inner</span></span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">is &lt;- case index of</span></span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ rs -&gt; rangesInts rs</span></span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail $ &quot;Matrix indexed by a domain that isn't int:&quot; &lt;+&gt; pretty index</span></span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitMatrix index $ replicate (length is) z</span></span>
+<span class="lineno">   31 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainSet _ (SetAttr sizeAttr) inner) = do</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">z       &lt;- zeroVal inner</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">minSize &lt;- getMin <span class="nottickedoff">d</span> sizeAttr</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">return $ ConstantAbstract $ AbsLitSet $ replicate (fromInteger minSize) <span class="nottickedoff">z</span></span>
+<span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainSequence _ (SequenceAttr sizeAttr _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">z       &lt;- zeroVal inner</span></span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">minSize &lt;- getMin d sizeAttr</span></span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitSequence $ replicate (fromInteger minSize) z</span></span>
+<span class="lineno">   39 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainFunction _ (FunctionAttr sizeAttr partialityAttr _) innerFr innerTo) =</span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">case partialityAttr of</span></span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">PartialityAttr_Partial -&gt; do</span></span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">minSize &lt;- getMin d sizeAttr</span></span>
+<span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">zFr     &lt;- zeroVal innerFr</span></span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">zTo     &lt;- zeroVal innerTo</span></span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitFunction $ replicate (fromInteger minSize) (zFr, zTo)</span></span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">PartialityAttr_Total   -&gt; do</span></span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">froms   &lt;- enumerateDomain (forgetRepr innerFr)</span></span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">zTo     &lt;- zeroVal innerTo</span></span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitFunction [ (fr, zTo) | fr &lt;- froms ]</span></span>
+<span class="lineno">   50 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainMSet _ (MSetAttr sizeAttr _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   51 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">z       &lt;- zeroVal inner</span></span>
+<span class="lineno">   52 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">minSize &lt;- getMin d sizeAttr</span></span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitMSet $ replicate (fromInteger minSize) z</span></span>
+<span class="lineno">   54 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainRelation _ (RelationAttr sizeAttr _) inners) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">zs      &lt;- mapM zeroVal inners</span></span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">minSize &lt;- getMin d sizeAttr</span></span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitRelation $ replicate (fromInteger minSize) zs</span></span>
+<span class="lineno">   58 </span><span class="spaces"></span><span class="istickedoff">zeroVal d@(DomainPartition _ (PartitionAttr numPartsAttr partSizeAttr _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">z        &lt;- zeroVal inner</span></span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">minSize1 &lt;- getMin d numPartsAttr</span></span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">minSize2 &lt;- getMin d partSizeAttr</span></span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantAbstract $ AbsLitPartition $ replicate (fromInteger minSize1)</span></span>
+<span class="lineno">   63 </span><span class="spaces">                                                            </span><span class="istickedoff"><span class="nottickedoff">(replicate (fromInteger minSize2) z)</span></span>
+<span class="lineno">   64 </span><span class="spaces"></span><span class="istickedoff">zeroVal d = <span class="nottickedoff">bug $ &quot;No 'zero' value for domain:&quot; &lt;+&gt; pretty d</span></span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>zeroValR :: MonadFail m =&gt; Range a -&gt; m a
+<span class="lineno">   68 </span><span class="decl"><span class="istickedoff">zeroValR RangeOpen = <span class="nottickedoff">fail &quot;No 'zero' value for an open range.&quot;</span></span>
+<span class="lineno">   69 </span><span class="spaces"></span><span class="istickedoff">zeroValR (RangeSingle x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno">   70 </span><span class="spaces"></span><span class="istickedoff">zeroValR (RangeLowerBounded x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno">   71 </span><span class="spaces"></span><span class="istickedoff">zeroValR (RangeUpperBounded x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno">   72 </span><span class="spaces"></span><span class="istickedoff">zeroValR (RangeBounded x _) = return x</span></span>
+<span class="lineno">   73 </span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>getMin :: (MonadFail m, Pretty r, Pretty x) =&gt; Domain r x -&gt; SizeAttr Constant -&gt; m Integer
+<span class="lineno">   76 </span><span class="decl"><span class="istickedoff">getMin _ SizeAttr_None = <span class="nottickedoff">return 0</span></span>
+<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff">getMin d (SizeAttr_Size x) = <span class="nottickedoff">returnInt d x</span></span>
+<span class="lineno">   78 </span><span class="spaces"></span><span class="istickedoff">getMin d (SizeAttr_MinSize x) = <span class="nottickedoff">returnInt d x</span></span>
+<span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff">getMin _ (SizeAttr_MaxSize _) = return 0</span>
+<span class="lineno">   80 </span><span class="spaces"></span><span class="istickedoff">getMin d (SizeAttr_MinMaxSize x _) = <span class="nottickedoff">returnInt d x</span></span></span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>returnInt :: (MonadFail m, Pretty r, Pretty x) =&gt; Domain r x -&gt; Constant -&gt; m Integer
+<span class="lineno">   84 </span><span class="decl"><span class="nottickedoff">returnInt _ (ConstantInt _ x) = return x</span>
+<span class="lineno">   85 </span><span class="spaces"></span><span class="nottickedoff">returnInt d _ = fail $ &quot;Attribute expected to be an int in:&quot; &lt;+&gt; pretty d</span></span>
+
+</pre>
+</body>
+</html>
