@@ -243,7 +243,7 @@ span.spaces    { background: white }
 <span class="lineno">  224 </span><span class="decl"><span class="istickedoff">stringToDoc = Pr.text</span></span>
 <span class="lineno">  225 </span>
 <span class="lineno">  226 </span>padRight :: Int -&gt; Char -&gt; String -&gt; String
-<span class="lineno">  227 </span><span class="decl"><span class="istickedoff">padRight n ch s = s ++ replicate (n - length s) <span class="nottickedoff">ch</span></span></span>
+<span class="lineno">  227 </span><span class="decl"><span class="nottickedoff">padRight n ch s = s ++ replicate (n - length s) ch</span></span>
 <span class="lineno">  228 </span>
 <span class="lineno">  229 </span>padLeft :: Int -&gt; Char -&gt; String -&gt; String
 <span class="lineno">  230 </span><span class="decl"><span class="istickedoff">padLeft n ch s = replicate (n - length s) ch ++ s</span></span>

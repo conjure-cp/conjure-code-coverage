@@ -116,13 +116,13 @@ span.spaces    { background: white }
 <span class="lineno">   97 </span><span class="spaces">                        </span><span class="istickedoff">then do</span>
 <span class="lineno">   98 </span><span class="spaces">                            </span><span class="istickedoff">(c, cTyMaybe) &lt;- case v of</span>
 <span class="lineno">   99 </span><span class="spaces">                                </span><span class="istickedoff">TypedConstant c cTy</span>
-<span class="lineno">  100 </span><span class="spaces">                                    </span><span class="istickedoff">| elem TypeAny (universe cTy)       -- we may be able to do better!</span>
+<span class="lineno">  100 </span><span class="spaces">                                    </span><span class="istickedoff">| <span class="tickonlytrue">elem TypeAny (universe cTy)</span>       -- we may be able to do better!</span>
 <span class="lineno">  101 </span><span class="spaces">                                        </span><span class="istickedoff">-&gt; return (c, Just cTy)</span>
-<span class="lineno">  102 </span><span class="spaces">                                    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span></span>
-<span class="lineno">  103 </span><span class="spaces">                                        </span><span class="istickedoff">-&gt; return (<span class="nottickedoff">v</span>, Nothing)          -- already sufficiently typed</span>
+<span class="lineno">  102 </span><span class="spaces">                                    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span></span>
+<span class="lineno">  103 </span><span class="spaces">                                        </span><span class="istickedoff">-&gt; <span class="nottickedoff">return (v, Nothing)</span>          -- already sufficiently typed</span>
 <span class="lineno">  104 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">return (v, Just TypeAny)</span>           -- empty collection, unknown type</span>
 <span class="lineno">  105 </span><span class="spaces">                            </span><span class="istickedoff">case cTyMaybe of</span>
-<span class="lineno">  106 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; return $ Just (n, d, v)</span>
+<span class="lineno">  106 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">return $ Just (n, d, v)</span></span>
 <span class="lineno">  107 </span><span class="spaces">                                </span><span class="istickedoff">Just cTy1 -&gt; do</span>
 <span class="lineno">  108 </span><span class="spaces">                                    </span><span class="istickedoff">-- calculate the type of the domain, unify with the type we already have</span>
 <span class="lineno">  109 </span><span class="spaces">                                    </span><span class="istickedoff">cTy2 &lt;- typeOfDomain d</span>

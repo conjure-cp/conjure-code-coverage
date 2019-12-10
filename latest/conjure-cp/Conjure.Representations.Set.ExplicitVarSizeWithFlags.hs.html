@@ -209,7 +209,7 @@ span.spaces    { background: white }
 <span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff">[flags, values] &lt;- downX1 inp</span>
 <span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff">Just [_, (_, DomainMatrix index inner)] &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
 <span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  193 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- innerSO downX1 [essence| &amp;values[&amp;i] |] inner</span>
+<span class="lineno">  193 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- innerSO <span class="nottickedoff">downX1</span> [essence| &amp;values[&amp;i] |] inner</span>
 <span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff">return</span>
 <span class="lineno">  195 </span><span class="spaces">                </span><span class="istickedoff">[essence|</span>
 <span class="lineno">  196 </span><span class="spaces">                    </span><span class="istickedoff">[ (&amp;flags[&amp;i], &amp;soValues) | &amp;iPat : &amp;index]</span>

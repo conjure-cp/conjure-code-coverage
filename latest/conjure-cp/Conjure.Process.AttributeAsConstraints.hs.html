@@ -102,7 +102,7 @@ span.spaces    { background: white }
 <span class="lineno">   83 </span>    -&gt; m (Expression -&gt; m Expression)               -- the constraint generator
 <span class="lineno">   84 </span>
 <span class="lineno">   85 </span><span class="decl"><span class="istickedoff">attributeToConstraint domain@DomainSet{} = generator where</span>
-<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
 <span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span>
 <span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
@@ -129,9 +129,9 @@ span.spaces    { background: white }
 <span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
 <span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
 <span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
-<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;total&quot;      Nothing  = return $ \ x -&gt; do</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;iPat : &amp;inF . &amp;i in defined(&amp;x) |]</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;total&quot;      Nothing  = <span class="nottickedoff">return $ \ x -&gt; do</span></span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;iPat : &amp;inF . &amp;i in defined(&amp;x) |]</span></span>
 <span class="lineno">  116 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;injective&quot;  Nothing  = return $ \ x -&gt; do</span>
 <span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">return [essence| allDiff([ &amp;x(&amp;i) | &amp;iPat : &amp;inF ]) |]</span>
@@ -147,66 +147,66 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  130 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  131 </span><span class="spaces"></span><span class="istickedoff">attributeToConstraint domain@(DomainRelation _ _ [dom,dom2]) | <span class="tickonlytrue">dom == dom2</span> = generator where</span>
-<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
-<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
-<span class="lineno">  134 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
-<span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  136 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;reflexive&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;xP           : &amp;dom . &amp;rel(&amp;x,&amp;x) |]</span>
-<span class="lineno">  139 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;irreflexive&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;xP           : &amp;dom . !(&amp;rel(&amp;x,&amp;x)) |]</span>
-<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;coreflexive&quot; Nothing = <span class="nottickedoff">return $ \ rel -&gt; do</span></span>
+<span class="lineno">  131 </span><span class="spaces"></span><span class="istickedoff">attributeToConstraint domain@(DomainRelation _ _ [dom,dom2]) | <span class="nottickedoff">dom == dom2</span> = <span class="nottickedoff">generator</span> where</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator    &quot;size&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;minSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;maxSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
+<span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;reflexive&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP           : &amp;dom . &amp;rel(&amp;x,&amp;x) |]</span></span>
+<span class="lineno">  139 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;irreflexive&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP           : &amp;dom . !(&amp;rel(&amp;x,&amp;x)) |]</span></span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;coreflexive&quot; Nothing = return $ \ rel -&gt; do</span></span>
 <span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
 <span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
 <span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) -&gt; &amp;x=&amp;y |]</span></span>
-<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;symmetric&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) -&gt; &amp;rel(&amp;y,&amp;x) |]</span>
-<span class="lineno">  150 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;antiSymmetric&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  153 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;x) -&gt; &amp;x=&amp;y |]</span></span></span></span></span>
-<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;aSymmetric&quot; Nothing = <span class="nottickedoff">return $ \ rel -&gt; do</span></span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;symmetric&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) -&gt; &amp;rel(&amp;y,&amp;x) |]</span></span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;antiSymmetric&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  153 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;x) -&gt; &amp;x=&amp;y |]</span></span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;aSymmetric&quot; Nothing = return $ \ rel -&gt; do</span></span>
 <span class="lineno">  155 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
 <span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
 <span class="lineno">  157 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) -&gt; !(&amp;rel(&amp;y,&amp;x)) |]</span></span>
-<span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;transitive&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  159 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">(zP, z) &lt;- quantifiedVar</span>
-<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> forAll &amp;xP, &amp;yP, &amp;zP : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;z) -&gt; &amp;rel(&amp;x,&amp;z) |]</span></span></span></span></span>
-<span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;total&quot; Nothing = <span class="nottickedoff">return $ \ rel -&gt; do</span></span>
+<span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;transitive&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  159 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(zP, z) &lt;- quantifiedVar</span></span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP, &amp;zP : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;z) -&gt; &amp;rel(&amp;x,&amp;z) |]</span></span>
+<span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;total&quot; Nothing = return $ \ rel -&gt; do</span></span>
 <span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
 <span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
 <span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) \/ &amp;rel(&amp;y,&amp;x) |]</span></span>
-<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;connex&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) \/ &amp;rel(&amp;y,&amp;x) \/ &amp;x = &amp;y |]</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;Euclidean&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">(zP, z) &lt;- quantifiedVar</span>
-<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> forAll &amp;xP, &amp;yP, &amp;zP : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;x,&amp;z) -&gt; &amp;rel(&amp;y,&amp;z) |]</span></span></span></span></span>
-<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;serial&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  177 </span><span class="spaces">        </span><span class="istickedoff">(xP, x) &lt;- quantifiedVar</span>
-<span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff">(yP, y) &lt;- quantifiedVar</span>
-<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;xP : &amp;dom . exists &amp;yP : &amp;dom . &amp;rel(&amp;x,&amp;y) |]</span>
-<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;equivalence&quot;  Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff">a &lt;- generator &quot;reflexive&quot;  Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff">b &lt;- generator &quot;symmetric&quot;  Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">c &lt;- generator &quot;transitive&quot; Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;a /\ &amp;b /\ &amp;c |]</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;partialOrder&quot; Nothing = return $ \ rel -&gt; do</span>
-<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">a &lt;- generator &quot;reflexive&quot;     Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">b &lt;- generator &quot;antiSymmetric&quot; Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">c &lt;- generator &quot;transitive&quot;    Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
-<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;a /\ &amp;b /\ &amp;c |]</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  190 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
+<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;connex&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP      : &amp;dom . &amp;rel(&amp;x,&amp;y) \/ &amp;rel(&amp;y,&amp;x) \/ &amp;x = &amp;y |]</span></span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;Euclidean&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(zP, z) &lt;- quantifiedVar</span></span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP, &amp;yP, &amp;zP : &amp;dom . &amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;x,&amp;z) -&gt; &amp;rel(&amp;y,&amp;z) |]</span></span>
+<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;serial&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  177 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span></span>
+<span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span></span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;xP : &amp;dom . exists &amp;yP : &amp;dom . &amp;rel(&amp;x,&amp;y) |]</span></span>
+<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;equivalence&quot;  Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">a &lt;- generator &quot;reflexive&quot;  Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">b &lt;- generator &quot;symmetric&quot;  Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">c &lt;- generator &quot;transitive&quot; Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;a /\ &amp;b /\ &amp;c |]</span></span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;partialOrder&quot; Nothing = return $ \ rel -&gt; do</span></span>
+<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">a &lt;- generator &quot;reflexive&quot;     Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">b &lt;- generator &quot;antiSymmetric&quot; Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">c &lt;- generator &quot;transitive&quot;    Nothing &gt;&gt;= \ gen -&gt; gen rel</span></span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;a /\ &amp;b /\ &amp;c |]</span></span>
+<span class="lineno">  190 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
 <span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  192 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  193 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
