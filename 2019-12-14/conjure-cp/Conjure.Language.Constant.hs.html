@@ -89,7 +89,7 @@ span.spaces    { background: white }
 <span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantBool a) (ConstantBool b) = compare a b</span>
 <span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantInt _ a) (ConstantInt _ b) = compare a b</span>
 <span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantEnum _ aVals aVal) (ConstantEnum _ bVals bVal) =</span>
-<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">compare (elemIndex aVal aVals, aVal) (elemIndex bVal bVals, bVal)</span></span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">compare (elemIndex aVal aVals, aVal) (elemIndex bVal bVals, bVal)</span>
 <span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantField a1 a2) (ConstantField b1 b2) = <span class="nottickedoff">compare (a1,a2) (b1,b2)</span></span>
 <span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantAbstract a) (ConstantAbstract b) = compare a b</span>
 <span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">compare (DomainInConstant a) (DomainInConstant b) = <span class="nottickedoff">compare a b</span></span>
@@ -168,7 +168,7 @@ span.spaces    { background: white }
 <span class="lineno">  149 </span><span class="decl"><span class="istickedoff">domainSizeOfRanges = fmap genericLength . valuesInIntDomain</span></span>
 <span class="lineno">  150 </span>
 <span class="lineno">  151 </span>instance DomainSizeOf Constant Constant where
-<span class="lineno">  152 </span>    <span class="decl"><span class="nottickedoff">domainSizeOf = fmap (ConstantInt TagInt) . domainSizeOf</span></span>
+<span class="lineno">  152 </span>    <span class="decl"><span class="istickedoff">domainSizeOf = fmap (ConstantInt <span class="nottickedoff">TagInt</span>) . domainSizeOf</span></span>
 <span class="lineno">  153 </span>
 <span class="lineno">  154 </span>instance Pretty Constant where
 <span class="lineno">  155 </span>
@@ -195,7 +195,7 @@ span.spaces    { background: white }
 <span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantBool False)          = &quot;false&quot;</span>
 <span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantBool True )          = &quot;true&quot;</span>
 <span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantInt _ x   )          = pretty x</span>
-<span class="lineno">  179 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantEnum _ _ x)          = <span class="nottickedoff">pretty x</span></span>
+<span class="lineno">  179 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantEnum _ _ x)          = pretty x</span>
 <span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantField n _)           = pretty n</span>
 <span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantAbstract x)          = pretty x</span>
 <span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInConstant d)          = <span class="nottickedoff">&quot;`&quot; &lt;&gt; pretty d &lt;&gt; &quot;`&quot;</span></span>
@@ -215,7 +215,7 @@ span.spaces    { background: white }
 <span class="lineno">  196 </span><span class="spaces">    </span><span class="istickedoff">boolOut ConstantUndefined{} = return False</span>
 <span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">boolOut c = <span class="nottickedoff">fail (&quot;Expecting a boolean, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  198 </span>
-<span class="lineno">  199 </span>    <span class="decl"><span class="nottickedoff">fromList xs = ConstantAbstract $ AbsLitMatrix (mkDomainIntB 1 (fromInt $ genericLength xs)) xs</span></span>
+<span class="lineno">  199 </span>    <span class="decl"><span class="istickedoff">fromList xs = ConstantAbstract $ AbsLitMatrix <span class="nottickedoff">(mkDomainIntB 1 (fromInt $ genericLength xs))</span> xs</span></span>
 <span class="lineno">  200 </span>    <span class="decl"><span class="istickedoff">listOut (ConstantAbstract (AbsLitMatrix _ xs)) = return xs</span>
 <span class="lineno">  201 </span><span class="spaces">    </span><span class="istickedoff">listOut c = fail <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  202 </span>
@@ -226,8 +226,8 @@ span.spaces    { background: white }
 <span class="lineno">  207 </span>
 <span class="lineno">  208 </span>instance DomainContainer Constant (Domain ()) where
 <span class="lineno">  209 </span>    <span class="decl"><span class="nottickedoff">fromDomain = DomainInConstant</span></span>
-<span class="lineno">  210 </span>    <span class="decl"><span class="nottickedoff">domainOut (DomainInConstant dom) = return dom</span>
-<span class="lineno">  211 </span><span class="spaces">    </span><span class="nottickedoff">domainOut _ = fail &quot;domainOut{Constant}&quot;</span></span>
+<span class="lineno">  210 </span>    <span class="decl"><span class="istickedoff">domainOut (DomainInConstant dom) = return dom</span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">domainOut _ = <span class="nottickedoff">fail &quot;domainOut{Constant}&quot;</span></span></span>
 <span class="lineno">  212 </span>
 <span class="lineno">  213 </span>mkUndef :: Type -&gt; Doc -&gt; Constant
 <span class="lineno">  214 </span><span class="decl"><span class="istickedoff">mkUndef TypeBool _ = ConstantBool False</span>
@@ -240,7 +240,7 @@ span.spaces    { background: white }
 <span class="lineno">  221 </span>normaliseConstant :: Constant -&gt; Constant
 <span class="lineno">  222 </span><span class="decl"><span class="istickedoff">normaliseConstant x@ConstantBool{} = x</span>
 <span class="lineno">  223 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantInt{}  = x</span>
-<span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantEnum{} = <span class="nottickedoff">x</span></span>
+<span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantEnum{} = x</span>
 <span class="lineno">  225 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantField{} = x</span>
 <span class="lineno">  226 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant (ConstantAbstract x) = ConstantAbstract (normaliseAbsLit normaliseConstant x)</span>
 <span class="lineno">  227 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant (DomainInConstant d) = DomainInConstant (normaliseDomain normaliseConstant d)</span>
@@ -298,7 +298,7 @@ span.spaces    { background: white }
 <span class="lineno">  279 </span>
 <span class="lineno">  280 </span>viewConstantTuple     :: MonadFail m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  281 </span><span class="decl"><span class="istickedoff">viewConstantTuple     (ConstantAbstract (AbsLitTuple xs)) = return xs</span>
-<span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple     (TypedConstant c _) = <span class="nottickedoff">viewConstantTuple c</span></span>
+<span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple     (TypedConstant c _) = viewConstantTuple c</span>
 <span class="lineno">  283 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple    constant = fail <span class="nottickedoff">(&quot;Expecting a tuple, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  284 </span>
 <span class="lineno">  285 </span>viewConstantRecord    :: MonadFail m =&gt; Constant -&gt; m [(Name, Constant)]

@@ -178,13 +178,13 @@ span.spaces    { background: white }
 <span class="lineno">  159 </span><span class="spaces">            </span><span class="istickedoff">extract (viewConstantSet      -&gt; Just rows     ) = Just rows</span>
 <span class="lineno">  160 </span><span class="spaces">            </span><span class="istickedoff">extract (viewConstantMSet     -&gt; Just rows     ) = Just rows</span>
 <span class="lineno">  161 </span><span class="spaces">            </span><span class="istickedoff">extract (viewConstantFunction -&gt; Just rows     ) = Just (map snd rows)</span>
-<span class="lineno">  162 </span><span class="spaces">            </span><span class="istickedoff">extract (viewConstantSequence -&gt; Just rows     ) = <span class="nottickedoff">Just rows</span></span>
+<span class="lineno">  162 </span><span class="spaces">            </span><span class="istickedoff">extract (viewConstantSequence -&gt; Just rows     ) = Just rows</span>
 <span class="lineno">  163 </span><span class="spaces">            </span><span class="istickedoff">extract _ = Nothing</span>
 <span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  165 </span><span class="spaces">            </span><span class="istickedoff">isPrim :: Constant -&gt; Maybe Prim</span>
 <span class="lineno">  166 </span><span class="spaces">            </span><span class="istickedoff">isPrim (ConstantBool val) = Just (Left val)</span>
 <span class="lineno">  167 </span><span class="spaces">            </span><span class="istickedoff">isPrim (ConstantInt _ val) = Just (Right (Left val))</span>
-<span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">isPrim val@ConstantEnum{} = <span class="nottickedoff">Just (Right (Right val))</span></span>
+<span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">isPrim val@ConstantEnum{} = Just (Right (Right val))</span>
 <span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">isPrim _ = Nothing</span>
 <span class="lineno">  170 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  171 </span><span class="spaces">            </span><span class="istickedoff">isPrim1DT :: Constant -&gt; Maybe [Prim]</span>
@@ -214,12 +214,12 @@ span.spaces    { background: white }
 <span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">showPrim _ (Left True)  = &quot;T&quot;</span>
 <span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff">showPrim _ (Left False) = &quot;_&quot;</span>
 <span class="lineno">  197 </span><span class="spaces">            </span><span class="istickedoff">showPrim n (Right (Left  i)) = padLeft n ' ' (show i)</span>
-<span class="lineno">  198 </span><span class="spaces">            </span><span class="istickedoff">showPrim n (Right (Right i)) = <span class="nottickedoff">padRight n ' ' (show (pretty i))</span></span>
+<span class="lineno">  198 </span><span class="spaces">            </span><span class="istickedoff">showPrim n (Right (Right i)) = padRight n <span class="nottickedoff">' '</span> (show (pretty i))</span>
 <span class="lineno">  199 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff">maxIntWidth :: Data a =&gt; a -&gt; Int</span>
 <span class="lineno">  201 </span><span class="spaces">            </span><span class="istickedoff">maxIntWidth primTable =</span>
 <span class="lineno">  202 </span><span class="spaces">                </span><span class="istickedoff">maximum (0 : [ length (show i)          | i &lt;- universeBi primTable :: [Integer] ]</span>
-<span class="lineno">  203 </span><span class="spaces">                          </span><span class="istickedoff">++ [ <span class="nottickedoff">length (show (pretty i))</span> | i@ConstantEnum{} &lt;- universeBi primTable ])</span>
+<span class="lineno">  203 </span><span class="spaces">                          </span><span class="istickedoff">++ [ length (show (pretty i)) | i@ConstantEnum{} &lt;- universeBi primTable ])</span>
 <span class="lineno">  204 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  205 </span><span class="spaces">            </span><span class="istickedoff">comment1D :: Int -&gt;  [Prim] -&gt; String</span>
 <span class="lineno">  206 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">comment1D width primTable =</span></span>
@@ -591,7 +591,7 @@ span.spaces    { background: white }
 <span class="lineno">  572 </span>instance Serialize InBubble
 <span class="lineno">  573 </span>instance Hashable  InBubble
 <span class="lineno">  574 </span>instance ToJSON    InBubble where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  575 </span>instance FromJSON  InBubble where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  575 </span>instance FromJSON  InBubble where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  576 </span>
 <span class="lineno">  577 </span>
 <span class="lineno">  578 </span>------------------------------------------------------------------------------------------------------------------------

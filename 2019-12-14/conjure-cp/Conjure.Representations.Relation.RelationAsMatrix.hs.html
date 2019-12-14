@@ -31,7 +31,7 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>relationAsMatrix :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
-<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">relationAsMatrix = Representation chck downD structuralCons <span class="nottickedoff">downC</span> <span class="nottickedoff">up</span> symmetryOrdering</span>
+<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">relationAsMatrix = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up symmetryOrdering</span>
 <span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   18 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -140,46 +140,46 @@ span.spaces    { background: white }
 <span class="lineno">  121 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  122 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, domain@(DomainRelation Relation_AsMatrix _ innerDomains)) =</span></span>
-<span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case lookup (outName domain name) ctxt of</span></span>
-<span class="lineno">  127 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; fail $ vcat $</span></span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainRelation Relation_AsMatrix _ innerDomains)) =</span>
+<span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
+<span class="lineno">  127 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in RelationAsMatrix up)&quot;</span></span>
 <span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  132 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  133 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just constant -&gt; do</span></span>
-<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
-<span class="lineno">  136 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">allIndices :: (MonadFail m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span></span>
-<span class="lineno">  137 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">allIndices = fmap sequence . mapM domainValues</span></span>
-<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index :: MonadFail m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span></span>
-<span class="lineno">  140 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index m [] = return m</span></span>
-<span class="lineno">  141 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index (ConstantAbstract (AbsLitMatrix indexDomain vals)) (i:is) = do</span></span>
-<span class="lineno">  142 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">froms &lt;- domainValues indexDomain</span></span>
-<span class="lineno">  143 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">case lookup i (zip froms vals) of</span></span>
-<span class="lineno">  144 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; fail &quot;Value not found. RelationAsMatrix.up.index&quot;</span></span>
-<span class="lineno">  145 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Just v  -&gt; index v is</span></span>
-<span class="lineno">  146 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index m is = fail (&quot;RelationAsMatrix.up.index&quot; &lt;+&gt; pretty m &lt;+&gt; pretty (show is))</span></span>
-<span class="lineno">  147 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  148 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">indices  &lt;- allIndices innerDomains</span></span>
-<span class="lineno">  149 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">vals     &lt;- forM indices $ \ these -&gt; do</span></span>
-<span class="lineno">  150 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">indexed &lt;- index constant these</span></span>
-<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">case viewConstantBool indexed of</span></span>
-<span class="lineno">  152 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">Just False -&gt; return Nothing</span></span>
-<span class="lineno">  153 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">Just True  -&gt; return (Just these)</span></span>
-<span class="lineno">  154 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail $ vcat</span></span>
+<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt; do</span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff">let</span>
+<span class="lineno">  136 </span><span class="spaces">                        </span><span class="istickedoff">allIndices :: (MonadFail m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span>
+<span class="lineno">  137 </span><span class="spaces">                        </span><span class="istickedoff">allIndices = fmap sequence . mapM domainValues</span>
+<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff">index :: MonadFail m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span>
+<span class="lineno">  140 </span><span class="spaces">                        </span><span class="istickedoff">index m [] = return m</span>
+<span class="lineno">  141 </span><span class="spaces">                        </span><span class="istickedoff">index (ConstantAbstract (AbsLitMatrix indexDomain vals)) (i:is) = do</span>
+<span class="lineno">  142 </span><span class="spaces">                            </span><span class="istickedoff">froms &lt;- domainValues indexDomain</span>
+<span class="lineno">  143 </span><span class="spaces">                            </span><span class="istickedoff">case lookup i (zip froms vals) of</span>
+<span class="lineno">  144 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail &quot;Value not found. RelationAsMatrix.up.index&quot;</span></span>
+<span class="lineno">  145 </span><span class="spaces">                                </span><span class="istickedoff">Just v  -&gt; index v is</span>
+<span class="lineno">  146 </span><span class="spaces">                        </span><span class="istickedoff">index m is = <span class="nottickedoff">fail (&quot;RelationAsMatrix.up.index&quot; &lt;+&gt; pretty m &lt;+&gt; pretty (show is))</span></span>
+<span class="lineno">  147 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  148 </span><span class="spaces">                    </span><span class="istickedoff">indices  &lt;- allIndices innerDomains</span>
+<span class="lineno">  149 </span><span class="spaces">                    </span><span class="istickedoff">vals     &lt;- forM indices $ \ these -&gt; do</span>
+<span class="lineno">  150 </span><span class="spaces">                        </span><span class="istickedoff">indexed &lt;- index constant these</span>
+<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff">case viewConstantBool indexed of</span>
+<span class="lineno">  152 </span><span class="spaces">                            </span><span class="istickedoff">Just False -&gt; return Nothing</span>
+<span class="lineno">  153 </span><span class="spaces">                            </span><span class="istickedoff">Just True  -&gt; return (Just these)</span>
+<span class="lineno">  154 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
 <span class="lineno">  155 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a boolean literal, but got:&quot; &lt;++&gt; pretty indexed</span></span>
 <span class="lineno">  156 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  157 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  158 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  159 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  160 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return ( name</span></span>
-<span class="lineno">  161 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitRelation $ catMaybes vals</span></span>
-<span class="lineno">  162 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up _ (name, domain) = na $ vcat [ &quot;{up} RelationAsMatrix&quot;</span></span>
+<span class="lineno">  159 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  160 </span><span class="spaces">                    </span><span class="istickedoff">return ( <span class="nottickedoff">name</span></span>
+<span class="lineno">  161 </span><span class="spaces">                           </span><span class="istickedoff">, ConstantAbstract $ AbsLitRelation $ catMaybes vals</span>
+<span class="lineno">  162 </span><span class="spaces">                           </span><span class="istickedoff">)</span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff">up _ (name, domain) = <span class="nottickedoff">na $ vcat [ &quot;{up} RelationAsMatrix&quot;</span></span>
 <span class="lineno">  164 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;name:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  165 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  166 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
