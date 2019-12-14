@@ -167,7 +167,7 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff">return (TypeInt t)</span>
 <span class="lineno">  150 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainEnum    defn _ _ ) = return <span class="nottickedoff">(TypeEnum defn)</span></span>
-<span class="lineno">  151 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainUnnamed defn _   ) = <span class="nottickedoff">return (TypeUnnamed defn)</span></span>
+<span class="lineno">  151 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainUnnamed defn _   ) = return <span class="nottickedoff">(TypeUnnamed defn)</span></span>
 <span class="lineno">  152 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainTuple         xs ) = TypeTuple      &lt;$&gt; mapM typeOfDomain xs</span>
 <span class="lineno">  153 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainRecord        xs ) = TypeRecord     &lt;$&gt; sequence [ do t &lt;- typeOfDomain d ; return (n, t)</span>
 <span class="lineno">  154 </span><span class="spaces">                                                                     </span><span class="istickedoff">| (n,d) &lt;- xs ]</span>
@@ -415,10 +415,10 @@ span.spaces    { background: white }
 <span class="lineno">  396 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;regular&quot; = <span class="nottickedoff">AttrName_regular</span></span>
 <span class="lineno">  397 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;reflexive&quot; = AttrName_reflexive</span>
 <span class="lineno">  398 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;irreflexive&quot; = AttrName_irreflexive</span>
-<span class="lineno">  399 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;coreflexive&quot; = <span class="nottickedoff">AttrName_coreflexive</span></span>
+<span class="lineno">  399 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;coreflexive&quot; = AttrName_coreflexive</span>
 <span class="lineno">  400 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;symmetric&quot; = AttrName_symmetric</span>
-<span class="lineno">  401 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;antiSymmetric&quot; = <span class="nottickedoff">AttrName_antiSymmetric</span></span>
-<span class="lineno">  402 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;aSymmetric&quot; = <span class="nottickedoff">AttrName_aSymmetric</span></span>
+<span class="lineno">  401 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;antiSymmetric&quot; = AttrName_antiSymmetric</span>
+<span class="lineno">  402 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;aSymmetric&quot; = AttrName_aSymmetric</span>
 <span class="lineno">  403 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;transitive&quot; = AttrName_transitive</span>
 <span class="lineno">  404 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;connex&quot; = AttrName_connex</span>
 <span class="lineno">  405 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;Euclidean&quot; = AttrName_Euclidean</span>
@@ -569,11 +569,11 @@ span.spaces    { background: white }
 <span class="lineno">  550 </span>instance FromJSON  a =&gt; FromJSON  (SequenceAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  551 </span>instance Default (SequenceAttr a) where <span class="decl"><span class="nottickedoff">def = SequenceAttr def def</span></span>
 <span class="lineno">  552 </span>instance Pretty a =&gt; Pretty (SequenceAttr a) where
-<span class="lineno">  553 </span>    <span class="decl"><span class="nottickedoff">pretty (SequenceAttr a b) =</span>
-<span class="lineno">  554 </span><span class="spaces">        </span><span class="nottickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b]</span>
-<span class="lineno">  555 </span><span class="spaces">        </span><span class="nottickedoff">in  if null inside</span>
-<span class="lineno">  556 </span><span class="spaces">                </span><span class="nottickedoff">then prEmpty</span>
-<span class="lineno">  557 </span><span class="spaces">                </span><span class="nottickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  553 </span>    <span class="decl"><span class="istickedoff">pretty (SequenceAttr a b) =</span>
+<span class="lineno">  554 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b]</span>
+<span class="lineno">  555 </span><span class="spaces">        </span><span class="istickedoff">in  if <span class="tickonlyfalse">null inside</span></span>
+<span class="lineno">  556 </span><span class="spaces">                </span><span class="istickedoff">then <span class="nottickedoff">prEmpty</span></span>
+<span class="lineno">  557 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
 <span class="lineno">  558 </span>
 <span class="lineno">  559 </span>
 <span class="lineno">  560 </span>data RelationAttr a = RelationAttr (SizeAttr a) BinaryRelationAttrs
@@ -625,7 +625,7 @@ span.spaces    { background: white }
 <span class="lineno">  606 </span>instance Serialize BinaryRelationAttr
 <span class="lineno">  607 </span>instance Hashable  BinaryRelationAttr
 <span class="lineno">  608 </span>instance ToJSON    BinaryRelationAttr where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  609 </span>instance FromJSON  BinaryRelationAttr where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  609 </span>instance FromJSON  BinaryRelationAttr where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  610 </span>instance Pretty BinaryRelationAttr where
 <span class="lineno">  611 </span>    <span class="decl"><span class="istickedoff">pretty BinRelAttr_Reflexive     = &quot;reflexive&quot;</span>
 <span class="lineno">  612 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Irreflexive   = &quot;irreflexive&quot;</span>
@@ -658,19 +658,19 @@ span.spaces    { background: white }
 <span class="lineno">  639 </span><span class="spaces"></span><span class="istickedoff">readBinRel a = <span class="nottickedoff">fail $ &quot;Not a binary relation attribute:&quot; &lt;+&gt; pretty a</span></span></span>
 <span class="lineno">  640 </span>
 <span class="lineno">  641 </span>binRelToAttrName :: BinaryRelationAttr -&gt; AttrName
-<span class="lineno">  642 </span><span class="decl"><span class="nottickedoff">binRelToAttrName BinRelAttr_Reflexive       = AttrName_reflexive    </span>
-<span class="lineno">  643 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Irreflexive     = AttrName_irreflexive  </span>
-<span class="lineno">  644 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Coreflexive     = AttrName_coreflexive  </span>
-<span class="lineno">  645 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Symmetric       = AttrName_symmetric    </span>
-<span class="lineno">  646 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_AntiSymmetric   = AttrName_antiSymmetric</span>
-<span class="lineno">  647 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_ASymmetric      = AttrName_aSymmetric   </span>
-<span class="lineno">  648 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Transitive      = AttrName_transitive   </span>
-<span class="lineno">  649 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Total           = AttrName_total        </span>
-<span class="lineno">  650 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Connex          = AttrName_connex       </span>
-<span class="lineno">  651 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Euclidean       = AttrName_Euclidean    </span>
-<span class="lineno">  652 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Serial          = AttrName_serial       </span>
-<span class="lineno">  653 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_Equivalence     = AttrName_equivalence  </span>
-<span class="lineno">  654 </span><span class="spaces"></span><span class="nottickedoff">binRelToAttrName BinRelAttr_PartialOrder    = AttrName_partialOrder</span></span> 
+<span class="lineno">  642 </span><span class="decl"><span class="istickedoff">binRelToAttrName BinRelAttr_Reflexive       = <span class="nottickedoff">AttrName_reflexive</span>    </span>
+<span class="lineno">  643 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Irreflexive     = AttrName_irreflexive  </span>
+<span class="lineno">  644 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Coreflexive     = <span class="nottickedoff">AttrName_coreflexive</span>  </span>
+<span class="lineno">  645 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Symmetric       = AttrName_symmetric    </span>
+<span class="lineno">  646 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_AntiSymmetric   = <span class="nottickedoff">AttrName_antiSymmetric</span></span>
+<span class="lineno">  647 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_ASymmetric      = <span class="nottickedoff">AttrName_aSymmetric</span>   </span>
+<span class="lineno">  648 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Transitive      = <span class="nottickedoff">AttrName_transitive</span>   </span>
+<span class="lineno">  649 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Total           = <span class="nottickedoff">AttrName_total</span>        </span>
+<span class="lineno">  650 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Connex          = AttrName_connex       </span>
+<span class="lineno">  651 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Euclidean       = AttrName_Euclidean    </span>
+<span class="lineno">  652 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Serial          = AttrName_serial       </span>
+<span class="lineno">  653 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Equivalence     = AttrName_equivalence  </span>
+<span class="lineno">  654 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_PartialOrder    = AttrName_partialOrder</span></span> 
 <span class="lineno">  655 </span>
 <span class="lineno">  656 </span>-- reflexive        forAll x : T . rel(x,x)
 <span class="lineno">  657 </span>-- irreflexive      forAll x : T . !rel(x,x)
@@ -887,7 +887,7 @@ span.spaces    { background: white }
 <span class="lineno">  868 </span><span class="spaces">                </span><span class="istickedoff">&quot;--&gt;&quot; &lt;+&gt; pretty innerTo</span>
 <span class="lineno">  869 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  870 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSequence r attrs inner) =</span>
-<span class="lineno">  871 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">hang (&quot;sequence&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span></span>
+<span class="lineno">  871 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;sequence&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
 <span class="lineno">  872 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  873 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRelation r attrs inners)</span>
 <span class="lineno">  874 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;relation&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (prettyList prParens &quot; *&quot; inners)</span>
@@ -997,8 +997,8 @@ span.spaces    { background: white }
 <span class="lineno">  978 </span><span class="decl"><span class="istickedoff">normaliseDomain _norm DomainBool                  = DomainBool</span>
 <span class="lineno">  979 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainInt t rs           ) = DomainInt t $ sort $ map (normaliseRange norm) (expandRanges rs)</span>
 <span class="lineno">  980 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n Nothing   mp) = <span class="nottickedoff">DomainEnum n Nothing mp</span></span>
-<span class="lineno">  981 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n (Just rs) mp) = <span class="nottickedoff">DomainEnum n (Just $ sort rs) mp</span></span>
-<span class="lineno">  982 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainUnnamed n x        ) = <span class="nottickedoff">DomainUnnamed n (norm x)</span></span>
+<span class="lineno">  981 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n (Just rs) mp) = DomainEnum <span class="nottickedoff">n</span> (Just $ sort rs) mp</span>
+<span class="lineno">  982 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainUnnamed n x        ) = DomainUnnamed <span class="nottickedoff">n</span> (norm x)</span>
 <span class="lineno">  983 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRecord           doms     ) = DomainRecord  [ (n, normaliseDomain norm d)</span>
 <span class="lineno">  984 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
 <span class="lineno">  985 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainVariant          doms     ) = DomainVariant [ (n, normaliseDomain norm d)</span>
@@ -1019,7 +1019,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1000 </span><span class="spaces">                                                                             </span><span class="istickedoff">(map (normaliseDomain norm) doms)</span>
 <span class="lineno"> 1001 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainPartition r attr dom      ) = DomainPartition r (fmap norm attr)</span>
 <span class="lineno"> 1002 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
-<span class="lineno"> 1003 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm d = <span class="nottickedoff">d</span></span></span>
+<span class="lineno"> 1003 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm d = d</span></span>
 <span class="lineno"> 1004 </span>
 <span class="lineno"> 1005 </span>normaliseRange :: (c -&gt; c) -&gt; Range c -&gt; Range c
 <span class="lineno"> 1006 </span><span class="decl"><span class="istickedoff">normaliseRange _norm RangeOpen             = <span class="nottickedoff">RangeOpen</span></span>

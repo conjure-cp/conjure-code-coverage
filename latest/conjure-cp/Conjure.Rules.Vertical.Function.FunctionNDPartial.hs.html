@@ -105,7 +105,7 @@ span.spaces    { background: white }
 <span class="lineno">   86 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">   87 </span><span class="spaces">                </span><span class="istickedoff">let kRange = case innerDomainFr of</span>
 <span class="lineno">   88 </span><span class="spaces">                        </span><span class="istickedoff">DomainTuple ts  -&gt; map fromInt [1 .. genericLength ts]</span>
-<span class="lineno">   89 </span><span class="spaces">                        </span><span class="istickedoff">DomainRecord rs -&gt; <span class="nottickedoff">map (fromName . fst) rs</span></span>
+<span class="lineno">   89 </span><span class="spaces">                        </span><span class="istickedoff">DomainRecord rs -&gt; map (fromName . fst) rs</span>
 <span class="lineno">   90 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ vcat [ &quot;FunctionNDPartial.rule_Comprehension&quot;</span></span>
 <span class="lineno">   91 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;innerDomainFr:&quot; &lt;+&gt; pretty innerDomainFr</span></span>
 <span class="lineno">   92 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
