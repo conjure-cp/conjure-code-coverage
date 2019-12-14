@@ -1,0 +1,615 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>{-# LANGUAGE TypeFamilies #-}
+<span class="lineno">    3 </span>{-# LANGUAGE PolyKinds #-}
+<span class="lineno">    4 </span>{-# LANGUAGE Rank2Types #-}
+<span class="lineno">    5 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable #-}
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>module Conjure.Prelude
+<span class="lineno">    8 </span>    ( module X
+<span class="lineno">    9 </span>    , stringToDoc
+<span class="lineno">   10 </span>    , padRight, padLeft, padCenter
+<span class="lineno">   11 </span>    , pairWithContents
+<span class="lineno">   12 </span>    , withRest, withAfter, withBefore
+<span class="lineno">   13 </span>    , T.Text, stringToText, textToString
+<span class="lineno">   14 </span>    , sameLength
+<span class="lineno">   15 </span>    , concatMapM, concatForM
+<span class="lineno">   16 </span>    , timedIO, timedPutStrLn
+<span class="lineno">   17 </span>    , tick
+<span class="lineno">   18 </span>    , isLeft, isRight
+<span class="lineno">   19 </span>    , tracing
+<span class="lineno">   20 </span>    , allCombinations
+<span class="lineno">   21 </span>    , sortOn, sortNub
+<span class="lineno">   22 </span>    , maybeRead
+<span class="lineno">   23 </span>    , padShowInt
+<span class="lineno">   24 </span>    , decodeFromFile
+<span class="lineno">   25 </span>    , RandomM(..)
+<span class="lineno">   26 </span>    , fst3, snd3, thd3
+<span class="lineno">   27 </span>    , (|&gt;)
+<span class="lineno">   28 </span>    , allNats
+<span class="lineno">   29 </span>    , jsonOptions
+<span class="lineno">   30 </span>    , Proxy(..)
+<span class="lineno">   31 </span>    , MonadFail(..), failCheaply, na
+<span class="lineno">   32 </span>    , allContexts, ascendants
+<span class="lineno">   33 </span>    , dropExtension, dropDirs
+<span class="lineno">   34 </span>    , MonadLog(..), LogLevel(..), runLoggerPipeIO, ignoreLogs
+<span class="lineno">   35 </span>    , logInfo, logWarn, logDebug, logDebugVerbose
+<span class="lineno">   36 </span>    , histogram
+<span class="lineno">   37 </span>    , ExceptT(..)
+<span class="lineno">   38 </span>    , sh
+<span class="lineno">   39 </span>    , scope
+<span class="lineno">   40 </span>    , getAllDirs, getAllFiles, getAllFilesWithSuffix
+<span class="lineno">   41 </span>    , removeFileIfExists, readFileIfExists, removeDirectoryIfExists
+<span class="lineno">   42 </span>    , setRandomSeed, randomRIO
+<span class="lineno">   43 </span>    , nchoosek
+<span class="lineno">   44 </span>    , JSONValue
+<span class="lineno">   45 </span>    , isTopMostZ
+<span class="lineno">   46 </span>    , getDirectoryContents
+<span class="lineno">   47 </span>    ) where
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>import GHC.Err as X ( error )
+<span class="lineno">   50 </span>import GHC.Stack as X ( HasCallStack )
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>-- basic data types
+<span class="lineno">   53 </span>import Data.Bool as X ( Bool(..), (||), (&amp;&amp;), not, otherwise )
+<span class="lineno">   54 </span>import Data.Int as X ( Int )
+<span class="lineno">   55 </span>import GHC.Integer as X ( Integer )
+<span class="lineno">   56 </span>import GHC.Exts as X ( Double )
+<span class="lineno">   57 </span>import GHC.Real as X ( Fractional(..), Integral(..), fromIntegral, (^), Real(..) )
+<span class="lineno">   58 </span>import GHC.Enum as X ( Enum(..) )
+<span class="lineno">   59 </span>import Data.Char as X ( Char, toLower, isSpace )
+<span class="lineno">   60 </span>import Data.String as X ( String, IsString(..) )
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>-- basic type classes
+<span class="lineno">   63 </span>import Data.Eq as X ( Eq(..) )
+<span class="lineno">   64 </span>import Data.Ord as X ( Ord(..), Ordering(..), comparing )
+<span class="lineno">   65 </span>import Text.Show as X ( Show(..), showString, showParen )
+<span class="lineno">   66 </span>import Text.Read as X ( Read(..), reads )
+<span class="lineno">   67 </span>import GHC.Num as X ( Num(..) )
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>-- some more type classes
+<span class="lineno">   70 </span>import GHC.Generics as X ( Generic )
+<span class="lineno">   71 </span>import Data.Functor as X ( Functor(..) )
+<span class="lineno">   72 </span>import Control.Applicative as X ( Applicative(..), (&lt;$&gt;), (&lt;*), (*&gt;), (&lt;|&gt;), many, some, optional )
+<span class="lineno">   73 </span>import qualified Control.Monad ( fail )
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>import Control.Monad                as X ( Monad(return, (&gt;&gt;), (&gt;&gt;=))
+<span class="lineno">   76 </span>                                         , (&lt;=&lt;), (&gt;=&gt;), (=&lt;&lt;), ap, join
+<span class="lineno">   77 </span>                                         , guard, void, when, unless
+<span class="lineno">   78 </span>                                         , zipWithM, zipWithM_, foldM, filterM, replicateM
+<span class="lineno">   79 </span>                                         , MonadPlus(..), mzero, msum )
+<span class="lineno">   80 </span>import Control.Monad.Trans.Class    as X ( MonadTrans(lift) )
+<span class="lineno">   81 </span>import Control.Monad.Identity       as X ( Identity, runIdentity )
+<span class="lineno">   82 </span>import Control.Monad.IO.Class       as X ( MonadIO, liftIO )
+<span class="lineno">   83 </span>import Control.Monad.State.Strict   as X ( MonadState, StateT(..), get, gets, modify
+<span class="lineno">   84 </span>                                         , evalStateT, runStateT, evalState, runState )
+<span class="lineno">   85 </span>import Control.Monad.Trans.Identity as X ( IdentityT(..) )
+<span class="lineno">   86 </span>import Control.Monad.Trans.Maybe    as X ( MaybeT(..), runMaybeT )
+<span class="lineno">   87 </span>import Control.Monad.Writer.Strict  as X ( MonadWriter(listen, tell), WriterT(runWriterT), execWriterT, runWriter )
+<span class="lineno">   88 </span>import Control.Monad.Reader         as X ( MonadReader(ask), ReaderT(..), runReaderT, asks )
+<span class="lineno">   89 </span>import Control.Arrow                as X ( first, second, (***), (&amp;&amp;&amp;) )
+<span class="lineno">   90 </span>import Control.Category             as X ( (&lt;&lt;&lt;), (&gt;&gt;&gt;) )
+<span class="lineno">   91 </span>
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>import Data.Data         as X ( Data, Typeable )
+<span class="lineno">   94 </span>import Data.Default      as X ( Default, def )
+<span class="lineno">   95 </span>import Data.Either       as X ( Either(..), either, lefts, rights, partitionEithers )
+<span class="lineno">   96 </span>import Data.Function     as X ( id, const, flip, on, ($), (.) )
+<span class="lineno">   97 </span>import Data.List         as X ( (\\), intercalate, intersperse, minimumBy, nub, nubBy
+<span class="lineno">   98 </span>                              , group, groupBy, sort, sortBy
+<span class="lineno">   99 </span>                              , genericLength, genericIndex, genericTake
+<span class="lineno">  100 </span>                              , isSuffixOf, isPrefixOf, isInfixOf
+<span class="lineno">  101 </span>                              , stripPrefix
+<span class="lineno">  102 </span>                              , subsequences, transpose, elemIndex
+<span class="lineno">  103 </span>                              , replicate, length
+<span class="lineno">  104 </span>                              , (++), map, null, reverse, lookup, elem, unlines, words
+<span class="lineno">  105 </span>                              , zipWith, concatMap, lines, notElem, foldr
+<span class="lineno">  106 </span>                              , sum, product, unzip, zip, zip3, foldr1, foldl
+<span class="lineno">  107 </span>                              , unzip3, repeat, unwords, intersect
+<span class="lineno">  108 </span>                              , take, drop
+<span class="lineno">  109 </span>                              , takeWhile, dropWhile, span
+<span class="lineno">  110 </span>                              , head, init, tail, last
+<span class="lineno">  111 </span>                              , inits, tails
+<span class="lineno">  112 </span>                              , findIndex
+<span class="lineno">  113 </span>                              , filter, partition
+<span class="lineno">  114 </span>                              )
+<span class="lineno">  115 </span>import Data.List.Split   as X ( splitOn, chunksOf )
+<span class="lineno">  116 </span>import Data.Maybe        as X ( Maybe(..), catMaybes, listToMaybe, fromMaybe, maybe, maybeToList, mapMaybe
+<span class="lineno">  117 </span>                              , isNothing, isJust )
+<span class="lineno">  118 </span>import Data.Semigroup    as X ( Semigroup )
+<span class="lineno">  119 </span>import Data.Monoid       as X ( Monoid(mempty, mappend), mconcat, Any(..) )
+<span class="lineno">  120 </span>import Data.Tuple        as X ( fst, snd, swap, curry, uncurry )
+<span class="lineno">  121 </span>
+<span class="lineno">  122 </span>import Data.Foldable     as X ( Foldable, mapM_, forM_, sequence_, fold, foldMap, toList, maximum, minimum
+<span class="lineno">  123 </span>                              , and, or, all, any
+<span class="lineno">  124 </span>                              , concat
+<span class="lineno">  125 </span>                              )
+<span class="lineno">  126 </span>import Data.Traversable  as X ( Traversable, mapM, forM, sequence )
+<span class="lineno">  127 </span>
+<span class="lineno">  128 </span>import System.IO as X ( FilePath, IO, putStr, putStrLn, print, writeFile, appendFile, getLine )
+<span class="lineno">  129 </span>import System.IO.Error ( isDoesNotExistError )
+<span class="lineno">  130 </span>import Control.Exception as X ( catch, throwIO, SomeException )
+<span class="lineno">  131 </span>
+<span class="lineno">  132 </span>import Data.Proxy as X ( Proxy(..) )
+<span class="lineno">  133 </span>
+<span class="lineno">  134 </span>-- template-haskell
+<span class="lineno">  135 </span>import qualified Language.Haskell.TH as TH ( Q )
+<span class="lineno">  136 </span>
+<span class="lineno">  137 </span>-- safe
+<span class="lineno">  138 </span>import Safe as X ( at, atNote, atMay, readMay, readNote, headNote, fromJustNote )
+<span class="lineno">  139 </span>
+<span class="lineno">  140 </span>-- hashable
+<span class="lineno">  141 </span>import Data.Hashable as X ( Hashable(..), hash )
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>-- cereal
+<span class="lineno">  144 </span>import Data.Serialize as X ( Serialize, encode, decode )
+<span class="lineno">  145 </span>import qualified Data.Serialize
+<span class="lineno">  146 </span>
+<span class="lineno">  147 </span>-- aeson
+<span class="lineno">  148 </span>import Data.Aeson as X ( ToJSON(..), FromJSON(..), genericToJSON, genericParseJSON )
+<span class="lineno">  149 </span>import qualified Data.Aeson.Types as JSON
+<span class="lineno">  150 </span>
+<span class="lineno">  151 </span>-- QuickCheck
+<span class="lineno">  152 </span>import Test.QuickCheck ( Gen )
+<span class="lineno">  153 </span>
+<span class="lineno">  154 </span>-- megaparsec
+<span class="lineno">  155 </span>import Text.Megaparsec.Prim ( ParsecT )
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>-- pretty
+<span class="lineno">  158 </span>import Text.PrettyPrint as X
+<span class="lineno">  159 </span>    ( Doc
+<span class="lineno">  160 </span>    , (&lt;&gt;), (&lt;+&gt;), ($$)
+<span class="lineno">  161 </span>    , hang, nest, punctuate
+<span class="lineno">  162 </span>    , hcat, vcat, fsep, hsep, sep
+<span class="lineno">  163 </span>    )
+<span class="lineno">  164 </span>
+<span class="lineno">  165 </span>-- uniplate
+<span class="lineno">  166 </span>import Data.Generics.Uniplate.Data as X
+<span class="lineno">  167 </span>    ( transform, transformBi
+<span class="lineno">  168 </span>    , transformM, transformBiM
+<span class="lineno">  169 </span>    , descend, descendM
+<span class="lineno">  170 </span>    , descendBi, descendBiM
+<span class="lineno">  171 </span>    , universe, universeBi
+<span class="lineno">  172 </span>    , children, childrenBi
+<span class="lineno">  173 </span>    , uniplate
+<span class="lineno">  174 </span>    )
+<span class="lineno">  175 </span>import Data.Generics.Uniplate.Zipper as Zipper ( Zipper, down, right, up, hole )
+<span class="lineno">  176 </span>
+<span class="lineno">  177 </span>-- pipes
+<span class="lineno">  178 </span>import qualified Pipes
+<span class="lineno">  179 </span>
+<span class="lineno">  180 </span>-- shelly
+<span class="lineno">  181 </span>import Shelly ( Sh, shelly, print_stdout, print_stderr )
+<span class="lineno">  182 </span>
+<span class="lineno">  183 </span>-- ansi-terminal
+<span class="lineno">  184 </span>import System.Console.ANSI ( clearScreen, setCursorPosition )
+<span class="lineno">  185 </span>
+<span class="lineno">  186 </span>import System.Random ( StdGen, mkStdGen, setStdGen, randomRIO )
+<span class="lineno">  187 </span>
+<span class="lineno">  188 </span>import qualified Data.ByteString as ByteString
+<span class="lineno">  189 </span>import qualified Data.Text as T
+<span class="lineno">  190 </span>import qualified Data.Text.IO as T
+<span class="lineno">  191 </span>import qualified Text.PrettyPrint as Pr
+<span class="lineno">  192 </span>
+<span class="lineno">  193 </span>-- containers
+<span class="lineno">  194 </span>import qualified Data.Set as S
+<span class="lineno">  195 </span>
+<span class="lineno">  196 </span>-- strict
+<span class="lineno">  197 </span>import System.IO.Strict ( readFile )
+<span class="lineno">  198 </span>
+<span class="lineno">  199 </span>import System.Directory as X
+<span class="lineno">  200 </span>    ( doesDirectoryExist, doesFileExist
+<span class="lineno">  201 </span>    , createDirectoryIfMissing
+<span class="lineno">  202 </span>    )
+<span class="lineno">  203 </span>import System.Directory ( removeDirectoryRecursive, removeFile )
+<span class="lineno">  204 </span>import qualified System.Directory ( getDirectoryContents )
+<span class="lineno">  205 </span>import System.Environment as X ( getArgs )
+<span class="lineno">  206 </span>import System.FilePath as X ( (&lt;/&gt;) )
+<span class="lineno">  207 </span>import System.CPUTime ( getCPUTime )
+<span class="lineno">  208 </span>
+<span class="lineno">  209 </span>-- time
+<span class="lineno">  210 </span>import Data.Time.Clock ( getCurrentTime )
+<span class="lineno">  211 </span>
+<span class="lineno">  212 </span>import Debug.Trace as X ( trace, traceM )
+<span class="lineno">  213 </span>
+<span class="lineno">  214 </span>tracing :: Show a =&gt; String -&gt; a -&gt; a
+<span class="lineno">  215 </span><span class="decl"><span class="nottickedoff">tracing s a = trace (&quot;tracing &quot; ++ s ++ &quot;: &quot; ++ show a) a</span></span>
+<span class="lineno">  216 </span>
+<span class="lineno">  217 </span>stringToText :: String -&gt; T.Text
+<span class="lineno">  218 </span><span class="decl"><span class="istickedoff">stringToText = T.pack</span></span>
+<span class="lineno">  219 </span>
+<span class="lineno">  220 </span>textToString :: T.Text -&gt; String
+<span class="lineno">  221 </span><span class="decl"><span class="istickedoff">textToString = T.unpack</span></span>
+<span class="lineno">  222 </span>
+<span class="lineno">  223 </span>stringToDoc :: String -&gt; Doc
+<span class="lineno">  224 </span><span class="decl"><span class="istickedoff">stringToDoc = Pr.text</span></span>
+<span class="lineno">  225 </span>
+<span class="lineno">  226 </span>padRight :: Int -&gt; Char -&gt; String -&gt; String
+<span class="lineno">  227 </span><span class="decl"><span class="nottickedoff">padRight n ch s = s ++ replicate (n - length s) ch</span></span>
+<span class="lineno">  228 </span>
+<span class="lineno">  229 </span>padLeft :: Int -&gt; Char -&gt; String -&gt; String
+<span class="lineno">  230 </span><span class="decl"><span class="istickedoff">padLeft n ch s = replicate (n - length s) ch ++ s</span></span>
+<span class="lineno">  231 </span>
+<span class="lineno">  232 </span>padCenter :: Int -&gt; Char -&gt; String -&gt; String
+<span class="lineno">  233 </span><span class="decl"><span class="nottickedoff">padCenter n ch s = replicate (div diff 2) ch ++ s ++ replicate (diff - div diff 2) ch</span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="nottickedoff">diff = n - length s</span></span>
+<span class="lineno">  236 </span>
+<span class="lineno">  237 </span>pairWithContents :: FilePath -&gt; IO (FilePath, T.Text)
+<span class="lineno">  238 </span><span class="decl"><span class="istickedoff">pairWithContents fp = do</span>
+<span class="lineno">  239 </span><span class="spaces">    </span><span class="istickedoff">con &lt;- T.readFile fp</span>
+<span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">return (fp,con)</span></span>
+<span class="lineno">  241 </span>
+<span class="lineno">  242 </span>-- the fst component: generate a list yielding the elements of the input list in order
+<span class="lineno">  243 </span>-- the snd component: is all those elements except the fst.
+<span class="lineno">  244 </span>withRest :: [a] -&gt; [(a,[a])]
+<span class="lineno">  245 </span><span class="decl"><span class="nottickedoff">withRest [] = []</span>
+<span class="lineno">  246 </span><span class="spaces"></span><span class="nottickedoff">withRest (x:xs) = (x,xs) : map (second (x:)) (withRest xs)</span></span>
+<span class="lineno">  247 </span>
+<span class="lineno">  248 </span>-- generate a list yielding the elements of the input list in order in the fst component.
+<span class="lineno">  249 </span>-- the snd component is all those elements to the right of fst.
+<span class="lineno">  250 </span>withAfter :: [a] -&gt; [(a,[a])]
+<span class="lineno">  251 </span><span class="decl"><span class="istickedoff">withAfter [] = []</span>
+<span class="lineno">  252 </span><span class="spaces"></span><span class="istickedoff">withAfter (x:xs) = (x,xs) : withAfter xs</span></span>
+<span class="lineno">  253 </span>
+<span class="lineno">  254 </span>-- generate a list yielding the elements of the input list in order in the fst component.
+<span class="lineno">  255 </span>-- the snd component is all those elements to the left of fst.
+<span class="lineno">  256 </span>withBefore :: [a] -&gt; [(a,[a])]
+<span class="lineno">  257 </span><span class="decl"><span class="nottickedoff">withBefore = reverse . withAfter . reverse</span></span>
+<span class="lineno">  258 </span>
+<span class="lineno">  259 </span>
+<span class="lineno">  260 </span>sameLength :: [a] -&gt; [b] -&gt; Bool
+<span class="lineno">  261 </span><span class="decl"><span class="nottickedoff">sameLength [] [] = True</span>
+<span class="lineno">  262 </span><span class="spaces"></span><span class="nottickedoff">sameLength (_:xs) (_:ys) = sameLength xs ys</span>
+<span class="lineno">  263 </span><span class="spaces"></span><span class="nottickedoff">sameLength _ _ = False</span></span>
+<span class="lineno">  264 </span>
+<span class="lineno">  265 </span>concatMapM :: (Functor m, Monad m) =&gt; (a -&gt; m [b]) -&gt; [a] -&gt; m [b]
+<span class="lineno">  266 </span><span class="decl"><span class="istickedoff">concatMapM f xs = concat &lt;$&gt; mapM f xs</span></span>
+<span class="lineno">  267 </span>
+<span class="lineno">  268 </span>concatForM :: (Functor m, Monad m) =&gt; [a] -&gt; (a -&gt; m [b]) -&gt; m [b]
+<span class="lineno">  269 </span><span class="decl"><span class="istickedoff">concatForM f xs = concatMapM xs f</span></span>
+<span class="lineno">  270 </span>
+<span class="lineno">  271 </span>timedIO :: IO a -&gt; IO (a, Double)
+<span class="lineno">  272 </span><span class="decl"><span class="nottickedoff">timedIO io = do</span>
+<span class="lineno">  273 </span><span class="spaces">    </span><span class="nottickedoff">start &lt;- getCPUTime</span>
+<span class="lineno">  274 </span><span class="spaces">    </span><span class="nottickedoff">a &lt;- io</span>
+<span class="lineno">  275 </span><span class="spaces">    </span><span class="nottickedoff">end   &lt;- getCPUTime</span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="nottickedoff">let diff = fromIntegral (end - start) / ((10 :: Double) ^ (12 :: Int))</span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="nottickedoff">return (a, diff)</span></span>
+<span class="lineno">  278 </span>
+<span class="lineno">  279 </span>tick :: MonadIO m =&gt; Doc -&gt; m ()
+<span class="lineno">  280 </span><span class="decl"><span class="nottickedoff">tick msg = do</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="nottickedoff">time &lt;- liftIO getCPUTime</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="nottickedoff">let seconds = fromIntegral time / ((10 :: Double) ^ (12 :: Int))</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="nottickedoff">traceM $ show seconds ++ &quot;\t&quot; ++ show msg</span></span>
+<span class="lineno">  284 </span>
+<span class="lineno">  285 </span>timedPutStrLn :: String -&gt; IO ()
+<span class="lineno">  286 </span><span class="decl"><span class="nottickedoff">timedPutStrLn str = do</span>
+<span class="lineno">  287 </span><span class="spaces">    </span><span class="nottickedoff">t &lt;- getCurrentTime</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="nottickedoff">putStrLn (unwords [show t, str])</span></span>
+<span class="lineno">  289 </span>
+<span class="lineno">  290 </span>isLeft :: Either a b -&gt; Bool
+<span class="lineno">  291 </span><span class="decl"><span class="nottickedoff">isLeft Left{} = True</span>
+<span class="lineno">  292 </span><span class="spaces"></span><span class="nottickedoff">isLeft _      = False</span></span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>isRight :: Either a b -&gt; Bool
+<span class="lineno">  295 </span><span class="decl"><span class="nottickedoff">isRight Right{} = True</span>
+<span class="lineno">  296 </span><span class="spaces"></span><span class="nottickedoff">isRight _       = False</span></span>
+<span class="lineno">  297 </span>
+<span class="lineno">  298 </span>allCombinations :: [(a,[b])] -&gt; [[(a,b)]]
+<span class="lineno">  299 </span><span class="decl"><span class="nottickedoff">allCombinations [] = [[]]</span>
+<span class="lineno">  300 </span><span class="spaces"></span><span class="nottickedoff">allCombinations ((x,ys):qs) = concat [ [ (x,y) : ws | y &lt;- ys ] | ws &lt;- allCombinations qs ]</span></span>
+<span class="lineno">  301 </span>
+<span class="lineno">  302 </span>sortOn :: Ord b =&gt; (a -&gt; b) -&gt; [a] -&gt; [a]
+<span class="lineno">  303 </span><span class="decl"><span class="istickedoff">sortOn f = sortBy (comparing f)</span></span>
+<span class="lineno">  304 </span>
+<span class="lineno">  305 </span>sortNub :: Ord a =&gt; [a] -&gt; [a]
+<span class="lineno">  306 </span><span class="decl"><span class="istickedoff">sortNub = S.toList . S.fromList</span></span>
+<span class="lineno">  307 </span>
+<span class="lineno">  308 </span>
+<span class="lineno">  309 </span>instance Serialize T.Text where
+<span class="lineno">  310 </span>    <span class="decl"><span class="nottickedoff">put = Data.Serialize.put . T.unpack</span></span>
+<span class="lineno">  311 </span>    <span class="decl"><span class="nottickedoff">get = T.pack &lt;$&gt; Data.Serialize.get</span></span>
+<span class="lineno">  312 </span>
+<span class="lineno">  313 </span>maybeRead :: Read a =&gt; String -&gt; Maybe a
+<span class="lineno">  314 </span><span class="decl"><span class="nottickedoff">maybeRead = fmap fst . listToMaybe . reads</span></span>
+<span class="lineno">  315 </span>
+<span class="lineno">  316 </span>padShowInt :: Show a =&gt; Int -&gt; a -&gt; String
+<span class="lineno">  317 </span><span class="decl"><span class="nottickedoff">padShowInt n i = let s = show i in replicate (n - length s) '0' ++ s</span></span>
+<span class="lineno">  318 </span>
+<span class="lineno">  319 </span>decodeFromFile :: (Serialize a, MonadFail IO) =&gt; FilePath -&gt; IO a
+<span class="lineno">  320 </span><span class="decl"><span class="nottickedoff">decodeFromFile path = do</span>
+<span class="lineno">  321 </span><span class="spaces">    </span><span class="nottickedoff">con &lt;- ByteString.readFile path</span>
+<span class="lineno">  322 </span><span class="spaces">    </span><span class="nottickedoff">either (fail . stringToDoc) return (decode con)</span></span>
+<span class="lineno">  323 </span>
+<span class="lineno">  324 </span>class Monad m =&gt; RandomM m where
+<span class="lineno">  325 </span>    get_stdgen :: m StdGen
+<span class="lineno">  326 </span>    set_stdgen :: StdGen -&gt; m ()
+<span class="lineno">  327 </span>
+<span class="lineno">  328 </span>
+<span class="lineno">  329 </span>fst3 :: (a,b,c) -&gt; a
+<span class="lineno">  330 </span><span class="decl"><span class="istickedoff">fst3 (a,_,_) = a</span></span>
+<span class="lineno">  331 </span>
+<span class="lineno">  332 </span>snd3 :: (a,b,c) -&gt; b
+<span class="lineno">  333 </span><span class="decl"><span class="istickedoff">snd3 (_,b,_) = b</span></span>
+<span class="lineno">  334 </span>
+<span class="lineno">  335 </span>thd3 :: (a,b,c) -&gt; c
+<span class="lineno">  336 </span><span class="decl"><span class="istickedoff">thd3 (_,_,c) = c</span></span>
+<span class="lineno">  337 </span>
+<span class="lineno">  338 </span>(|&gt;) :: a -&gt; (a -&gt; b) -&gt; b
+<span class="lineno">  339 </span><span class="decl"><span class="istickedoff">(|&gt;) = flip ($)</span></span>
+<span class="lineno">  340 </span>
+<span class="lineno">  341 </span>allNats :: [Integer]
+<span class="lineno">  342 </span><span class="decl"><span class="istickedoff">allNats = [1..]</span></span>
+<span class="lineno">  343 </span>
+<span class="lineno">  344 </span>
+<span class="lineno">  345 </span>jsonOptions :: JSON.Options
+<span class="lineno">  346 </span><span class="decl"><span class="istickedoff">jsonOptions = JSON.defaultOptions</span>
+<span class="lineno">  347 </span><span class="spaces">    </span><span class="istickedoff">{ JSON.allNullaryToStringTag = True</span>
+<span class="lineno">  348 </span><span class="spaces">    </span><span class="istickedoff">, JSON.omitNothingFields = <span class="nottickedoff">True</span></span>
+<span class="lineno">  349 </span><span class="spaces">    </span><span class="istickedoff">, JSON.sumEncoding = JSON.ObjectWithSingleField</span>
+<span class="lineno">  350 </span><span class="spaces">    </span><span class="istickedoff">}</span></span>
+<span class="lineno">  351 </span>
+<span class="lineno">  352 </span>
+<span class="lineno">  353 </span>class (Functor m, Applicative m, Monad m) =&gt; MonadFail m where
+<span class="lineno">  354 </span>    fail :: Doc -&gt; m a
+<span class="lineno">  355 </span>
+<span class="lineno">  356 </span>na :: MonadFail m =&gt; Doc -&gt; m a
+<span class="lineno">  357 </span><span class="decl"><span class="istickedoff">na message = fail (&quot;N/A:&quot; &lt;+&gt; message)</span></span>
+<span class="lineno">  358 </span>
+<span class="lineno">  359 </span>instance MonadFail Identity where
+<span class="lineno">  360 </span>    <span class="decl"><span class="nottickedoff">fail = Control.Monad.fail . show</span></span>
+<span class="lineno">  361 </span>
+<span class="lineno">  362 </span>instance MonadFail Maybe where
+<span class="lineno">  363 </span>    <span class="decl"><span class="istickedoff">fail = const Nothing</span></span>
+<span class="lineno">  364 </span>
+<span class="lineno">  365 </span>instance (a ~ Doc) =&gt; MonadFail (Either a) where
+<span class="lineno">  366 </span>    <span class="decl"><span class="istickedoff">fail = Left</span></span>
+<span class="lineno">  367 </span>
+<span class="lineno">  368 </span>instance MonadFail m =&gt; MonadFail (IdentityT m) where
+<span class="lineno">  369 </span>    <span class="decl"><span class="istickedoff">fail = lift . fail</span></span>
+<span class="lineno">  370 </span>
+<span class="lineno">  371 </span>instance (Functor m, Monad m) =&gt; MonadFail (MaybeT m) where
+<span class="lineno">  372 </span>    <span class="decl"><span class="istickedoff">fail = const $ MaybeT $ return Nothing</span></span>
+<span class="lineno">  373 </span>
+<span class="lineno">  374 </span>instance (Functor m, Monad m) =&gt; MonadFail (ExceptT m) where
+<span class="lineno">  375 </span>    <span class="decl"><span class="istickedoff">fail = ExceptT . return . Left</span></span>
+<span class="lineno">  376 </span>
+<span class="lineno">  377 </span>instance (Functor m, Monad m, MonadFail m) =&gt; MonadFail (StateT st m) where
+<span class="lineno">  378 </span>    <span class="decl"><span class="istickedoff">fail = lift . fail</span></span>
+<span class="lineno">  379 </span>
+<span class="lineno">  380 </span>instance (MonadFail m, Monoid w) =&gt; MonadFail (WriterT w m) where
+<span class="lineno">  381 </span>    <span class="decl"><span class="istickedoff">fail = lift . fail</span></span>
+<span class="lineno">  382 </span>
+<span class="lineno">  383 </span>instance MonadFail m =&gt; MonadFail (ReaderT r m) where
+<span class="lineno">  384 </span>    <span class="decl"><span class="istickedoff">fail = lift . fail</span></span>
+<span class="lineno">  385 </span>
+<span class="lineno">  386 </span>instance MonadFail Gen where
+<span class="lineno">  387 </span>    <span class="decl"><span class="nottickedoff">fail = Control.Monad.fail . show</span></span>
+<span class="lineno">  388 </span>
+<span class="lineno">  389 </span>instance MonadFail (ParsecT l m) where
+<span class="lineno">  390 </span>    <span class="decl"><span class="istickedoff">fail = Control.Monad.fail . show</span></span>
+<span class="lineno">  391 </span>
+<span class="lineno">  392 </span>instance MonadFail m =&gt; MonadFail (Pipes.Proxy a b c d m) where
+<span class="lineno">  393 </span>    <span class="decl"><span class="nottickedoff">fail = lift . fail</span></span>
+<span class="lineno">  394 </span>
+<span class="lineno">  395 </span>instance MonadFail TH.Q where
+<span class="lineno">  396 </span>    <span class="decl"><span class="nottickedoff">fail = Control.Monad.fail . show</span></span>
+<span class="lineno">  397 </span>
+<span class="lineno">  398 </span>
+<span class="lineno">  399 </span>newtype ExceptT m a = ExceptT { <span class="istickedoff"><span class="decl"><span class="istickedoff">runExceptT</span></span></span> :: m (Either Doc a) }
+<span class="lineno">  400 </span>
+<span class="lineno">  401 </span>instance (Functor m) =&gt; Functor (ExceptT m) where
+<span class="lineno">  402 </span>    <span class="decl"><span class="istickedoff">fmap f = ExceptT . fmap (fmap f) . runExceptT</span></span>
+<span class="lineno">  403 </span>
+<span class="lineno">  404 </span>instance (Functor m, Monad m) =&gt; Applicative (ExceptT m) where
+<span class="lineno">  405 </span>    <span class="decl"><span class="istickedoff">pure = return</span></span>
+<span class="lineno">  406 </span>    <span class="decl"><span class="istickedoff">(&lt;*&gt;) = ap</span></span>
+<span class="lineno">  407 </span>
+<span class="lineno">  408 </span>instance (Monad m) =&gt; Monad (ExceptT m) where
+<span class="lineno">  409 </span>    <span class="decl"><span class="istickedoff">return a = ExceptT $ return (Right a)</span></span>
+<span class="lineno">  410 </span>    <span class="decl"><span class="istickedoff">m &gt;&gt;= k = ExceptT $ do</span>
+<span class="lineno">  411 </span><span class="spaces">        </span><span class="istickedoff">a &lt;- runExceptT m</span>
+<span class="lineno">  412 </span><span class="spaces">        </span><span class="istickedoff">case a of</span>
+<span class="lineno">  413 </span><span class="spaces">            </span><span class="istickedoff">Left e -&gt; return (Left e)</span>
+<span class="lineno">  414 </span><span class="spaces">            </span><span class="istickedoff">Right x -&gt; runExceptT (k x)</span></span>
+<span class="lineno">  415 </span>    <span class="decl"><span class="istickedoff">fail = ExceptT . return . Left . stringToDoc</span></span>
+<span class="lineno">  416 </span>
+<span class="lineno">  417 </span>instance MonadIO m =&gt; MonadIO (ExceptT m) where
+<span class="lineno">  418 </span>    <span class="decl"><span class="nottickedoff">liftIO comp = ExceptT $ do</span>
+<span class="lineno">  419 </span><span class="spaces">        </span><span class="nottickedoff">res &lt;- liftIO comp</span>
+<span class="lineno">  420 </span><span class="spaces">        </span><span class="nottickedoff">return (Right res)</span></span>
+<span class="lineno">  421 </span>
+<span class="lineno">  422 </span>instance MonadTrans ExceptT where
+<span class="lineno">  423 </span>    <span class="decl"><span class="istickedoff">lift comp = ExceptT $ do</span>
+<span class="lineno">  424 </span><span class="spaces">        </span><span class="istickedoff">res &lt;- comp</span>
+<span class="lineno">  425 </span><span class="spaces">        </span><span class="istickedoff">return (Right res)</span></span>
+<span class="lineno">  426 </span>
+<span class="lineno">  427 </span>-- | &quot;failCheaply: premature optimisation at its finest.&quot; - Oz
+<span class="lineno">  428 </span>--   If you have a (MonadFail m =&gt; m a) action at hand which doesn't require anything else from the monad m,
+<span class="lineno">  429 </span>--   it can be run in any monad that implements MonadFail.
+<span class="lineno">  430 </span>--   Running it in a monad like IO will be a little bit more expensive though.
+<span class="lineno">  431 </span>--   Why not run it in Either and raise the error in the outer monad instead?
+<span class="lineno">  432 </span>--   Notice: this function cannot be eta-reduced.
+<span class="lineno">  433 </span>failCheaply :: MonadFail m2 =&gt; (forall m . MonadFail m =&gt; m a) -&gt; m2 a
+<span class="lineno">  434 </span><span class="decl"><span class="nottickedoff">failCheaply m = either fail return m</span></span>
+<span class="lineno">  435 </span>
+<span class="lineno">  436 </span>
+<span class="lineno">  437 </span>allContexts :: Data b =&gt; Zipper a b -&gt; [Zipper a b]
+<span class="lineno">  438 </span><span class="decl"><span class="nottickedoff">allContexts z0 = concatMap subtreeOf (allSiblings z0)</span>
+<span class="lineno">  439 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  440 </span><span class="spaces">        </span><span class="nottickedoff">-- the input has to be the left most</span>
+<span class="lineno">  441 </span><span class="spaces">        </span><span class="nottickedoff">allSiblings :: Zipper a b -&gt; [Zipper a b]</span>
+<span class="lineno">  442 </span><span class="spaces">        </span><span class="nottickedoff">allSiblings z = z : maybe [] allSiblings (right z)</span>
+<span class="lineno">  443 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  444 </span><span class="spaces">        </span><span class="nottickedoff">subtreeOf :: Data b =&gt; Zipper a b -&gt; [Zipper a b]</span>
+<span class="lineno">  445 </span><span class="spaces">        </span><span class="nottickedoff">subtreeOf z = z : maybe [] allContexts (down z)</span></span>
+<span class="lineno">  446 </span>
+<span class="lineno">  447 </span>ascendants :: Zipper a b -&gt; [b]
+<span class="lineno">  448 </span><span class="decl"><span class="nottickedoff">ascendants z = hole z : maybe [] ascendants (Zipper.up z)</span></span>
+<span class="lineno">  449 </span>
+<span class="lineno">  450 </span>
+<span class="lineno">  451 </span>-- | splits from the &quot;.&quot;s, drops the last component, glues back together what's left
+<span class="lineno">  452 </span>dropExtension :: FilePath -&gt; FilePath
+<span class="lineno">  453 </span><span class="decl"><span class="istickedoff">dropExtension = intercalate <span class="nottickedoff">&quot;.&quot;</span> . init . splitOn &quot;.&quot;</span></span>
+<span class="lineno">  454 </span>
+<span class="lineno">  455 </span>-- | splits from the &quot;/&quot;s, drops all but last component, returns what's left
+<span class="lineno">  456 </span>dropDirs :: FilePath -&gt; FilePath
+<span class="lineno">  457 </span><span class="decl"><span class="nottickedoff">dropDirs = last . splitOn &quot;/&quot;</span></span>
+<span class="lineno">  458 </span>
+<span class="lineno">  459 </span>
+<span class="lineno">  460 </span>class (Functor m, Applicative m, Monad m) =&gt; MonadLog m where
+<span class="lineno">  461 </span>    log :: LogLevel -&gt; Doc -&gt; m ()
+<span class="lineno">  462 </span>
+<span class="lineno">  463 </span>data LogLevel
+<span class="lineno">  464 </span>    = LogNone
+<span class="lineno">  465 </span>    | LogInfo
+<span class="lineno">  466 </span>    | LogFollow
+<span class="lineno">  467 </span>    | LogWarn
+<span class="lineno">  468 </span>    | LogDebug
+<span class="lineno">  469 </span>    | LogDebugVerbose
+<span class="lineno">  470 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Read</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  471 </span>
+<span class="lineno">  472 </span>instance Serialize LogLevel
+<span class="lineno">  473 </span>instance Hashable  LogLevel
+<span class="lineno">  474 </span>instance ToJSON    LogLevel where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  475 </span>instance FromJSON  LogLevel where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  476 </span>
+<span class="lineno">  477 </span>instance Default LogLevel where <span class="decl"><span class="istickedoff">def = LogInfo</span></span>
+<span class="lineno">  478 </span>
+<span class="lineno">  479 </span>logInfo :: MonadLog m =&gt; Doc -&gt; m ()
+<span class="lineno">  480 </span><span class="decl"><span class="nottickedoff">logInfo = log LogInfo</span></span>
+<span class="lineno">  481 </span>
+<span class="lineno">  482 </span>logWarn :: MonadLog m =&gt; Doc -&gt; m ()
+<span class="lineno">  483 </span><span class="decl"><span class="nottickedoff">logWarn = log LogWarn</span></span>
+<span class="lineno">  484 </span>
+<span class="lineno">  485 </span>logDebug :: MonadLog m =&gt; Doc -&gt; m ()
+<span class="lineno">  486 </span><span class="decl"><span class="istickedoff">logDebug = log <span class="nottickedoff">LogDebug</span></span></span>
+<span class="lineno">  487 </span>
+<span class="lineno">  488 </span>logDebugVerbose :: MonadLog m =&gt; Doc -&gt; m ()
+<span class="lineno">  489 </span><span class="decl"><span class="istickedoff">logDebugVerbose = log <span class="nottickedoff">LogDebugVerbose</span></span></span>
+<span class="lineno">  490 </span>
+<span class="lineno">  491 </span>instance MonadLog m =&gt; MonadLog (ReaderT r m) where
+<span class="lineno">  492 </span>    <span class="decl"><span class="nottickedoff">log l m = lift (log l m)</span></span>
+<span class="lineno">  493 </span>
+<span class="lineno">  494 </span>instance (MonadLog m, Monoid w) =&gt; MonadLog (WriterT w m) where
+<span class="lineno">  495 </span>    <span class="decl"><span class="nottickedoff">log l m = lift (log l m)</span></span>
+<span class="lineno">  496 </span>
+<span class="lineno">  497 </span>instance MonadLog m =&gt; MonadLog (StateT st m) where
+<span class="lineno">  498 </span>    <span class="decl"><span class="istickedoff">log l m = lift (log <span class="nottickedoff">l</span> <span class="nottickedoff">m</span>)</span></span>
+<span class="lineno">  499 </span>
+<span class="lineno">  500 </span>instance MonadLog m =&gt; MonadLog (ExceptT m) where
+<span class="lineno">  501 </span>    <span class="decl"><span class="nottickedoff">log l m = log l m &gt;&gt; ExceptT (return (Right ()))</span></span>
+<span class="lineno">  502 </span>
+<span class="lineno">  503 </span>instance (Applicative m, Monad m) =&gt; MonadLog (IdentityT m) where
+<span class="lineno">  504 </span>    <span class="decl"><span class="istickedoff">log _ _ = return <span class="nottickedoff">()</span></span></span>
+<span class="lineno">  505 </span>
+<span class="lineno">  506 </span>instance Monad m =&gt; MonadLog (Pipes.Proxy a b () (Either (LogLevel, Doc) d) m) where
+<span class="lineno">  507 </span>    <span class="decl"><span class="istickedoff">log l m = Pipes.yield (Left (<span class="nottickedoff">l</span>,<span class="nottickedoff">m</span>))</span></span>
+<span class="lineno">  508 </span>
+<span class="lineno">  509 </span>ignoreLogs :: Monad m =&gt; IdentityT m a -&gt; m a
+<span class="lineno">  510 </span><span class="decl"><span class="istickedoff">ignoreLogs = runIdentityT</span></span>
+<span class="lineno">  511 </span>
+<span class="lineno">  512 </span>runLoggerPipeIO :: MonadIO m =&gt; LogLevel -&gt; Pipes.Producer (Either (LogLevel, Doc) a) m r -&gt; m r
+<span class="lineno">  513 </span><span class="decl"><span class="nottickedoff">runLoggerPipeIO l logger = Pipes.runEffect $ Pipes.for logger each</span>
+<span class="lineno">  514 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  515 </span><span class="spaces">        </span><span class="nottickedoff">each (Left (lvl, msg)) =</span>
+<span class="lineno">  516 </span><span class="spaces">            </span><span class="nottickedoff">when (lvl &lt;= l) $ do</span>
+<span class="lineno">  517 </span><span class="spaces">                </span><span class="nottickedoff">let txt = Pr.renderStyle (Pr.style { Pr.lineLength = 200 }) msg</span>
+<span class="lineno">  518 </span><span class="spaces">                </span><span class="nottickedoff">when (&quot;[&quot; `isPrefixOf` txt) $ do</span>
+<span class="lineno">  519 </span><span class="spaces">                    </span><span class="nottickedoff">liftIO clearScreen</span>
+<span class="lineno">  520 </span><span class="spaces">                    </span><span class="nottickedoff">liftIO (setCursorPosition 0 0)</span>
+<span class="lineno">  521 </span><span class="spaces">                </span><span class="nottickedoff">liftIO $ putStrLn txt</span>
+<span class="lineno">  522 </span><span class="spaces">        </span><span class="nottickedoff">each _ = return ()</span></span>
+<span class="lineno">  523 </span>
+<span class="lineno">  524 </span>histogram :: Ord a =&gt; [a] -&gt; [(a, Integer)]
+<span class="lineno">  525 </span><span class="decl"><span class="istickedoff">histogram = map (head &amp;&amp;&amp; genericLength) . group . sort</span></span>
+<span class="lineno">  526 </span>
+<span class="lineno">  527 </span>sh :: Sh a -&gt; IO a
+<span class="lineno">  528 </span><span class="decl"><span class="istickedoff">sh = shelly . print_stdout False . print_stderr False</span></span>
+<span class="lineno">  529 </span>
+<span class="lineno">  530 </span>scope :: MonadState st m =&gt; m a -&gt; m a
+<span class="lineno">  531 </span><span class="decl"><span class="istickedoff">scope ma = do</span>
+<span class="lineno">  532 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets id</span>
+<span class="lineno">  533 </span><span class="spaces">    </span><span class="istickedoff">a &lt;- ma</span>
+<span class="lineno">  534 </span><span class="spaces">    </span><span class="istickedoff">modify (const st)</span>
+<span class="lineno">  535 </span><span class="spaces">    </span><span class="istickedoff">return a</span></span>
+<span class="lineno">  536 </span>
+<span class="lineno">  537 </span>getDirectoryContents :: FilePath -&gt; IO [FilePath]
+<span class="lineno">  538 </span><span class="decl"><span class="istickedoff">getDirectoryContents x = System.Directory.getDirectoryContents x `catch` (\ (_ :: SomeException) -&gt; return [] )</span></span>
+<span class="lineno">  539 </span>
+<span class="lineno">  540 </span>getAllDirs :: FilePath -&gt; IO [FilePath]
+<span class="lineno">  541 </span><span class="decl"><span class="istickedoff">getAllDirs x = do</span>
+<span class="lineno">  542 </span><span class="spaces">    </span><span class="istickedoff">let dots i = not ( i == &quot;.&quot; || i == &quot;..&quot; )</span>
+<span class="lineno">  543 </span><span class="spaces">    </span><span class="istickedoff">isDir &lt;- doesDirectoryExist x</span>
+<span class="lineno">  544 </span><span class="spaces">    </span><span class="istickedoff">ys' &lt;- getDirectoryContents x</span>
+<span class="lineno">  545 </span><span class="spaces">    </span><span class="istickedoff">let ys = filter dots ys'</span>
+<span class="lineno">  546 </span><span class="spaces">    </span><span class="istickedoff">([x | isDir] ++) &lt;$&gt; concatMapM getAllDirs (map (x &lt;/&gt;) ys)</span></span>
+<span class="lineno">  547 </span>
+<span class="lineno">  548 </span>getAllFiles :: FilePath -&gt; IO [FilePath]
+<span class="lineno">  549 </span><span class="decl"><span class="istickedoff">getAllFiles x = do</span>
+<span class="lineno">  550 </span><span class="spaces">    </span><span class="istickedoff">let dots i = not ( i == &quot;.&quot; || i == &quot;..&quot; )</span>
+<span class="lineno">  551 </span><span class="spaces">    </span><span class="istickedoff">ys' &lt;- getDirectoryContents x</span>
+<span class="lineno">  552 </span><span class="spaces">    </span><span class="istickedoff">let ys = filter dots ys'</span>
+<span class="lineno">  553 </span><span class="spaces">    </span><span class="istickedoff">(x :) &lt;$&gt; concatMapM getAllFiles (map (x &lt;/&gt;) ys)</span></span>
+<span class="lineno">  554 </span>
+<span class="lineno">  555 </span>getAllFilesWithSuffix :: String -&gt; FilePath -&gt; IO [FilePath]
+<span class="lineno">  556 </span><span class="decl"><span class="istickedoff">getAllFilesWithSuffix suffix fp = filter (suffix `isSuffixOf`) &lt;$&gt; getAllFiles fp</span></span>
+<span class="lineno">  557 </span>
+<span class="lineno">  558 </span>-- from http://stackoverflow.com/questions/8502201/remove-file-if-it-exists
+<span class="lineno">  559 </span>removeFileIfExists :: FilePath -&gt; IO ()
+<span class="lineno">  560 </span><span class="decl"><span class="istickedoff">removeFileIfExists f = removeFile f `catch` handleExists</span>
+<span class="lineno">  561 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff">handleExists e</span>
+<span class="lineno">  563 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">isDoesNotExistError e</span> = return <span class="nottickedoff">()</span></span>
+<span class="lineno">  564 </span><span class="spaces">            </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">throwIO e</span></span></span>
+<span class="lineno">  565 </span>
+<span class="lineno">  566 </span>readFileIfExists :: FilePath -&gt; IO (Maybe String)
+<span class="lineno">  567 </span><span class="decl"><span class="istickedoff">readFileIfExists f = (Just &lt;$&gt; readFile f) `catch` handleExists</span>
+<span class="lineno">  568 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  569 </span><span class="spaces">        </span><span class="istickedoff">handleExists e</span>
+<span class="lineno">  570 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">isDoesNotExistError e</span> = return Nothing</span>
+<span class="lineno">  571 </span><span class="spaces">            </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">throwIO e</span></span></span>
+<span class="lineno">  572 </span>
+<span class="lineno">  573 </span>removeDirectoryIfExists :: FilePath -&gt; IO ()
+<span class="lineno">  574 </span><span class="decl"><span class="istickedoff">removeDirectoryIfExists f = removeDirectoryRecursive f `catch` handleExists</span>
+<span class="lineno">  575 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  576 </span><span class="spaces">        </span><span class="istickedoff">handleExists e</span>
+<span class="lineno">  577 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">isDoesNotExistError e</span> = return <span class="nottickedoff">()</span></span>
+<span class="lineno">  578 </span><span class="spaces">            </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">throwIO e</span></span></span>
+<span class="lineno">  579 </span>
+<span class="lineno">  580 </span>
+<span class="lineno">  581 </span>setRandomSeed :: Int -&gt; IO ()
+<span class="lineno">  582 </span><span class="decl"><span class="nottickedoff">setRandomSeed = setStdGen . mkStdGen</span></span>
+<span class="lineno">  583 </span>
+<span class="lineno">  584 </span>nchoosek :: Integral a =&gt; (a -&gt; a) -&gt; a -&gt; a -&gt; a
+<span class="lineno">  585 </span><span class="decl"><span class="istickedoff">nchoosek f n k = f n `div` (f k * f (n-k))</span></span>
+<span class="lineno">  586 </span>
+<span class="lineno">  587 </span>type JSONValue = JSON.Value
+<span class="lineno">  588 </span>
+<span class="lineno">  589 </span>-- | return true if this is a top-most zipper.
+<span class="lineno">  590 </span>--   i.e. we cannot go any more up.
+<span class="lineno">  591 </span>isTopMostZ :: Zipper a b -&gt; Bool
+<span class="lineno">  592 </span><span class="decl"><span class="istickedoff">isTopMostZ = isNothing . up</span></span>
+
+</pre>
+</body>
+</html>
