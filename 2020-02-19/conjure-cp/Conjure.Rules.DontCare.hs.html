@@ -1,0 +1,192 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.DontCare where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>rule_Bool :: Rule
+<span class="lineno">   10 </span><span class="decl"><span class="istickedoff">rule_Bool = <span class="nottickedoff">&quot;dontCare-bool&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   11 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">x          &lt;- match opDontCare p</span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff">DomainBool &lt;- domainOf x</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   15 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare value for bools is false.&quot;</span></span>
+<span class="lineno">   16 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opEq x (fromBool False)</span>
+<span class="lineno">   17 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>rule_Int :: Rule
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">rule_Int = <span class="nottickedoff">&quot;dontCare-int&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">x         &lt;- match opDontCare p</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">TypeInt t &lt;- typeOf x</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">xDomain   &lt;- domainOf x</span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">raiseBug = bug (&quot;dontCare on domain:&quot; &lt;+&gt; pretty xDomain)</span></span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">let val = reTag t $ case xDomain of</span>
+<span class="lineno">   28 </span><span class="spaces">                </span><span class="istickedoff">DomainInt _ [] -&gt; <span class="nottickedoff">raiseBug</span></span>
+<span class="lineno">   29 </span><span class="spaces">                </span><span class="istickedoff">DomainInt _ (r:_) -&gt; case r of</span>
+<span class="lineno">   30 </span><span class="spaces">                    </span><span class="istickedoff">RangeOpen -&gt; <span class="nottickedoff">raiseBug</span></span>
+<span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">RangeSingle v -&gt; v</span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">RangeLowerBounded v -&gt; <span class="nottickedoff">v</span></span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">RangeUpperBounded v -&gt; <span class="nottickedoff">v</span></span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">RangeBounded v _ -&gt; v</span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">DomainIntE v -&gt; [essence| min(&amp;v) |]</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseBug</span></span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare value for this integer is&quot; &lt;+&gt; pretty val</span></span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opEq x val</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>rule_Tuple :: Rule
+<span class="lineno">   44 </span><span class="decl"><span class="istickedoff">rule_Tuple = <span class="nottickedoff">&quot;dontCare-tuple&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   45 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">x           &lt;- match opDontCare p</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- downX1 x</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for tuple&quot;</span></span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>rule_Record :: Rule
+<span class="lineno">   56 </span><span class="decl"><span class="istickedoff">rule_Record = <span class="nottickedoff">&quot;dontCare-record&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">x            &lt;- match opDontCare p</span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">TypeRecord{} &lt;- typeOf x</span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">xs           &lt;- downX1 x</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for record&quot;</span></span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>rule_Variant :: Rule
+<span class="lineno">   68 </span><span class="decl"><span class="istickedoff">rule_Variant = <span class="nottickedoff">&quot;dontCare-variant&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">x             &lt;- match opDontCare p</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">xs            &lt;- downX1 x</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for variant&quot;</span></span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span>
+<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   77 </span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>rule_Matrix :: Rule
+<span class="lineno">   80 </span><span class="decl"><span class="istickedoff">rule_Matrix = <span class="nottickedoff">&quot;dontCare-matrix&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff">x                    &lt;- match opDontCare p</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix index _ &lt;- domainOf x</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for matrix&quot;</span></span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   87 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   88 </span><span class="spaces">                </span><span class="istickedoff">return [essence| forAll &amp;iPat : &amp;index . dontCare(&amp;x[&amp;i]) |]</span>
+<span class="lineno">   89 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>
+<span class="lineno">   92 </span>rule_Abstract :: Rule
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">rule_Abstract = <span class="nottickedoff">&quot;dontCare-abstract&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   94 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">x  &lt;- match opDontCare p</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff">TypeSet      {} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet     {} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence {} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction {} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  102 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation {} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">TypePartition{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;not a known abstract domain&quot;</span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="istickedoff">hasRepresentation x</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- downX1 x</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  108 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;dontCare handling for an abstract domain&quot;</span></span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList $ map (make opDontCare) xs</span>
+<span class="lineno">  110 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>handleDontCares ::
+<span class="lineno">  114 </span>    MonadFail m =&gt;
+<span class="lineno">  115 </span>    NameGen m =&gt;
+<span class="lineno">  116 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  117 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  118 </span>    Expression -&gt; m Expression
+<span class="lineno">  119 </span><span class="decl"><span class="nottickedoff">handleDontCares p =</span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="nottickedoff">case match opDontCare p of</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="nottickedoff">Nothing -&gt; return p</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="nottickedoff">Just x -&gt; do</span>
+<span class="lineno">  123 </span><span class="spaces">            </span><span class="nottickedoff">typX &lt;- typeOf x</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="nottickedoff">case typX of</span>
+<span class="lineno">  125 </span><span class="spaces">                </span><span class="nottickedoff">TypeBool -&gt; return (make opEq x (fromBool False))</span>
+<span class="lineno">  126 </span><span class="spaces">                </span><span class="nottickedoff">TypeInt _ -&gt; do</span>
+<span class="lineno">  127 </span><span class="spaces">                    </span><span class="nottickedoff">domX &lt;- domainOf x</span>
+<span class="lineno">  128 </span><span class="spaces">                    </span><span class="nottickedoff">let raiseBug = bug (&quot;dontCare on domain:&quot; &lt;+&gt; pretty domX)</span>
+<span class="lineno">  129 </span><span class="spaces">                    </span><span class="nottickedoff">let val = case domX of</span>
+<span class="lineno">  130 </span><span class="spaces">                            </span><span class="nottickedoff">DomainInt _ [] -&gt; raiseBug</span>
+<span class="lineno">  131 </span><span class="spaces">                            </span><span class="nottickedoff">DomainInt _ (r:_) -&gt; case r of</span>
+<span class="lineno">  132 </span><span class="spaces">                                </span><span class="nottickedoff">RangeOpen -&gt; raiseBug</span>
+<span class="lineno">  133 </span><span class="spaces">                                </span><span class="nottickedoff">RangeSingle v -&gt; v</span>
+<span class="lineno">  134 </span><span class="spaces">                                </span><span class="nottickedoff">RangeLowerBounded v -&gt; v</span>
+<span class="lineno">  135 </span><span class="spaces">                                </span><span class="nottickedoff">RangeUpperBounded v -&gt; v</span>
+<span class="lineno">  136 </span><span class="spaces">                                </span><span class="nottickedoff">RangeBounded v _ -&gt; v</span>
+<span class="lineno">  137 </span><span class="spaces">                            </span><span class="nottickedoff">DomainIntE v -&gt; [essence| min(&amp;v) |]</span>
+<span class="lineno">  138 </span><span class="spaces">                            </span><span class="nottickedoff">_ -&gt; raiseBug</span>
+<span class="lineno">  139 </span><span class="spaces">                    </span><span class="nottickedoff">return $ make opEq x val</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="nottickedoff">TypeTuple{} -&gt; do</span>
+<span class="lineno">  141 </span><span class="spaces">                    </span><span class="nottickedoff">xs  &lt;- downX1 x</span>
+<span class="lineno">  142 </span><span class="spaces">                    </span><span class="nottickedoff">xs' &lt;- mapM (handleDontCares . make opDontCare) xs</span>
+<span class="lineno">  143 </span><span class="spaces">                    </span><span class="nottickedoff">return $ make opAnd $ fromList xs'</span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="nottickedoff">TypeRecord{} -&gt; do</span>
+<span class="lineno">  145 </span><span class="spaces">                    </span><span class="nottickedoff">xs  &lt;- downX1 x</span>
+<span class="lineno">  146 </span><span class="spaces">                    </span><span class="nottickedoff">xs' &lt;- mapM (handleDontCares . make opDontCare) xs</span>
+<span class="lineno">  147 </span><span class="spaces">                    </span><span class="nottickedoff">return $ make opAnd $ fromList xs'</span>
+<span class="lineno">  148 </span><span class="spaces">                </span><span class="nottickedoff">TypeVariant{} -&gt; do</span>
+<span class="lineno">  149 </span><span class="spaces">                    </span><span class="nottickedoff">xs  &lt;- downX1 x</span>
+<span class="lineno">  150 </span><span class="spaces">                    </span><span class="nottickedoff">xs' &lt;- mapM (handleDontCares . make opDontCare) xs</span>
+<span class="lineno">  151 </span><span class="spaces">                    </span><span class="nottickedoff">return $ make opAnd $ fromList xs'</span>
+<span class="lineno">  152 </span><span class="spaces">                </span><span class="nottickedoff">TypeMatrix{} -&gt; do</span>
+<span class="lineno">  153 </span><span class="spaces">                    </span><span class="nottickedoff">domX &lt;- domainOf x</span>
+<span class="lineno">  154 </span><span class="spaces">                    </span><span class="nottickedoff">case domX of</span>
+<span class="lineno">  155 </span><span class="spaces">                        </span><span class="nottickedoff">DomainMatrix index _ -&gt; do</span>
+<span class="lineno">  156 </span><span class="spaces">                            </span><span class="nottickedoff">(iPat@(Single nm), _) &lt;- quantifiedVar</span>
+<span class="lineno">  157 </span><span class="spaces">                            </span><span class="nottickedoff">-- direct name resolution</span>
+<span class="lineno">  158 </span><span class="spaces">                            </span><span class="nottickedoff">let i = Reference nm (Just (DeclNoRepr Find nm index NoRegion))</span>
+<span class="lineno">  159 </span><span class="spaces">                            </span><span class="nottickedoff">inner &lt;- handleDontCares [essence| dontCare(&amp;x[&amp;i]) |]</span>
+<span class="lineno">  160 </span><span class="spaces">                            </span><span class="nottickedoff">return [essence| forAll &amp;iPat : &amp;index . &amp;inner |]</span>
+<span class="lineno">  161 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; bug (&quot;dontCare on domain, expecting matrix, but got:&quot; &lt;+&gt; pretty domX)</span>
+<span class="lineno">  162 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; do</span>
+<span class="lineno">  163 </span><span class="spaces">                    </span><span class="nottickedoff">case representationOf x of</span>
+<span class="lineno">  164 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; fail &quot;doesn't seem to have a representation, during handleDontCares&quot;</span>
+<span class="lineno">  165 </span><span class="spaces">                        </span><span class="nottickedoff">Just _  -&gt; do</span>
+<span class="lineno">  166 </span><span class="spaces">                            </span><span class="nottickedoff">xs  &lt;- downX1 x</span>
+<span class="lineno">  167 </span><span class="spaces">                            </span><span class="nottickedoff">xs' &lt;- mapM (handleDontCares . make opDontCare) xs</span>
+<span class="lineno">  168 </span><span class="spaces">                            </span><span class="nottickedoff">return $ make opAnd $ fromList xs'</span></span>
+<span class="lineno">  169 </span>
+
+</pre>
+</body>
+</html>
