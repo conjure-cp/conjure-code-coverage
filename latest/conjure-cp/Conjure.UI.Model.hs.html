@@ -2359,7 +2359,7 @@ span.spaces    { background: white }
 <span class="lineno"> 2340 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpAllDiff (OpAllDiff (Comprehension body gensOrConds)))) = do</span>
 <span class="lineno"> 2341 </span><span class="spaces">        </span><span class="istickedoff">let (toInline, toKeep) = mconcat</span>
 <span class="lineno"> 2342 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
-<span class="lineno"> 2343 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | <span class="tickonlytrue">categoryOf x == CatDecision</span> -&gt; ([x],[])</span>
+<span class="lineno"> 2343 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([x],[])</span>
 <span class="lineno"> 2344 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[goc])</span>
 <span class="lineno"> 2345 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
 <span class="lineno"> 2346 </span><span class="spaces">                </span><span class="istickedoff">]</span>
