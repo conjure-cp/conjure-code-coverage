@@ -1998,633 +1998,637 @@ span.spaces    { background: white }
 <span class="lineno"> 1979 </span>rule_Flatten_Lex :: Rule
 <span class="lineno"> 1980 </span><span class="decl"><span class="istickedoff">rule_Flatten_Lex = <span class="nottickedoff">&quot;flatten-lex&quot;</span> `namedRule` theRule where</span>
 <span class="lineno"> 1981 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a &lt;lex &amp;b |] = do</span>
-<span class="lineno"> 1982 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
-<span class="lineno"> 1983 </span><span class="spaces">      </span><span class="istickedoff">tb &lt;- typeOf b</span>
-<span class="lineno"> 1984 </span><span class="spaces">      </span><span class="istickedoff">case (ta, tb) of</span>
-<span class="lineno"> 1985 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt;</span>
-<span class="lineno"> 1986 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot; </span>
-<span class="lineno"> 1987 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt;</span>
-<span class="lineno"> 1988 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot;</span>
-<span class="lineno"> 1989 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span> </span>
-<span class="lineno"> 1990 </span><span class="spaces">      </span><span class="istickedoff">fa &lt;- flatten a</span>
-<span class="lineno"> 1991 </span><span class="spaces">      </span><span class="istickedoff">fb &lt;- flatten b</span>
-<span class="lineno"> 1992 </span><span class="spaces">      </span><span class="istickedoff">tfa &lt;- typeOf fa</span>
-<span class="lineno"> 1993 </span><span class="spaces">      </span><span class="istickedoff">tfb &lt;- typeOf fb</span>
-<span class="lineno"> 1994 </span><span class="spaces">      </span><span class="istickedoff">case (tfa, tfb) of</span>
-<span class="lineno"> 1995 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 1996 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 1997 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;flattener: &quot; &lt;+&gt; vcat [stringToDoc $ show tfa, stringToDoc $ show tfb]</span></span>
-<span class="lineno"> 1998 </span><span class="spaces">      </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Flatten Lex less&quot;</span></span>
-<span class="lineno"> 1999 </span><span class="spaces">             </span><span class="istickedoff">, return [essence| &amp;fa &lt;lex &amp;fb |]</span>
-<span class="lineno"> 2000 </span><span class="spaces">             </span><span class="istickedoff">)</span>
-<span class="lineno"> 2001 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a &lt;=lex &amp;b |] = do</span>
-<span class="lineno"> 2002 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
-<span class="lineno"> 2003 </span><span class="spaces">      </span><span class="istickedoff">tb &lt;- typeOf b</span>
-<span class="lineno"> 2004 </span><span class="spaces">      </span><span class="istickedoff">case (ta, tb) of</span>
-<span class="lineno"> 2005 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt;</span>
-<span class="lineno"> 2006 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">na &quot;rule_Flatten_Lex&quot;</span> </span>
-<span class="lineno"> 2007 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt;</span>
-<span class="lineno"> 2008 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot;</span>
-<span class="lineno"> 2009 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span> </span>
-<span class="lineno"> 2010 </span><span class="spaces">      </span><span class="istickedoff">fa &lt;- flatten a</span>
-<span class="lineno"> 2011 </span><span class="spaces">      </span><span class="istickedoff">fb &lt;- flatten b</span>
-<span class="lineno"> 2012 </span><span class="spaces">      </span><span class="istickedoff">tfa &lt;- typeOf fa</span>
-<span class="lineno"> 2013 </span><span class="spaces">      </span><span class="istickedoff">tfb &lt;- typeOf fb</span>
-<span class="lineno"> 2014 </span><span class="spaces">      </span><span class="istickedoff">case (tfa, tfb) of</span>
-<span class="lineno"> 2015 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno"> 2016 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2017 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;flattener: &quot; &lt;+&gt; vcat [stringToDoc $ show tfa, stringToDoc $ show tfb]</span></span>
-<span class="lineno"> 2018 </span><span class="spaces">      </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Flatten Lex Lt&quot;</span></span>
-<span class="lineno"> 2019 </span><span class="spaces">             </span><span class="istickedoff">, return [essence| &amp;fa &lt;=lex &amp;fb |]</span>
-<span class="lineno"> 2020 </span><span class="spaces">             </span><span class="istickedoff">)</span>
-<span class="lineno"> 2021 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Flatten_Lex&quot;  </span>
-<span class="lineno"> 2022 </span><span class="spaces">    </span><span class="istickedoff">flatten a = do</span>
-<span class="lineno"> 2023 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
-<span class="lineno"> 2024 </span><span class="spaces">      </span><span class="istickedoff">case ta of</span>
-<span class="lineno"> 2025 </span><span class="spaces">        </span><span class="istickedoff">TypeBool -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [-toInt(&amp;a)] |]</span></span></span></span></span>
-<span class="lineno"> 2026 </span><span class="spaces">        </span><span class="istickedoff">TypeInt{} -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [&amp;a] |]</span></span></span></span></span>
-<span class="lineno"> 2027 </span><span class="spaces">        </span><span class="istickedoff">TypeList TypeInt{} -&gt; return a</span>
-<span class="lineno"> 2028 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix TypeInt{} TypeInt{} -&gt; return a</span>
-<span class="lineno"> 2029 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple ts -&gt; do</span>
-<span class="lineno"> 2030 </span><span class="spaces">          </span><span class="istickedoff">case a of</span>
-<span class="lineno"> 2031 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral x -&gt; do</span>
-<span class="lineno"> 2032 </span><span class="spaces">              </span><span class="istickedoff">case x of</span>
-<span class="lineno"> 2033 </span><span class="spaces">                </span><span class="istickedoff">AbsLitTuple xs -&gt; do</span>
-<span class="lineno"> 2034 </span><span class="spaces">                  </span><span class="istickedoff">fxs &lt;- sequence (flatten &lt;$&gt; xs)</span>
-<span class="lineno"> 2035 </span><span class="spaces">                  </span><span class="istickedoff">let flatxs = fromList fxs</span>
-<span class="lineno"> 2036 </span><span class="spaces">                  </span><span class="istickedoff">return [essence| flatten(&amp;flatxs) |]</span>
-<span class="lineno"> 2037 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this abslit fellow...&quot;</span></span>
-<span class="lineno"> 2038 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2039 </span><span class="spaces">            </span><span class="istickedoff">Constant c -&gt;</span>
-<span class="lineno"> 2040 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">case c of</span></span>
-<span class="lineno"> 2041 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract ca -&gt;</span></span>
-<span class="lineno"> 2042 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">case ca of</span></span>
-<span class="lineno"> 2043 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">AbsLitTuple xs -&gt; do</span></span>
-<span class="lineno"> 2044 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">fxs &lt;- sequence (flatten &lt;$&gt; (Constant &lt;$&gt; xs))</span></span>
-<span class="lineno"> 2045 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">let flatxs = fromList fxs</span></span>
-<span class="lineno"> 2046 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">return [essence| flatten(&amp;flatxs) |]</span></span>
-<span class="lineno"> 2047 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
-<span class="lineno"> 2048 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2049 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
-<span class="lineno"> 2050 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2051 </span><span class="spaces">            </span><span class="istickedoff">Op _ -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2052 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">(oName, o) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2053 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">flatten $ Comprehension o [ComprehensionLetting oName a]</span></span>
-<span class="lineno"> 2054 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2055 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">ps &lt;- sequence $ (\(i,_) -&gt; do</span></span>
-<span class="lineno"> 2056 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">(Single nm, tm) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2057 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">return (i,nm,tm)) &lt;$&gt; (zip [1..] ts)</span></span>
-<span class="lineno"> 2058 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">let lts = (\(i,nm,_tm) -&gt; ComprehensionLetting (Single nm) [essence| &amp;a[&amp;i] |]) &lt;$&gt; ps</span></span>
-<span class="lineno"> 2059 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">tup = AbstractLiteral $ AbsLitTuple $ (\(_,_,tm) -&gt; tm) &lt;$&gt; ps</span></span>
-<span class="lineno"> 2060 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">flatten $ Comprehension tup lts</span></span>
-<span class="lineno"> 2061 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt;</span>
-<span class="lineno"> 2062 </span><span class="spaces">          </span><span class="istickedoff">case a of</span>
-<span class="lineno"> 2063 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral x -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2064 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">case x of</span></span>
-<span class="lineno"> 2065 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbsLitMatrix _ xs -&gt; do</span></span>
-<span class="lineno"> 2066 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">fxs &lt;- sequence (flatten &lt;$&gt; xs)</span></span>
-<span class="lineno"> 2067 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">let flatxs = fromList fxs</span></span>
-<span class="lineno"> 2068 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">return [essence| flatten(&amp;flatxs) |]</span></span>
-<span class="lineno"> 2069 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this abslit fellow...&quot;</span></span>
-<span class="lineno"> 2070 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2071 </span><span class="spaces">            </span><span class="istickedoff">Constant c -&gt;</span>
-<span class="lineno"> 2072 </span><span class="spaces">              </span><span class="istickedoff">case c of</span>
-<span class="lineno"> 2073 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract ca -&gt;</span>
-<span class="lineno"> 2074 </span><span class="spaces">                  </span><span class="istickedoff">case ca of</span>
-<span class="lineno"> 2075 </span><span class="spaces">                    </span><span class="istickedoff">AbsLitMatrix _ [] -&gt;</span>
-<span class="lineno"> 2076 </span><span class="spaces">                      </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> ([] : `matrix indexed by [int()] of int`) |]</span></span></span></span></span>
-<span class="lineno"> 2077 </span><span class="spaces">                    </span><span class="istickedoff">AbsLitMatrix _ xs -&gt; do</span>
-<span class="lineno"> 2078 </span><span class="spaces">                      </span><span class="istickedoff">fxs &lt;- sequence (flatten &lt;$&gt; (Constant &lt;$&gt; xs))</span>
-<span class="lineno"> 2079 </span><span class="spaces">                      </span><span class="istickedoff">let flatxs = fromList fxs</span>
-<span class="lineno"> 2080 </span><span class="spaces">                      </span><span class="istickedoff">return [essence| flatten(&amp;flatxs) |]</span>
-<span class="lineno"> 2081 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
-<span class="lineno"> 2082 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2083 </span><span class="spaces">                </span><span class="istickedoff">TypedConstant tc _ -&gt; flatten (Constant tc)</span>
-<span class="lineno"> 2084 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
-<span class="lineno"> 2085 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
-<span class="lineno"> 2086 </span><span class="spaces">            </span><span class="istickedoff">Op _ -&gt; do</span>
-<span class="lineno"> 2087 </span><span class="spaces">              </span><span class="istickedoff">(oName, o) &lt;- quantifiedVar</span>
-<span class="lineno"> 2088 </span><span class="spaces">              </span><span class="istickedoff">flatten $ Comprehension o [ComprehensionLetting <span class="nottickedoff">oName</span> <span class="nottickedoff">a</span>]</span>
-<span class="lineno"> 2089 </span><span class="spaces">            </span><span class="istickedoff">Reference nm ex -&gt;</span>
-<span class="lineno"> 2090 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this reference fellow...&quot;</span></span>
-<span class="lineno"> 2091 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [stringToDoc (show a)</span></span>
-<span class="lineno"> 2092 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">,&quot;reference:&quot; &lt;+&gt; stringToDoc (show nm)</span></span>
-<span class="lineno"> 2093 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">,&quot;fellow:&quot; &lt;+&gt; stringToDoc (show ex)]</span></span>
-<span class="lineno"> 2094 </span><span class="spaces">            </span><span class="istickedoff">Comprehension body gocs -&gt; do</span>
-<span class="lineno"> 2095 </span><span class="spaces">              </span><span class="istickedoff">fbody &lt;- flatten body</span>
-<span class="lineno"> 2096 </span><span class="spaces">              </span><span class="istickedoff">let comp = Comprehension fbody gocs</span>
-<span class="lineno"> 2097 </span><span class="spaces">              </span><span class="istickedoff">return [essence| flatten(&amp;comp) |]</span>
-<span class="lineno"> 2098 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this expression fellow...&quot;</span></span>
-<span class="lineno"> 2099 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno"> 2100 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span></span>
-<span class="lineno"> 2101 </span>
-<span class="lineno"> 2102 </span>
-<span class="lineno"> 2103 </span>rule_ReducerToComprehension :: Rule
-<span class="lineno"> 2104 </span><span class="decl"><span class="istickedoff">rule_ReducerToComprehension = <span class="nottickedoff">&quot;reducer-to-comprehension&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2105 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2106 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mk, coll) &lt;- match opReducer p</span>
-<span class="lineno"> 2107 </span><span class="spaces">        </span><span class="istickedoff">-- leave comprehensions alone</span>
-<span class="lineno"> 2108 </span><span class="spaces">        </span><span class="istickedoff">let</span>
-<span class="lineno"> 2109 </span><span class="spaces">            </span><span class="istickedoff">isComprehension Comprehension{} = True</span>
-<span class="lineno"> 2110 </span><span class="spaces">            </span><span class="istickedoff">isComprehension _ = False</span>
-<span class="lineno"> 2111 </span><span class="spaces">        </span><span class="istickedoff">case followAliases isComprehension coll of</span>
-<span class="lineno"> 2112 </span><span class="spaces">            </span><span class="istickedoff">True  -&gt; na &quot;rule_ReducerToComprehension&quot;</span>
-<span class="lineno"> 2113 </span><span class="spaces">            </span><span class="istickedoff">False -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2114 </span><span class="spaces">        </span><span class="istickedoff">-- leave matrix literals alone</span>
-<span class="lineno"> 2115 </span><span class="spaces">        </span><span class="istickedoff">case tryMatch matrixLiteral coll of</span>
-<span class="lineno"> 2116 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2117 </span><span class="spaces">            </span><span class="istickedoff">Just {} -&gt; na &quot;rule_ReducerToComprehension&quot;</span>
-<span class="lineno"> 2118 </span><span class="spaces">        </span><span class="istickedoff">tyColl &lt;- typeOf coll</span>
-<span class="lineno"> 2119 </span><span class="spaces">        </span><span class="istickedoff">howToIndex &lt;- case tyColl of</span>
-<span class="lineno"> 2120 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence{} -&gt; <span class="nottickedoff">return $ Left ()</span></span>
-<span class="lineno"> 2121 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{}   -&gt; <span class="nottickedoff">return $ Right ()</span></span>
-<span class="lineno"> 2122 </span><span class="spaces">            </span><span class="istickedoff">TypeList{}     -&gt; <span class="nottickedoff">return $ Right ()</span></span>
-<span class="lineno"> 2123 </span><span class="spaces">            </span><span class="istickedoff">TypeSet{}      -&gt; return $ Right <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2124 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; <span class="nottickedoff">return $ Right ()</span></span>
-<span class="lineno"> 2125 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;rule_ReducerToComprehension&quot;</span></span>
-<span class="lineno"> 2126 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2127 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Creating a comprehension for the collection inside the reducer operator.&quot;</span></span>
-<span class="lineno"> 2128 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno"> 2129 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno"> 2130 </span><span class="spaces">                </span><span class="istickedoff">case howToIndex of</span>
-<span class="lineno"> 2131 </span><span class="spaces">                    </span><span class="istickedoff">Left{}  -&gt; <span class="nottickedoff">return $ mk [essence| [ &amp;i[2] | &amp;iPat &lt;- &amp;coll ] |]</span></span>
-<span class="lineno"> 2132 </span><span class="spaces">                    </span><span class="istickedoff">Right{} -&gt; return $ mk [essence| [ &amp;i    | &amp;iPat &lt;- &amp;coll ] |]</span>
-<span class="lineno"> 2133 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2134 </span>
-<span class="lineno"> 2135 </span>
-<span class="lineno"> 2136 </span>rule_TrueIsNoOp :: Rule
-<span class="lineno"> 2137 </span><span class="decl"><span class="istickedoff">rule_TrueIsNoOp = <span class="nottickedoff">&quot;true-is-noop&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2138 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpTrue (OpTrue ref))) =</span>
-<span class="lineno"> 2139 </span><span class="spaces">        </span><span class="istickedoff">case ref of</span>
-<span class="lineno"> 2140 </span><span class="spaces">            </span><span class="istickedoff">Reference _ (Just DeclHasRepr{}) -&gt;</span>
-<span class="lineno"> 2141 </span><span class="spaces">                </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Remove the argument from true.&quot;</span></span>
-<span class="lineno"> 2142 </span><span class="spaces">                       </span><span class="istickedoff">, return $ Constant $ ConstantBool True</span>
-<span class="lineno"> 2143 </span><span class="spaces">                       </span><span class="istickedoff">)</span>
-<span class="lineno"> 2144 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;The argument of true doesn't have a representation.&quot;</span></span>
-<span class="lineno"> 2145 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_TrueIsNoOp&quot;</span></span>
-<span class="lineno"> 2146 </span>
-<span class="lineno"> 2147 </span>
-<span class="lineno"> 2148 </span>rule_FlattenOf1D :: Rule
-<span class="lineno"> 2149 </span><span class="decl"><span class="istickedoff">rule_FlattenOf1D = <span class="nottickedoff">&quot;flatten-of-1D&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2150 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2151 </span><span class="spaces">        </span><span class="istickedoff">x   &lt;- match opFlatten p</span>
-<span class="lineno"> 2152 </span><span class="spaces">        </span><span class="istickedoff">tyx &lt;- typeOf x</span>
-<span class="lineno"> 2153 </span><span class="spaces">        </span><span class="istickedoff">out &lt;- case tyx of</span>
-<span class="lineno"> 2154 </span><span class="spaces">            </span><span class="istickedoff">TypeList     TypeBool{} -&gt; <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 2155 </span><span class="spaces">            </span><span class="istickedoff">TypeList     TypeInt{}  -&gt; <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 2156 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool{} -&gt; return x</span>
-<span class="lineno"> 2157 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeInt{}  -&gt; <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 2158 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{}            -&gt; -- more than 1D</span>
-<span class="lineno"> 2159 </span><span class="spaces">                </span><span class="istickedoff">case listOut x of</span>
-<span class="lineno"> 2160 </span><span class="spaces">                    </span><span class="istickedoff">Just [y] -&gt; <span class="nottickedoff">return (make opFlatten y)</span></span>
-<span class="lineno"> 2161 </span><span class="spaces">                    </span><span class="istickedoff">_        -&gt; na &quot;rule_FlattenOf1D&quot;</span>
-<span class="lineno"> 2162 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;rule_FlattenOf1D&quot;</span>
-<span class="lineno"> 2163 </span><span class="spaces">        </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;1D matrices do not need a flatten.&quot;</span></span>
-<span class="lineno"> 2164 </span><span class="spaces">               </span><span class="istickedoff">, return out</span>
-<span class="lineno"> 2165 </span><span class="spaces">               </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2166 </span>
-<span class="lineno"> 2167 </span>
-<span class="lineno"> 2168 </span>rule_Decompose_AllDiff :: Rule
-<span class="lineno"> 2169 </span><span class="decl"><span class="istickedoff">rule_Decompose_AllDiff = <span class="nottickedoff">&quot;decompose-allDiff&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2170 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| allDiff(&amp;m) |] = do</span>
-<span class="lineno"> 2171 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf m</span>
-<span class="lineno"> 2172 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno"> 2173 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; <span class="nottickedoff">na &quot;allDiff can stay&quot;</span></span>
-<span class="lineno"> 2174 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ (TypeInt _)  -&gt; na &quot;allDiff can stay&quot;</span>
-<span class="lineno"> 2175 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ _        -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno"> 2176 </span><span class="spaces">            </span><span class="istickedoff">_                     -&gt; na &quot;allDiff on something other than a matrix.&quot;</span>
-<span class="lineno"> 2177 </span><span class="spaces">        </span><span class="istickedoff">index:_ &lt;- <span class="nottickedoff">indexDomainsOf m</span></span>
-<span class="lineno"> 2178 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2179 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Decomposing allDiff. Type:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno"> 2180 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno"> 2181 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2182 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2183 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2184 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
-<span class="lineno"> 2185 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">and([ &amp;m[&amp;i] != &amp;m[&amp;j]</span></span>
-<span class="lineno"> 2186 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| &amp;iPat : &amp;index</span></span>
-<span class="lineno"> 2187 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;jPat : &amp;index</span></span>
-<span class="lineno"> 2188 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;i &lt; &amp;j</span></span>
-<span class="lineno"> 2189 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
-<span class="lineno"> 2190 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
-<span class="lineno"> 2191 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno"> 2192 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Decompose_AllDiff&quot;</span></span>
-<span class="lineno"> 2193 </span>
-<span class="lineno"> 2194 </span>
-<span class="lineno"> 2195 </span>rule_DomainCardinality :: Rule
-<span class="lineno"> 2196 </span><span class="decl"><span class="istickedoff">rule_DomainCardinality = <span class="nottickedoff">&quot;domain-cardinality&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2197 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2198 </span><span class="spaces">        </span><span class="istickedoff">maybeDomain &lt;- match opTwoBars p</span>
-<span class="lineno"> 2199 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- expandDomainReference &lt;$&gt; case maybeDomain of</span>
-<span class="lineno"> 2200 </span><span class="spaces">            </span><span class="istickedoff">Domain d -&gt; return d</span>
-<span class="lineno"> 2201 </span><span class="spaces">            </span><span class="istickedoff">Reference _ (Just (Alias (Domain d))) -&gt; <span class="nottickedoff">return d</span></span>
-<span class="lineno"> 2202 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;rule_DomainCardinality&quot;</span>
-<span class="lineno"> 2203 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2204 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Cardinality of a domain&quot;</span></span>
-<span class="lineno"> 2205 </span><span class="spaces">            </span><span class="istickedoff">, case d of</span>
-<span class="lineno"> 2206 </span><span class="spaces">                </span><span class="istickedoff">DomainInt _ [RangeBounded 1 u] -&gt; return u</span>
-<span class="lineno"> 2207 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
-<span class="lineno"> 2208 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, _) &lt;- quantifiedVar</span>
-<span class="lineno"> 2209 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> sum([ 1 | &amp;iPat : &amp;d ]) |]</span></span></span>
-<span class="lineno"> 2210 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2211 </span>
-<span class="lineno"> 2212 </span>
-<span class="lineno"> 2213 </span>rule_DomainMinMax :: Rule
-<span class="lineno"> 2214 </span><span class="decl"><span class="istickedoff">rule_DomainMinMax = <span class="nottickedoff">&quot;domain-MinMax&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2215 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| max(&amp;maybeDomain) |] = do</span>
-<span class="lineno"> 2216 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- getDomain maybeDomain</span>
-<span class="lineno"> 2217 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2218 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;max of a domain&quot;</span></span>
-<span class="lineno"> 2219 </span><span class="spaces">            </span><span class="istickedoff">, maxOfDomain d</span>
-<span class="lineno"> 2220 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2221 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| min(&amp;maybeDomain) |] = do</span>
-<span class="lineno"> 2222 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- getDomain maybeDomain</span>
-<span class="lineno"> 2223 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2224 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;min of a domain&quot;</span></span>
-<span class="lineno"> 2225 </span><span class="spaces">            </span><span class="istickedoff">, minOfDomain d</span>
-<span class="lineno"> 2226 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2227 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_DomainMinMax&quot;</span>
-<span class="lineno"> 2228 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2229 </span><span class="spaces">    </span><span class="istickedoff">getDomain :: MonadFail m =&gt; Expression -&gt; m (Domain () Expression)</span>
-<span class="lineno"> 2230 </span><span class="spaces">    </span><span class="istickedoff">getDomain (Domain d) = return d</span>
-<span class="lineno"> 2231 </span><span class="spaces">    </span><span class="istickedoff">getDomain (Reference _ (Just (Alias (Domain d)))) = <span class="nottickedoff">getDomain (Domain d)</span></span>
-<span class="lineno"> 2232 </span><span class="spaces">    </span><span class="istickedoff">getDomain _ = na &quot;rule_DomainMinMax.getDomain&quot;</span></span>
-<span class="lineno"> 2233 </span>
-<span class="lineno"> 2234 </span>
-<span class="lineno"> 2235 </span>rule_ComplexAbsPat :: Rule
-<span class="lineno"> 2236 </span><span class="decl"><span class="istickedoff">rule_ComplexAbsPat = <span class="nottickedoff">&quot;complex-pattern&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2237 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
-<span class="lineno"> 2238 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, domainOrExpr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno"> 2239 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainNoRepr pat@AbsPatTuple{} domain) -&gt; return (pat, Left domain)</span>
-<span class="lineno"> 2240 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr       pat@AbsPatTuple{} expr)   -&gt; return (pat, Right expr)</span>
-<span class="lineno"> 2241 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_ComplexAbsPat&quot;</span></span>
-<span class="lineno"> 2242 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2243 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;complex pattern on tuple patterns&quot;</span></span>
-<span class="lineno"> 2244 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno"> 2245 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno"> 2246 </span><span class="spaces">                </span><span class="istickedoff">let replacements = [ (p, make opMatrixIndexing i (map (fromInt . fromIntegral) is))</span>
-<span class="lineno"> 2247 </span><span class="spaces">                                   </span><span class="istickedoff">| (p, is) &lt;- genMappings pat</span>
-<span class="lineno"> 2248 </span><span class="spaces">                                   </span><span class="istickedoff">]</span>
-<span class="lineno"> 2249 </span><span class="spaces">                </span><span class="istickedoff">let f x@(Reference nm _) = fromMaybe x (lookup nm replacements)</span>
-<span class="lineno"> 2250 </span><span class="spaces">                    </span><span class="istickedoff">f x = x</span>
-<span class="lineno"> 2251 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (transform f body)</span>
-<span class="lineno"> 2252 </span><span class="spaces">                            </span><span class="istickedoff">$  gocBefore</span>
-<span class="lineno"> 2253 </span><span class="spaces">                            </span><span class="istickedoff">++ [ either (Generator . GenDomainNoRepr iPat)</span>
-<span class="lineno"> 2254 </span><span class="spaces">                                        </span><span class="istickedoff">(Generator . GenInExpr       iPat)</span>
-<span class="lineno"> 2255 </span><span class="spaces">                                        </span><span class="istickedoff">domainOrExpr ]</span>
-<span class="lineno"> 2256 </span><span class="spaces">                            </span><span class="istickedoff">++ transformBi f gocAfter</span>
-<span class="lineno"> 2257 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2258 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ComplexAbsPat&quot;</span>
-<span class="lineno"> 2259 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2260 </span><span class="spaces">    </span><span class="istickedoff">-- i         --&gt; i -&gt; []</span>
-<span class="lineno"> 2261 </span><span class="spaces">    </span><span class="istickedoff">-- (i,j)     --&gt; i -&gt; [1]</span>
-<span class="lineno"> 2262 </span><span class="spaces">    </span><span class="istickedoff">--               j -&gt; [2]</span>
-<span class="lineno"> 2263 </span><span class="spaces">    </span><span class="istickedoff">-- (i,(j,k)) --&gt; i -&gt; [1]</span>
-<span class="lineno"> 2264 </span><span class="spaces">    </span><span class="istickedoff">--               j -&gt; [2,1]</span>
-<span class="lineno"> 2265 </span><span class="spaces">    </span><span class="istickedoff">--               k -&gt; [2,2]</span>
-<span class="lineno"> 2266 </span><span class="spaces">    </span><span class="istickedoff">genMappings :: AbstractPattern -&gt; [(Name, [Int])]</span>
-<span class="lineno"> 2267 </span><span class="spaces">    </span><span class="istickedoff">genMappings (Single nm) = [(nm, [])]</span>
-<span class="lineno"> 2268 </span><span class="spaces">    </span><span class="istickedoff">genMappings (AbsPatTuple pats)</span>
-<span class="lineno"> 2269 </span><span class="spaces">        </span><span class="istickedoff">= concat</span>
-<span class="lineno"> 2270 </span><span class="spaces">            </span><span class="istickedoff">[ [ (patCore, i:is) | (patCore, is) &lt;- genMappings pat ]</span>
-<span class="lineno"> 2271 </span><span class="spaces">            </span><span class="istickedoff">| (i, pat) &lt;- zip [1..] pats</span>
-<span class="lineno"> 2272 </span><span class="spaces">            </span><span class="istickedoff">]</span>
-<span class="lineno"> 2273 </span><span class="spaces">    </span><span class="istickedoff">genMappings (AbsPatMatrix pats)</span>
-<span class="lineno"> 2274 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">concat</span></span>
-<span class="lineno"> 2275 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ [ (patCore, i:is) | (patCore, is) &lt;- genMappings pat ]</span></span>
-<span class="lineno"> 2276 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (i, pat) &lt;- zip [1..] pats</span></span>
-<span class="lineno"> 2277 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno"> 2278 </span><span class="spaces">    </span><span class="istickedoff">genMappings pat = <span class="nottickedoff">bug (&quot;rule_ComplexLambda.genMappings:&quot; &lt;+&gt; pretty (show pat))</span></span></span>
-<span class="lineno"> 2279 </span>
-<span class="lineno"> 2280 </span>
-<span class="lineno"> 2281 </span>-- this rule doesn't use `namedRule` because it need access to ascendants through the zipper
-<span class="lineno"> 2282 </span>rule_InlineConditions :: Rule
-<span class="lineno"> 2283 </span><span class="decl"><span class="istickedoff">rule_InlineConditions = Rule <span class="nottickedoff">&quot;inline-conditions&quot;</span> theRule where</span>
-<span class="lineno"> 2284 </span><span class="spaces">    </span><span class="istickedoff">theRule z (Comprehension body gensOrConds) = do</span>
-<span class="lineno"> 2285 </span><span class="spaces">        </span><span class="istickedoff">let (toInline, toKeep) = mconcat</span>
-<span class="lineno"> 2286 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
-<span class="lineno"> 2287 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([x],[])</span>
-<span class="lineno"> 2288 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[goc])</span>
-<span class="lineno"> 2289 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
-<span class="lineno"> 2290 </span><span class="spaces">                </span><span class="istickedoff">]</span>
-<span class="lineno"> 2291 </span><span class="spaces">        </span><span class="istickedoff">theGuard &lt;- case toInline of</span>
-<span class="lineno"> 2292 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; na &quot;No condition to inline.&quot;</span>
-<span class="lineno"> 2293 </span><span class="spaces">            </span><span class="istickedoff">[x] -&gt; return x</span>
-<span class="lineno"> 2294 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; return $ make opAnd $ fromList xs</span>
-<span class="lineno"> 2295 </span><span class="spaces">        </span><span class="istickedoff">(nameQ, opSkip) &lt;- queryQ z</span>
-<span class="lineno"> 2296 </span><span class="spaces">        </span><span class="istickedoff">let bodySkipped = opSkip theGuard body</span>
-<span class="lineno"> 2297 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2298 </span><span class="spaces">            </span><span class="istickedoff">[ RuleResult</span>
-<span class="lineno"> 2299 </span><span class="spaces">                </span><span class="istickedoff">{ ruleResultDescr = <span class="nottickedoff">&quot;Inlining conditions, inside&quot; &lt;+&gt; nameQ</span></span>
-<span class="lineno"> 2300 </span><span class="spaces">                </span><span class="istickedoff">, ruleResultType  = ExpressionRefinement</span>
-<span class="lineno"> 2301 </span><span class="spaces">                </span><span class="istickedoff">, ruleResult      = return $ Comprehension bodySkipped toKeep</span>
-<span class="lineno"> 2302 </span><span class="spaces">                </span><span class="istickedoff">, ruleResultHook  = Nothing</span>
-<span class="lineno"> 2303 </span><span class="spaces">                </span><span class="istickedoff">} ]</span>
-<span class="lineno"> 2304 </span><span class="spaces">    </span><span class="istickedoff">theRule _ _ = na &quot;rule_InlineConditions&quot;</span>
-<span class="lineno"> 2305 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2306 </span><span class="spaces">    </span><span class="istickedoff">-- keep going up, until finding a quantifier</span>
-<span class="lineno"> 2307 </span><span class="spaces">    </span><span class="istickedoff">-- when found, return the skipping operator for the quantifier</span>
-<span class="lineno"> 2308 </span><span class="spaces">    </span><span class="istickedoff">-- if none exists, do not apply the rule.</span>
-<span class="lineno"> 2309 </span><span class="spaces">    </span><span class="istickedoff">-- (or maybe we should call bug right ahead, it can't be anything else.)</span>
-<span class="lineno"> 2310 </span><span class="spaces">    </span><span class="istickedoff">queryQ z0 =</span>
-<span class="lineno"> 2311 </span><span class="spaces">        </span><span class="istickedoff">case Zipper.up z0 of</span>
-<span class="lineno"> 2312 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">na &quot;rule_InlineConditions (meh-1)&quot;</span></span>
-<span class="lineno"> 2313 </span><span class="spaces">            </span><span class="istickedoff">Just z -&gt; do</span>
-<span class="lineno"> 2314 </span><span class="spaces">                </span><span class="istickedoff">let h = hole z</span>
-<span class="lineno"> 2315 </span><span class="spaces">                </span><span class="istickedoff">case ( match opAnd h, match opOr h, match opSum h, match opProduct h</span>
-<span class="lineno"> 2316 </span><span class="spaces">                     </span><span class="istickedoff">, match opMin h, match opMax h, match opOrdering h ) of</span>
-<span class="lineno"> 2317 </span><span class="spaces">                    </span><span class="istickedoff">(Just{}, _, _, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;and&quot;</span>, opAndSkip)</span>
-<span class="lineno"> 2318 </span><span class="spaces">                    </span><span class="istickedoff">(_, Just{}, _, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;or&quot;</span> , opOrSkip )</span>
-<span class="lineno"> 2319 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, Just{}, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;sum&quot;</span>, opSumSkip)</span>
-<span class="lineno"> 2320 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, Just{}, _, _, _) -&gt; return (<span class="nottickedoff">&quot;product&quot;</span>, opProductSkip)</span>
-<span class="lineno"> 2321 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, Just{}, _, _) -&gt; na &quot;rule_InlineConditions (min)&quot;</span>
-<span class="lineno"> 2322 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, Just{}, _) -&gt; na &quot;rule_InlineConditions (max)&quot;</span>
-<span class="lineno"> 2323 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, _, Just{}) -&gt; <span class="nottickedoff">return (&quot;ordering&quot;, opSumSkip)</span></span>
-<span class="lineno"> 2324 </span><span class="spaces">                    </span><span class="istickedoff">_                          -&gt; na &quot;rule_InlineConditions (meh-2)&quot;</span>
-<span class="lineno"> 2325 </span><span class="spaces">                                            </span><span class="istickedoff">-- case Zipper.up z of</span>
-<span class="lineno"> 2326 </span><span class="spaces">                                            </span><span class="istickedoff">--     Nothing -&gt; na &quot;queryQ&quot;</span>
-<span class="lineno"> 2327 </span><span class="spaces">                                            </span><span class="istickedoff">--     Just u  -&gt; queryQ u</span>
-<span class="lineno"> 2328 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2329 </span><span class="spaces">    </span><span class="istickedoff">opAndSkip     b x = [essence| &amp;b -&gt; &amp;x |]</span>
-<span class="lineno"> 2330 </span><span class="spaces">    </span><span class="istickedoff">opOrSkip      b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;b /\ &amp;x |]</span></span></span></span></span>
-<span class="lineno"> 2331 </span><span class="spaces">    </span><span class="istickedoff">opSumSkip     b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> toInt(&amp;b) * catchUndef(&amp;x, 0) |]</span></span></span></span></span>
-<span class="lineno"> 2332 </span><span class="spaces">    </span><span class="istickedoff">opProductSkip b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [ 1</span></span></span></span></span></span></span></span></span>
-<span class="lineno"> 2333 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, catchUndef(&amp;x,1)</span></span></span></span></span></span></span></span></span>
-<span class="lineno"> 2334 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">; int(0..1)</span></span></span></span></span></span></span></span></span>
-<span class="lineno"> 2335 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">] [toInt(&amp;b)] |]</span></span></span></span></span></span></span></span></span></span>
-<span class="lineno"> 2336 </span>
-<span class="lineno"> 2337 </span>
-<span class="lineno"> 2338 </span>rule_InlineConditions_AllDiff :: Rule
-<span class="lineno"> 2339 </span><span class="decl"><span class="istickedoff">rule_InlineConditions_AllDiff = <span class="nottickedoff">&quot;inline-conditions-allDiff&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2340 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpAllDiff (OpAllDiff (Comprehension body gensOrConds)))) = do</span>
-<span class="lineno"> 2341 </span><span class="spaces">        </span><span class="istickedoff">let (toInline, toKeep) = mconcat</span>
-<span class="lineno"> 2342 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
-<span class="lineno"> 2343 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([x],[])</span>
-<span class="lineno"> 2344 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[goc])</span>
-<span class="lineno"> 2345 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
-<span class="lineno"> 2346 </span><span class="spaces">                </span><span class="istickedoff">]</span>
-<span class="lineno"> 2347 </span><span class="spaces">        </span><span class="istickedoff">theGuard &lt;- case toInline of</span>
-<span class="lineno"> 2348 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; na &quot;No condition to inline.&quot;</span>
-<span class="lineno"> 2349 </span><span class="spaces">            </span><span class="istickedoff">[x] -&gt; return x</span>
-<span class="lineno"> 2350 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; return $ make opAnd $ fromList xs</span>
-<span class="lineno"> 2351 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2352 </span><span class="spaces">        </span><span class="istickedoff">domBody &lt;- domainOf body</span>
-<span class="lineno"> 2353 </span><span class="spaces">        </span><span class="istickedoff">let</span>
-<span class="lineno"> 2354 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds (RangeSingle x) = <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 2355 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds (RangeBounded x _) = return x</span>
-<span class="lineno"> 2356 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds _ = <span class="nottickedoff">userErr1 (&quot;Unexpected infinite domain:&quot; &lt;+&gt; pretty domBody)</span></span>
-<span class="lineno"> 2357 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2358 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBoundsD (DomainInt _ rs) = mapM collectLowerBounds rs</span>
-<span class="lineno"> 2359 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBoundsD _  = <span class="nottickedoff">userErr1 (&quot;Expected an integer domain, but got:&quot; &lt;+&gt; pretty domBody)</span></span>
-<span class="lineno"> 2360 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2361 </span><span class="spaces">        </span><span class="istickedoff">bounds &lt;- collectLowerBoundsD domBody</span>
-<span class="lineno"> 2362 </span><span class="spaces">        </span><span class="istickedoff">let lowerBound = make opMin (fromList bounds)</span>
-<span class="lineno"> 2363 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2364 </span><span class="spaces">        </span><span class="istickedoff">-- for each element, we do element-lowerBound+1</span>
-<span class="lineno"> 2365 </span><span class="spaces">        </span><span class="istickedoff">-- this makes sure the smallest element is 1</span>
-<span class="lineno"> 2366 </span><span class="spaces">        </span><span class="istickedoff">-- hence we can use 0 as the except value!</span>
-<span class="lineno"> 2367 </span><span class="spaces">        </span><span class="istickedoff">let bodySkipped = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> toInt(&amp;theGuard) * catchUndef(&amp;body + (1 - &amp;lowerBound), 0) |]</span></span></span></span></span></span></span></span></span></span></span></span></span>
-<span class="lineno"> 2368 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2369 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2370 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Inlining conditions, inside allDiff&quot;</span></span>
-<span class="lineno"> 2371 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAllDiffExcept (Comprehension bodySkipped toKeep) 0</span>
-<span class="lineno"> 2372 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2373 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_InlineConditions_AllDiff&quot;</span></span>
-<span class="lineno"> 2374 </span>
-<span class="lineno"> 2375 </span>
-<span class="lineno"> 2376 </span>rule_InlineConditions_MaxMin :: Rule
-<span class="lineno"> 2377 </span><span class="decl"><span class="istickedoff">rule_InlineConditions_MaxMin = <span class="nottickedoff">&quot;aux-for-MaxMin&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2378 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2379 </span><span class="spaces">        </span><span class="istickedoff">when (categoryOf p &lt; CatDecision) $ na &quot;rule_InlineConditions_MaxMin&quot;</span>
-<span class="lineno"> 2380 </span><span class="spaces">        </span><span class="istickedoff">(nameQ, binOp, Comprehension body gensOrConds) &lt;-</span>
-<span class="lineno"> 2381 </span><span class="spaces">            </span><span class="istickedoff">case (match opMax p, match opMin p) of</span>
-<span class="lineno"> 2382 </span><span class="spaces">                </span><span class="istickedoff">(Just res, _) -&gt; return (<span class="nottickedoff">&quot;max&quot;</span>, \ a b -&gt; [essence| &amp;a &lt;= &amp;b |], res )</span>
-<span class="lineno"> 2383 </span><span class="spaces">                </span><span class="istickedoff">(_, Just res) -&gt; return (<span class="nottickedoff">&quot;min&quot;</span>, \ a b -&gt; [essence| &amp;a &gt;= &amp;b |], res )</span>
-<span class="lineno"> 2384 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na &quot;rule_InlineConditions_MaxMin&quot;</span>
-<span class="lineno"> 2385 </span><span class="spaces">        </span><span class="istickedoff">let</span>
-<span class="lineno"> 2386 </span><span class="spaces">            </span><span class="istickedoff">(toInline, gocInExpr, _toKeep) = mconcat</span>
-<span class="lineno"> 2387 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
-<span class="lineno"> 2388 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([<span class="nottickedoff">x</span>],<span class="nottickedoff">[]</span>,<span class="nottickedoff">[]</span>)</span>
-<span class="lineno"> 2389 </span><span class="spaces">                    </span><span class="istickedoff">Generator (GenInExpr {}) -&gt; <span class="nottickedoff">([],[goc],[])</span></span>
-<span class="lineno"> 2390 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[],<span class="nottickedoff">[goc]</span>)</span>
-<span class="lineno"> 2391 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
-<span class="lineno"> 2392 </span><span class="spaces">                </span><span class="istickedoff">]</span>
-<span class="lineno"> 2393 </span><span class="spaces">        </span><span class="istickedoff">when (null toInline &amp;&amp; null gocInExpr) $ na &quot;rule_InlineConditions_MaxMin&quot;</span>
-<span class="lineno"> 2394 </span><span class="spaces">        </span><span class="istickedoff">auxDomain &lt;- domainOf body</span>
-<span class="lineno"> 2395 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2396 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Creating auxiliary variable for a&quot; &lt;+&gt; nameQ</span></span>
-<span class="lineno"> 2397 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno"> 2398 </span><span class="spaces">                </span><span class="istickedoff">(auxName, aux) &lt;- auxiliaryVar</span>
-<span class="lineno"> 2399 </span><span class="spaces">                </span><span class="istickedoff">let auxDefinedLHS = make opSum (Comprehension 1 gensOrConds)</span>
-<span class="lineno"> 2400 </span><span class="spaces">                </span><span class="istickedoff">let auxDefined = [essence|<span class="nottickedoff"><span class="istickedoff"> &amp;auxDefinedLHS &gt; 0 |]</span></span></span>
-<span class="lineno"> 2401 </span><span class="spaces">                </span><span class="istickedoff">let auxUndefined = [essence| &amp;auxDefinedLHS = 0 |]</span>
-<span class="lineno"> 2402 </span><span class="spaces">                </span><span class="istickedoff">let aux' = WithLocals aux (DefinednessConstraints [auxDefined])</span>
-<span class="lineno"> 2403 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals aux'</span>
-<span class="lineno"> 2404 </span><span class="spaces">                    </span><span class="istickedoff">(AuxiliaryVars</span>
-<span class="lineno"> 2405 </span><span class="spaces">                        </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName auxDomain)</span>
-<span class="lineno"> 2406 </span><span class="spaces">                        </span><span class="istickedoff">, SuchThat</span>
-<span class="lineno"> 2407 </span><span class="spaces">                            </span><span class="istickedoff">[ make opAnd $ Comprehension</span>
-<span class="lineno"> 2408 </span><span class="spaces">                                </span><span class="istickedoff">(binOp body aux)</span>
-<span class="lineno"> 2409 </span><span class="spaces">                                </span><span class="istickedoff">gensOrConds</span>
-<span class="lineno"> 2410 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2411 </span><span class="spaces">                        </span><span class="istickedoff">-- either one of the members of this comprehension, or dontCare</span>
-<span class="lineno"> 2412 </span><span class="spaces">                        </span><span class="istickedoff">-- if it is indeed dontCare, care should be taken to make sure it isn't used as a normal value</span>
-<span class="lineno"> 2413 </span><span class="spaces">                            </span><span class="istickedoff">, make opAnd $ fromList</span>
-<span class="lineno"> 2414 </span><span class="spaces">                                </span><span class="istickedoff">[ make opImply auxDefined</span>
-<span class="lineno"> 2415 </span><span class="spaces">                                    </span><span class="istickedoff">(make opOr  $ Comprehension</span>
-<span class="lineno"> 2416 </span><span class="spaces">                                        </span><span class="istickedoff">[essence| &amp;body = &amp;aux |]</span>
-<span class="lineno"> 2417 </span><span class="spaces">                                        </span><span class="istickedoff">gensOrConds)</span>
-<span class="lineno"> 2418 </span><span class="spaces">                                </span><span class="istickedoff">, make opImply auxUndefined (make opDontCare aux)</span>
-<span class="lineno"> 2419 </span><span class="spaces">                                </span><span class="istickedoff">]</span>
-<span class="lineno"> 2420 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
-<span class="lineno"> 2421 </span><span class="spaces">                        </span><span class="istickedoff">])</span>
-<span class="lineno"> 2422 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2423 </span>
-<span class="lineno"> 2424 </span>
-<span class="lineno"> 2425 </span>rule_AttributeToConstraint :: Rule
-<span class="lineno"> 2426 </span><span class="decl"><span class="istickedoff">rule_AttributeToConstraint = <span class="nottickedoff">&quot;attribute-to-constraint&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2427 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpAttributeAsConstraint (OpAttributeAsConstraint thing attr mval))) = do</span>
-<span class="lineno"> 2428 </span><span class="spaces">        </span><span class="istickedoff">dom &lt;- domainOf thing</span>
-<span class="lineno"> 2429 </span><span class="spaces">        </span><span class="istickedoff">let conv = mkAttributeToConstraint dom attr mval thing</span>
-<span class="lineno"> 2430 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2431 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Converting an attribute to a constraint&quot;</span></span>
-<span class="lineno"> 2432 </span><span class="spaces">            </span><span class="istickedoff">, bugFailT <span class="nottickedoff">&quot;rule_AttributeToConstraint&quot;</span> conv</span>
-<span class="lineno"> 2433 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2434 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_AttributeToConstraint&quot;</span></span>
-<span class="lineno"> 2435 </span>
-<span class="lineno"> 2436 </span>
-<span class="lineno"> 2437 </span>rule_FullEvaluate :: Rule
-<span class="lineno"> 2438 </span><span class="decl"><span class="istickedoff">rule_FullEvaluate = <span class="nottickedoff">&quot;full-evaluate&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2439 </span><span class="spaces">    </span><span class="istickedoff">theRule Constant{} = na &quot;rule_FullEvaluate&quot;</span>
-<span class="lineno"> 2440 </span><span class="spaces">    </span><span class="istickedoff">theRule Domain{} = na &quot;rule_FullEvaluate&quot;</span>
-<span class="lineno"> 2441 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2442 </span><span class="spaces">        </span><span class="istickedoff">constant &lt;- instantiateExpression [] p</span>
-<span class="lineno"> 2443 </span><span class="spaces">        </span><span class="istickedoff">unless (null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe constant]) $</span>
-<span class="lineno"> 2444 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_PartialEvaluate, undefined&quot;</span>
-<span class="lineno"> 2445 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2446 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Full evaluator&quot;</span></span>
-<span class="lineno"> 2447 </span><span class="spaces">            </span><span class="istickedoff">, return $ Constant constant</span>
-<span class="lineno"> 2448 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2449 </span>
-<span class="lineno"> 2450 </span>
-<span class="lineno"> 2451 </span>rule_PartialEvaluate :: Rule
-<span class="lineno"> 2452 </span><span class="decl"><span class="istickedoff">rule_PartialEvaluate = &quot;partial-evaluate&quot; `namedRuleZ` theRule where</span>
-<span class="lineno"> 2453 </span><span class="spaces">    </span><span class="istickedoff">-- if a variable only has a single value in its domain, replace it with the value</span>
-<span class="lineno"> 2454 </span><span class="spaces">    </span><span class="istickedoff">theRule z (Reference _ (Just (DeclHasRepr _ _ (singletonDomainInt -&gt; Just val)))) =</span>
-<span class="lineno"> 2455 </span><span class="spaces">        </span><span class="istickedoff">case hole &lt;$&gt; Zipper.up z of</span>
-<span class="lineno"> 2456 </span><span class="spaces">            </span><span class="istickedoff">Just (Op (MkOpTrue _)) -&gt; na &quot;rule_PartialEvaluate, inside a true(ref)&quot;</span>
-<span class="lineno"> 2457 </span><span class="spaces">            </span><span class="istickedoff">_                      -&gt; return ( <span class="nottickedoff">&quot;Partial evaluator&quot;</span></span>
-<span class="lineno"> 2458 </span><span class="spaces">                                             </span><span class="istickedoff">, return val</span>
-<span class="lineno"> 2459 </span><span class="spaces">                                             </span><span class="istickedoff">)</span>
-<span class="lineno"> 2460 </span><span class="spaces">    </span><span class="istickedoff">theRule _ (Op op)</span>
-<span class="lineno"> 2461 </span><span class="spaces">        </span><span class="istickedoff">| Just (x, y) &lt;- case op of</span>
-<span class="lineno"> 2462 </span><span class="spaces">                            </span><span class="istickedoff">MkOpLeq (OpLeq x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2463 </span><span class="spaces">                            </span><span class="istickedoff">MkOpGeq (OpGeq x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2464 </span><span class="spaces">                            </span><span class="istickedoff">MkOpEq  (OpEq  x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2465 </span><span class="spaces">                            </span><span class="istickedoff">_                   -&gt; Nothing</span>
-<span class="lineno"> 2466 </span><span class="spaces">        </span><span class="istickedoff">, Reference nmX _ &lt;- x</span>
-<span class="lineno"> 2467 </span><span class="spaces">        </span><span class="istickedoff">, Reference nmY _ &lt;- y</span>
-<span class="lineno"> 2468 </span><span class="spaces">        </span><span class="istickedoff">, nmX == nmY</span>
-<span class="lineno"> 2469 </span><span class="spaces">        </span><span class="istickedoff">, categoryOf x &lt;= CatQuantified</span>
-<span class="lineno"> 2470 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">categoryOf y &lt;= CatQuantified</span></span>
-<span class="lineno"> 2471 </span><span class="spaces">        </span><span class="istickedoff">= return</span>
-<span class="lineno"> 2472 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Parameter = parameter (or quantified)&quot;</span></span>
-<span class="lineno"> 2473 </span><span class="spaces">            </span><span class="istickedoff">, return (fromBool True)</span>
-<span class="lineno"> 2474 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2475 </span><span class="spaces">    </span><span class="istickedoff">theRule _ (Op x) = do</span>
-<span class="lineno"> 2476 </span><span class="spaces">        </span><span class="istickedoff">x' &lt;- simplifyOp x</span>
-<span class="lineno"> 2477 </span><span class="spaces">        </span><span class="istickedoff">when (Op x == x') $ <span class="nottickedoff">bug $ vcat</span></span>
-<span class="lineno"> 2478 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;rule_PartialEvaluate, simplifier returns the input unchanged.&quot;</span></span>
-<span class="lineno"> 2479 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;input:&quot; &lt;+&gt; vcat [ pretty (Op x)</span></span>
-<span class="lineno"> 2480 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, pretty (show (Op x))</span></span>
-<span class="lineno"> 2481 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno"> 2482 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno"> 2483 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2484 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Partial evaluator&quot;</span></span>
-<span class="lineno"> 2485 </span><span class="spaces">            </span><span class="istickedoff">, return x'</span>
-<span class="lineno"> 2486 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2487 </span><span class="spaces">    </span><span class="istickedoff">theRule _ _ = na &quot;rule_PartialEvaluate&quot;</span></span>
-<span class="lineno"> 2488 </span>
-<span class="lineno"> 2489 </span>
-<span class="lineno"> 2490 </span>-- | shifting quantifiers inwards, if they operate on a row of a 2d matrix,
-<span class="lineno"> 2491 </span>--   make them operate on the rows directly then index
-<span class="lineno"> 2492 </span>rule_QuantifierShift :: Rule
-<span class="lineno"> 2493 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift = <span class="nottickedoff">&quot;quantifier-shift&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2494 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2495 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mkQuan, inner)           &lt;- match opReducer p</span>
-<span class="lineno"> 2496 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indexer)               &lt;- match opIndexing inner</span>
-<span class="lineno"> 2497 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- <span class="nottickedoff">match matrixLiteral matrix</span></span>
-<span class="lineno"> 2498 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case ty of</span></span>
-<span class="lineno"> 2499 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMatrix{} -&gt; return ()</span></span>
-<span class="lineno"> 2500 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeList{} -&gt; return ()</span></span>
-<span class="lineno"> 2501 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_QuantifierShift&quot;</span></span>
-<span class="lineno"> 2502 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2503 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Shifting quantifier inwards&quot;</span></span>
-<span class="lineno"> 2504 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opIndexing</span></span>
-<span class="lineno"> 2505 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make matrixLiteral</span></span>
-<span class="lineno"> 2506 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
-<span class="lineno"> 2507 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">index</span></span>
-<span class="lineno"> 2508 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">(map mkQuan elems))</span></span>
-<span class="lineno"> 2509 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">indexer</span></span>
-<span class="lineno"> 2510 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
-<span class="lineno"> 2511 </span>
-<span class="lineno"> 2512 </span>
-<span class="lineno"> 2513 </span>-- | shifting quantifiers inwards, if they operate on a flattened multi-dim matrix.
-<span class="lineno"> 2514 </span>rule_QuantifierShift2 :: Rule
-<span class="lineno"> 2515 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift2 = <span class="nottickedoff">&quot;quantifier-shift2&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2516 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2517 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mkQuan, inner)           &lt;- match opReducer p</span>
-<span class="lineno"> 2518 </span><span class="spaces">        </span><span class="istickedoff">matrix                          &lt;- match opFlatten inner</span>
-<span class="lineno"> 2519 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- match matrixLiteral matrix</span>
-<span class="lineno"> 2520 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno"> 2521 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{} -&gt; <span class="nottickedoff">return ()</span>           -- the matrix literal should contain further matrix/list stuff.</span>
-<span class="lineno"> 2522 </span><span class="spaces">            </span><span class="istickedoff">TypeList{}   -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2523 </span><span class="spaces">            </span><span class="istickedoff">_            -&gt; <span class="nottickedoff">na &quot;rule_QuantifierShift2&quot;</span></span>
-<span class="lineno"> 2524 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2525 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Shifting quantifier inwards&quot;</span></span>
-<span class="lineno"> 2526 </span><span class="spaces">            </span><span class="istickedoff">, return $ mkQuan</span>
-<span class="lineno"> 2527 </span><span class="spaces">                        </span><span class="istickedoff">(make matrixLiteral</span>
-<span class="lineno"> 2528 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
-<span class="lineno"> 2529 </span><span class="spaces">                            </span><span class="istickedoff">index</span>
-<span class="lineno"> 2530 </span><span class="spaces">                            </span><span class="istickedoff">(map (mkQuan . flattenIfNeeded (matrixNumDims ty)) elems))</span>
-<span class="lineno"> 2531 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2532 </span>
-<span class="lineno"> 2533 </span>
-<span class="lineno"> 2534 </span>-- | shifting quantifiers inwards, if they operate on a concatenated multi-dim matrix.
-<span class="lineno"> 2535 </span>rule_QuantifierShift3 :: Rule
-<span class="lineno"> 2536 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift3 = <span class="nottickedoff">&quot;quantifier-shift3&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2537 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2538 </span><span class="spaces">        </span><span class="istickedoff">(_, True, mkQuan, inner)        &lt;- match opReducer p</span>
-<span class="lineno"> 2539 </span><span class="spaces">        </span><span class="istickedoff">matrix                          &lt;- match opConcatenate inner</span>
-<span class="lineno"> 2540 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- match matrixLiteral matrix</span>
-<span class="lineno"> 2541 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2542 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Shifting quantifier inwards&quot;</span></span>
-<span class="lineno"> 2543 </span><span class="spaces">            </span><span class="istickedoff">, return $ mkQuan $ make matrixLiteral</span>
-<span class="lineno"> 2544 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
-<span class="lineno"> 2545 </span><span class="spaces">                                        </span><span class="istickedoff">index</span>
-<span class="lineno"> 2546 </span><span class="spaces">                                        </span><span class="istickedoff">(map mkQuan elems)</span>
-<span class="lineno"> 2547 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno"> 2548 </span>
-<span class="lineno"> 2549 </span>
-<span class="lineno"> 2550 </span>rule_Comprehension_Simplify :: Rule
-<span class="lineno"> 2551 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Simplify = <span class="nottickedoff">&quot;comprehension-simplify&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2552 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension x gocs)</span>
-<span class="lineno"> 2553 </span><span class="spaces">        </span><span class="istickedoff">| let isTrueCondition (Condition (Constant (ConstantBool True))) = True</span>
-<span class="lineno"> 2554 </span><span class="spaces">              </span><span class="istickedoff">isTrueCondition _ = False</span>
-<span class="lineno"> 2555 </span><span class="spaces">        </span><span class="istickedoff">, let gocs' = filter (not . isTrueCondition) gocs</span>
-<span class="lineno"> 2556 </span><span class="spaces">        </span><span class="istickedoff">, length gocs' &lt; length gocs</span>
-<span class="lineno"> 2557 </span><span class="spaces">        </span><span class="istickedoff">= return</span>
-<span class="lineno"> 2558 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Removing true conditions&quot;</span></span>
-<span class="lineno"> 2559 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension x gocs'</span>
-<span class="lineno"> 2560 </span><span class="spaces">            </span><span class="istickedoff">)</span>
-<span class="lineno"> 2561 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Simplify&quot;</span></span>
-<span class="lineno"> 2562 </span>
-<span class="lineno"> 2563 </span>
-<span class="lineno"> 2564 </span>rule_Xor_To_Sum :: Rule
-<span class="lineno"> 2565 </span><span class="decl"><span class="istickedoff">rule_Xor_To_Sum = <span class="nottickedoff">&quot;xor-to-sum&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2566 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| xor(&amp;arg) |] =</span>
-<span class="lineno"> 2567 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case arg of</span></span>
-<span class="lineno"> 2568 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Comprehension body goc -&gt; do</span></span>
-<span class="lineno"> 2569 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = Comprehension [essence| toInt(&amp;body) |] goc</span></span>
-<span class="lineno"> 2570 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2571 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2572 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
-<span class="lineno"> 2573 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno"> 2574 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitMatrix dom elems) -&gt; do</span></span>
-<span class="lineno"> 2575 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = AbstractLiteral $ AbsLitMatrix dom</span></span>
-<span class="lineno"> 2576 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| toInt(&amp;el) |] | el &lt;- elems ]</span></span>
-<span class="lineno"> 2577 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2578 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2579 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
-<span class="lineno"> 2580 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno"> 2581 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; do</span></span>
-<span class="lineno"> 2582 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2583 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2584 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2585 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum([ toInt(&amp;i) | &amp;iPat &lt;- &amp;arg ]) |]</span></span>
-<span class="lineno"> 2586 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno"> 2587 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Xor_To_Sum&quot;</span></span>
-<span class="lineno"> 2588 </span>
-<span class="lineno"> 2589 </span>
-<span class="lineno"> 2590 </span>rule_Comprehension_Cardinality :: Rule
-<span class="lineno"> 2591 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Cardinality = <span class="nottickedoff">&quot;comprehension-cardinality&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2592 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2593 </span><span class="spaces">        </span><span class="istickedoff">Comprehension _ gensOrConds &lt;- match opTwoBars p</span>
-<span class="lineno"> 2594 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">ofones = Comprehension (fromInt 1) gensOrConds</span></span>
-<span class="lineno"> 2595 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Horizontal rule for comprehension cardinality&quot;</span></span>
-<span class="lineno"> 2596 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, return [essence| sum(&amp;ofones) |]</span></span>
-<span class="lineno"> 2597 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
-<span class="lineno"> 2598 </span>
-<span class="lineno"> 2599 </span>rule_Flatten_Cardinality :: Rule
-<span class="lineno"> 2600 </span><span class="decl"><span class="istickedoff">rule_Flatten_Cardinality = <span class="nottickedoff">&quot;flatten-cardinality&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2601 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2602 </span><span class="spaces">        </span><span class="istickedoff">list &lt;- match opTwoBars p &gt;&gt;= match opConcatenate</span>
-<span class="lineno"> 2603 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Horizontal rule for comprehension cardinality&quot;</span></span>
-<span class="lineno"> 2604 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno"> 2605 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2606 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">return [essence| sum([ |&amp;i| | &amp;iPat &lt;- &amp;list ]) |]</span></span>
-<span class="lineno"> 2607 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
-<span class="lineno"> 2608 </span>
+<span class="lineno"> 1982 </span><span class="spaces">      </span><span class="istickedoff">reject_flat a b</span>
+<span class="lineno"> 1983 </span><span class="spaces">      </span><span class="istickedoff">fa &lt;- flatten a</span>
+<span class="lineno"> 1984 </span><span class="spaces">      </span><span class="istickedoff">fb &lt;- flatten b</span>
+<span class="lineno"> 1985 </span><span class="spaces">      </span><span class="istickedoff">tfa &lt;- typeOf fa</span>
+<span class="lineno"> 1986 </span><span class="spaces">      </span><span class="istickedoff">tfb &lt;- typeOf fb</span>
+<span class="lineno"> 1987 </span><span class="spaces">      </span><span class="istickedoff">case (tfa, tfb) of</span>
+<span class="lineno"> 1988 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 1989 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 1990 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;flattener: &quot; &lt;+&gt; vcat [stringToDoc $ show tfa, stringToDoc $ show tfb]</span></span>
+<span class="lineno"> 1991 </span><span class="spaces">      </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Flatten Lex less&quot;</span></span>
+<span class="lineno"> 1992 </span><span class="spaces">             </span><span class="istickedoff">, return [essence| &amp;fa &lt;lex &amp;fb |]</span>
+<span class="lineno"> 1993 </span><span class="spaces">             </span><span class="istickedoff">)</span>
+<span class="lineno"> 1994 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a &lt;=lex &amp;b |] = do</span>
+<span class="lineno"> 1995 </span><span class="spaces">      </span><span class="istickedoff">reject_flat a b</span>
+<span class="lineno"> 1996 </span><span class="spaces">      </span><span class="istickedoff">fa &lt;- flatten a</span>
+<span class="lineno"> 1997 </span><span class="spaces">      </span><span class="istickedoff">fb &lt;- flatten b</span>
+<span class="lineno"> 1998 </span><span class="spaces">      </span><span class="istickedoff">tfa &lt;- typeOf fa</span>
+<span class="lineno"> 1999 </span><span class="spaces">      </span><span class="istickedoff">tfb &lt;- typeOf fb</span>
+<span class="lineno"> 2000 </span><span class="spaces">      </span><span class="istickedoff">case (tfa, tfb) of</span>
+<span class="lineno"> 2001 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, TypeList TypeInt{}) -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno"> 2002 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, TypeMatrix TypeInt{} TypeInt{}) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2003 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;flattener: &quot; &lt;+&gt; vcat [stringToDoc $ show tfa, stringToDoc $ show tfb]</span></span>
+<span class="lineno"> 2004 </span><span class="spaces">      </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Flatten Lex Lt&quot;</span></span>
+<span class="lineno"> 2005 </span><span class="spaces">             </span><span class="istickedoff">, return [essence| &amp;fa &lt;=lex &amp;fb |]</span>
+<span class="lineno"> 2006 </span><span class="spaces">             </span><span class="istickedoff">)</span>
+<span class="lineno"> 2007 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Flatten_Lex&quot;  </span>
+<span class="lineno"> 2008 </span><span class="spaces">    </span><span class="istickedoff">reject_flat a b = do</span>
+<span class="lineno"> 2009 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
+<span class="lineno"> 2010 </span><span class="spaces">      </span><span class="istickedoff">tb &lt;- typeOf b</span>
+<span class="lineno"> 2011 </span><span class="spaces">      </span><span class="istickedoff">case (ta, <span class="nottickedoff">tb</span>) of</span>
+<span class="lineno"> 2012 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeBool TypeInt{}, _) -&gt;</span>
+<span class="lineno"> 2013 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">na &quot;rule_Flatten_Lex&quot;</span></span>
+<span class="lineno"> 2014 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeBool TypeBool, _) -&gt;</span>
+<span class="lineno"> 2015 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">na &quot;rule_Flatten_Lex&quot;</span></span>
+<span class="lineno"> 2016 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeInt{}, _) -&gt;</span>
+<span class="lineno"> 2017 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot; </span>
+<span class="lineno"> 2018 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeInt{}, _) -&gt;</span>
+<span class="lineno"> 2019 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot;</span>
+<span class="lineno"> 2020 </span><span class="spaces">        </span><span class="istickedoff">(TypeList TypeBool, _) -&gt;</span>
+<span class="lineno"> 2021 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">na &quot;rule_Flatten_Lex&quot;</span> </span>
+<span class="lineno"> 2022 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix TypeInt{} TypeBool, _) -&gt;</span>
+<span class="lineno"> 2023 </span><span class="spaces">          </span><span class="istickedoff">na &quot;rule_Flatten_Lex&quot;</span>
+<span class="lineno"> 2024 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span> </span>
+<span class="lineno"> 2025 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2026 </span><span class="spaces">    </span><span class="istickedoff">flatten a = do</span>
+<span class="lineno"> 2027 </span><span class="spaces">      </span><span class="istickedoff">ta &lt;- typeOf a</span>
+<span class="lineno"> 2028 </span><span class="spaces">      </span><span class="istickedoff">case ta of</span>
+<span class="lineno"> 2029 </span><span class="spaces">        </span><span class="istickedoff">TypeBool -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [-toInt(&amp;a)] |]</span></span></span></span></span>
+<span class="lineno"> 2030 </span><span class="spaces">        </span><span class="istickedoff">TypeInt{} -&gt; return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [&amp;a] |]</span></span></span></span></span>
+<span class="lineno"> 2031 </span><span class="spaces">        </span><span class="istickedoff">TypeList TypeInt{} -&gt; return a</span>
+<span class="lineno"> 2032 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix TypeInt{} TypeInt{} -&gt; return a</span>
+<span class="lineno"> 2033 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple ts -&gt; do</span>
+<span class="lineno"> 2034 </span><span class="spaces">          </span><span class="istickedoff">case a of</span>
+<span class="lineno"> 2035 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral x -&gt; do</span>
+<span class="lineno"> 2036 </span><span class="spaces">              </span><span class="istickedoff">case x of</span>
+<span class="lineno"> 2037 </span><span class="spaces">                </span><span class="istickedoff">AbsLitTuple xs -&gt; do</span>
+<span class="lineno"> 2038 </span><span class="spaces">                  </span><span class="istickedoff">fxs &lt;- sequence (flatten &lt;$&gt; xs)</span>
+<span class="lineno"> 2039 </span><span class="spaces">                  </span><span class="istickedoff">let flatxs = fromList fxs</span>
+<span class="lineno"> 2040 </span><span class="spaces">                  </span><span class="istickedoff">return [essence| flatten(&amp;flatxs) |]</span>
+<span class="lineno"> 2041 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this abslit fellow...&quot;</span></span>
+<span class="lineno"> 2042 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2043 </span><span class="spaces">            </span><span class="istickedoff">Constant c -&gt;</span>
+<span class="lineno"> 2044 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">case c of</span></span>
+<span class="lineno"> 2045 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract ca -&gt;</span></span>
+<span class="lineno"> 2046 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">case ca of</span></span>
+<span class="lineno"> 2047 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">AbsLitTuple xs -&gt; do</span></span>
+<span class="lineno"> 2048 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">fxs &lt;- sequence (flatten &lt;$&gt; (Constant &lt;$&gt; xs))</span></span>
+<span class="lineno"> 2049 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">let flatxs = fromList fxs</span></span>
+<span class="lineno"> 2050 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">return [essence| flatten(&amp;flatxs) |]</span></span>
+<span class="lineno"> 2051 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
+<span class="lineno"> 2052 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2053 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
+<span class="lineno"> 2054 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2055 </span><span class="spaces">            </span><span class="istickedoff">Op _ -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2056 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">(oName, o) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2057 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">flatten $ Comprehension o [ComprehensionLetting oName a]</span></span>
+<span class="lineno"> 2058 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2059 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">ps &lt;- sequence $ (\(i,_) -&gt; do</span></span>
+<span class="lineno"> 2060 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">(Single nm, tm) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2061 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">return (i,nm,tm)) &lt;$&gt; (zip [1..] ts)</span></span>
+<span class="lineno"> 2062 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">let lts = (\(i,nm,_tm) -&gt; ComprehensionLetting (Single nm) [essence| &amp;a[&amp;i] |]) &lt;$&gt; ps</span></span>
+<span class="lineno"> 2063 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">tup = AbstractLiteral $ AbsLitTuple $ (\(_,_,tm) -&gt; tm) &lt;$&gt; ps</span></span>
+<span class="lineno"> 2064 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">flatten $ Comprehension tup lts</span></span>
+<span class="lineno"> 2065 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt;</span>
+<span class="lineno"> 2066 </span><span class="spaces">          </span><span class="istickedoff">case a of</span>
+<span class="lineno"> 2067 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral x -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2068 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">case x of</span></span>
+<span class="lineno"> 2069 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbsLitMatrix _ xs -&gt; do</span></span>
+<span class="lineno"> 2070 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">fxs &lt;- sequence (flatten &lt;$&gt; xs)</span></span>
+<span class="lineno"> 2071 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">let flatxs = fromList fxs</span></span>
+<span class="lineno"> 2072 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">return [essence| flatten(&amp;flatxs) |]</span></span>
+<span class="lineno"> 2073 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;rule_FlattenLex: flatten isn't defined for this abslit fellow...&quot;</span></span>
+<span class="lineno"> 2074 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2075 </span><span class="spaces">            </span><span class="istickedoff">Constant c -&gt;</span>
+<span class="lineno"> 2076 </span><span class="spaces">              </span><span class="istickedoff">case c of</span>
+<span class="lineno"> 2077 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract ca -&gt;</span>
+<span class="lineno"> 2078 </span><span class="spaces">                  </span><span class="istickedoff">case ca of</span>
+<span class="lineno"> 2079 </span><span class="spaces">                    </span><span class="istickedoff">AbsLitMatrix _ [] -&gt;</span>
+<span class="lineno"> 2080 </span><span class="spaces">                      </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> ([] : `matrix indexed by [int()] of int`) |]</span></span></span></span></span>
+<span class="lineno"> 2081 </span><span class="spaces">                    </span><span class="istickedoff">AbsLitMatrix _ xs -&gt; do</span>
+<span class="lineno"> 2082 </span><span class="spaces">                      </span><span class="istickedoff">fxs &lt;- sequence (flatten &lt;$&gt; (Constant &lt;$&gt; xs))</span>
+<span class="lineno"> 2083 </span><span class="spaces">                      </span><span class="istickedoff">let flatxs = fromList fxs</span>
+<span class="lineno"> 2084 </span><span class="spaces">                      </span><span class="istickedoff">return [essence| flatten(&amp;flatxs) |]</span>
+<span class="lineno"> 2085 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
+<span class="lineno"> 2086 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2087 </span><span class="spaces">                </span><span class="istickedoff">TypedConstant tc _ -&gt; flatten (Constant tc)</span>
+<span class="lineno"> 2088 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this constant fellow...&quot;</span></span>
+<span class="lineno"> 2089 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span>
+<span class="lineno"> 2090 </span><span class="spaces">            </span><span class="istickedoff">Op _ -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2091 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">(oName, o) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2092 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">flatten $ Comprehension o [ComprehensionLetting oName a]</span></span>
+<span class="lineno"> 2093 </span><span class="spaces">            </span><span class="istickedoff">Reference nm ex -&gt;</span>
+<span class="lineno"> 2094 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this reference fellow...&quot;</span></span>
+<span class="lineno"> 2095 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [stringToDoc (show a)</span></span>
+<span class="lineno"> 2096 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">,&quot;reference:&quot; &lt;+&gt; stringToDoc (show nm)</span></span>
+<span class="lineno"> 2097 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">,&quot;fellow:&quot; &lt;+&gt; stringToDoc (show ex)]</span></span>
+<span class="lineno"> 2098 </span><span class="spaces">            </span><span class="istickedoff">Comprehension body gocs -&gt; do</span>
+<span class="lineno"> 2099 </span><span class="spaces">              </span><span class="istickedoff">fbody &lt;- flatten body</span>
+<span class="lineno"> 2100 </span><span class="spaces">              </span><span class="istickedoff">let comp = Comprehension fbody gocs</span>
+<span class="lineno"> 2101 </span><span class="spaces">              </span><span class="istickedoff">return [essence| flatten(&amp;comp) |]</span>
+<span class="lineno"> 2102 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;rule_FlattenLex: flatten isn't defined for this expression fellow...&quot;</span></span>
+<span class="lineno"> 2103 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno"> 2104 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; vcat [pretty a, pretty ta, stringToDoc $ show a]</span></span></span>
+<span class="lineno"> 2105 </span>
+<span class="lineno"> 2106 </span>
+<span class="lineno"> 2107 </span>rule_ReducerToComprehension :: Rule
+<span class="lineno"> 2108 </span><span class="decl"><span class="istickedoff">rule_ReducerToComprehension = <span class="nottickedoff">&quot;reducer-to-comprehension&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2109 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2110 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mk, coll) &lt;- match opReducer p</span>
+<span class="lineno"> 2111 </span><span class="spaces">        </span><span class="istickedoff">-- leave comprehensions alone</span>
+<span class="lineno"> 2112 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno"> 2113 </span><span class="spaces">            </span><span class="istickedoff">isComprehension Comprehension{} = True</span>
+<span class="lineno"> 2114 </span><span class="spaces">            </span><span class="istickedoff">isComprehension _ = False</span>
+<span class="lineno"> 2115 </span><span class="spaces">        </span><span class="istickedoff">case followAliases isComprehension coll of</span>
+<span class="lineno"> 2116 </span><span class="spaces">            </span><span class="istickedoff">True  -&gt; na &quot;rule_ReducerToComprehension&quot;</span>
+<span class="lineno"> 2117 </span><span class="spaces">            </span><span class="istickedoff">False -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2118 </span><span class="spaces">        </span><span class="istickedoff">-- leave matrix literals alone</span>
+<span class="lineno"> 2119 </span><span class="spaces">        </span><span class="istickedoff">case tryMatch matrixLiteral coll of</span>
+<span class="lineno"> 2120 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2121 </span><span class="spaces">            </span><span class="istickedoff">Just {} -&gt; na &quot;rule_ReducerToComprehension&quot;</span>
+<span class="lineno"> 2122 </span><span class="spaces">        </span><span class="istickedoff">tyColl &lt;- typeOf coll</span>
+<span class="lineno"> 2123 </span><span class="spaces">        </span><span class="istickedoff">howToIndex &lt;- case tyColl of</span>
+<span class="lineno"> 2124 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence{} -&gt; <span class="nottickedoff">return $ Left ()</span></span>
+<span class="lineno"> 2125 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{}   -&gt; <span class="nottickedoff">return $ Right ()</span></span>
+<span class="lineno"> 2126 </span><span class="spaces">            </span><span class="istickedoff">TypeList{}     -&gt; <span class="nottickedoff">return $ Right ()</span></span>
+<span class="lineno"> 2127 </span><span class="spaces">            </span><span class="istickedoff">TypeSet{}      -&gt; return $ Right <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2128 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; <span class="nottickedoff">return $ Right ()</span></span>
+<span class="lineno"> 2129 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;rule_ReducerToComprehension&quot;</span></span>
+<span class="lineno"> 2130 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2131 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Creating a comprehension for the collection inside the reducer operator.&quot;</span></span>
+<span class="lineno"> 2132 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno"> 2133 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno"> 2134 </span><span class="spaces">                </span><span class="istickedoff">case howToIndex of</span>
+<span class="lineno"> 2135 </span><span class="spaces">                    </span><span class="istickedoff">Left{}  -&gt; <span class="nottickedoff">return $ mk [essence| [ &amp;i[2] | &amp;iPat &lt;- &amp;coll ] |]</span></span>
+<span class="lineno"> 2136 </span><span class="spaces">                    </span><span class="istickedoff">Right{} -&gt; return $ mk [essence| [ &amp;i    | &amp;iPat &lt;- &amp;coll ] |]</span>
+<span class="lineno"> 2137 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2138 </span>
+<span class="lineno"> 2139 </span>
+<span class="lineno"> 2140 </span>rule_TrueIsNoOp :: Rule
+<span class="lineno"> 2141 </span><span class="decl"><span class="istickedoff">rule_TrueIsNoOp = <span class="nottickedoff">&quot;true-is-noop&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2142 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpTrue (OpTrue ref))) =</span>
+<span class="lineno"> 2143 </span><span class="spaces">        </span><span class="istickedoff">case ref of</span>
+<span class="lineno"> 2144 </span><span class="spaces">            </span><span class="istickedoff">Reference _ (Just DeclHasRepr{}) -&gt;</span>
+<span class="lineno"> 2145 </span><span class="spaces">                </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;Remove the argument from true.&quot;</span></span>
+<span class="lineno"> 2146 </span><span class="spaces">                       </span><span class="istickedoff">, return $ Constant $ ConstantBool True</span>
+<span class="lineno"> 2147 </span><span class="spaces">                       </span><span class="istickedoff">)</span>
+<span class="lineno"> 2148 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;The argument of true doesn't have a representation.&quot;</span></span>
+<span class="lineno"> 2149 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_TrueIsNoOp&quot;</span></span>
+<span class="lineno"> 2150 </span>
+<span class="lineno"> 2151 </span>
+<span class="lineno"> 2152 </span>rule_FlattenOf1D :: Rule
+<span class="lineno"> 2153 </span><span class="decl"><span class="istickedoff">rule_FlattenOf1D = <span class="nottickedoff">&quot;flatten-of-1D&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2154 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2155 </span><span class="spaces">        </span><span class="istickedoff">x   &lt;- match opFlatten p</span>
+<span class="lineno"> 2156 </span><span class="spaces">        </span><span class="istickedoff">tyx &lt;- typeOf x</span>
+<span class="lineno"> 2157 </span><span class="spaces">        </span><span class="istickedoff">out &lt;- case tyx of</span>
+<span class="lineno"> 2158 </span><span class="spaces">            </span><span class="istickedoff">TypeList     TypeBool{} -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 2159 </span><span class="spaces">            </span><span class="istickedoff">TypeList     TypeInt{}  -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 2160 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool{} -&gt; return x</span>
+<span class="lineno"> 2161 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeInt{}  -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 2162 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{}            -&gt; -- more than 1D</span>
+<span class="lineno"> 2163 </span><span class="spaces">                </span><span class="istickedoff">case listOut x of</span>
+<span class="lineno"> 2164 </span><span class="spaces">                    </span><span class="istickedoff">Just [y] -&gt; <span class="nottickedoff">return (make opFlatten y)</span></span>
+<span class="lineno"> 2165 </span><span class="spaces">                    </span><span class="istickedoff">_        -&gt; na &quot;rule_FlattenOf1D&quot;</span>
+<span class="lineno"> 2166 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;rule_FlattenOf1D&quot;</span>
+<span class="lineno"> 2167 </span><span class="spaces">        </span><span class="istickedoff">return ( <span class="nottickedoff">&quot;1D matrices do not need a flatten.&quot;</span></span>
+<span class="lineno"> 2168 </span><span class="spaces">               </span><span class="istickedoff">, return out</span>
+<span class="lineno"> 2169 </span><span class="spaces">               </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2170 </span>
+<span class="lineno"> 2171 </span>
+<span class="lineno"> 2172 </span>rule_Decompose_AllDiff :: Rule
+<span class="lineno"> 2173 </span><span class="decl"><span class="istickedoff">rule_Decompose_AllDiff = <span class="nottickedoff">&quot;decompose-allDiff&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2174 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| allDiff(&amp;m) |] = do</span>
+<span class="lineno"> 2175 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf m</span>
+<span class="lineno"> 2176 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno"> 2177 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; <span class="nottickedoff">na &quot;allDiff can stay&quot;</span></span>
+<span class="lineno"> 2178 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ (TypeInt _)  -&gt; na &quot;allDiff can stay&quot;</span>
+<span class="lineno"> 2179 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ _        -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno"> 2180 </span><span class="spaces">            </span><span class="istickedoff">_                     -&gt; na &quot;allDiff on something other than a matrix.&quot;</span>
+<span class="lineno"> 2181 </span><span class="spaces">        </span><span class="istickedoff">index:_ &lt;- <span class="nottickedoff">indexDomainsOf m</span></span>
+<span class="lineno"> 2182 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2183 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Decomposing allDiff. Type:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno"> 2184 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno"> 2185 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2186 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2187 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2188 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
+<span class="lineno"> 2189 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">and([ &amp;m[&amp;i] != &amp;m[&amp;j]</span></span>
+<span class="lineno"> 2190 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| &amp;iPat : &amp;index</span></span>
+<span class="lineno"> 2191 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;jPat : &amp;index</span></span>
+<span class="lineno"> 2192 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;i &lt; &amp;j</span></span>
+<span class="lineno"> 2193 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
+<span class="lineno"> 2194 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno"> 2195 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2196 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Decompose_AllDiff&quot;</span></span>
+<span class="lineno"> 2197 </span>
+<span class="lineno"> 2198 </span>
+<span class="lineno"> 2199 </span>rule_DomainCardinality :: Rule
+<span class="lineno"> 2200 </span><span class="decl"><span class="istickedoff">rule_DomainCardinality = <span class="nottickedoff">&quot;domain-cardinality&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2201 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2202 </span><span class="spaces">        </span><span class="istickedoff">maybeDomain &lt;- match opTwoBars p</span>
+<span class="lineno"> 2203 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- expandDomainReference &lt;$&gt; case maybeDomain of</span>
+<span class="lineno"> 2204 </span><span class="spaces">            </span><span class="istickedoff">Domain d -&gt; return d</span>
+<span class="lineno"> 2205 </span><span class="spaces">            </span><span class="istickedoff">Reference _ (Just (Alias (Domain d))) -&gt; <span class="nottickedoff">return d</span></span>
+<span class="lineno"> 2206 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;rule_DomainCardinality&quot;</span>
+<span class="lineno"> 2207 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2208 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Cardinality of a domain&quot;</span></span>
+<span class="lineno"> 2209 </span><span class="spaces">            </span><span class="istickedoff">, case d of</span>
+<span class="lineno"> 2210 </span><span class="spaces">                </span><span class="istickedoff">DomainInt _ [RangeBounded 1 u] -&gt; return u</span>
+<span class="lineno"> 2211 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno"> 2212 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, _) &lt;- quantifiedVar</span>
+<span class="lineno"> 2213 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> sum([ 1 | &amp;iPat : &amp;d ]) |]</span></span></span>
+<span class="lineno"> 2214 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2215 </span>
+<span class="lineno"> 2216 </span>
+<span class="lineno"> 2217 </span>rule_DomainMinMax :: Rule
+<span class="lineno"> 2218 </span><span class="decl"><span class="istickedoff">rule_DomainMinMax = <span class="nottickedoff">&quot;domain-MinMax&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2219 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| max(&amp;maybeDomain) |] = do</span>
+<span class="lineno"> 2220 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- getDomain maybeDomain</span>
+<span class="lineno"> 2221 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2222 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;max of a domain&quot;</span></span>
+<span class="lineno"> 2223 </span><span class="spaces">            </span><span class="istickedoff">, maxOfDomain d</span>
+<span class="lineno"> 2224 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2225 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| min(&amp;maybeDomain) |] = do</span>
+<span class="lineno"> 2226 </span><span class="spaces">        </span><span class="istickedoff">d &lt;- getDomain maybeDomain</span>
+<span class="lineno"> 2227 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2228 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;min of a domain&quot;</span></span>
+<span class="lineno"> 2229 </span><span class="spaces">            </span><span class="istickedoff">, minOfDomain d</span>
+<span class="lineno"> 2230 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2231 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_DomainMinMax&quot;</span>
+<span class="lineno"> 2232 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2233 </span><span class="spaces">    </span><span class="istickedoff">getDomain :: MonadFail m =&gt; Expression -&gt; m (Domain () Expression)</span>
+<span class="lineno"> 2234 </span><span class="spaces">    </span><span class="istickedoff">getDomain (Domain d) = return d</span>
+<span class="lineno"> 2235 </span><span class="spaces">    </span><span class="istickedoff">getDomain (Reference _ (Just (Alias (Domain d)))) = <span class="nottickedoff">getDomain (Domain d)</span></span>
+<span class="lineno"> 2236 </span><span class="spaces">    </span><span class="istickedoff">getDomain _ = na &quot;rule_DomainMinMax.getDomain&quot;</span></span>
+<span class="lineno"> 2237 </span>
+<span class="lineno"> 2238 </span>
+<span class="lineno"> 2239 </span>rule_ComplexAbsPat :: Rule
+<span class="lineno"> 2240 </span><span class="decl"><span class="istickedoff">rule_ComplexAbsPat = <span class="nottickedoff">&quot;complex-pattern&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2241 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno"> 2242 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, domainOrExpr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno"> 2243 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainNoRepr pat@AbsPatTuple{} domain) -&gt; return (pat, Left domain)</span>
+<span class="lineno"> 2244 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr       pat@AbsPatTuple{} expr)   -&gt; return (pat, Right expr)</span>
+<span class="lineno"> 2245 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_ComplexAbsPat&quot;</span></span>
+<span class="lineno"> 2246 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2247 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;complex pattern on tuple patterns&quot;</span></span>
+<span class="lineno"> 2248 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno"> 2249 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno"> 2250 </span><span class="spaces">                </span><span class="istickedoff">let replacements = [ (p, make opMatrixIndexing i (map (fromInt . fromIntegral) is))</span>
+<span class="lineno"> 2251 </span><span class="spaces">                                   </span><span class="istickedoff">| (p, is) &lt;- genMappings pat</span>
+<span class="lineno"> 2252 </span><span class="spaces">                                   </span><span class="istickedoff">]</span>
+<span class="lineno"> 2253 </span><span class="spaces">                </span><span class="istickedoff">let f x@(Reference nm _) = fromMaybe x (lookup nm replacements)</span>
+<span class="lineno"> 2254 </span><span class="spaces">                    </span><span class="istickedoff">f x = x</span>
+<span class="lineno"> 2255 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (transform f body)</span>
+<span class="lineno"> 2256 </span><span class="spaces">                            </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno"> 2257 </span><span class="spaces">                            </span><span class="istickedoff">++ [ either (Generator . GenDomainNoRepr iPat)</span>
+<span class="lineno"> 2258 </span><span class="spaces">                                        </span><span class="istickedoff">(Generator . GenInExpr       iPat)</span>
+<span class="lineno"> 2259 </span><span class="spaces">                                        </span><span class="istickedoff">domainOrExpr ]</span>
+<span class="lineno"> 2260 </span><span class="spaces">                            </span><span class="istickedoff">++ transformBi f gocAfter</span>
+<span class="lineno"> 2261 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2262 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ComplexAbsPat&quot;</span>
+<span class="lineno"> 2263 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2264 </span><span class="spaces">    </span><span class="istickedoff">-- i         --&gt; i -&gt; []</span>
+<span class="lineno"> 2265 </span><span class="spaces">    </span><span class="istickedoff">-- (i,j)     --&gt; i -&gt; [1]</span>
+<span class="lineno"> 2266 </span><span class="spaces">    </span><span class="istickedoff">--               j -&gt; [2]</span>
+<span class="lineno"> 2267 </span><span class="spaces">    </span><span class="istickedoff">-- (i,(j,k)) --&gt; i -&gt; [1]</span>
+<span class="lineno"> 2268 </span><span class="spaces">    </span><span class="istickedoff">--               j -&gt; [2,1]</span>
+<span class="lineno"> 2269 </span><span class="spaces">    </span><span class="istickedoff">--               k -&gt; [2,2]</span>
+<span class="lineno"> 2270 </span><span class="spaces">    </span><span class="istickedoff">genMappings :: AbstractPattern -&gt; [(Name, [Int])]</span>
+<span class="lineno"> 2271 </span><span class="spaces">    </span><span class="istickedoff">genMappings (Single nm) = [(nm, [])]</span>
+<span class="lineno"> 2272 </span><span class="spaces">    </span><span class="istickedoff">genMappings (AbsPatTuple pats)</span>
+<span class="lineno"> 2273 </span><span class="spaces">        </span><span class="istickedoff">= concat</span>
+<span class="lineno"> 2274 </span><span class="spaces">            </span><span class="istickedoff">[ [ (patCore, i:is) | (patCore, is) &lt;- genMappings pat ]</span>
+<span class="lineno"> 2275 </span><span class="spaces">            </span><span class="istickedoff">| (i, pat) &lt;- zip [1..] pats</span>
+<span class="lineno"> 2276 </span><span class="spaces">            </span><span class="istickedoff">]</span>
+<span class="lineno"> 2277 </span><span class="spaces">    </span><span class="istickedoff">genMappings (AbsPatMatrix pats)</span>
+<span class="lineno"> 2278 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">concat</span></span>
+<span class="lineno"> 2279 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ [ (patCore, i:is) | (patCore, is) &lt;- genMappings pat ]</span></span>
+<span class="lineno"> 2280 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (i, pat) &lt;- zip [1..] pats</span></span>
+<span class="lineno"> 2281 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno"> 2282 </span><span class="spaces">    </span><span class="istickedoff">genMappings pat = <span class="nottickedoff">bug (&quot;rule_ComplexLambda.genMappings:&quot; &lt;+&gt; pretty (show pat))</span></span></span>
+<span class="lineno"> 2283 </span>
+<span class="lineno"> 2284 </span>
+<span class="lineno"> 2285 </span>-- this rule doesn't use `namedRule` because it need access to ascendants through the zipper
+<span class="lineno"> 2286 </span>rule_InlineConditions :: Rule
+<span class="lineno"> 2287 </span><span class="decl"><span class="istickedoff">rule_InlineConditions = Rule <span class="nottickedoff">&quot;inline-conditions&quot;</span> theRule where</span>
+<span class="lineno"> 2288 </span><span class="spaces">    </span><span class="istickedoff">theRule z (Comprehension body gensOrConds) = do</span>
+<span class="lineno"> 2289 </span><span class="spaces">        </span><span class="istickedoff">let (toInline, toKeep) = mconcat</span>
+<span class="lineno"> 2290 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
+<span class="lineno"> 2291 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([x],[])</span>
+<span class="lineno"> 2292 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[goc])</span>
+<span class="lineno"> 2293 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
+<span class="lineno"> 2294 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno"> 2295 </span><span class="spaces">        </span><span class="istickedoff">theGuard &lt;- case toInline of</span>
+<span class="lineno"> 2296 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; na &quot;No condition to inline.&quot;</span>
+<span class="lineno"> 2297 </span><span class="spaces">            </span><span class="istickedoff">[x] -&gt; return x</span>
+<span class="lineno"> 2298 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; return $ make opAnd $ fromList xs</span>
+<span class="lineno"> 2299 </span><span class="spaces">        </span><span class="istickedoff">(nameQ, opSkip) &lt;- queryQ z</span>
+<span class="lineno"> 2300 </span><span class="spaces">        </span><span class="istickedoff">let bodySkipped = opSkip theGuard body</span>
+<span class="lineno"> 2301 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2302 </span><span class="spaces">            </span><span class="istickedoff">[ RuleResult</span>
+<span class="lineno"> 2303 </span><span class="spaces">                </span><span class="istickedoff">{ ruleResultDescr = <span class="nottickedoff">&quot;Inlining conditions, inside&quot; &lt;+&gt; nameQ</span></span>
+<span class="lineno"> 2304 </span><span class="spaces">                </span><span class="istickedoff">, ruleResultType  = ExpressionRefinement</span>
+<span class="lineno"> 2305 </span><span class="spaces">                </span><span class="istickedoff">, ruleResult      = return $ Comprehension bodySkipped toKeep</span>
+<span class="lineno"> 2306 </span><span class="spaces">                </span><span class="istickedoff">, ruleResultHook  = Nothing</span>
+<span class="lineno"> 2307 </span><span class="spaces">                </span><span class="istickedoff">} ]</span>
+<span class="lineno"> 2308 </span><span class="spaces">    </span><span class="istickedoff">theRule _ _ = na &quot;rule_InlineConditions&quot;</span>
+<span class="lineno"> 2309 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2310 </span><span class="spaces">    </span><span class="istickedoff">-- keep going up, until finding a quantifier</span>
+<span class="lineno"> 2311 </span><span class="spaces">    </span><span class="istickedoff">-- when found, return the skipping operator for the quantifier</span>
+<span class="lineno"> 2312 </span><span class="spaces">    </span><span class="istickedoff">-- if none exists, do not apply the rule.</span>
+<span class="lineno"> 2313 </span><span class="spaces">    </span><span class="istickedoff">-- (or maybe we should call bug right ahead, it can't be anything else.)</span>
+<span class="lineno"> 2314 </span><span class="spaces">    </span><span class="istickedoff">queryQ z0 =</span>
+<span class="lineno"> 2315 </span><span class="spaces">        </span><span class="istickedoff">case Zipper.up z0 of</span>
+<span class="lineno"> 2316 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">na &quot;rule_InlineConditions (meh-1)&quot;</span></span>
+<span class="lineno"> 2317 </span><span class="spaces">            </span><span class="istickedoff">Just z -&gt; do</span>
+<span class="lineno"> 2318 </span><span class="spaces">                </span><span class="istickedoff">let h = hole z</span>
+<span class="lineno"> 2319 </span><span class="spaces">                </span><span class="istickedoff">case ( match opAnd h, match opOr h, match opSum h, match opProduct h</span>
+<span class="lineno"> 2320 </span><span class="spaces">                     </span><span class="istickedoff">, match opMin h, match opMax h, match opOrdering h ) of</span>
+<span class="lineno"> 2321 </span><span class="spaces">                    </span><span class="istickedoff">(Just{}, _, _, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;and&quot;</span>, opAndSkip)</span>
+<span class="lineno"> 2322 </span><span class="spaces">                    </span><span class="istickedoff">(_, Just{}, _, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;or&quot;</span> , opOrSkip )</span>
+<span class="lineno"> 2323 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, Just{}, _, _, _, _) -&gt; return (<span class="nottickedoff">&quot;sum&quot;</span>, opSumSkip)</span>
+<span class="lineno"> 2324 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, Just{}, _, _, _) -&gt; return (<span class="nottickedoff">&quot;product&quot;</span>, opProductSkip)</span>
+<span class="lineno"> 2325 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, Just{}, _, _) -&gt; na &quot;rule_InlineConditions (min)&quot;</span>
+<span class="lineno"> 2326 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, Just{}, _) -&gt; na &quot;rule_InlineConditions (max)&quot;</span>
+<span class="lineno"> 2327 </span><span class="spaces">                    </span><span class="istickedoff">(_, _, _, _, _, _, Just{}) -&gt; <span class="nottickedoff">return (&quot;ordering&quot;, opSumSkip)</span></span>
+<span class="lineno"> 2328 </span><span class="spaces">                    </span><span class="istickedoff">_                          -&gt; na &quot;rule_InlineConditions (meh-2)&quot;</span>
+<span class="lineno"> 2329 </span><span class="spaces">                                            </span><span class="istickedoff">-- case Zipper.up z of</span>
+<span class="lineno"> 2330 </span><span class="spaces">                                            </span><span class="istickedoff">--     Nothing -&gt; na &quot;queryQ&quot;</span>
+<span class="lineno"> 2331 </span><span class="spaces">                                            </span><span class="istickedoff">--     Just u  -&gt; queryQ u</span>
+<span class="lineno"> 2332 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2333 </span><span class="spaces">    </span><span class="istickedoff">opAndSkip     b x = [essence| &amp;b -&gt; &amp;x |]</span>
+<span class="lineno"> 2334 </span><span class="spaces">    </span><span class="istickedoff">opOrSkip      b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;b /\ &amp;x |]</span></span></span></span></span>
+<span class="lineno"> 2335 </span><span class="spaces">    </span><span class="istickedoff">opSumSkip     b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> toInt(&amp;b) * catchUndef(&amp;x, 0) |]</span></span></span></span></span>
+<span class="lineno"> 2336 </span><span class="spaces">    </span><span class="istickedoff">opProductSkip b x = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> [ 1</span></span></span></span></span></span></span></span></span>
+<span class="lineno"> 2337 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, catchUndef(&amp;x,1)</span></span></span></span></span></span></span></span></span>
+<span class="lineno"> 2338 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">; int(0..1)</span></span></span></span></span></span></span></span></span>
+<span class="lineno"> 2339 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">] [toInt(&amp;b)] |]</span></span></span></span></span></span></span></span></span></span>
+<span class="lineno"> 2340 </span>
+<span class="lineno"> 2341 </span>
+<span class="lineno"> 2342 </span>rule_InlineConditions_AllDiff :: Rule
+<span class="lineno"> 2343 </span><span class="decl"><span class="istickedoff">rule_InlineConditions_AllDiff = <span class="nottickedoff">&quot;inline-conditions-allDiff&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2344 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpAllDiff (OpAllDiff (Comprehension body gensOrConds)))) = do</span>
+<span class="lineno"> 2345 </span><span class="spaces">        </span><span class="istickedoff">let (toInline, toKeep) = mconcat</span>
+<span class="lineno"> 2346 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
+<span class="lineno"> 2347 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([x],[])</span>
+<span class="lineno"> 2348 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[goc])</span>
+<span class="lineno"> 2349 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
+<span class="lineno"> 2350 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno"> 2351 </span><span class="spaces">        </span><span class="istickedoff">theGuard &lt;- case toInline of</span>
+<span class="lineno"> 2352 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; na &quot;No condition to inline.&quot;</span>
+<span class="lineno"> 2353 </span><span class="spaces">            </span><span class="istickedoff">[x] -&gt; return x</span>
+<span class="lineno"> 2354 </span><span class="spaces">            </span><span class="istickedoff">xs  -&gt; return $ make opAnd $ fromList xs</span>
+<span class="lineno"> 2355 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2356 </span><span class="spaces">        </span><span class="istickedoff">domBody &lt;- domainOf body</span>
+<span class="lineno"> 2357 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno"> 2358 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds (RangeSingle x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 2359 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds (RangeBounded x _) = return x</span>
+<span class="lineno"> 2360 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBounds _ = <span class="nottickedoff">userErr1 (&quot;Unexpected infinite domain:&quot; &lt;+&gt; pretty domBody)</span></span>
+<span class="lineno"> 2361 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2362 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBoundsD (DomainInt _ rs) = mapM collectLowerBounds rs</span>
+<span class="lineno"> 2363 </span><span class="spaces">            </span><span class="istickedoff">collectLowerBoundsD _  = <span class="nottickedoff">userErr1 (&quot;Expected an integer domain, but got:&quot; &lt;+&gt; pretty domBody)</span></span>
+<span class="lineno"> 2364 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2365 </span><span class="spaces">        </span><span class="istickedoff">bounds &lt;- collectLowerBoundsD domBody</span>
+<span class="lineno"> 2366 </span><span class="spaces">        </span><span class="istickedoff">let lowerBound = make opMin (fromList bounds)</span>
+<span class="lineno"> 2367 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2368 </span><span class="spaces">        </span><span class="istickedoff">-- for each element, we do element-lowerBound+1</span>
+<span class="lineno"> 2369 </span><span class="spaces">        </span><span class="istickedoff">-- this makes sure the smallest element is 1</span>
+<span class="lineno"> 2370 </span><span class="spaces">        </span><span class="istickedoff">-- hence we can use 0 as the except value!</span>
+<span class="lineno"> 2371 </span><span class="spaces">        </span><span class="istickedoff">let bodySkipped = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> toInt(&amp;theGuard) * catchUndef(&amp;body + (1 - &amp;lowerBound), 0) |]</span></span></span></span></span></span></span></span></span></span></span></span></span>
+<span class="lineno"> 2372 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2373 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2374 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Inlining conditions, inside allDiff&quot;</span></span>
+<span class="lineno"> 2375 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAllDiffExcept (Comprehension bodySkipped toKeep) 0</span>
+<span class="lineno"> 2376 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2377 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_InlineConditions_AllDiff&quot;</span></span>
+<span class="lineno"> 2378 </span>
+<span class="lineno"> 2379 </span>
+<span class="lineno"> 2380 </span>rule_InlineConditions_MaxMin :: Rule
+<span class="lineno"> 2381 </span><span class="decl"><span class="istickedoff">rule_InlineConditions_MaxMin = <span class="nottickedoff">&quot;aux-for-MaxMin&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2382 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2383 </span><span class="spaces">        </span><span class="istickedoff">when (categoryOf p &lt; CatDecision) $ na &quot;rule_InlineConditions_MaxMin&quot;</span>
+<span class="lineno"> 2384 </span><span class="spaces">        </span><span class="istickedoff">(nameQ, binOp, Comprehension body gensOrConds) &lt;-</span>
+<span class="lineno"> 2385 </span><span class="spaces">            </span><span class="istickedoff">case (match opMax p, match opMin p) of</span>
+<span class="lineno"> 2386 </span><span class="spaces">                </span><span class="istickedoff">(Just res, _) -&gt; return (<span class="nottickedoff">&quot;max&quot;</span>, \ a b -&gt; [essence| &amp;a &lt;= &amp;b |], res )</span>
+<span class="lineno"> 2387 </span><span class="spaces">                </span><span class="istickedoff">(_, Just res) -&gt; return (<span class="nottickedoff">&quot;min&quot;</span>, \ a b -&gt; [essence| &amp;a &gt;= &amp;b |], res )</span>
+<span class="lineno"> 2388 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na &quot;rule_InlineConditions_MaxMin&quot;</span>
+<span class="lineno"> 2389 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno"> 2390 </span><span class="spaces">            </span><span class="istickedoff">(toInline, gocInExpr, _toKeep) = mconcat</span>
+<span class="lineno"> 2391 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
+<span class="lineno"> 2392 </span><span class="spaces">                    </span><span class="istickedoff">Condition x | categoryOf x == CatDecision -&gt; ([<span class="nottickedoff">x</span>],<span class="nottickedoff">[]</span>,<span class="nottickedoff">[]</span>)</span>
+<span class="lineno"> 2393 </span><span class="spaces">                    </span><span class="istickedoff">Generator (GenInExpr {}) -&gt; <span class="nottickedoff">([],[goc],[])</span></span>
+<span class="lineno"> 2394 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; ([],[],<span class="nottickedoff">[goc]</span>)</span>
+<span class="lineno"> 2395 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
+<span class="lineno"> 2396 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno"> 2397 </span><span class="spaces">        </span><span class="istickedoff">when (null toInline &amp;&amp; null gocInExpr) $ na &quot;rule_InlineConditions_MaxMin&quot;</span>
+<span class="lineno"> 2398 </span><span class="spaces">        </span><span class="istickedoff">auxDomain &lt;- domainOf body</span>
+<span class="lineno"> 2399 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2400 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Creating auxiliary variable for a&quot; &lt;+&gt; nameQ</span></span>
+<span class="lineno"> 2401 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno"> 2402 </span><span class="spaces">                </span><span class="istickedoff">(auxName, aux) &lt;- auxiliaryVar</span>
+<span class="lineno"> 2403 </span><span class="spaces">                </span><span class="istickedoff">let auxDefinedLHS = make opSum (Comprehension 1 gensOrConds)</span>
+<span class="lineno"> 2404 </span><span class="spaces">                </span><span class="istickedoff">let auxDefined = [essence|<span class="nottickedoff"><span class="istickedoff"> &amp;auxDefinedLHS &gt; 0 |]</span></span></span>
+<span class="lineno"> 2405 </span><span class="spaces">                </span><span class="istickedoff">let auxUndefined = [essence| &amp;auxDefinedLHS = 0 |]</span>
+<span class="lineno"> 2406 </span><span class="spaces">                </span><span class="istickedoff">let aux' = WithLocals aux (DefinednessConstraints [auxDefined])</span>
+<span class="lineno"> 2407 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals aux'</span>
+<span class="lineno"> 2408 </span><span class="spaces">                    </span><span class="istickedoff">(AuxiliaryVars</span>
+<span class="lineno"> 2409 </span><span class="spaces">                        </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName auxDomain)</span>
+<span class="lineno"> 2410 </span><span class="spaces">                        </span><span class="istickedoff">, SuchThat</span>
+<span class="lineno"> 2411 </span><span class="spaces">                            </span><span class="istickedoff">[ make opAnd $ Comprehension</span>
+<span class="lineno"> 2412 </span><span class="spaces">                                </span><span class="istickedoff">(binOp body aux)</span>
+<span class="lineno"> 2413 </span><span class="spaces">                                </span><span class="istickedoff">gensOrConds</span>
+<span class="lineno"> 2414 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2415 </span><span class="spaces">                        </span><span class="istickedoff">-- either one of the members of this comprehension, or dontCare</span>
+<span class="lineno"> 2416 </span><span class="spaces">                        </span><span class="istickedoff">-- if it is indeed dontCare, care should be taken to make sure it isn't used as a normal value</span>
+<span class="lineno"> 2417 </span><span class="spaces">                            </span><span class="istickedoff">, make opAnd $ fromList</span>
+<span class="lineno"> 2418 </span><span class="spaces">                                </span><span class="istickedoff">[ make opImply auxDefined</span>
+<span class="lineno"> 2419 </span><span class="spaces">                                    </span><span class="istickedoff">(make opOr  $ Comprehension</span>
+<span class="lineno"> 2420 </span><span class="spaces">                                        </span><span class="istickedoff">[essence| &amp;body = &amp;aux |]</span>
+<span class="lineno"> 2421 </span><span class="spaces">                                        </span><span class="istickedoff">gensOrConds)</span>
+<span class="lineno"> 2422 </span><span class="spaces">                                </span><span class="istickedoff">, make opImply auxUndefined (make opDontCare aux)</span>
+<span class="lineno"> 2423 </span><span class="spaces">                                </span><span class="istickedoff">]</span>
+<span class="lineno"> 2424 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno"> 2425 </span><span class="spaces">                        </span><span class="istickedoff">])</span>
+<span class="lineno"> 2426 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2427 </span>
+<span class="lineno"> 2428 </span>
+<span class="lineno"> 2429 </span>rule_AttributeToConstraint :: Rule
+<span class="lineno"> 2430 </span><span class="decl"><span class="istickedoff">rule_AttributeToConstraint = <span class="nottickedoff">&quot;attribute-to-constraint&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2431 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpAttributeAsConstraint (OpAttributeAsConstraint thing attr mval))) = do</span>
+<span class="lineno"> 2432 </span><span class="spaces">        </span><span class="istickedoff">dom &lt;- domainOf thing</span>
+<span class="lineno"> 2433 </span><span class="spaces">        </span><span class="istickedoff">let conv = mkAttributeToConstraint dom attr mval thing</span>
+<span class="lineno"> 2434 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2435 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Converting an attribute to a constraint&quot;</span></span>
+<span class="lineno"> 2436 </span><span class="spaces">            </span><span class="istickedoff">, bugFailT <span class="nottickedoff">&quot;rule_AttributeToConstraint&quot;</span> conv</span>
+<span class="lineno"> 2437 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2438 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_AttributeToConstraint&quot;</span></span>
+<span class="lineno"> 2439 </span>
+<span class="lineno"> 2440 </span>
+<span class="lineno"> 2441 </span>rule_FullEvaluate :: Rule
+<span class="lineno"> 2442 </span><span class="decl"><span class="istickedoff">rule_FullEvaluate = <span class="nottickedoff">&quot;full-evaluate&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2443 </span><span class="spaces">    </span><span class="istickedoff">theRule Constant{} = na &quot;rule_FullEvaluate&quot;</span>
+<span class="lineno"> 2444 </span><span class="spaces">    </span><span class="istickedoff">theRule Domain{} = na &quot;rule_FullEvaluate&quot;</span>
+<span class="lineno"> 2445 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2446 </span><span class="spaces">        </span><span class="istickedoff">constant &lt;- instantiateExpression [] p</span>
+<span class="lineno"> 2447 </span><span class="spaces">        </span><span class="istickedoff">unless (null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe constant]) $</span>
+<span class="lineno"> 2448 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_PartialEvaluate, undefined&quot;</span>
+<span class="lineno"> 2449 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2450 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Full evaluator&quot;</span></span>
+<span class="lineno"> 2451 </span><span class="spaces">            </span><span class="istickedoff">, return $ Constant constant</span>
+<span class="lineno"> 2452 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2453 </span>
+<span class="lineno"> 2454 </span>
+<span class="lineno"> 2455 </span>rule_PartialEvaluate :: Rule
+<span class="lineno"> 2456 </span><span class="decl"><span class="istickedoff">rule_PartialEvaluate = &quot;partial-evaluate&quot; `namedRuleZ` theRule where</span>
+<span class="lineno"> 2457 </span><span class="spaces">    </span><span class="istickedoff">-- if a variable only has a single value in its domain, replace it with the value</span>
+<span class="lineno"> 2458 </span><span class="spaces">    </span><span class="istickedoff">theRule z (Reference _ (Just (DeclHasRepr _ _ (singletonDomainInt -&gt; Just val)))) =</span>
+<span class="lineno"> 2459 </span><span class="spaces">        </span><span class="istickedoff">case hole &lt;$&gt; Zipper.up z of</span>
+<span class="lineno"> 2460 </span><span class="spaces">            </span><span class="istickedoff">Just (Op (MkOpTrue _)) -&gt; na &quot;rule_PartialEvaluate, inside a true(ref)&quot;</span>
+<span class="lineno"> 2461 </span><span class="spaces">            </span><span class="istickedoff">_                      -&gt; return ( <span class="nottickedoff">&quot;Partial evaluator&quot;</span></span>
+<span class="lineno"> 2462 </span><span class="spaces">                                             </span><span class="istickedoff">, return val</span>
+<span class="lineno"> 2463 </span><span class="spaces">                                             </span><span class="istickedoff">)</span>
+<span class="lineno"> 2464 </span><span class="spaces">    </span><span class="istickedoff">theRule _ (Op op)</span>
+<span class="lineno"> 2465 </span><span class="spaces">        </span><span class="istickedoff">| Just (x, y) &lt;- case op of</span>
+<span class="lineno"> 2466 </span><span class="spaces">                            </span><span class="istickedoff">MkOpLeq (OpLeq x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2467 </span><span class="spaces">                            </span><span class="istickedoff">MkOpGeq (OpGeq x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2468 </span><span class="spaces">                            </span><span class="istickedoff">MkOpEq  (OpEq  x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2469 </span><span class="spaces">                            </span><span class="istickedoff">_                   -&gt; Nothing</span>
+<span class="lineno"> 2470 </span><span class="spaces">        </span><span class="istickedoff">, Reference nmX _ &lt;- x</span>
+<span class="lineno"> 2471 </span><span class="spaces">        </span><span class="istickedoff">, Reference nmY _ &lt;- y</span>
+<span class="lineno"> 2472 </span><span class="spaces">        </span><span class="istickedoff">, nmX == nmY</span>
+<span class="lineno"> 2473 </span><span class="spaces">        </span><span class="istickedoff">, categoryOf x &lt;= CatQuantified</span>
+<span class="lineno"> 2474 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">categoryOf y &lt;= CatQuantified</span></span>
+<span class="lineno"> 2475 </span><span class="spaces">        </span><span class="istickedoff">= return</span>
+<span class="lineno"> 2476 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Parameter = parameter (or quantified)&quot;</span></span>
+<span class="lineno"> 2477 </span><span class="spaces">            </span><span class="istickedoff">, return (fromBool True)</span>
+<span class="lineno"> 2478 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2479 </span><span class="spaces">    </span><span class="istickedoff">theRule _ (Op x) = do</span>
+<span class="lineno"> 2480 </span><span class="spaces">        </span><span class="istickedoff">x' &lt;- simplifyOp x</span>
+<span class="lineno"> 2481 </span><span class="spaces">        </span><span class="istickedoff">when (Op x == x') $ <span class="nottickedoff">bug $ vcat</span></span>
+<span class="lineno"> 2482 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;rule_PartialEvaluate, simplifier returns the input unchanged.&quot;</span></span>
+<span class="lineno"> 2483 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;input:&quot; &lt;+&gt; vcat [ pretty (Op x)</span></span>
+<span class="lineno"> 2484 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, pretty (show (Op x))</span></span>
+<span class="lineno"> 2485 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno"> 2486 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno"> 2487 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2488 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Partial evaluator&quot;</span></span>
+<span class="lineno"> 2489 </span><span class="spaces">            </span><span class="istickedoff">, return x'</span>
+<span class="lineno"> 2490 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2491 </span><span class="spaces">    </span><span class="istickedoff">theRule _ _ = na &quot;rule_PartialEvaluate&quot;</span></span>
+<span class="lineno"> 2492 </span>
+<span class="lineno"> 2493 </span>
+<span class="lineno"> 2494 </span>-- | shifting quantifiers inwards, if they operate on a row of a 2d matrix,
+<span class="lineno"> 2495 </span>--   make them operate on the rows directly then index
+<span class="lineno"> 2496 </span>rule_QuantifierShift :: Rule
+<span class="lineno"> 2497 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift = <span class="nottickedoff">&quot;quantifier-shift&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2498 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2499 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mkQuan, inner)           &lt;- match opReducer p</span>
+<span class="lineno"> 2500 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indexer)               &lt;- match opIndexing inner</span>
+<span class="lineno"> 2501 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- <span class="nottickedoff">match matrixLiteral matrix</span></span>
+<span class="lineno"> 2502 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case ty of</span></span>
+<span class="lineno"> 2503 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMatrix{} -&gt; return ()</span></span>
+<span class="lineno"> 2504 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeList{} -&gt; return ()</span></span>
+<span class="lineno"> 2505 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_QuantifierShift&quot;</span></span>
+<span class="lineno"> 2506 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2507 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Shifting quantifier inwards&quot;</span></span>
+<span class="lineno"> 2508 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opIndexing</span></span>
+<span class="lineno"> 2509 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make matrixLiteral</span></span>
+<span class="lineno"> 2510 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
+<span class="lineno"> 2511 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">index</span></span>
+<span class="lineno"> 2512 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">(map mkQuan elems))</span></span>
+<span class="lineno"> 2513 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">indexer</span></span>
+<span class="lineno"> 2514 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno"> 2515 </span>
+<span class="lineno"> 2516 </span>
+<span class="lineno"> 2517 </span>-- | shifting quantifiers inwards, if they operate on a flattened multi-dim matrix.
+<span class="lineno"> 2518 </span>rule_QuantifierShift2 :: Rule
+<span class="lineno"> 2519 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift2 = <span class="nottickedoff">&quot;quantifier-shift2&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2520 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2521 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mkQuan, inner)           &lt;- match opReducer p</span>
+<span class="lineno"> 2522 </span><span class="spaces">        </span><span class="istickedoff">matrix                          &lt;- match opFlatten inner</span>
+<span class="lineno"> 2523 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- match matrixLiteral matrix</span>
+<span class="lineno"> 2524 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno"> 2525 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{} -&gt; <span class="nottickedoff">return ()</span>           -- the matrix literal should contain further matrix/list stuff.</span>
+<span class="lineno"> 2526 </span><span class="spaces">            </span><span class="istickedoff">TypeList{}   -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2527 </span><span class="spaces">            </span><span class="istickedoff">_            -&gt; <span class="nottickedoff">na &quot;rule_QuantifierShift2&quot;</span></span>
+<span class="lineno"> 2528 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2529 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Shifting quantifier inwards&quot;</span></span>
+<span class="lineno"> 2530 </span><span class="spaces">            </span><span class="istickedoff">, return $ mkQuan</span>
+<span class="lineno"> 2531 </span><span class="spaces">                        </span><span class="istickedoff">(make matrixLiteral</span>
+<span class="lineno"> 2532 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
+<span class="lineno"> 2533 </span><span class="spaces">                            </span><span class="istickedoff">index</span>
+<span class="lineno"> 2534 </span><span class="spaces">                            </span><span class="istickedoff">(map (mkQuan . flattenIfNeeded (matrixNumDims ty)) elems))</span>
+<span class="lineno"> 2535 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2536 </span>
+<span class="lineno"> 2537 </span>
+<span class="lineno"> 2538 </span>-- | shifting quantifiers inwards, if they operate on a concatenated multi-dim matrix.
+<span class="lineno"> 2539 </span>rule_QuantifierShift3 :: Rule
+<span class="lineno"> 2540 </span><span class="decl"><span class="istickedoff">rule_QuantifierShift3 = <span class="nottickedoff">&quot;quantifier-shift3&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2541 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2542 </span><span class="spaces">        </span><span class="istickedoff">(_, True, mkQuan, inner)        &lt;- match opReducer p</span>
+<span class="lineno"> 2543 </span><span class="spaces">        </span><span class="istickedoff">matrix                          &lt;- match opConcatenate inner</span>
+<span class="lineno"> 2544 </span><span class="spaces">        </span><span class="istickedoff">(TypeMatrix _ ty, index, elems) &lt;- match matrixLiteral matrix</span>
+<span class="lineno"> 2545 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2546 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Shifting quantifier inwards&quot;</span></span>
+<span class="lineno"> 2547 </span><span class="spaces">            </span><span class="istickedoff">, return $ mkQuan $ make matrixLiteral</span>
+<span class="lineno"> 2548 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
+<span class="lineno"> 2549 </span><span class="spaces">                                        </span><span class="istickedoff">index</span>
+<span class="lineno"> 2550 </span><span class="spaces">                                        </span><span class="istickedoff">(map mkQuan elems)</span>
+<span class="lineno"> 2551 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2552 </span>
+<span class="lineno"> 2553 </span>
+<span class="lineno"> 2554 </span>rule_Comprehension_Simplify :: Rule
+<span class="lineno"> 2555 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Simplify = <span class="nottickedoff">&quot;comprehension-simplify&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2556 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension x gocs)</span>
+<span class="lineno"> 2557 </span><span class="spaces">        </span><span class="istickedoff">| let isTrueCondition (Condition (Constant (ConstantBool True))) = True</span>
+<span class="lineno"> 2558 </span><span class="spaces">              </span><span class="istickedoff">isTrueCondition _ = False</span>
+<span class="lineno"> 2559 </span><span class="spaces">        </span><span class="istickedoff">, let gocs' = filter (not . isTrueCondition) gocs</span>
+<span class="lineno"> 2560 </span><span class="spaces">        </span><span class="istickedoff">, length gocs' &lt; length gocs</span>
+<span class="lineno"> 2561 </span><span class="spaces">        </span><span class="istickedoff">= return</span>
+<span class="lineno"> 2562 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Removing true conditions&quot;</span></span>
+<span class="lineno"> 2563 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension x gocs'</span>
+<span class="lineno"> 2564 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno"> 2565 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Simplify&quot;</span></span>
+<span class="lineno"> 2566 </span>
+<span class="lineno"> 2567 </span>
+<span class="lineno"> 2568 </span>rule_Xor_To_Sum :: Rule
+<span class="lineno"> 2569 </span><span class="decl"><span class="istickedoff">rule_Xor_To_Sum = <span class="nottickedoff">&quot;xor-to-sum&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2570 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| xor(&amp;arg) |] =</span>
+<span class="lineno"> 2571 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case arg of</span></span>
+<span class="lineno"> 2572 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Comprehension body goc -&gt; do</span></span>
+<span class="lineno"> 2573 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = Comprehension [essence| toInt(&amp;body) |] goc</span></span>
+<span class="lineno"> 2574 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2575 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
+<span class="lineno"> 2576 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
+<span class="lineno"> 2577 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2578 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitMatrix dom elems) -&gt; do</span></span>
+<span class="lineno"> 2579 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = AbstractLiteral $ AbsLitMatrix dom</span></span>
+<span class="lineno"> 2580 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| toInt(&amp;el) |] | el &lt;- elems ]</span></span>
+<span class="lineno"> 2581 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2582 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
+<span class="lineno"> 2583 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
+<span class="lineno"> 2584 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2585 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; do</span></span>
+<span class="lineno"> 2586 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2587 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno"> 2588 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
+<span class="lineno"> 2589 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum([ toInt(&amp;i) | &amp;iPat &lt;- &amp;arg ]) |]</span></span>
+<span class="lineno"> 2590 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2591 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Xor_To_Sum&quot;</span></span>
+<span class="lineno"> 2592 </span>
+<span class="lineno"> 2593 </span>
+<span class="lineno"> 2594 </span>rule_Comprehension_Cardinality :: Rule
+<span class="lineno"> 2595 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Cardinality = <span class="nottickedoff">&quot;comprehension-cardinality&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2596 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2597 </span><span class="spaces">        </span><span class="istickedoff">Comprehension _ gensOrConds &lt;- match opTwoBars p</span>
+<span class="lineno"> 2598 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">ofones = Comprehension (fromInt 1) gensOrConds</span></span>
+<span class="lineno"> 2599 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Horizontal rule for comprehension cardinality&quot;</span></span>
+<span class="lineno"> 2600 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, return [essence| sum(&amp;ofones) |]</span></span>
+<span class="lineno"> 2601 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno"> 2602 </span>
+<span class="lineno"> 2603 </span>rule_Flatten_Cardinality :: Rule
+<span class="lineno"> 2604 </span><span class="decl"><span class="istickedoff">rule_Flatten_Cardinality = <span class="nottickedoff">&quot;flatten-cardinality&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2605 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2606 </span><span class="spaces">        </span><span class="istickedoff">list &lt;- match opTwoBars p &gt;&gt;= match opConcatenate</span>
+<span class="lineno"> 2607 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Horizontal rule for comprehension cardinality&quot;</span></span>
+<span class="lineno"> 2608 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno"> 2609 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2610 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">return [essence| sum([ |&amp;i| | &amp;iPat &lt;- &amp;list ]) |]</span></span>
+<span class="lineno"> 2611 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno"> 2612 </span>
 
 </pre>
 </body>
