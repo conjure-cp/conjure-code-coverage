@@ -1,0 +1,198 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>{-# LANGUAGE ViewPatterns #-}
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>module Conjure.Representations
+<span class="lineno">    5 </span>    ( downD, downC, up
+<span class="lineno">    6 </span>    , downD1, downC1, up1
+<span class="lineno">    7 </span>    , downToX1
+<span class="lineno">    8 </span>    , reprOptions, getStructurals
+<span class="lineno">    9 </span>    , symmetryOrdering
+<span class="lineno">   10 </span>    , reprsStandardOrderNoLevels, reprsStandardOrder, reprsSparseOrder
+<span class="lineno">   11 </span>    , downX1
+<span class="lineno">   12 </span>    , downX
+<span class="lineno">   13 </span>    ) where
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>-- conjure
+<span class="lineno">   16 </span>import Conjure.Prelude
+<span class="lineno">   17 </span>import Conjure.Bug
+<span class="lineno">   18 </span>import Conjure.Language
+<span class="lineno">   19 </span>import Conjure.Process.Enumerate
+<span class="lineno">   20 </span>import Conjure.Compute.DomainOf
+<span class="lineno">   21 </span>import Conjure.Representations.Combined
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>-- | Refine (down) an expression (X), one level (1).
+<span class="lineno">   25 </span>downX1 ::
+<span class="lineno">   26 </span>    MonadFail m =&gt;
+<span class="lineno">   27 </span>    NameGen m =&gt;
+<span class="lineno">   28 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   29 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   30 </span>    Expression -&gt; m [Expression]
+<span class="lineno">   31 </span><span class="decl"><span class="istickedoff">downX1 (Constant x) = onConstant x</span>
+<span class="lineno">   32 </span><span class="spaces"></span><span class="istickedoff">downX1 (AbstractLiteral x) = onAbstractLiteral x</span>
+<span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff">downX1 (Reference x (Just refTo)) = onReference x refTo</span>
+<span class="lineno">   34 </span><span class="spaces"></span><span class="istickedoff">downX1 (Op x) = onOp x</span>
+<span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff">downX1 (Comprehension body stmts) = do</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- downX1 body</span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">return [Comprehension x stmts | x &lt;- xs]</span>
+<span class="lineno">   38 </span><span class="spaces"></span><span class="istickedoff">downX1 x@WithLocals{} = <span class="nottickedoff">fail (&quot;downX1:&quot; &lt;++&gt; pretty (show x))</span></span>
+<span class="lineno">   39 </span><span class="spaces"></span><span class="istickedoff">downX1 x = <span class="nottickedoff">bug (&quot;downX1:&quot; &lt;++&gt; pretty (show x))</span></span></span>
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>-- | Refine (down) an expression (X), all the way.
+<span class="lineno">   43 </span>downX ::
+<span class="lineno">   44 </span>    NameGen m =&gt;
+<span class="lineno">   45 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   46 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   47 </span>    Expression -&gt; m [Expression]
+<span class="lineno">   48 </span><span class="decl"><span class="istickedoff">downX x = do</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">res &lt;- runMaybeT $ downX1 x</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">case res of</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">return [x]</span></span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">Just [] -&gt; return [x]</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">Just xs -&gt; concatMapM downX xs</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>onConstant ::
+<span class="lineno">   57 </span>    MonadFail m =&gt;
+<span class="lineno">   58 </span>    NameGen m =&gt;
+<span class="lineno">   59 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   60 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   61 </span>    Constant -&gt; m [Expression]
+<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">onConstant (ConstantAbstract (AbsLitTuple xs)) = return (map Constant xs)</span>
+<span class="lineno">   63 </span><span class="spaces"></span><span class="istickedoff">onConstant (ConstantAbstract (AbsLitRecord xs)) = return (map (Constant . snd) xs)</span>
+<span class="lineno">   64 </span><span class="spaces"></span><span class="istickedoff">onConstant (ConstantAbstract (AbsLitVariant (Just t) n x))</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="istickedoff">| Just i &lt;- elemIndex n (map fst t)</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">, let iExpr = fromInt (fromIntegral (i+1))</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">= return $ iExpr : [ if n == n'</span>
+<span class="lineno">   68 </span><span class="spaces">                            </span><span class="istickedoff">then Constant x</span>
+<span class="lineno">   69 </span><span class="spaces">                            </span><span class="istickedoff">else ExpressionMetaVar &quot;zeroVal for variant&quot;</span>
+<span class="lineno">   70 </span><span class="spaces">                       </span><span class="istickedoff">| (n',_) &lt;- t ]</span>
+<span class="lineno">   71 </span><span class="spaces"></span><span class="istickedoff">onConstant (ConstantAbstract (AbsLitMatrix index xs)) = do</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">yss &lt;- mapM (downX1 . Constant) xs</span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">let indexX = fmap Constant index</span>
+<span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">return [ AbstractLiteral (AbsLitMatrix indexX ys) | ys &lt;- transpose yss ]</span>
+<span class="lineno">   75 </span><span class="spaces"></span><span class="istickedoff">onConstant (TypedConstant c _) = <span class="nottickedoff">onConstant c</span></span>
+<span class="lineno">   76 </span><span class="spaces"></span><span class="istickedoff">onConstant x = <span class="nottickedoff">bug (&quot;downX1.onConstant:&quot; &lt;++&gt; pretty (show x))</span></span></span>
+<span class="lineno">   77 </span>
+<span class="lineno">   78 </span>onAbstractLiteral ::
+<span class="lineno">   79 </span>    MonadFail m =&gt;
+<span class="lineno">   80 </span>    NameGen m =&gt;
+<span class="lineno">   81 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   82 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   83 </span>    AbstractLiteral Expression -&gt; m [Expression]
+<span class="lineno">   84 </span><span class="decl"><span class="istickedoff">onAbstractLiteral (AbsLitTuple xs) = return xs</span>
+<span class="lineno">   85 </span><span class="spaces"></span><span class="istickedoff">onAbstractLiteral (AbsLitRecord xs) = <span class="nottickedoff">return (map snd xs)</span></span>
+<span class="lineno">   86 </span><span class="spaces"></span><span class="istickedoff">onAbstractLiteral (AbsLitVariant (Just t) n x)</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">| Just i &lt;- elemIndex n (map fst t)</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">, let iExpr = fromInt (fromIntegral (i+1))</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">= return $ iExpr : [ if n == n'</span>
+<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff">then x</span>
+<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff">else ExpressionMetaVar &quot;zeroVal for variant&quot;</span>
+<span class="lineno">   92 </span><span class="spaces">                       </span><span class="istickedoff">| (n',_) &lt;- t ]</span>
+<span class="lineno">   93 </span><span class="spaces"></span><span class="istickedoff">onAbstractLiteral (AbsLitMatrix index xs) = do</span>
+<span class="lineno">   94 </span><span class="spaces">    </span><span class="istickedoff">yss &lt;- mapM downX1 xs</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="istickedoff">return [ AbstractLiteral (AbsLitMatrix index ys) | ys &lt;- transpose yss ]</span>
+<span class="lineno">   96 </span><span class="spaces"></span><span class="istickedoff">onAbstractLiteral x = <span class="nottickedoff">bug (&quot;downX1.onAbstractLiteral:&quot; &lt;++&gt; pretty (show x))</span></span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>onReference ::
+<span class="lineno">   99 </span>    MonadFail m =&gt;
+<span class="lineno">  100 </span>    NameGen m =&gt;
+<span class="lineno">  101 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  102 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  103 </span>    Name -&gt; ReferenceTo -&gt; m [Expression]
+<span class="lineno">  104 </span><span class="decl"><span class="istickedoff">onReference nm refTo =</span>
+<span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">case refTo of</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">Alias x                   -&gt; downX1 x</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">InComprehension{}         -&gt; fail (&quot;downX1.onReference.InComprehension:&quot; &lt;++&gt; <span class="nottickedoff">pretty (show nm)</span>)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff">DeclNoRepr{}              -&gt; fail (&quot;downX1.onReference.DeclNoRepr:&quot;      &lt;++&gt; <span class="nottickedoff">pretty (show nm)</span>)</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">DeclHasRepr forg _ domain -&gt; downToX1 forg nm domain</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">RecordField{}             -&gt; <span class="nottickedoff">fail (&quot;downX1.onReference.RecordField:&quot;     &lt;++&gt; pretty (show nm))</span></span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">VariantField{}            -&gt; <span class="nottickedoff">fail (&quot;downX1.onReference.VariantField:&quot;    &lt;++&gt; pretty (show nm))</span></span></span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>onOp ::
+<span class="lineno">  114 </span>    MonadFail m =&gt;
+<span class="lineno">  115 </span>    NameGen m =&gt;
+<span class="lineno">  116 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  117 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  118 </span>    Op Expression -&gt; m [Expression]
+<span class="lineno">  119 </span><span class="decl"><span class="istickedoff">onOp p@(MkOpIndexing (OpIndexing m i)) = do</span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="istickedoff">ty &lt;- typeOf m</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">TypeList{}   -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; fail $ &quot;[onOp, not a TypeMatrix or TypeList]&quot; &lt;+&gt; vcat [pretty ty, pretty p]</span>
+<span class="lineno">  125 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- downX1 m</span>
+<span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff">let iIndexed x = Op (MkOpIndexing (OpIndexing x i))</span>
+<span class="lineno">  127 </span><span class="spaces">    </span><span class="istickedoff">return (map iIndexed xs)</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff">onOp (MkOpImage (OpImage (match functionLiteral -&gt; Just (_, xs)) a)) | <span class="tickonlyfalse">length xs &gt; 0</span> = <span class="nottickedoff">do</span></span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">vals &lt;- forM xs $ \ (_, value) -&gt; do</span></span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ys &lt;- downX1 value</span></span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ys</span></span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let keys = map fst xs</span></span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let outs = map (zip keys) (transpose vals)</span></span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return [ Op $ MkOpImage $ OpImage (AbstractLiteral (AbsLitFunction out)) a</span></span>
+<span class="lineno">  135 </span><span class="spaces">           </span><span class="istickedoff"><span class="nottickedoff">| out &lt;- outs ]</span></span>
+<span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff">onOp op = fail (&quot;downX1.onOp:&quot; &lt;++&gt; <span class="nottickedoff">pretty op</span>)</span></span>
+<span class="lineno">  137 </span>
+<span class="lineno">  138 </span>
+<span class="lineno">  139 </span>
+<span class="lineno">  140 </span>symmetryOrdering ::
+<span class="lineno">  141 </span>    MonadFail m =&gt;
+<span class="lineno">  142 </span>    NameGen m =&gt;
+<span class="lineno">  143 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  144 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  145 </span>    Expression -&gt; m Expression
+<span class="lineno">  146 </span><span class="decl"><span class="istickedoff">symmetryOrdering inp =</span>
+<span class="lineno">  147 </span><span class="spaces">    </span><span class="istickedoff">case inp of</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">-- Constant x -&gt; so_onConstant x</span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">-- AbstractLiteral x</span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff">Reference _ (Just refTo) -&gt; do</span>
+<span class="lineno">  151 </span><span class="spaces">            </span><span class="istickedoff">case refTo of</span>
+<span class="lineno">  152 </span><span class="spaces">                </span><span class="istickedoff">Alias x                        -&gt; <span class="nottickedoff">symmetryOrdering x</span></span>
+<span class="lineno">  153 </span><span class="spaces">                </span><span class="istickedoff">InComprehension{}              -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering.InComprehension:&quot; &lt;++&gt; pretty (show inp))</span></span>
+<span class="lineno">  154 </span><span class="spaces">                </span><span class="istickedoff">DeclNoRepr{}                   -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering.DeclNoRepr:&quot;      &lt;++&gt; pretty (show inp))</span></span>
+<span class="lineno">  155 </span><span class="spaces">                </span><span class="istickedoff">DeclHasRepr _forg _name domain -&gt; symmetryOrderingDispatch downX1 inp domain</span>
+<span class="lineno">  156 </span><span class="spaces">                </span><span class="istickedoff">RecordField{}                  -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering.RecordField:&quot;     &lt;++&gt; pretty (show inp))</span></span>
+<span class="lineno">  157 </span><span class="spaces">                </span><span class="istickedoff">VariantField{}                 -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering.VariantField:&quot;    &lt;++&gt; pretty (show inp))</span></span>
+<span class="lineno">  158 </span><span class="spaces">        </span><span class="istickedoff">Op op -&gt; case op of</span>
+<span class="lineno">  159 </span><span class="spaces">            </span><span class="istickedoff">MkOpIndexing (OpIndexing m _) -&gt; do</span>
+<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf m</span>
+<span class="lineno">  161 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{}   -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  164 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;[symmetryOrdering.onOp, not a TypeMatrix or TypeList]&quot; &lt;+&gt; vcat [pretty ty, pretty op]</span></span>
+<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">mDom &lt;- domainOfR m</span>
+<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">case mDom of</span>
+<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff">DomainMatrix _ domainInner -&gt; symmetryOrderingDispatch downX1 inp domainInner</span>
+<span class="lineno">  168 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering, not DomainMatrix:&quot; &lt;++&gt; pretty (show op))</span></span>
+<span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering, unhandled Op:&quot; &lt;++&gt; pretty (show op))</span></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">-- Comprehension body stmts -&gt; do</span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff">--     xs &lt;- downX1 body</span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">--     return [Comprehension x stmts | x &lt;- xs]</span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">-- x@WithLocals{} -&gt; bug (&quot;downX1:&quot; &lt;++&gt; pretty (show x))</span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;symmetryOrdering:&quot; &lt;++&gt; pretty (show inp))</span></span></span>
+<span class="lineno">  175 </span>
+
+</pre>
+</body>
+</html>
