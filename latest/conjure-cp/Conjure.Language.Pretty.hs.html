@@ -143,7 +143,7 @@ span.spaces    { background: white }
 <span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">pretty Null = &quot;null&quot;</span></span>
 <span class="lineno">  125 </span>
 <span class="lineno">  126 </span>instance Pretty JSON.Object where
-<span class="lineno">  127 </span>    <span class="decl"><span class="istickedoff">pretty = prBraces . vcat . punctuate &quot;,&quot; . map f . sortBy (comp `on` fst) . M.toList</span>
+<span class="lineno">  127 </span>    <span class="decl"><span class="istickedoff">pretty = prBraces . fsep . punctuate &quot;,&quot; . map f . sortBy (comp `on` fst) . M.toList</span>
 <span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">where</span>
 <span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">f (key, Array value)</span>
 <span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">| all (\ v -&gt; case v of String{} -&gt; True ; _ -&gt; False ) value</span>

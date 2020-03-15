@@ -31,172 +31,196 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>import Conjure.Prelude
 <span class="lineno">   13 </span>import Conjure.UserError
 <span class="lineno">   14 </span>import Conjure.UI
-<span class="lineno">   15 </span>import Conjure.Language.Definition
+<span class="lineno">   15 </span>import Conjure.Language
 <span class="lineno">   16 </span>import qualified Conjure.Language.Parser as Parser
 <span class="lineno">   17 </span>import qualified Conjure.Language.ParserC as ParserC
-<span class="lineno">   18 </span>import Conjure.Language.Pretty
-<span class="lineno">   19 </span>import Conjure.Language.Parser ( Parser)
-<span class="lineno">   20 </span>
-<span class="lineno">   21 </span>-- aeson
-<span class="lineno">   22 </span>import qualified Data.Aeson ( decodeStrict )
-<span class="lineno">   23 </span>
-<span class="lineno">   24 </span>-- cereal
-<span class="lineno">   25 </span>import qualified Data.Serialize ( decode, encode )
-<span class="lineno">   26 </span>
-<span class="lineno">   27 </span>-- text
-<span class="lineno">   28 </span>import qualified Data.Text as T
-<span class="lineno">   29 </span>import qualified Data.Text.IO as T ( getContents )
-<span class="lineno">   30 </span>import qualified Data.Text.Encoding as T ( encodeUtf8 )
-<span class="lineno">   31 </span>
-<span class="lineno">   32 </span>-- bytestring
-<span class="lineno">   33 </span>import qualified Data.ByteString as BS ( readFile, writeFile )
-<span class="lineno">   34 </span>import qualified Data.ByteString.Char8 as BS ( putStrLn )
+<span class="lineno">   18 </span>import Conjure.Language.Parser ( Parser )
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>-- aeson
+<span class="lineno">   21 </span>import qualified Data.Aeson ( decodeStrict )
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>-- cereal
+<span class="lineno">   24 </span>import qualified Data.Serialize ( decode, encode )
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>-- text
+<span class="lineno">   27 </span>import qualified Data.Text as T
+<span class="lineno">   28 </span>import qualified Data.Text.IO as T ( getContents )
+<span class="lineno">   29 </span>import qualified Data.Text.Encoding as T ( encodeUtf8 )
+<span class="lineno">   30 </span>
+<span class="lineno">   31 </span>-- bytestring
+<span class="lineno">   32 </span>import qualified Data.ByteString as BS ( readFile, writeFile )
+<span class="lineno">   33 </span>import qualified Data.ByteString.Char8 as BS ( putStrLn )
+<span class="lineno">   34 </span>
 <span class="lineno">   35 </span>
-<span class="lineno">   36 </span>
-<span class="lineno">   37 </span>readModelFromFile ::
-<span class="lineno">   38 </span>    MonadIO m =&gt;
-<span class="lineno">   39 </span>    MonadFail m =&gt;
-<span class="lineno">   40 </span>    MonadUserError m =&gt;
-<span class="lineno">   41 </span>    FilePath -&gt; m Model
-<span class="lineno">   42 </span><span class="decl"><span class="istickedoff">readModelFromFile fp = do</span>
-<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">con &lt;- liftIO $ BS.readFile fp</span>
-<span class="lineno">   44 </span><span class="spaces">    </span><span class="istickedoff">case Data.Serialize.decode con of</span>
-<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">Right res -&gt; <span class="nottickedoff">return res</span></span>
-<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">Left _ -&gt; do</span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
-<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">readModel Parser.parseModel (Just id) pair</span></span>
+<span class="lineno">   36 </span>readModelFromFile ::
+<span class="lineno">   37 </span>    MonadIO m =&gt;
+<span class="lineno">   38 </span>    MonadFail m =&gt;
+<span class="lineno">   39 </span>    MonadUserError m =&gt;
+<span class="lineno">   40 </span>    FilePath -&gt; m Model
+<span class="lineno">   41 </span><span class="decl"><span class="istickedoff">readModelFromFile fp = do</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">con &lt;- liftIO $ BS.readFile fp</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">case Data.Serialize.decode con of</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">Right res -&gt; <span class="nottickedoff">return res</span></span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">Left _ -&gt; do</span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">readModel Parser.parseModel (Just id) pair</span></span>
+<span class="lineno">   48 </span>
 <span class="lineno">   49 </span>
-<span class="lineno">   50 </span>
-<span class="lineno">   51 </span>readModelFromStdin ::
-<span class="lineno">   52 </span>    MonadIO m =&gt;
-<span class="lineno">   53 </span>    MonadFail m =&gt;
-<span class="lineno">   54 </span>    MonadUserError m =&gt;
-<span class="lineno">   55 </span>    m Model
-<span class="lineno">   56 </span><span class="decl"><span class="nottickedoff">readModelFromStdin = do</span>
-<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">con2 &lt;- liftIO $ T.getContents</span>
-<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">let pair = (&quot;stdin&quot;, con2)</span>
-<span class="lineno">   59 </span><span class="spaces">    </span><span class="nottickedoff">readModel Parser.parseModel (Just id) pair</span></span>
+<span class="lineno">   50 </span>readModelFromStdin ::
+<span class="lineno">   51 </span>    MonadIO m =&gt;
+<span class="lineno">   52 </span>    MonadFail m =&gt;
+<span class="lineno">   53 </span>    MonadUserError m =&gt;
+<span class="lineno">   54 </span>    m Model
+<span class="lineno">   55 </span><span class="decl"><span class="nottickedoff">readModelFromStdin = do</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">con2 &lt;- liftIO $ T.getContents</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">let pair = (&quot;stdin&quot;, con2)</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">readModel Parser.parseModel (Just id) pair</span></span>
+<span class="lineno">   59 </span>
 <span class="lineno">   60 </span>
-<span class="lineno">   61 </span>
-<span class="lineno">   62 </span>readParamOrSolutionFromFile ::
-<span class="lineno">   63 </span>    MonadIO m =&gt;
-<span class="lineno">   64 </span>    MonadFail m =&gt;
-<span class="lineno">   65 </span>    MonadUserError m =&gt;
-<span class="lineno">   66 </span>    FilePath -&gt; m Model
-<span class="lineno">   67 </span><span class="decl"><span class="nottickedoff">readParamOrSolutionFromFile fp = do</span>
-<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">con &lt;- liftIO $ BS.readFile fp</span>
-<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">case Data.Serialize.decode con of</span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">Right res -&gt; return res</span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">Left _ -&gt; do</span>
-<span class="lineno">   72 </span><span class="spaces">            </span><span class="nottickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="nottickedoff">readModel ParserC.parseModel (Just id) pair</span></span>
+<span class="lineno">   61 </span>readParamOrSolutionFromFile ::
+<span class="lineno">   62 </span>    MonadIO m =&gt;
+<span class="lineno">   63 </span>    MonadFail m =&gt;
+<span class="lineno">   64 </span>    MonadUserError m =&gt;
+<span class="lineno">   65 </span>    FilePath -&gt; m Model
+<span class="lineno">   66 </span><span class="decl"><span class="nottickedoff">readParamOrSolutionFromFile fp = do</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="nottickedoff">con &lt;- liftIO $ BS.readFile fp</span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">case Data.Serialize.decode con of</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">Right res -&gt; return res</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">Left _ -&gt; do</span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="nottickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
+<span class="lineno">   72 </span><span class="spaces">            </span><span class="nottickedoff">readModel ParserC.parseModel (Just id) pair</span></span>
+<span class="lineno">   73 </span>
 <span class="lineno">   74 </span>
-<span class="lineno">   75 </span>
-<span class="lineno">   76 </span>readModelPreambleFromFile ::
-<span class="lineno">   77 </span>    MonadIO m =&gt;
-<span class="lineno">   78 </span>    MonadFail m =&gt;
-<span class="lineno">   79 </span>    MonadUserError m =&gt;
-<span class="lineno">   80 </span>    FilePath -&gt; m Model
-<span class="lineno">   81 </span><span class="decl"><span class="nottickedoff">readModelPreambleFromFile fp = do</span>
-<span class="lineno">   82 </span><span class="spaces">    </span><span class="nottickedoff">con &lt;- liftIO $ BS.readFile fp</span>
-<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">case Data.Serialize.decode con of</span>
-<span class="lineno">   84 </span><span class="spaces">        </span><span class="nottickedoff">Right res -&gt; return res</span>
-<span class="lineno">   85 </span><span class="spaces">        </span><span class="nottickedoff">Left _ -&gt; do</span>
-<span class="lineno">   86 </span><span class="spaces">            </span><span class="nottickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
-<span class="lineno">   87 </span><span class="spaces">            </span><span class="nottickedoff">readModel Parser.parseModel (Just onlyPreamble) pair</span></span>
-<span class="lineno">   88 </span>
-<span class="lineno">   89 </span>readModelInfoFromFile ::
-<span class="lineno">   90 </span>    MonadIO m =&gt;
-<span class="lineno">   91 </span>    MonadFail m =&gt;
-<span class="lineno">   92 </span>    MonadUserError m =&gt;
-<span class="lineno">   93 </span>    FilePath -&gt; m Model
-<span class="lineno">   94 </span><span class="decl"><span class="istickedoff">readModelInfoFromFile fp = do</span>
-<span class="lineno">   95 </span><span class="spaces">    </span><span class="istickedoff">con &lt;- liftIO $ BS.readFile fp</span>
-<span class="lineno">   96 </span><span class="spaces">    </span><span class="istickedoff">case Data.Serialize.decode con of</span>
-<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff">Right res -&gt; <span class="nottickedoff">return res</span></span>
-<span class="lineno">   98 </span><span class="spaces">        </span><span class="istickedoff">Left _ -&gt; do</span>
-<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
-<span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">readModel <span class="nottickedoff">Parser.parseModel</span> Nothing pair</span></span>
+<span class="lineno">   75 </span>readModelPreambleFromFile ::
+<span class="lineno">   76 </span>    MonadIO m =&gt;
+<span class="lineno">   77 </span>    MonadFail m =&gt;
+<span class="lineno">   78 </span>    MonadUserError m =&gt;
+<span class="lineno">   79 </span>    FilePath -&gt; m Model
+<span class="lineno">   80 </span><span class="decl"><span class="nottickedoff">readModelPreambleFromFile fp = do</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">con &lt;- liftIO $ BS.readFile fp</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="nottickedoff">case Data.Serialize.decode con of</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="nottickedoff">Right res -&gt; return res</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="nottickedoff">Left _ -&gt; do</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="nottickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="nottickedoff">readModel Parser.parseModel (Just onlyPreamble) pair</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>readModelInfoFromFile ::
+<span class="lineno">   89 </span>    MonadIO m =&gt;
+<span class="lineno">   90 </span>    MonadFail m =&gt;
+<span class="lineno">   91 </span>    MonadUserError m =&gt;
+<span class="lineno">   92 </span>    FilePath -&gt; m Model
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">readModelInfoFromFile fp = do</span>
+<span class="lineno">   94 </span><span class="spaces">    </span><span class="istickedoff">con &lt;- liftIO $ BS.readFile fp</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="istickedoff">case Data.Serialize.decode con of</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">Right res -&gt; <span class="nottickedoff">return res</span></span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff">Left _ -&gt; do</span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff">pair &lt;- liftIO $ pairWithContents fp</span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">readModel <span class="nottickedoff">Parser.parseModel</span> Nothing pair</span></span>
+<span class="lineno">  100 </span>
 <span class="lineno">  101 </span>
-<span class="lineno">  102 </span>
-<span class="lineno">  103 </span>readModel ::
-<span class="lineno">  104 </span>    MonadFail m =&gt;
-<span class="lineno">  105 </span>    MonadUserError m =&gt;
-<span class="lineno">  106 </span>    Parser Model -&gt;
-<span class="lineno">  107 </span>    Maybe (Text -&gt; Text) -&gt;
-<span class="lineno">  108 </span>    (FilePath, Text) -&gt;
-<span class="lineno">  109 </span>    m Model
-<span class="lineno">  110 </span><span class="decl"><span class="istickedoff">readModel modelParser preprocess (fp, con) = do</span>
-<span class="lineno">  111 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">model &lt;- case preprocess of</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return def</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">Just prep -&gt;</span>
-<span class="lineno">  115 </span><span class="spaces">            </span><span class="istickedoff">case Parser.runLexerAndParser modelParser fp (prep con) of</span>
-<span class="lineno">  116 </span><span class="spaces">                </span><span class="istickedoff">Left  e -&gt; userErr1 e</span>
-<span class="lineno">  117 </span><span class="spaces">                </span><span class="istickedoff">Right x -&gt; return x</span>
-<span class="lineno">  118 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  120 </span><span class="spaces">        </span><span class="istickedoff">infoBlock = con</span>
-<span class="lineno">  121 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.lines</span>
-<span class="lineno">  122 </span><span class="spaces">            </span><span class="istickedoff">|&gt; dropWhile (&quot;$ Conjure's&quot; /=)     -- info block heading line</span>
-<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">|&gt; drop 1                           -- drop the heading</span>
-<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">|&gt; map (T.drop 2)                   -- uncomment</span>
-<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.unlines</span>
-<span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">infoJson = infoBlock</span>
-<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.encodeUtf8                     -- convert Text to ByteString</span>
-<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">|&gt; Data.Aeson.decodeStrict</span>
-<span class="lineno">  129 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  130 </span><span class="spaces">    </span><span class="istickedoff">if T.null (T.filter isSpace infoBlock)</span>
-<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">then return model</span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">else</span>
-<span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">case infoJson of</span>
-<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">userErr1 $ vcat</span></span>
-<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Malformed JSON in a cached Essence Prime model.&quot;</span></span>
-<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;It could be created by a different version of Conjure or modified by hand.&quot;</span></span>
-<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  138 </span><span class="spaces">                </span><span class="istickedoff">Just i  -&gt; return model { mInfo = i }</span></span>
+<span class="lineno">  102 </span>readModel ::
+<span class="lineno">  103 </span>    MonadFail m =&gt;
+<span class="lineno">  104 </span>    MonadUserError m =&gt;
+<span class="lineno">  105 </span>    Parser Model -&gt;
+<span class="lineno">  106 </span>    Maybe (Text -&gt; Text) -&gt;
+<span class="lineno">  107 </span>    (FilePath, Text) -&gt;
+<span class="lineno">  108 </span>    m Model
+<span class="lineno">  109 </span><span class="decl"><span class="istickedoff">readModel modelParser preprocess (fp, con) = do</span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">model &lt;- case preprocess of</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return def</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">Just prep -&gt;</span>
+<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff">case Parser.runLexerAndParser modelParser fp (prep con) of</span>
+<span class="lineno">  115 </span><span class="spaces">                </span><span class="istickedoff">Left  e -&gt; userErr1 e</span>
+<span class="lineno">  116 </span><span class="spaces">                </span><span class="istickedoff">Right x -&gt; return x</span>
+<span class="lineno">  117 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="istickedoff">infoBlock = con</span>
+<span class="lineno">  120 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.lines</span>
+<span class="lineno">  121 </span><span class="spaces">            </span><span class="istickedoff">|&gt; dropWhile (&quot;$ Conjure's&quot; /=)     -- info block heading line</span>
+<span class="lineno">  122 </span><span class="spaces">            </span><span class="istickedoff">|&gt; drop 1                           -- drop the heading</span>
+<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">|&gt; map (T.drop 2)                   -- uncomment</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.unlines</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">infoJson = infoBlock</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">|&gt; T.encodeUtf8                     -- convert Text to ByteString</span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">|&gt; Data.Aeson.decodeStrict</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff">if T.null (T.filter isSpace infoBlock)</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">then return model</span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">else</span>
+<span class="lineno">  132 </span><span class="spaces">            </span><span class="istickedoff">case infoJson of</span>
+<span class="lineno">  133 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">userErr1 $ vcat</span></span>
+<span class="lineno">  134 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Malformed JSON in a cached Essence Prime model.&quot;</span></span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;It could be created by a different version of Conjure or modified by hand.&quot;</span></span>
+<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  137 </span><span class="spaces">                </span><span class="istickedoff">Just i  -&gt; return model { mInfo = i }</span></span>
+<span class="lineno">  138 </span>
 <span class="lineno">  139 </span>
-<span class="lineno">  140 </span>
-<span class="lineno">  141 </span>onlyPreamble :: Text -&gt; Text
-<span class="lineno">  142 </span><span class="decl"><span class="nottickedoff">onlyPreamble</span>
-<span class="lineno">  143 </span><span class="spaces">    </span><span class="nottickedoff">= discardAfter &quot;maximising&quot;</span>
-<span class="lineno">  144 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;maximizing&quot;</span>
-<span class="lineno">  145 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;minimising&quot;</span>
-<span class="lineno">  146 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;minimizing&quot;</span>
-<span class="lineno">  147 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;such that&quot;</span>
-<span class="lineno">  148 </span><span class="spaces">    </span><span class="nottickedoff">. stripComments</span>
-<span class="lineno">  149 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  150 </span><span class="spaces">        </span><span class="nottickedoff">stripComments = T.unlines . map (T.takeWhile (/= '$')) . T.lines</span>
-<span class="lineno">  151 </span><span class="spaces">        </span><span class="nottickedoff">discardAfter t = fst . T.breakOn t</span></span>
+<span class="lineno">  140 </span>onlyPreamble :: Text -&gt; Text
+<span class="lineno">  141 </span><span class="decl"><span class="nottickedoff">onlyPreamble</span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="nottickedoff">= discardAfter &quot;maximising&quot;</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;maximizing&quot;</span>
+<span class="lineno">  144 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;minimising&quot;</span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;minimizing&quot;</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="nottickedoff">. discardAfter &quot;such that&quot;</span>
+<span class="lineno">  147 </span><span class="spaces">    </span><span class="nottickedoff">. stripComments</span>
+<span class="lineno">  148 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="nottickedoff">stripComments = T.unlines . map (T.takeWhile (/= '$')) . T.lines</span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="nottickedoff">discardAfter t = fst . T.breakOn t</span></span>
+<span class="lineno">  151 </span>
 <span class="lineno">  152 </span>
-<span class="lineno">  153 </span>
-<span class="lineno">  154 </span>writeModel :: MonadIO m =&gt; Int -&gt; OutputFormat -&gt; Maybe FilePath -&gt; Model -&gt; m ()
-<span class="lineno">  155 </span><span class="decl"><span class="istickedoff">writeModel  lnWidth Plain  Nothing   spec</span>
-<span class="lineno">  156 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                        = <span class="nottickedoff">liftIO $    putStrLn     (show           spec)</span></span>
-<span class="lineno">  157 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                           = <span class="nottickedoff">liftIO $    putStrLn     (render lnWidth spec)</span></span>
-<span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth Plain  (Just fp) spec</span>
-<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">lnWidth == 0</span>                        = <span class="nottickedoff">liftIO $    writeFile fp (show           spec)</span></span>
-<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>                           = liftIO $    writeFile fp (render lnWidth spec)</span>
-<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff">writeModel _lnWidth Binary Nothing   spec = <span class="nottickedoff">liftIO $ BS.putStrLn     (Data.Serialize.encode spec)</span></span>
-<span class="lineno">  162 </span><span class="spaces"></span><span class="istickedoff">writeModel _lnWidth Binary (Just fp) spec = <span class="nottickedoff">liftIO $ BS.writeFile fp (Data.Serialize.encode spec)</span></span>
-<span class="lineno">  163 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth JSON   Nothing   spec</span>
-<span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                        = <span class="nottickedoff">liftIO $    putStrLn     (show           (toJSON spec))</span></span>
-<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                           = <span class="nottickedoff">liftIO $    putStrLn     (render lnWidth (toJSON spec))</span></span>
-<span class="lineno">  166 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth JSON   (Just fp) spec</span>
-<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                        = <span class="nottickedoff">liftIO $    writeFile fp (show           (toJSON spec))</span></span>
-<span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                           = <span class="nottickedoff">liftIO $    writeFile fp (render lnWidth (toJSON spec))</span></span></span>
-<span class="lineno">  169 </span>
-<span class="lineno">  170 </span>
-<span class="lineno">  171 </span>writeModels :: MonadIO m =&gt; Int -&gt; OutputFormat -&gt; FilePath -&gt; String -&gt; [Model] -&gt; m ()
-<span class="lineno">  172 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
-<span class="lineno">  173 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
-<span class="lineno">  174 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
-<span class="lineno">  175 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
-<span class="lineno">  176 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
-<span class="lineno">  177 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
-<span class="lineno">  178 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
-<span class="lineno">  179 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
-<span class="lineno">  180 </span>
+<span class="lineno">  153 </span>writeModel ::
+<span class="lineno">  154 </span>    MonadIO m =&gt;
+<span class="lineno">  155 </span>    MonadUserError m =&gt;
+<span class="lineno">  156 </span>    Int -&gt;
+<span class="lineno">  157 </span>    OutputFormat -&gt;
+<span class="lineno">  158 </span>    Maybe FilePath -&gt;
+<span class="lineno">  159 </span>    Model -&gt;
+<span class="lineno">  160 </span>    m ()
+<span class="lineno">  161 </span><span class="decl"><span class="istickedoff">writeModel  lnWidth Plain   Nothing   spec</span>
+<span class="lineno">  162 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                         = <span class="nottickedoff">liftIO $    putStrLn     (show           spec)</span></span>
+<span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                            = <span class="nottickedoff">liftIO $    putStrLn     (render lnWidth spec)</span></span>
+<span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth Plain   (Just fp) spec</span>
+<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">lnWidth == 0</span>                         = <span class="nottickedoff">liftIO $    writeFile fp (show           spec)</span></span>
+<span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>                            = liftIO $    writeFile fp (render lnWidth spec)</span>
+<span class="lineno">  167 </span><span class="spaces"></span><span class="istickedoff">writeModel _lnWidth Binary  Nothing   spec = <span class="nottickedoff">liftIO $ BS.putStrLn     (Data.Serialize.encode spec)</span></span>
+<span class="lineno">  168 </span><span class="spaces"></span><span class="istickedoff">writeModel _lnWidth Binary  (Just fp) spec = <span class="nottickedoff">liftIO $ BS.writeFile fp (Data.Serialize.encode spec)</span></span>
+<span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth ASTJSON Nothing   spec</span>
+<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                         = <span class="nottickedoff">liftIO $    putStrLn     (show           (toJSON spec))</span></span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                            = <span class="nottickedoff">liftIO $    putStrLn     (render lnWidth (toJSON spec))</span></span>
+<span class="lineno">  172 </span><span class="spaces"></span><span class="istickedoff">writeModel  lnWidth ASTJSON (Just fp) spec</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">lnWidth == 0</span>                         = <span class="nottickedoff">liftIO $    writeFile fp (show           (toJSON spec))</span></span>
+<span class="lineno">  174 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                            = <span class="nottickedoff">liftIO $    writeFile fp (render lnWidth (toJSON spec))</span></span>
+<span class="lineno">  175 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth JSON Nothing spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
+<span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (show spec')</span></span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
+<span class="lineno">  180 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth JSON (Just fp) spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
+<span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span></span>
+<span class="lineno">  185 </span>
+<span class="lineno">  186 </span>
+<span class="lineno">  187 </span>writeModels ::
+<span class="lineno">  188 </span>    MonadIO m =&gt;
+<span class="lineno">  189 </span>    MonadUserError m =&gt;
+<span class="lineno">  190 </span>    Int -&gt;
+<span class="lineno">  191 </span>    OutputFormat -&gt;
+<span class="lineno">  192 </span>    FilePath -&gt;
+<span class="lineno">  193 </span>    String -&gt;
+<span class="lineno">  194 </span>    [Model] -&gt;
+<span class="lineno">  195 </span>    m ()
+<span class="lineno">  196 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
+<span class="lineno">  197 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
+<span class="lineno">  198 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
+<span class="lineno">  199 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
+<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
+<span class="lineno">  201 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
+<span class="lineno">  204 </span>
 
 </pre>
 </body>

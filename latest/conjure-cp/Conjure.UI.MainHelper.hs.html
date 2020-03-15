@@ -160,7 +160,7 @@ span.spaces    { background: white }
 <span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">| dumpRepresentations -&gt; do</span></span>
 <span class="lineno">  142 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">json &lt;- runNameGen () $ modelRepresentationsJSON essence2</span></span>
 <span class="lineno">  143 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn $ render lineWidth json</span></span>
-<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">| otherwise           -&gt; writeModel lineWidth JSON Nothing essence2</span></span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">| otherwise           -&gt; writeModel lineWidth ASTJSON Nothing essence2</span></span>
 <span class="lineno">  145 </span><span class="spaces"></span><span class="istickedoff">mainWithArgs Pretty{..} = <span class="nottickedoff">do</span></span>
 <span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">model0 &lt;- if or [ s `isSuffixOf` essence</span></span>
 <span class="lineno">  147 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">| s &lt;- [&quot;.param&quot;, &quot;.eprime-param&quot;, &quot;.solution&quot;, &quot;.eprime.solution&quot;] ]</span></span>

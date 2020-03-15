@@ -56,131 +56,152 @@ span.spaces    { background: white }
 <span class="lineno">   37 </span>instance ToJSON    x =&gt; ToJSON    (AbstractLiteral x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   38 </span>instance FromJSON  x =&gt; FromJSON  (AbstractLiteral x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   39 </span>
-<span class="lineno">   40 </span>instance Pretty a =&gt; Pretty (AbstractLiteral a) where
-<span class="lineno">   41 </span>    <span class="decl"><span class="istickedoff">pretty (AbsLitTuple xs) = (if length xs &lt; 2 then &quot;tuple&quot; else prEmpty) &lt;+&gt; prettyList prParens &quot;,&quot; xs</span>
-<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot; [ pretty n &lt;+&gt; &quot;=&quot; &lt;+&gt; pretty x</span>
-<span class="lineno">   43 </span><span class="spaces">                                                                    </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
-<span class="lineno">   44 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitVariant _ n x) = &quot;variant&quot; &lt;+&gt; prBraces (pretty n &lt;+&gt; &quot;=&quot; &lt;+&gt; pretty x)</span>
-<span class="lineno">   45 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMatrix _     []) = &quot;[]&quot;</span>
-<span class="lineno">   46 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMatrix index xs) = let f i = prBrackets (i &lt;&gt; &quot;;&quot; &lt;++&gt; pretty index) in prettyList f &quot;,&quot; xs</span>
-<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitSet       xs ) =                prettyList prBraces &quot;,&quot; xs</span>
-<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMSet      xs ) = &quot;mset&quot;      &lt;&gt; prettyList prParens &quot;,&quot; xs</span>
-<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitFunction  xs ) = &quot;function&quot;  &lt;&gt; prettyListDoc prParens &quot;,&quot; [ pretty a &lt;++&gt; &quot;--&gt;&quot; &lt;+&gt; pretty b | (a,b) &lt;- xs ]</span>
-<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitSequence  xs ) = &quot;sequence&quot;  &lt;&gt; prettyList prParens &quot;,&quot; xs</span>
-<span class="lineno">   51 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitRelation  xss) = &quot;relation&quot;  &lt;&gt; prettyListDoc prParens &quot;,&quot; [ pretty (AbsLitTuple xs)         | xs &lt;- xss   ]</span>
-<span class="lineno">   52 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitPartition xss) = &quot;partition&quot; &lt;&gt; prettyListDoc prParens &quot;,&quot; [ prettyList prBraces &quot;,&quot; xs      | xs &lt;- xss   ]</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (AbstractLiteral x) where
-<span class="lineno">   55 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (AbsLitTuple xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   56 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitTuple&quot;)</span>
-<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   58 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   59 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription AbsLitRecord{} = JSON.Object $ M.fromList</span>
-<span class="lineno">   60 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitRecord&quot;)</span>
-<span class="lineno">   61 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   62 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription AbsLitVariant{} = JSON.Object $ M.fromList</span>
-<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitVariant&quot;)</span>
-<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitMatrix _ xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitMatrix&quot;)</span>
-<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitSet xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitSet&quot;)</span>
-<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   74 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitMSet xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   75 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitMSet&quot;)</span>
-<span class="lineno">   76 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitFunction xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   80 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitFunction&quot;)</span>
-<span class="lineno">   81 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
-<span class="lineno">   82 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription (AbsLitTuple [x,y]) | (x,y) &lt;- xs ])</span>
-<span class="lineno">   83 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   84 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitSequence xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   86 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitSequence&quot;)</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
-<span class="lineno">   88 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription (AbsLitTuple [fromInt i, x]) | (i,x) &lt;- zip allNats xs ])</span>
-<span class="lineno">   89 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   90 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitRelation xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   92 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitRelation&quot;)</span>
-<span class="lineno">   93 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map (varSymBreakingDescription . AbsLitTuple) xs)</span>
-<span class="lineno">   94 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   95 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitPartition xs) = JSON.Object $ M.fromList</span>
-<span class="lineno">   97 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitPartition&quot;)</span>
-<span class="lineno">   98 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map (varSymBreakingDescription . AbsLitSet) xs)</span>
-<span class="lineno">   99 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">  100 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  101 </span>
-<span class="lineno">  102 </span>instance (TypeOf a, Pretty a) =&gt; TypeOf (AbstractLiteral a) where
-<span class="lineno">  103 </span>
-<span class="lineno">  104 </span>    <span class="decl"><span class="istickedoff">typeOf   (AbsLitTuple        []) = <span class="nottickedoff">return (TypeTuple [TypeAny])</span></span>
-<span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitTuple        xs) = TypeTuple    &lt;$&gt; mapM typeOf xs</span>
-<span class="lineno">  106 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  107 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitRecord       xs) = TypeRecord   &lt;$&gt; sequence [ do t &lt;- typeOf x ; return (n,t)</span>
-<span class="lineno">  108 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
-<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitVariant Nothing  _ _) = <span class="nottickedoff">fail &quot;Cannot calculate the type of variant literal.&quot;</span></span>
-<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitVariant (Just t) _ _) = fmap TypeVariant $ forM t $ \ (n,d) -&gt; do</span>
-<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">dt &lt;- typeOfDomain d</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">return (n, dt)</span>
-<span class="lineno">  114 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  115 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMatrix _   []  ) = return (TypeMatrix TypeAny TypeAny)</span>
-<span class="lineno">  116 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitMatrix ind inn ) = TypeMatrix   &lt;$&gt; typeOfDomain ind &lt;*&gt; (homoType (pretty p) =&lt;&lt; mapM typeOf inn)</span>
-<span class="lineno">  117 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  118 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitSet         [] ) = return (TypeSet TypeAny)</span>
-<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitSet         xs ) = TypeSet      &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
-<span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMSet        [] ) = return (TypeMSet TypeAny)</span>
-<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitMSet        xs ) = TypeMSet     &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
-<span class="lineno">  123 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitFunction    [] ) = return (TypeFunction TypeAny TypeAny)</span>
-<span class="lineno">  125 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitFunction    xs ) = TypeFunction &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . fst) xs)</span>
-<span class="lineno">  126 </span><span class="spaces">                                                    </span><span class="istickedoff">&lt;*&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . snd) xs)</span>
+<span class="lineno">   40 </span>instance (SimpleJSON x, Pretty x) =&gt; SimpleJSON (AbstractLiteral x) where
+<span class="lineno">   41 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON lit =</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="nottickedoff">case lit of</span>
+<span class="lineno">   43 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitTuple xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitRecord xs -&gt; do</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="nottickedoff">xs' &lt;- forM xs $ \ (nm, x) -&gt; do</span>
+<span class="lineno">   46 </span><span class="spaces">                    </span><span class="nottickedoff">x' &lt;- toSimpleJSON x</span>
+<span class="lineno">   47 </span><span class="spaces">                    </span><span class="nottickedoff">return (stringToText (renderNormal nm), x')</span>
+<span class="lineno">   48 </span><span class="spaces">                </span><span class="nottickedoff">return $ JSON.Object $ M.fromList xs'</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="nottickedoff">-- AbsLitVariant (Maybe [(Name, Domain () x)]) Name x</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMatrix _ xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSet xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMSet xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   53 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitFunction xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSequence xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitRelation xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitPartition xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; noToSimpleJSON lit</span></span>
+<span class="lineno">   58 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON _ = noFromSimpleJSON</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>instance Pretty a =&gt; Pretty (AbstractLiteral a) where
+<span class="lineno">   62 </span>    <span class="decl"><span class="istickedoff">pretty (AbsLitTuple xs) = (if length xs &lt; 2 then &quot;tuple&quot; else prEmpty) &lt;+&gt; prettyList prParens &quot;,&quot; xs</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot; [ pretty n &lt;+&gt; &quot;=&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">   64 </span><span class="spaces">                                                                    </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitVariant _ n x) = &quot;variant&quot; &lt;+&gt; prBraces (pretty n &lt;+&gt; &quot;=&quot; &lt;+&gt; pretty x)</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMatrix _     []) = &quot;[]&quot;</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMatrix index xs) = let f i = prBrackets (i &lt;&gt; &quot;;&quot; &lt;++&gt; pretty index) in prettyList f &quot;,&quot; xs</span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitSet       xs ) =                prettyList prBraces &quot;,&quot; xs</span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitMSet      xs ) = &quot;mset&quot;      &lt;&gt; prettyList prParens &quot;,&quot; xs</span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitFunction  xs ) = &quot;function&quot;  &lt;&gt; prettyListDoc prParens &quot;,&quot; [ pretty a &lt;++&gt; &quot;--&gt;&quot; &lt;+&gt; pretty b | (a,b) &lt;- xs ]</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitSequence  xs ) = &quot;sequence&quot;  &lt;&gt; prettyList prParens &quot;,&quot; xs</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitRelation  xss) = &quot;relation&quot;  &lt;&gt; prettyListDoc prParens &quot;,&quot; [ pretty (AbsLitTuple xs)         | xs &lt;- xss   ]</span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsLitPartition xss) = &quot;partition&quot; &lt;&gt; prettyListDoc prParens &quot;,&quot; [ prettyList prBraces &quot;,&quot; xs      | xs &lt;- xss   ]</span></span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (AbstractLiteral x) where
+<span class="lineno">   76 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (AbsLitTuple xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitTuple&quot;)</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   79 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription AbsLitRecord{} = JSON.Object $ M.fromList</span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitRecord&quot;)</span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription AbsLitVariant{} = JSON.Object $ M.fromList</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitVariant&quot;)</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitMatrix _ xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitMatrix&quot;)</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitSet xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">   91 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitSet&quot;)</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">   94 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitMSet xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitMSet&quot;)</span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   98 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">   99 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitFunction xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">  101 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitFunction&quot;)</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription (AbsLitTuple [x,y]) | (x,y) &lt;- xs ])</span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  106 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitSequence xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitSequence&quot;)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription (AbsLitTuple [fromInt i, x]) | (i,x) &lt;- zip allNats xs ])</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitRelation xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitRelation&quot;)</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map (varSymBreakingDescription . AbsLitTuple) xs)</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  117 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsLitPartition xs) = JSON.Object $ M.fromList</span>
+<span class="lineno">  118 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsLitPartition&quot;)</span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map (varSymBreakingDescription . AbsLitSet) xs)</span>
+<span class="lineno">  120 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  122 </span>
+<span class="lineno">  123 </span>instance (TypeOf a, Pretty a) =&gt; TypeOf (AbstractLiteral a) where
+<span class="lineno">  124 </span>
+<span class="lineno">  125 </span>    <span class="decl"><span class="istickedoff">typeOf   (AbsLitTuple        []) = <span class="nottickedoff">return (TypeTuple [TypeAny])</span></span>
+<span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitTuple        xs) = TypeTuple    &lt;$&gt; mapM typeOf xs</span>
 <span class="lineno">  127 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitSequence    [] ) = return (TypeSequence TypeAny)</span>
-<span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitSequence    xs ) = TypeSequence &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitRecord       xs) = TypeRecord   &lt;$&gt; sequence [ do t &lt;- typeOf x ; return (n,t)</span>
+<span class="lineno">  129 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
 <span class="lineno">  130 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitRelation    [] ) = return (TypeRelation [TypeAny])</span>
-<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitRelation    xss) = do</span>
-<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . AbsLitTuple) xss</span>
-<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">TypeTuple ts -&gt; return (TypeRelation ts)</span>
-<span class="lineno">  136 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;expecting TypeTuple in typeOf&quot;</span></span>
-<span class="lineno">  137 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  138 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitPartition   [] ) = return <span class="nottickedoff">(TypePartition TypeAny)</span></span>
-<span class="lineno">  139 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitPartition   xss) = TypePartition &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf (concat xss))</span></span>
-<span class="lineno">  140 </span>
-<span class="lineno">  141 </span>
-<span class="lineno">  142 </span>normaliseAbsLit :: (Ord c, ExpressionLike c) =&gt; (c -&gt; c) -&gt; AbstractLiteral c -&gt; AbstractLiteral c
-<span class="lineno">  143 </span><span class="decl"><span class="istickedoff">normaliseAbsLit norm (AbsLitTuple     xs ) = AbsLitTuple                           $ map norm xs</span>
-<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitRecord    xs ) = AbsLitRecord                          $ map (second norm) xs</span>
-<span class="lineno">  145 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitVariant t n x) = AbsLitVariant t n (norm x)</span>
-<span class="lineno">  146 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitMatrix d  xs ) = AbsLitMatrix (normaliseDomain norm d) $ map norm xs</span>
-<span class="lineno">  147 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitSet       xs ) = AbsLitSet                   $ sortNub $ map norm xs</span>
-<span class="lineno">  148 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitMSet      xs ) = AbsLitMSet                  $ sort    $ map norm xs</span>
-<span class="lineno">  149 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitFunction  xs ) = AbsLitFunction              $ sortNub [ (norm x, norm y) | (x, y) &lt;- xs ]</span>
-<span class="lineno">  150 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitSequence  xs ) = AbsLitSequence              $           map norm xs</span>
-<span class="lineno">  151 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitRelation  xss) = AbsLitRelation              $ sortNub $ map (map norm) xss</span>
-<span class="lineno">  152 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitPartition xss) = AbsLitPartition             $ sortNub $ map (sortNub . map norm) xss</span></span>
-<span class="lineno">  153 </span>
-<span class="lineno">  154 </span>emptyCollectionAbsLit :: AbstractLiteral c -&gt; Bool
-<span class="lineno">  155 </span><span class="decl"><span class="istickedoff">emptyCollectionAbsLit AbsLitTuple{} = False</span>
-<span class="lineno">  156 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit AbsLitRecord{} = False</span>
-<span class="lineno">  157 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit AbsLitVariant{} = False</span>
-<span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitMatrix _ xs) = null xs</span>
-<span class="lineno">  159 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitSet xs) = null xs</span>
-<span class="lineno">  160 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitMSet xs) = null xs</span>
-<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitFunction xs) = null xs</span>
-<span class="lineno">  162 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitSequence xs) = null xs</span>
-<span class="lineno">  163 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitRelation xs) = null xs</span>
-<span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitPartition xs) = null xs</span></span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitVariant Nothing  _ _) = <span class="nottickedoff">fail &quot;Cannot calculate the type of variant literal.&quot;</span></span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitVariant (Just t) _ _) = fmap TypeVariant $ forM t $ \ (n,d) -&gt; do</span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">dt &lt;- typeOfDomain d</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">return (n, dt)</span>
+<span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMatrix _   []  ) = return (TypeMatrix TypeAny TypeAny)</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitMatrix ind inn ) = TypeMatrix   &lt;$&gt; typeOfDomain ind &lt;*&gt; (homoType (pretty p) =&lt;&lt; mapM typeOf inn)</span>
+<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  139 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitSet         [] ) = return (TypeSet TypeAny)</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitSet         xs ) = TypeSet      &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
+<span class="lineno">  141 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMSet        [] ) = return (TypeMSet TypeAny)</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitMSet        xs ) = TypeMSet     &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitFunction    [] ) = return (TypeFunction TypeAny TypeAny)</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitFunction    xs ) = TypeFunction &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . fst) xs)</span>
+<span class="lineno">  147 </span><span class="spaces">                                                    </span><span class="istickedoff">&lt;*&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . snd) xs)</span>
+<span class="lineno">  148 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitSequence    [] ) = return (TypeSequence TypeAny)</span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitSequence    xs ) = TypeSequence &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
+<span class="lineno">  151 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  152 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitRelation    [] ) = return (TypeRelation [TypeAny])</span>
+<span class="lineno">  153 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitRelation    xss) = do</span>
+<span class="lineno">  154 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM (typeOf . AbsLitTuple) xss</span>
+<span class="lineno">  155 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  156 </span><span class="spaces">            </span><span class="istickedoff">TypeTuple ts -&gt; return (TypeRelation ts)</span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;expecting TypeTuple in typeOf&quot;</span></span>
+<span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitPartition   [] ) = return <span class="nottickedoff">(TypePartition TypeAny)</span></span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitPartition   xss) = TypePartition &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf (concat xss))</span></span>
+<span class="lineno">  161 </span>
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>normaliseAbsLit :: (Ord c, ExpressionLike c) =&gt; (c -&gt; c) -&gt; AbstractLiteral c -&gt; AbstractLiteral c
+<span class="lineno">  164 </span><span class="decl"><span class="istickedoff">normaliseAbsLit norm (AbsLitTuple     xs ) = AbsLitTuple                           $ map norm xs</span>
+<span class="lineno">  165 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitRecord    xs ) = AbsLitRecord                          $ map (second norm) xs</span>
+<span class="lineno">  166 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitVariant t n x) = AbsLitVariant t n (norm x)</span>
+<span class="lineno">  167 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitMatrix d  xs ) = AbsLitMatrix (normaliseDomain norm d) $ map norm xs</span>
+<span class="lineno">  168 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitSet       xs ) = AbsLitSet                   $ sortNub $ map norm xs</span>
+<span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitMSet      xs ) = AbsLitMSet                  $ sort    $ map norm xs</span>
+<span class="lineno">  170 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitFunction  xs ) = AbsLitFunction              $ sortNub [ (norm x, norm y) | (x, y) &lt;- xs ]</span>
+<span class="lineno">  171 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitSequence  xs ) = AbsLitSequence              $           map norm xs</span>
+<span class="lineno">  172 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitRelation  xss) = AbsLitRelation              $ sortNub $ map (map norm) xss</span>
+<span class="lineno">  173 </span><span class="spaces"></span><span class="istickedoff">normaliseAbsLit norm (AbsLitPartition xss) = AbsLitPartition             $ sortNub $ map (sortNub . map norm) xss</span></span>
+<span class="lineno">  174 </span>
+<span class="lineno">  175 </span>emptyCollectionAbsLit :: AbstractLiteral c -&gt; Bool
+<span class="lineno">  176 </span><span class="decl"><span class="istickedoff">emptyCollectionAbsLit AbsLitTuple{} = False</span>
+<span class="lineno">  177 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit AbsLitRecord{} = False</span>
+<span class="lineno">  178 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit AbsLitVariant{} = False</span>
+<span class="lineno">  179 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitMatrix _ xs) = null xs</span>
+<span class="lineno">  180 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitSet xs) = null xs</span>
+<span class="lineno">  181 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitMSet xs) = null xs</span>
+<span class="lineno">  182 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitFunction xs) = null xs</span>
+<span class="lineno">  183 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitSequence xs) = null xs</span>
+<span class="lineno">  184 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitRelation xs) = null xs</span>
+<span class="lineno">  185 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionAbsLit (AbsLitPartition xs) = null xs</span></span>
 
 </pre>
 </body>

@@ -650,11 +650,11 @@ span.spaces    { background: white }
 <span class="lineno">  631 </span><span class="spaces">    </span><span class="istickedoff">in</span>
 <span class="lineno">  632 </span><span class="spaces">        </span><span class="istickedoff">makeExprParser (parseAtomicExpr &lt;?&gt; &quot;expression&quot;)</span>
 <span class="lineno">  633 </span><span class="spaces">            </span><span class="istickedoff">[ [ case descr of</span>
-<span class="lineno">  634 </span><span class="spaces">                    </span><span class="istickedoff">Binary op FLeft               -&gt; InfixL $ do lexeme op</span>
+<span class="lineno">  634 </span><span class="spaces">                    </span><span class="istickedoff">BinaryOp op FLeft             -&gt; InfixL $ do lexeme op</span>
 <span class="lineno">  635 </span><span class="spaces">                                                                 </span><span class="istickedoff">return $ mergeOp op</span>
-<span class="lineno">  636 </span><span class="spaces">                    </span><span class="istickedoff">Binary op FNone               -&gt; InfixN $ do lexeme op</span>
+<span class="lineno">  636 </span><span class="spaces">                    </span><span class="istickedoff">BinaryOp op FNone             -&gt; InfixN $ do lexeme op</span>
 <span class="lineno">  637 </span><span class="spaces">                                                                 </span><span class="istickedoff">return $ mergeOp op</span>
-<span class="lineno">  638 </span><span class="spaces">                    </span><span class="istickedoff">Binary op FRight              -&gt; InfixR $ do lexeme op</span>
+<span class="lineno">  638 </span><span class="spaces">                    </span><span class="istickedoff">BinaryOp op FRight            -&gt; InfixR $ do lexeme op</span>
 <span class="lineno">  639 </span><span class="spaces">                                                                 </span><span class="istickedoff">return $ mergeOp op</span>
 <span class="lineno">  640 </span><span class="spaces">                    </span><span class="istickedoff">UnaryPrefix L_Minus           -&gt; Prefix $ foldr1 (.) &lt;$&gt; some parseUnaryNegate</span>
 <span class="lineno">  641 </span><span class="spaces">                    </span><span class="istickedoff">UnaryPrefix L_ExclamationMark -&gt; Prefix $ foldr1 (.) &lt;$&gt; some parseUnaryNot</span>
