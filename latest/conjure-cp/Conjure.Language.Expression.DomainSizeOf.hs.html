@@ -46,86 +46,92 @@ span.spaces    { background: white }
 <span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainInt _ [] ) = <span class="nottickedoff">fail &quot;domainSizeOf infinite integer domain&quot;</span></span>
 <span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainInt _ [r]) = domainSizeOfRange r</span>
 <span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainInt _ rs ) = make opSum . fromList &lt;$&gt; mapM domainSizeOfRange rs</span>
-<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainEnum n Nothing _) = <span class="nottickedoff">return $</span></span>
-<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let n' = n `mappend` &quot;_EnumSize&quot;</span></span>
-<span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">in  Reference n' (Just (DeclHasRepr Given n' (DomainInt TagInt [])))</span></span>
-<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainUnnamed _ x) = <span class="nottickedoff">return x</span></span>
-<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple []) = <span class="nottickedoff">return 1</span></span>
-<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple xs) = make opProduct . fromList &lt;$&gt; mapM domainSizeOf xs</span>
-<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRecord xs) = make opProduct . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
-<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainVariant xs) = make opSum . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
-<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMatrix index inner) = make opPow &lt;$&gt; domainSizeOf inner &lt;*&gt; domainSizeOf index</span>
-<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainSet _ (SetAttr sizeAttr) inner) = do</span>
-<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">innerSize &lt;- domainSizeOf inner</span>
-<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">case sizeAttr of</span>
-<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_None           -&gt; return (make opPow 2 innerSize)</span>
-<span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_Size size      -&gt; return (nchoosek (make opFactorial) innerSize size)</span>
-<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
-<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MaxSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
-<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ _ -&gt; return (make opPow 2 innerSize)              -- TODO: can be better</span>
-<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMSet _ attrs inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">innerSize &lt;- domainSizeOf inner</span></span>
-<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
-<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMaxSize = case attrs of</span></span>
-<span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return x</span></span>
-<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return x</span></span>
-<span class="lineno">   53 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return x</span></span>
-<span class="lineno">   54 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; return (x * innerSize)</span></span>
-<span class="lineno">   55 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; return (x * innerSize)</span></span>
-<span class="lineno">   56 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail (&quot;domainSizeOf.getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
-<span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMaxOccur = case attrs of</span></span>
-<span class="lineno">   58 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; return x</span></span>
-<span class="lineno">   59 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; return x</span></span>
-<span class="lineno">   60 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
-<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
-<span class="lineno">   62 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
-<span class="lineno">   63 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail (&quot;domainSizeOf.getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
-<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">maxSize  &lt;- getMaxSize</span></span>
-<span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">maxOccur &lt;- getMaxOccur</span></span>
-<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (make opPow maxOccur maxSize)</span></span>
-<span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d@(DomainSequence _ (SequenceAttr sizeAttr jectivityAttr) innerTo) = <span class="nottickedoff">do</span></span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">size &lt;- case sizeAttr of</span></span>
-<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None           -&gt; fail (&quot;Infinite domain:&quot; &lt;+&gt; pretty d)</span></span>
-<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s         -&gt; return s</span></span>
-<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize _      -&gt; fail (&quot;Infinite domain:&quot; &lt;+&gt; pretty d)</span></span>
-<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize s      -&gt; return s</span></span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize _ s -&gt; return s</span></span>
-<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">domainSizeOf $ DomainFunction def (FunctionAttr sizeAttr PartialityAttr_Partial jectivityAttr)</span></span>
-<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(DomainInt TagInt [RangeBounded 1 size]) innerTo</span></span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainFunction _ (FunctionAttr sizeAttr _ _) innerFr innerTo) =</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf $ DomainRelation <span class="nottickedoff">def</span> (RelationAttr sizeAttr <span class="nottickedoff">def</span>) [innerFr, innerTo]</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRelation _ (RelationAttr sizeAttr _binRelAttr) inners) =</span>
-<span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf (DomainSet <span class="nottickedoff">def</span> (SetAttr sizeAttr) (DomainTuple inners))</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainPartition _ a inner) =</span>
-<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf $ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsNum  a))</span>
-<span class="lineno">   82 </span><span class="spaces">                      </span><span class="istickedoff">$ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsSize a)) inner</span>
-<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d = <span class="nottickedoff">bug (&quot;not implemented: domainSizeOf:&quot; &lt;+&gt; vcat [pretty d, pretty (show d)])</span></span></span>
-<span class="lineno">   84 </span>
-<span class="lineno">   85 </span>
-<span class="lineno">   86 </span>domainSizeOfRange :: (Op a :&lt; a, ExpressionLike a, Pretty a, MonadFail m, Num a, Eq a) =&gt; Range a -&gt; m a
-<span class="lineno">   87 </span><span class="decl"><span class="istickedoff">domainSizeOfRange RangeSingle{} = return 1</span>
-<span class="lineno">   88 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange (RangeBounded 1 u) = return u</span>
-<span class="lineno">   89 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange (RangeBounded l u) = return $ make opSum $ fromList [1, make opMinus u l]</span>
-<span class="lineno">   90 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange r = <span class="nottickedoff">fail (&quot;domainSizeOf infinite range:&quot; &lt;+&gt; pretty r)</span></span></span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainIntE x) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">go (Reference _ (Just (Alias y))) = go y</span></span>
+<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">go (Comprehension _body gocs) = return $ make opSum $ Comprehension 1 gocs</span></span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">go y = bug (&quot;not implemented: domainSizeOf.go:&quot; &lt;+&gt; vcat [pretty y, pretty (show y)])</span></span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">go x</span></span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainEnum n Nothing _) = <span class="nottickedoff">return $</span></span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let n' = n `mappend` &quot;_EnumSize&quot;</span></span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">in  Reference n' (Just (DeclHasRepr Given n' (DomainInt TagInt [])))</span></span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainUnnamed _ x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple []) = <span class="nottickedoff">return 1</span></span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple xs) = make opProduct . fromList &lt;$&gt; mapM domainSizeOf xs</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRecord xs) = make opProduct . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainVariant xs) = make opSum . fromList &lt;$&gt; mapM (domainSizeOf . snd) xs</span>
+<span class="lineno">   44 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMatrix index inner) = make opPow &lt;$&gt; domainSizeOf inner &lt;*&gt; domainSizeOf index</span>
+<span class="lineno">   45 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainSet _ (SetAttr sizeAttr) inner) = do</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">innerSize &lt;- domainSizeOf inner</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">case sizeAttr of</span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_None           -&gt; return (make opPow 2 innerSize)</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_Size size      -&gt; return (nchoosek (make opFactorial) innerSize size)</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MaxSize _      -&gt; <span class="nottickedoff">return (make opPow 2 innerSize)</span>              -- TODO: can be better</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ _ -&gt; return (make opPow 2 innerSize)              -- TODO: can be better</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMSet _ attrs inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">innerSize &lt;- domainSizeOf inner</span></span>
+<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMaxSize = case attrs of</span></span>
+<span class="lineno">   57 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return x</span></span>
+<span class="lineno">   58 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return x</span></span>
+<span class="lineno">   59 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return x</span></span>
+<span class="lineno">   60 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; return (x * innerSize)</span></span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; return (x * innerSize)</span></span>
+<span class="lineno">   62 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail (&quot;domainSizeOf.getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMaxOccur = case attrs of</span></span>
+<span class="lineno">   64 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; return x</span></span>
+<span class="lineno">   65 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; return x</span></span>
+<span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return (make opMin $ fromList [x, innerSize])</span></span>
+<span class="lineno">   69 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail (&quot;domainSizeOf.getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">maxSize  &lt;- getMaxSize</span></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">maxOccur &lt;- getMaxOccur</span></span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (make opPow maxOccur maxSize)</span></span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d@(DomainSequence _ (SequenceAttr sizeAttr jectivityAttr) innerTo) = <span class="nottickedoff">do</span></span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">size &lt;- case sizeAttr of</span></span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None           -&gt; fail (&quot;Infinite domain:&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s         -&gt; return s</span></span>
+<span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize _      -&gt; fail (&quot;Infinite domain:&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize s      -&gt; return s</span></span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize _ s -&gt; return s</span></span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">domainSizeOf $ DomainFunction def (FunctionAttr sizeAttr PartialityAttr_Partial jectivityAttr)</span></span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(DomainInt TagInt [RangeBounded 1 size]) innerTo</span></span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainFunction _ (FunctionAttr sizeAttr _ _) innerFr innerTo) =</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf $ DomainRelation <span class="nottickedoff">def</span> (RelationAttr sizeAttr <span class="nottickedoff">def</span>) [innerFr, innerTo]</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainRelation _ (RelationAttr sizeAttr _binRelAttr) inners) =</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf (DomainSet <span class="nottickedoff">def</span> (SetAttr sizeAttr) (DomainTuple inners))</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainPartition _ a inner) =</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">domainSizeOf $ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsNum  a))</span>
+<span class="lineno">   88 </span><span class="spaces">                      </span><span class="istickedoff">$ DomainSet <span class="nottickedoff">def</span> (SetAttr (partsSize a)) inner</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d = <span class="nottickedoff">bug (&quot;not implemented: domainSizeOf:&quot; &lt;+&gt; vcat [pretty d, pretty (show d)])</span></span></span>
+<span class="lineno">   90 </span>
 <span class="lineno">   91 </span>
-<span class="lineno">   92 </span>
-<span class="lineno">   93 </span>getMaxNumberOfElementsInContainer :: Domain () Expression -&gt; Expression
-<span class="lineno">   94 </span><span class="decl"><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainSet _ (SetAttr sizeAttr) inner) =</span>
-<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">case (getMaxFrom_SizeAttr sizeAttr, domainSizeOf inner) of</span>
-<span class="lineno">   96 </span><span class="spaces">        </span><span class="nottickedoff">(Just n, _) -&gt; n</span>
-<span class="lineno">   97 </span><span class="spaces">        </span><span class="nottickedoff">(_, Just n) -&gt; n</span>
-<span class="lineno">   98 </span><span class="spaces">        </span><span class="nottickedoff">_           -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainSet:&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">   99 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainMSet _ (MSetAttr sizeAttr occurAttr) inner) =</span>
-<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">case (getMaxFrom_SizeAttr sizeAttr, getMaxFrom_OccurAttr occurAttr, domainSizeOf inner) of</span>
-<span class="lineno">  101 </span><span class="spaces">        </span><span class="nottickedoff">(Just n, _     , _     ) -&gt; n</span>
-<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">(_     , Just o, Just n) -&gt; [essence| &amp;o * &amp;n |]</span>
-<span class="lineno">  103 </span><span class="spaces">        </span><span class="nottickedoff">_                        -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainMSet:&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">  104 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainSequence _ (SequenceAttr sizeAttr _) _) =</span>
-<span class="lineno">  105 </span><span class="spaces">    </span><span class="nottickedoff">case getMaxFrom_SizeAttr sizeAttr of</span>
-<span class="lineno">  106 </span><span class="spaces">        </span><span class="nottickedoff">Just n -&gt; n</span>
-<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">_      -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainSequence:&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">  108 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain = bug $ &quot;getMaxNumberOfElementsInContainer:&quot; &lt;+&gt; pretty domain</span></span>
-<span class="lineno">  109 </span>
+<span class="lineno">   92 </span>domainSizeOfRange :: (Op a :&lt; a, ExpressionLike a, Pretty a, MonadFail m, Num a, Eq a) =&gt; Range a -&gt; m a
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">domainSizeOfRange RangeSingle{} = return 1</span>
+<span class="lineno">   94 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange (RangeBounded 1 u) = return u</span>
+<span class="lineno">   95 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange (RangeBounded l u) = return $ make opSum $ fromList [1, make opMinus u l]</span>
+<span class="lineno">   96 </span><span class="spaces"></span><span class="istickedoff">domainSizeOfRange r = <span class="nottickedoff">fail (&quot;domainSizeOf infinite range:&quot; &lt;+&gt; pretty r)</span></span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>
+<span class="lineno">   99 </span>getMaxNumberOfElementsInContainer :: Domain () Expression -&gt; Expression
+<span class="lineno">  100 </span><span class="decl"><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainSet _ (SetAttr sizeAttr) inner) =</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="nottickedoff">case (getMaxFrom_SizeAttr sizeAttr, domainSizeOf inner) of</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">(Just n, _) -&gt; n</span>
+<span class="lineno">  103 </span><span class="spaces">        </span><span class="nottickedoff">(_, Just n) -&gt; n</span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">_           -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainSet:&quot; &lt;+&gt; pretty domain</span>
+<span class="lineno">  105 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainMSet _ (MSetAttr sizeAttr occurAttr) inner) =</span>
+<span class="lineno">  106 </span><span class="spaces">    </span><span class="nottickedoff">case (getMaxFrom_SizeAttr sizeAttr, getMaxFrom_OccurAttr occurAttr, domainSizeOf inner) of</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">(Just n, _     , _     ) -&gt; n</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">(_     , Just o, Just n) -&gt; [essence| &amp;o * &amp;n |]</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="nottickedoff">_                        -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainMSet:&quot; &lt;+&gt; pretty domain</span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain@(DomainSequence _ (SequenceAttr sizeAttr _) _) =</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">case getMaxFrom_SizeAttr sizeAttr of</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="nottickedoff">Just n -&gt; n</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">_      -&gt; bug $ &quot;getMaxNumberOfElementsInContainer, DomainSequence:&quot; &lt;+&gt; pretty domain</span>
+<span class="lineno">  114 </span><span class="spaces"></span><span class="nottickedoff">getMaxNumberOfElementsInContainer domain = bug $ &quot;getMaxNumberOfElementsInContainer:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  115 </span>
 
 </pre>
 </body>
