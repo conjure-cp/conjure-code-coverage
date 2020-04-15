@@ -130,7 +130,7 @@ span.spaces    { background: white }
 <span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let outputFilename = fromMaybe (dropExtension essenceParam ++ &quot;.eprime-param&quot;) eprimeParam</span></span>
 <span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">eprimeF &lt;- readModelInfoFromFile eprime</span></span>
 <span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">essenceParamF &lt;- readParamOrSolutionFromFile essenceParam</span></span>
-<span class="lineno">  114 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">output &lt;- runNameGen () $ translateParameter eprimeF essenceParamF</span></span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">output &lt;- runNameGen () $ translateParameter False eprimeF essenceParamF</span></span>
 <span class="lineno">  115 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">writeModel lineWidth outputFormat (Just outputFilename) output</span></span>
 <span class="lineno">  116 </span><span class="spaces"></span><span class="istickedoff">mainWithArgs TranslateSolution{..} = <span class="nottickedoff">do</span></span>
 <span class="lineno">  117 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">when (null eprime        ) $ userErr1 &quot;Mandatory field --eprime&quot;</span></span>
@@ -755,7 +755,7 @@ span.spaces    { background: white }
 <span class="lineno">  736 </span><span class="spaces">        </span><span class="nottickedoff">-- we want to preserve user-erors, and not raise them as errors using IO.fail</span>
 <span class="lineno">  737 </span><span class="spaces">        </span><span class="nottickedoff">runTranslateParameter :: IO (Either [Doc] Model)</span>
 <span class="lineno">  738 </span><span class="spaces">        </span><span class="nottickedoff">runTranslateParameter = runUserErrorT $ ignoreLogs $ runNameGen () $</span>
-<span class="lineno">  739 </span><span class="spaces">                                    </span><span class="nottickedoff">translateParameter eprimeModel essenceParam</span>
+<span class="lineno">  739 </span><span class="spaces">                                    </span><span class="nottickedoff">translateParameter graphSolver eprimeModel essenceParam</span>
 <span class="lineno">  740 </span><span class="spaces">    </span><span class="nottickedoff">eprimeParam' &lt;- liftIO runTranslateParameter</span>
 <span class="lineno">  741 </span><span class="spaces">    </span><span class="nottickedoff">case eprimeParam' of</span>
 <span class="lineno">  742 </span><span class="spaces">        </span><span class="nottickedoff">Left err -&gt; return (Left err)</span>
