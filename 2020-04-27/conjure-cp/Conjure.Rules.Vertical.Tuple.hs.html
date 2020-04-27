@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Tuple_Eq :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Tuple_Eq = <span class="nottickedoff">&quot;tuple-eq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Tuple_Eq = &quot;tuple-eq&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opEq p</span>
 <span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
@@ -81,7 +81,7 @@ span.spaces    { background: white }
 <span class="lineno">   62 </span>
 <span class="lineno">   63 </span>
 <span class="lineno">   64 </span>rule_Tuple_TildeLt :: Rule
-<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">rule_Tuple_TildeLt = <span class="nottickedoff">&quot;tuple-TildeLt&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">rule_Tuple_TildeLt = &quot;tuple-TildeLt&quot; `namedRule` theRule where</span>
 <span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opTildeLt p</span>
 <span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
@@ -147,7 +147,7 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">unroll [a]    [b]    = [essence| &amp;a ~&lt; &amp;b |]</span>
 <span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">unroll (a:as) (b:bs) = let rest = unroll as bs</span>
-<span class="lineno">  131 </span><span class="spaces">                               </span><span class="istickedoff">in  [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> (&amp;a ~&lt; &amp;b) \/ ((&amp;a = &amp;b) /\ &amp;rest) |]</span></span></span></span></span></span></span></span></span>
+<span class="lineno">  131 </span><span class="spaces">                               </span><span class="istickedoff">in  [essence| (&amp;a ~&lt; &amp;b) \/ ((&amp;a = &amp;b) /\ &amp;rest) |]</span>
 <span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ = <span class="nottickedoff">bug (&quot;arity mismatch in:&quot; &lt;+&gt; pretty p)</span></span></span>
 <span class="lineno">  133 </span>
 <span class="lineno">  134 </span>decomposeLexTildeLeq :: Expression -&gt; [Expression] -&gt; [Expression] -&gt; Expression
@@ -160,7 +160,7 @@ span.spaces    { background: white }
 <span class="lineno">  141 </span>
 <span class="lineno">  142 </span>
 <span class="lineno">  143 </span>rule_Tuple_Index :: Rule
-<span class="lineno">  144 </span><span class="decl"><span class="istickedoff">rule_Tuple_Index = <span class="nottickedoff">&quot;tuple-index&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  144 </span><span class="decl"><span class="istickedoff">rule_Tuple_Index = &quot;tuple-index&quot; `namedRule` theRule where</span>
 <span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  146 </span><span class="spaces">        </span><span class="istickedoff">(t,i)       &lt;- match opIndexing p</span>
 <span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf t</span>

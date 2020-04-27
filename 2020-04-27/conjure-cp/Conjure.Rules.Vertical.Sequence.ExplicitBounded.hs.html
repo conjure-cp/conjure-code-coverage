@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Comprehension :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;sequence-comprehension{ExplicitBounded}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;sequence-comprehension{ExplicitBounded}&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, sequ), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>
@@ -57,7 +57,7 @@ span.spaces    { background: white }
 <span class="lineno">   38 </span>
 <span class="lineno">   39 </span>
 <span class="lineno">   40 </span>rule_Card :: Rule
-<span class="lineno">   41 </span><span class="decl"><span class="istickedoff">rule_Card = <span class="nottickedoff">&quot;sequence-cardinality{ExplicitBounded}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   41 </span><span class="decl"><span class="istickedoff">rule_Card = &quot;sequence-cardinality{ExplicitBounded}&quot; `namedRule` theRule where</span>
 <span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| |&amp;s| |] = do</span>
 <span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{}           &lt;- typeOf s</span>
 <span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">Sequence_ExplicitBounded &lt;- representationOf s</span>
@@ -70,7 +70,7 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span>
 <span class="lineno">   52 </span>
 <span class="lineno">   53 </span>rule_Image_NotABool :: Rule
-<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">rule_Image_NotABool = <span class="nottickedoff">&quot;sequence-image{ExplicitBounded}-not-a-bool&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">rule_Image_NotABool = &quot;sequence-image{ExplicitBounded}-not-a-bool&quot; `namedRule` theRule where</span>
 <span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| image(&amp;sequ,&amp;x) |] = do</span>
 <span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">Sequence_ExplicitBounded &lt;- representationOf sequ</span>
 <span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence tyTo        &lt;- typeOf sequ</span>

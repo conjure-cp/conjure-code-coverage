@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Comprehension :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;mset-comprehension{ExplicitWithRepetition}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;mset-comprehension{ExplicitWithRepetition}&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, s), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} s) -&gt; return (pat, s)</span>

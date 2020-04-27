@@ -122,43 +122,43 @@ span.spaces    { background: white }
 <span class="lineno">  103 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  104 </span><span class="spaces">                    </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  105 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
-<span class="lineno">  106 </span><span class="spaces">                        </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span>
-<span class="lineno">  107 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ &amp;partSizesVar[&amp;i] = sum([ 1 | &amp;jPat : &amp;innerDomain , &amp;whichPart[&amp;j] = &amp;i ])</span></span></span></span></span>
-<span class="lineno">  108 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)</span></span></span></span></span>
-<span class="lineno">  109 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span></span></span>
-<span class="lineno">  110 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span>
+<span class="lineno">  106 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  107 </span><span class="spaces">                            </span><span class="istickedoff">and([ &amp;partSizesVar[&amp;i] = sum([ 1 | &amp;jPat : &amp;innerDomain , &amp;whichPart[&amp;j] = &amp;i ])</span>
+<span class="lineno">  108 </span><span class="spaces">                                </span><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)</span>
+<span class="lineno">  109 </span><span class="spaces">                                </span><span class="istickedoff">])</span>
+<span class="lineno">  110 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  111 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  112 </span><span class="spaces">                </span><span class="istickedoff">firstIndexChannelling whichPart numPartsVar firstIndexVar = do</span>
 <span class="lineno">  113 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  115 </span><span class="spaces">                    </span><span class="istickedoff">return</span>
 <span class="lineno">  116 </span><span class="spaces">                        </span><span class="istickedoff">[ -- firstIndexVar[i] is &lt;= all indices belonging to part i</span>
-<span class="lineno">  117 </span><span class="spaces">                          </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  118 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar .</span></span></span>
-<span class="lineno">  119 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">forAll &amp;jPat : &amp;innerDomain .</span></span></span>
-<span class="lineno">  120 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">&amp;whichPart[&amp;j] = &amp;i -&gt; &amp;firstIndexVar[&amp;i] &lt;= &amp;j</span></span></span>
-<span class="lineno">  121 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  117 </span><span class="spaces">                          </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  118 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar .</span>
+<span class="lineno">  119 </span><span class="spaces">                                </span><span class="istickedoff">forAll &amp;jPat : &amp;innerDomain .</span>
+<span class="lineno">  120 </span><span class="spaces">                                    </span><span class="istickedoff">&amp;whichPart[&amp;j] = &amp;i -&gt; &amp;firstIndexVar[&amp;i] &lt;= &amp;j</span>
+<span class="lineno">  121 </span><span class="spaces">                          </span><span class="istickedoff">|]</span>
 <span class="lineno">  122 </span><span class="spaces">                        </span><span class="istickedoff">, -- firstIndexVar[i] is equal to one of those</span>
-<span class="lineno">  123 </span><span class="spaces">                          </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span></span></span>
-<span class="lineno">  124 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar .</span></span></span></span></span></span></span>
-<span class="lineno">  125 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">exists &amp;jPat : &amp;innerDomain .</span></span></span></span></span></span></span>
-<span class="lineno">  126 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">&amp;whichPart[&amp;j] = &amp;i /\ &amp;firstIndexVar[&amp;i] = &amp;j</span></span></span></span></span></span></span>
-<span class="lineno">  127 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span></span></span>
+<span class="lineno">  123 </span><span class="spaces">                          </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  124 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar .</span>
+<span class="lineno">  125 </span><span class="spaces">                                </span><span class="istickedoff">exists &amp;jPat : &amp;innerDomain .</span>
+<span class="lineno">  126 </span><span class="spaces">                                    </span><span class="istickedoff">&amp;whichPart[&amp;j] = &amp;i /\ &amp;firstIndexVar[&amp;i] = &amp;j</span>
+<span class="lineno">  127 </span><span class="spaces">                          </span><span class="istickedoff">|]</span>
 <span class="lineno">  128 </span><span class="spaces">                        </span><span class="istickedoff">, -- firstIndexVar[i] is dontCare, if nothing is in part i</span>
-<span class="lineno">  129 </span><span class="spaces">                          </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  130 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &gt; &amp;numPartsVar .</span></span></span>
-<span class="lineno">  131 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">dontCare(&amp;firstIndexVar[&amp;i])</span></span></span>
-<span class="lineno">  132 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  129 </span><span class="spaces">                          </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  130 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxNumParts) , &amp;i &gt; &amp;numPartsVar .</span>
+<span class="lineno">  131 </span><span class="spaces">                                </span><span class="istickedoff">dontCare(&amp;firstIndexVar[&amp;i])</span>
+<span class="lineno">  132 </span><span class="spaces">                          </span><span class="istickedoff">|]</span>
 <span class="lineno">  133 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
 <span class="lineno">  134 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  135 </span><span class="spaces">                </span><span class="istickedoff">symmetryBreaking numPartsVar firstIndexVar = do</span>
 <span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  138 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
-<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span></span></span></span></span>
-<span class="lineno">  140 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">forAll &amp;iPat, &amp;jPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar /\ &amp;j &lt;= &amp;numPartsVar .</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  141 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">&amp;i &lt; &amp;j &lt;-&gt; &amp;firstIndexVar[&amp;i] &lt; &amp;firstIndexVar[&amp;j]</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  142 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span></span></span></span></span>
+<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  140 </span><span class="spaces">                          </span><span class="istickedoff">forAll &amp;iPat, &amp;jPat : int(1..&amp;maxNumParts) , &amp;i &lt;= &amp;numPartsVar /\ &amp;j &lt;= &amp;numPartsVar .</span>
+<span class="lineno">  141 </span><span class="spaces">                              </span><span class="istickedoff">&amp;i &lt; &amp;j &lt;-&gt; &amp;firstIndexVar[&amp;i] &lt; &amp;firstIndexVar[&amp;j]</span>
+<span class="lineno">  142 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">numPartsCons numPartsVar =</span>
 <span class="lineno">  145 </span><span class="spaces">                    </span><span class="istickedoff">return $ mkSizeCons (partsNum attrs) numPartsVar</span>
@@ -168,32 +168,32 @@ span.spaces    { background: white }
 <span class="lineno">  149 </span><span class="spaces">                    </span><span class="istickedoff">let theConsForI = make opAnd $ fromList $</span>
 <span class="lineno">  150 </span><span class="spaces">                            </span><span class="istickedoff">mkSizeCons (partsSize attrs) [essence| &amp;partSizesVar[&amp;i] |]</span>
 <span class="lineno">  151 </span><span class="spaces">                    </span><span class="istickedoff">return</span>
-<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff">[   [essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  153 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ &amp;theConsForI</span></span></span>
-<span class="lineno">  154 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)          $ forAll part numbers</span></span></span>
-<span class="lineno">  155 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar                    $ that are active</span></span></span>
-<span class="lineno">  156 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  157 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
-<span class="lineno">  158 </span><span class="spaces">                        </span><span class="istickedoff">,   [essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  159 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ &amp;partSizesVar[&amp;i] = 0</span></span></span>
-<span class="lineno">  160 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)          $ forAll part numbers</span></span></span>
-<span class="lineno">  161 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &gt; &amp;numPartsVar                     $ that are inactive</span></span></span>
-<span class="lineno">  162 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  163 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff">[   [essence|</span>
+<span class="lineno">  153 </span><span class="spaces">                                </span><span class="istickedoff">and([ &amp;theConsForI</span>
+<span class="lineno">  154 </span><span class="spaces">                                    </span><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)          $ forAll part numbers</span>
+<span class="lineno">  155 </span><span class="spaces">                                    </span><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar                    $ that are active</span>
+<span class="lineno">  156 </span><span class="spaces">                                    </span><span class="istickedoff">])</span>
+<span class="lineno">  157 </span><span class="spaces">                            </span><span class="istickedoff">|]</span>
+<span class="lineno">  158 </span><span class="spaces">                        </span><span class="istickedoff">,   [essence|</span>
+<span class="lineno">  159 </span><span class="spaces">                                </span><span class="istickedoff">and([ &amp;partSizesVar[&amp;i] = 0</span>
+<span class="lineno">  160 </span><span class="spaces">                                    </span><span class="istickedoff">| &amp;iPat : int(1..&amp;maxNumParts)          $ forAll part numbers</span>
+<span class="lineno">  161 </span><span class="spaces">                                    </span><span class="istickedoff">, &amp;i &gt; &amp;numPartsVar                     $ that are inactive</span>
+<span class="lineno">  162 </span><span class="spaces">                                    </span><span class="istickedoff">])</span>
+<span class="lineno">  163 </span><span class="spaces">                            </span><span class="istickedoff">|]</span>
 <span class="lineno">  164 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
 <span class="lineno">  165 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">noGaps whichPart numPartsVar = do</span>
 <span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  168 </span><span class="spaces">                    </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  169 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
-<span class="lineno">  170 </span><span class="spaces">                        </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  171 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ or([ &amp;whichPart[&amp;j] = &amp;i                  $ there must be a member in that part</span></span></span>
-<span class="lineno">  172 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;jPat : &amp;innerDomain</span></span></span>
-<span class="lineno">  173 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  174 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(3..&amp;maxNumParts)              $ forAll part numbers (except 1 and 2)</span></span></span>
-<span class="lineno">  175 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar                        $ that are active</span></span></span>
-<span class="lineno">  176 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  177 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  170 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  171 </span><span class="spaces">                            </span><span class="istickedoff">and([ or([ &amp;whichPart[&amp;j] = &amp;i                  $ there must be a member in that part</span>
+<span class="lineno">  172 </span><span class="spaces">                                     </span><span class="istickedoff">| &amp;jPat : &amp;innerDomain</span>
+<span class="lineno">  173 </span><span class="spaces">                                     </span><span class="istickedoff">])</span>
+<span class="lineno">  174 </span><span class="spaces">                                </span><span class="istickedoff">| &amp;iPat : int(3..&amp;maxNumParts)              $ forAll part numbers (except 1 and 2)</span>
+<span class="lineno">  175 </span><span class="spaces">                                </span><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar                        $ that are active</span>
+<span class="lineno">  176 </span><span class="spaces">                                </span><span class="istickedoff">])</span>
+<span class="lineno">  177 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  178 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  179 </span><span class="spaces">                </span><span class="istickedoff">fixedPartSize =</span>
 <span class="lineno">  180 </span><span class="spaces">                    </span><span class="istickedoff">case attrs of</span>
@@ -203,12 +203,12 @@ span.spaces    { background: white }
 <span class="lineno">  184 </span><span class="spaces">                </span><span class="istickedoff">regular numPartsVar partSizesVar | isRegular attrs &amp;&amp; not fixedPartSize = do</span>
 <span class="lineno">  185 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  186 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
-<span class="lineno">  187 </span><span class="spaces">                        </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"></span></span></span>
-<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">and([ &amp;partSizesVar[&amp;i-1] = &amp;partSizesVar[&amp;i]</span></span></span>
-<span class="lineno">  189 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(2..&amp;maxNumParts)</span></span></span>
-<span class="lineno">  190 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar</span></span></span>
-<span class="lineno">  191 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  187 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">  188 </span><span class="spaces">                            </span><span class="istickedoff">and([ &amp;partSizesVar[&amp;i-1] = &amp;partSizesVar[&amp;i]</span>
+<span class="lineno">  189 </span><span class="spaces">                                </span><span class="istickedoff">| &amp;iPat : int(2..&amp;maxNumParts)</span>
+<span class="lineno">  190 </span><span class="spaces">                                </span><span class="istickedoff">, &amp;i &lt;= &amp;numPartsVar</span>
+<span class="lineno">  191 </span><span class="spaces">                                </span><span class="istickedoff">])</span>
+<span class="lineno">  192 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  193 </span><span class="spaces">                </span><span class="istickedoff">regular _ _ = return []</span>
 <span class="lineno">  194 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">return $ \ inpPartition -&gt; do</span>

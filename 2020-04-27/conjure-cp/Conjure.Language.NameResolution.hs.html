@@ -287,12 +287,12 @@ span.spaces    { background: white }
 <span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">resolveD (DomainRecord ds) = fmap DomainRecord $ forM ds $ \ (n, d) -&gt; do</span>
 <span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">d' &lt;- resolveD d</span>
 <span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff">t  &lt;- typeOfDomain d'</span>
-<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">modify ((n, RecordField <span class="nottickedoff">n</span> t) :)</span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">modify ((n, RecordField n t) :)</span>
 <span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">return (n, d')</span>
 <span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff">resolveD (DomainVariant ds) = fmap DomainVariant $ forM ds $ \ (n, d) -&gt; do</span>
 <span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">d' &lt;- resolveD d</span>
 <span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">t  &lt;- typeOfDomain d'</span>
-<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">modify ((n, VariantField <span class="nottickedoff">n</span> t) :)</span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">modify ((n, VariantField n t) :)</span>
 <span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">return (n, d')</span>
 <span class="lineno">  278 </span><span class="spaces"></span><span class="istickedoff">resolveD d = do</span>
 <span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">d' &lt;- descendM resolveD d</span>

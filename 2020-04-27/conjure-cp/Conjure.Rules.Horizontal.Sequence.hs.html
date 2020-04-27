@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Comprehension_Literal :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Literal = <span class="nottickedoff">&quot;sequence-comprehension-literal&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Literal = &quot;sequence-comprehension-literal&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gofBefore, (pat, expr), gofAfter) &lt;- matchFirst gensOrConds $ \ gof -&gt; case gof of</span>
 <span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet,opToMSet,opToRelation] expr)</span>
@@ -76,7 +76,7 @@ span.spaces    { background: white }
 <span class="lineno">   57 </span>
 <span class="lineno">   58 </span>
 <span class="lineno">   59 </span>rule_Image_Literal_Int :: Rule
-<span class="lineno">   60 </span><span class="decl"><span class="istickedoff">rule_Image_Literal_Int = <span class="nottickedoff">&quot;sequence-image-literal-int&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   60 </span><span class="decl"><span class="istickedoff">rule_Image_Literal_Int = &quot;sequence-image-literal-int&quot; `namedRule` theRule where</span>
 <span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   62 </span><span class="spaces">        </span><span class="istickedoff">(func, arg)                   &lt;- match opImage p</span>
 <span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">(TypeSequence (TypeInt _), elems) &lt;- match sequenceLiteral func</span>
@@ -86,7 +86,7 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">let</span>
 <span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">val = make opSum $ fromList</span>
 <span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff">-- if this is ever true, the output is the value of b.</span>
-<span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff">[ [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> toInt(&amp;a = &amp;arg) * &amp;b |]</span></span></span></span></span>
+<span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff">[ [essence| toInt(&amp;a = &amp;arg) * &amp;b |]</span>
 <span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff">| (a',b) &lt;- zip allNats elems</span>
 <span class="lineno">   72 </span><span class="spaces">                        </span><span class="istickedoff">, let a = fromInt a'</span>
 <span class="lineno">   73 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
@@ -98,7 +98,7 @@ span.spaces    { background: white }
 <span class="lineno">   79 </span>
 <span class="lineno">   80 </span>
 <span class="lineno">   81 </span>rule_Eq_Literal :: Rule
-<span class="lineno">   82 </span><span class="decl"><span class="istickedoff">rule_Eq_Literal = <span class="nottickedoff">&quot;sequence-eq-literal&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   82 </span><span class="decl"><span class="istickedoff">rule_Eq_Literal = &quot;sequence-eq-literal&quot; `namedRule` theRule where</span>
 <span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">(x,y) &lt;- match opEq p</span>
 <span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">xTy &lt;- typeOf x</span>
@@ -276,7 +276,7 @@ span.spaces    { background: white }
 <span class="lineno">  257 </span>
 <span class="lineno">  258 </span>
 <span class="lineno">  259 </span>rule_Card :: Rule
-<span class="lineno">  260 </span><span class="decl"><span class="istickedoff">rule_Card = <span class="nottickedoff">&quot;sequence-cardinality&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  260 </span><span class="decl"><span class="istickedoff">rule_Card = &quot;sequence-cardinality&quot; `namedRule` theRule where</span>
 <span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| |&amp;s| |] = do</span>
 <span class="lineno">  262 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{} &lt;- typeOf s</span>
 <span class="lineno">  263 </span><span class="spaces">        </span><span class="istickedoff">dom &lt;- domainOf s</span>
@@ -290,13 +290,13 @@ span.spaces    { background: white }
 <span class="lineno">  271 </span><span class="spaces">                    </span><span class="istickedoff">-&gt; <span class="nottickedoff">domainSizeOf inner</span></span>
 <span class="lineno">  272 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; do</span>
 <span class="lineno">  273 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, _) &lt;- quantifiedVar</span>
-<span class="lineno">  274 </span><span class="spaces">                    </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"> sum &amp;iPat in &amp;s . 1 |]</span></span></span>
+<span class="lineno">  274 </span><span class="spaces">                    </span><span class="istickedoff">return [essence| sum &amp;iPat in &amp;s . 1 |]</span>
 <span class="lineno">  275 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Card&quot;</span></span>
 <span class="lineno">  277 </span>
 <span class="lineno">  278 </span>
 <span class="lineno">  279 </span>rule_Comprehension_Defined :: Rule
-<span class="lineno">  280 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined = <span class="nottickedoff">&quot;sequence-defined&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  280 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined = &quot;sequence-defined&quot; `namedRule` theRule where</span>
 <span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  282 </span><span class="spaces">        </span><span class="istickedoff">(gofBefore, (pat, expr), gofAfter) &lt;- matchFirst gensOrConds $ \ gof -&gt; case gof of</span>
 <span class="lineno">  283 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>
@@ -452,7 +452,7 @@ span.spaces    { background: white }
 <span class="lineno">  433 </span>
 <span class="lineno">  434 </span>
 <span class="lineno">  435 </span>rule_Image_Int :: Rule
-<span class="lineno">  436 </span><span class="decl"><span class="istickedoff">rule_Image_Int = <span class="nottickedoff">&quot;sequence-image-int&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  436 </span><span class="decl"><span class="istickedoff">rule_Image_Int = &quot;sequence-image-int&quot; `namedRule` theRule where</span>
 <span class="lineno">  437 </span><span class="spaces">    </span><span class="istickedoff">theRule Reference{} = na &quot;rule_Image_Int&quot;</span>
 <span class="lineno">  438 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  439 </span><span class="spaces">        </span><span class="istickedoff">let</span>
@@ -530,7 +530,7 @@ span.spaces    { background: white }
 <span class="lineno">  511 </span>
 <span class="lineno">  512 </span>
 <span class="lineno">  513 </span>rule_Substring :: Rule
-<span class="lineno">  514 </span><span class="decl"><span class="istickedoff">rule_Substring = <span class="nottickedoff">&quot;substring&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  514 </span><span class="decl"><span class="istickedoff">rule_Substring = &quot;substring&quot; `namedRule` theRule where</span>
 <span class="lineno">  515 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a substring &amp;b |] = do</span>
 <span class="lineno">  516 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{} &lt;- typeOf a</span>
 <span class="lineno">  517 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{} &lt;- typeOf b</span>
@@ -549,7 +549,7 @@ span.spaces    { background: white }
 <span class="lineno">  530 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MinMaxSize _ x -&gt; <span class="nottickedoff">return x</span></span>
 <span class="lineno">  531 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;rule_Substring maxSize&quot;</span></span>
 <span class="lineno">  532 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  533 </span><span class="spaces">        </span><span class="istickedoff">let maxSize = [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> max([&amp;aMaxSize, &amp;bMaxSize]) |]</span></span></span></span></span>
+<span class="lineno">  533 </span><span class="spaces">        </span><span class="istickedoff">let maxSize = [essence| max([&amp;aMaxSize, &amp;bMaxSize]) |]</span>
 <span class="lineno">  534 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  535 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  536 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for substring on 2 sequences&quot;</span></span>
@@ -558,17 +558,17 @@ span.spaces    { background: white }
 <span class="lineno">  539 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  540 </span><span class="spaces">                </span><span class="istickedoff">return $ make opOr $ Comprehension</span>
 <span class="lineno">  541 </span><span class="spaces">                        </span><span class="istickedoff">(make opAnd $ Comprehension</span>
-<span class="lineno">  542 </span><span class="spaces">                            </span><span class="istickedoff">[essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;j[2] = image(&amp;b, &amp;i + &amp;j[1]) |]</span></span></span></span></span>
+<span class="lineno">  542 </span><span class="spaces">                            </span><span class="istickedoff">[essence| &amp;j[2] = image(&amp;b, &amp;i + &amp;j[1]) |]</span>
 <span class="lineno">  543 </span><span class="spaces">                            </span><span class="istickedoff">[ Generator (GenInExpr jPat a)</span>
 <span class="lineno">  544 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
 <span class="lineno">  545 </span><span class="spaces">                        </span><span class="istickedoff">)</span>
-<span class="lineno">  546 </span><span class="spaces">                        </span><span class="istickedoff">[ Generator (GenDomainNoRepr iPat $ mkDomainIntB 0 [essence|<span class="nottickedoff"><span class="istickedoff"> &amp;maxSize - 1 |]</span></span>)]</span>
+<span class="lineno">  546 </span><span class="spaces">                        </span><span class="istickedoff">[ Generator (GenDomainNoRepr iPat $ mkDomainIntB 0 [essence| &amp;maxSize - 1 |])]</span>
 <span class="lineno">  547 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  548 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Substring&quot;</span></span>
 <span class="lineno">  549 </span>
 <span class="lineno">  550 </span>
 <span class="lineno">  551 </span>rule_Subsequence :: Rule
-<span class="lineno">  552 </span><span class="decl"><span class="istickedoff">rule_Subsequence = <span class="nottickedoff">&quot;subsequence&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  552 </span><span class="decl"><span class="istickedoff">rule_Subsequence = &quot;subsequence&quot; `namedRule` theRule where</span>
 <span class="lineno">  553 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a subsequence &amp;b |] = do</span>
 <span class="lineno">  554 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{} &lt;- typeOf a</span>
 <span class="lineno">  555 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence{} &lt;- typeOf b</span>
@@ -605,11 +605,11 @@ span.spaces    { background: white }
 <span class="lineno">  586 </span><span class="spaces">                            </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName</span>
 <span class="lineno">  587 </span><span class="spaces">                                    </span><span class="istickedoff">(DomainSequence def (SequenceAttr aSizeAttr def) (mkDomainIntB 1 bMaxSize)))</span>
 <span class="lineno">  588 </span><span class="spaces">                            </span><span class="istickedoff">, SuchThat</span>
-<span class="lineno">  589 </span><span class="spaces">                                </span><span class="istickedoff">[ [essence|<span class="nottickedoff"><span class="istickedoff"> and([ image(&amp;aux, &amp;i-1) &lt; image(&amp;aux, &amp;i)</span></span></span>
-<span class="lineno">  590 </span><span class="spaces">                                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">| &amp;iPat : int(2..&amp;aMaxSize)</span></span></span>
-<span class="lineno">  591 </span><span class="spaces">                                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">, &amp;i &lt;= |&amp;aux|</span></span></span>
-<span class="lineno">  592 </span><span class="spaces">                                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">])</span></span></span>
-<span class="lineno">  593 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span>
+<span class="lineno">  589 </span><span class="spaces">                                </span><span class="istickedoff">[ [essence| and([ image(&amp;aux, &amp;i-1) &lt; image(&amp;aux, &amp;i)</span>
+<span class="lineno">  590 </span><span class="spaces">                                                </span><span class="istickedoff">| &amp;iPat : int(2..&amp;aMaxSize)</span>
+<span class="lineno">  591 </span><span class="spaces">                                                </span><span class="istickedoff">, &amp;i &lt;= |&amp;aux|</span>
+<span class="lineno">  592 </span><span class="spaces">                                                </span><span class="istickedoff">])</span>
+<span class="lineno">  593 </span><span class="spaces">                                  </span><span class="istickedoff">|]</span>
 <span class="lineno">  594 </span><span class="spaces">                                </span><span class="istickedoff">, [essence| |&amp;a| = |&amp;aux|</span>
 <span class="lineno">  595 </span><span class="spaces">                                  </span><span class="istickedoff">|]</span>
 <span class="lineno">  596 </span><span class="spaces">                                </span><span class="istickedoff">]</span>

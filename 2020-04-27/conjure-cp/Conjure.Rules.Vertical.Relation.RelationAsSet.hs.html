@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Comprehension :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;relation-map_in_expr{RelationAsSet}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;relation-map_in_expr{RelationAsSet}&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, rel), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet, opToMSet] expr)</span>
@@ -44,7 +44,7 @@ span.spaces    { background: white }
 <span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
 <span class="lineno">   26 </span>
 <span class="lineno">   27 </span>rule_Card :: Rule
-<span class="lineno">   28 </span><span class="decl"><span class="istickedoff">rule_Card = <span class="nottickedoff">&quot;relation-card{RelationAsSet}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   28 </span><span class="decl"><span class="istickedoff">rule_Card = &quot;relation-card{RelationAsSet}&quot; `namedRule` theRule where</span>
 <span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">rel              &lt;- match opTwoBars p</span>
 <span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">TypeRelation{}   &lt;- typeOf rel</span>
