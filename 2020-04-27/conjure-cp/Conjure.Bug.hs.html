@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fno-warn-orphans #-}
+<span class="lineno">    2 </span>{-# LANGUAGE CPP #-}
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>module Conjure.Bug
+<span class="lineno">    5 </span>    ( bug
+<span class="lineno">    6 </span>    , bugFail, bugFailT
+<span class="lineno">    7 </span>    ) where
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>import Conjure.Prelude
+<span class="lineno">   10 </span>import Conjure.RepositoryVersion ( repositoryVersion )
+<span class="lineno">   11 </span>import Conjure.Language.Pretty
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>#if __GLASGOW_HASKELL__ &gt;= 800
+<span class="lineno">   14 </span>-- base
+<span class="lineno">   15 </span>import GHC.Stack ( HasCallStack )
+<span class="lineno">   16 </span>-- call this function instead of &quot;error&quot;
+<span class="lineno">   17 </span>bug :: HasCallStack =&gt; Doc -&gt; a
+<span class="lineno">   18 </span>#else
+<span class="lineno">   19 </span>bug :: Doc -&gt; a
+<span class="lineno">   20 </span>#endif
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">bug message = error $ unlines</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">[ &quot;This should never happen, sorry!&quot;</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">, &quot;However, it did happen, so it must be a bug. Please report it to us!&quot;</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Conjure is actively maintained, we will get back to you as soon as possible.&quot;</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">, &quot;You can help us by providing a minimal failing example.&quot;</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Also include the repository version for this build: &quot; ++ repositoryVersion</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Issue tracker: http://github.com/conjure-cp/conjure/issues&quot;</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;, &quot;&quot; , renderNormal message</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>bugFail :: Doc -&gt; Either Doc a -&gt; a
+<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">bugFail loc (Left err) = <span class="nottickedoff">bug (vcat [&quot;BUGFAIL at&quot; &lt;+&gt; loc, err])</span></span>
+<span class="lineno">   37 </span><span class="spaces"></span><span class="istickedoff">bugFail _   (Right x) = x</span></span>
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>bugFailT :: Monad m =&gt; Doc -&gt; ExceptT m a -&gt; m a
+<span class="lineno">   40 </span><span class="decl"><span class="istickedoff">bugFailT loc comp = do</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">res &lt;- runExceptT comp</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">case res of</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">bug (vcat [&quot;BUGFAIL at&quot; &lt;+&gt; loc, err])</span></span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">Right x  -&gt; return x</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>instance MonadFail IO where
+<span class="lineno">   47 </span>    <span class="decl"><span class="nottickedoff">fail msg = bug (vcat [&quot;IO Error&quot;, msg])</span></span>
+
+</pre>
+</body>
+</html>

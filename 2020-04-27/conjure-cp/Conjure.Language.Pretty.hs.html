@@ -1,0 +1,186 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE TypeSynonymInstances #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Pretty
+<span class="lineno">    4 </span>    ( Pretty(..)
+<span class="lineno">    5 </span>    , (&lt;++&gt;), (&lt;+&gt;), (&lt;&gt;)
+<span class="lineno">    6 </span>    , (&lt;+-&gt;)
+<span class="lineno">    7 </span>    , prettyList, prettyListDoc
+<span class="lineno">    8 </span>    , parensIf
+<span class="lineno">    9 </span>    , render, renderNormal, renderWide
+<span class="lineno">   10 </span>    , hang, hcat
+<span class="lineno">   11 </span>    , prEmpty, prParens, prBrackets, prBraces
+<span class="lineno">   12 </span>    , Doc
+<span class="lineno">   13 </span>    , prettyContext
+<span class="lineno">   14 </span>    , logDebugId
+<span class="lineno">   15 </span>    , tracingPretty
+<span class="lineno">   16 </span>    ) where
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>-- conjure
+<span class="lineno">   19 </span>import Conjure.Prelude
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>-- base
+<span class="lineno">   22 </span>import Text.Printf ( printf )
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>-- text
+<span class="lineno">   25 </span>import qualified Data.Text as T ( Text, unpack, replace)
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>-- pretty
+<span class="lineno">   28 </span>import Text.PrettyPrint
+<span class="lineno">   29 </span>    ( parens, brackets, braces, empty       -- will be exported with new names
+<span class="lineno">   30 </span>    , text                                  -- only used in this module
+<span class="lineno">   31 </span>    , style, renderStyle, lineLength, ribbonsPerLine
+<span class="lineno">   32 </span>    )
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>-- aeson
+<span class="lineno">   35 </span>import Data.Aeson as JSON
+<span class="lineno">   36 </span>import Data.Scientific ( Scientific, floatingOrInteger )    -- scientific
+<span class="lineno">   37 </span>import qualified Data.HashMap.Strict as M                   -- unordered-containers
+<span class="lineno">   38 </span>import qualified Data.Vector as V                           -- vector
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>class Show a =&gt; Pretty a where
+<span class="lineno">   42 </span>    pretty :: a -&gt; Doc
+<span class="lineno">   43 </span>    prettyPrec :: Int -&gt; a -&gt; Doc
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>    <span class="decl"><span class="istickedoff">pretty = prettyPrec 0</span></span>
+<span class="lineno">   46 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ = pretty</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>instance Pretty Doc     where <span class="decl"><span class="istickedoff">pretty = id</span></span>
+<span class="lineno">   49 </span>instance Pretty T.Text  where <span class="decl"><span class="istickedoff">pretty = pretty . T.unpack</span></span>
+<span class="lineno">   50 </span>instance Pretty String  where <span class="decl"><span class="istickedoff">pretty = text</span></span>
+<span class="lineno">   51 </span>instance Pretty ()      where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   52 </span>instance Pretty Bool    where <span class="decl"><span class="nottickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   53 </span>instance Pretty Int     where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   54 </span>instance Pretty Integer where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   55 </span>instance Pretty Double  where <span class="decl"><span class="nottickedoff">pretty x = pretty (printf &quot;%.2f&quot; x :: String)</span></span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>instance (Pretty a, Pretty b) =&gt; Pretty (a, b) where
+<span class="lineno">   58 </span>    <span class="decl"><span class="nottickedoff">pretty (a, b) = prettyListDoc parens &quot;,&quot; [pretty a, pretty b]</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>instance (Pretty a, Pretty b, Pretty c) =&gt; Pretty (a, b, c) where
+<span class="lineno">   61 </span>    <span class="decl"><span class="nottickedoff">pretty (a, b, c) = prettyListDoc parens &quot;,&quot; [pretty a, pretty b, pretty c]</span></span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>instance Pretty a =&gt; Pretty (Maybe a) where
+<span class="lineno">   64 </span>    <span class="decl"><span class="nottickedoff">pretty Nothing  = &quot;Nothing&quot;</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">pretty (Just x) = &quot;Just&quot; &lt;+&gt; parens (pretty x)</span></span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>infixl 5 &lt;++&gt;
+<span class="lineno">   69 </span>(&lt;++&gt;) :: Doc -&gt; Doc -&gt; Doc
+<span class="lineno">   70 </span><span class="decl"><span class="istickedoff">a &lt;++&gt; b = hang a 4 b</span></span>
+<span class="lineno">   71 </span>
+<span class="lineno">   72 </span>-- | For debugging output, truncates the second argument to 5 lines
+<span class="lineno">   73 </span>(&lt;+-&gt;) :: Doc -&gt; Doc -&gt; Doc
+<span class="lineno">   74 </span><span class="decl"><span class="nottickedoff">a &lt;+-&gt; b = a &lt;+&gt; (vcat $ map pretty $ take 5 $ lines $ renderWide $ b)</span></span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>prettyList :: Pretty a =&gt; (Doc -&gt; Doc) -&gt; Doc -&gt; [a] -&gt; Doc
+<span class="lineno">   77 </span><span class="decl"><span class="istickedoff">prettyList wrap punc = prettyListDoc wrap punc . map pretty</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>prettyListDoc :: (Doc -&gt; Doc) -&gt; Doc -&gt; [Doc] -&gt; Doc
+<span class="lineno">   80 </span><span class="decl"><span class="istickedoff">prettyListDoc wrap punc = wrap . fsep . punctuate punc</span></span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>parensIf :: Bool -&gt; Doc -&gt; Doc
+<span class="lineno">   83 </span><span class="decl"><span class="istickedoff">parensIf = wrapIf parens</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">wrapIf :: (Doc -&gt; Doc) -&gt; Bool -&gt; Doc -&gt; Doc</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">wrapIf wrap c = if c then wrap else id</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>renderNormal :: Pretty a =&gt; a -&gt; String
+<span class="lineno">   89 </span><span class="decl"><span class="istickedoff">renderNormal = render 120</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>renderWide :: Pretty a =&gt; a -&gt; String
+<span class="lineno">   92 </span><span class="decl"><span class="nottickedoff">renderWide = render 240</span></span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>render :: Pretty a =&gt; Int -&gt; a -&gt; String
+<span class="lineno">   95 </span><span class="decl"><span class="istickedoff">render w = renderStyle (style { lineLength = w, ribbonsPerLine = 1 }) . pretty</span></span>
+<span class="lineno">   96 </span>
+<span class="lineno">   97 </span>prEmpty :: Doc
+<span class="lineno">   98 </span><span class="decl"><span class="istickedoff">prEmpty = empty</span></span>
+<span class="lineno">   99 </span>
+<span class="lineno">  100 </span>prParens :: Doc -&gt; Doc
+<span class="lineno">  101 </span><span class="decl"><span class="istickedoff">prParens = parens</span></span>
+<span class="lineno">  102 </span>
+<span class="lineno">  103 </span>prBrackets :: Doc -&gt; Doc
+<span class="lineno">  104 </span><span class="decl"><span class="istickedoff">prBrackets = brackets</span></span>
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>prBraces :: Doc -&gt; Doc
+<span class="lineno">  107 </span><span class="decl"><span class="istickedoff">prBraces = braces</span></span>
+<span class="lineno">  108 </span>
+<span class="lineno">  109 </span>prettyContext :: (Pretty a, Pretty b) =&gt; [(a,b)] -&gt; [Doc]
+<span class="lineno">  110 </span><span class="decl"><span class="istickedoff">prettyContext = map (\ (a,b) -&gt; nest 4 $ pretty a &lt;&gt; &quot;:&quot; &lt;+&gt; pretty b )</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>--------------------------------------------------------------------------------
+<span class="lineno">  114 </span>-- JSON ------------------------------------------------------------------------
+<span class="lineno">  115 </span>--------------------------------------------------------------------------------
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>instance Pretty JSON.Value where
+<span class="lineno">  118 </span>    <span class="decl"><span class="istickedoff">pretty (Object x) = pretty x</span>
+<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff">pretty (Array x) = pretty x</span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="istickedoff">pretty (String x) = &quot;\&quot;&quot; &lt;&gt; pretty (T.unpack (T.replace &quot;\&quot;&quot; &quot;\\\&quot;&quot; x)) &lt;&gt; &quot;\&quot;&quot;</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff">pretty (Number x) = pretty x</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">pretty (Bool False) = &quot;false&quot;</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">pretty (Bool True) = &quot;true&quot;</span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">pretty Null = &quot;null&quot;</span></span>
+<span class="lineno">  125 </span>
+<span class="lineno">  126 </span>instance Pretty JSON.Object where
+<span class="lineno">  127 </span>    <span class="decl"><span class="istickedoff">pretty = prBraces . fsep . punctuate &quot;,&quot; . map f . sortBy (comp `on` fst) . M.toList</span>
+<span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">where</span>
+<span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">f (key, Array value)</span>
+<span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">| all (\ v -&gt; case v of String{} -&gt; True ; _ -&gt; False ) value</span>
+<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff">= pretty (show key) &lt;&gt; &quot;:&quot; &lt;++&gt; prettyArrayVCat value</span>
+<span class="lineno">  132 </span><span class="spaces">            </span><span class="istickedoff">f (key, value) = pretty (show key) &lt;&gt; &quot;:&quot; &lt;++&gt; pretty value</span>
+<span class="lineno">  133 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">keyOrder :: M.HashMap Text Int</span>
+<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">keyOrder = M.fromList $</span>
+<span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff">zip [ &quot;finds&quot;, &quot;givens&quot;, &quot;enumGivens&quot;, &quot;enumLettings&quot;, &quot;unnameds&quot;</span>
+<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;strategyQ&quot;, &quot;strategyA&quot;</span>
+<span class="lineno">  138 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;trailCompact&quot;, &quot;trailVerbose&quot;, &quot;trailRewrites&quot;</span>
+<span class="lineno">  139 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;nameGenState&quot;, &quot;nbExtraGivens&quot;</span>
+<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;representations&quot;, &quot;representationsTree&quot;</span>
+<span class="lineno">  141 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;originalDomains&quot;</span>
+<span class="lineno">  142 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;before&quot;, &quot;after&quot;</span>
+<span class="lineno">  143 </span><span class="spaces">                    </span><span class="istickedoff">] [1..]</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">            </span><span class="istickedoff">comp a b =</span>
+<span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">let preferred = compare &lt;$&gt; M.lookup a keyOrder</span>
+<span class="lineno">  147 </span><span class="spaces">                                        </span><span class="istickedoff">&lt;*&gt; M.lookup b keyOrder</span>
+<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">in  fromMaybe (compare a b) preferred</span></span>
+<span class="lineno">  149 </span>
+<span class="lineno">  150 </span>instance Pretty JSON.Array where
+<span class="lineno">  151 </span>    <span class="decl"><span class="istickedoff">pretty = prBrackets . fsep . punctuate &quot;,&quot; . map pretty . V.toList</span></span>
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>prettyArrayVCat :: V.Vector Value -&gt; Doc
+<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">prettyArrayVCat = prBrackets . vcat . punctuate <span class="nottickedoff">&quot;,&quot;</span> . map <span class="nottickedoff">pretty</span> . V.toList</span></span>
+<span class="lineno">  155 </span>
+<span class="lineno">  156 </span>instance Pretty Scientific where
+<span class="lineno">  157 </span>    <span class="decl"><span class="istickedoff">pretty = either <span class="nottickedoff">pretty</span> pretty . (floatingOrInteger :: Scientific -&gt; Either Double Integer)</span></span>
+<span class="lineno">  158 </span>
+<span class="lineno">  159 </span>logDebugId :: (MonadLog m, Pretty a) =&gt; Doc -&gt; a -&gt; m a
+<span class="lineno">  160 </span><span class="decl"><span class="istickedoff">logDebugId msg a = logDebug <span class="nottickedoff">(msg &lt;++&gt; pretty a)</span> &gt;&gt; return a</span></span>
+<span class="lineno">  161 </span>
+<span class="lineno">  162 </span>tracingPretty :: Pretty a =&gt; Doc -&gt; a -&gt; a
+<span class="lineno">  163 </span><span class="decl"><span class="nottickedoff">tracingPretty s a = trace (renderWide $ &quot;tracing&quot; &lt;+&gt; s &lt;&gt; &quot;: &quot; &lt;++&gt; pretty a) a</span></span>
+
+</pre>
+</body>
+</html>
