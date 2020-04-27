@@ -1038,18 +1038,18 @@ span.spaces    { background: white }
 <span class="lineno"> 1019 </span>-- | checking whether any undefined values creeped into the final model
 <span class="lineno"> 1020 </span>checkIfHasUndefined :: MonadFail m =&gt; Model -&gt; m Model
 <span class="lineno"> 1021 </span><span class="decl"><span class="istickedoff">checkIfHasUndefined m  | Just modelZipper &lt;- mkModelZipper m = do</span>
-<span class="lineno"> 1022 </span><span class="spaces">    </span><span class="istickedoff">let returnMsg x = return</span>
-<span class="lineno"> 1023 </span><span class="spaces">            </span><span class="istickedoff">$ &quot;&quot;</span>
-<span class="lineno"> 1024 </span><span class="spaces">            </span><span class="istickedoff">: (&quot;Undefined value in the final model:&quot; &lt;+&gt; pretty (hole x))</span>
-<span class="lineno"> 1025 </span><span class="spaces">            </span><span class="istickedoff">: [ nest 4 (&quot;Context #&quot; &lt;&gt; pretty i &lt;&gt; &quot;:&quot; &lt;+&gt; pretty c)</span>
-<span class="lineno"> 1026 </span><span class="spaces">              </span><span class="istickedoff">| (i, c) &lt;- zip allNats (tail (ascendants x))</span>
-<span class="lineno"> 1027 </span><span class="spaces">              </span><span class="istickedoff">]</span>
+<span class="lineno"> 1022 </span><span class="spaces">    </span><span class="istickedoff">let <span class="nottickedoff">returnMsg x = return</span></span>
+<span class="lineno"> 1023 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">$ &quot;&quot;</span></span>
+<span class="lineno"> 1024 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: (&quot;Undefined value in the final model:&quot; &lt;+&gt; pretty (hole x))</span></span>
+<span class="lineno"> 1025 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: [ nest 4 (&quot;Context #&quot; &lt;&gt; pretty i &lt;&gt; &quot;:&quot; &lt;+&gt; pretty c)</span></span>
+<span class="lineno"> 1026 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">| (i, c) &lt;- zip allNats (tail (ascendants x))</span></span>
+<span class="lineno"> 1027 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno"> 1028 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1029 </span><span class="spaces">    </span><span class="istickedoff">fails &lt;- fmap concat $ forM (allContextsExceptReferences modelZipper) $ \ x -&gt;</span>
 <span class="lineno"> 1030 </span><span class="spaces">                </span><span class="istickedoff">case hole x of</span>
-<span class="lineno"> 1031 </span><span class="spaces">                    </span><span class="istickedoff">Constant ConstantUndefined{} -&gt; returnMsg x</span>
+<span class="lineno"> 1031 </span><span class="spaces">                    </span><span class="istickedoff">Constant ConstantUndefined{} -&gt; <span class="nottickedoff">returnMsg x</span></span>
 <span class="lineno"> 1032 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; return []</span>
-<span class="lineno"> 1033 </span><span class="spaces">    </span><span class="istickedoff">unless (null fails) (bug (vcat fails))</span>
+<span class="lineno"> 1033 </span><span class="spaces">    </span><span class="istickedoff">unless (null fails) <span class="nottickedoff">(bug (vcat fails))</span></span>
 <span class="lineno"> 1034 </span><span class="spaces">    </span><span class="istickedoff">return m</span>
 <span class="lineno"> 1035 </span><span class="spaces"></span><span class="istickedoff">checkIfHasUndefined m = return m</span></span>
 <span class="lineno"> 1036 </span>
@@ -1070,21 +1070,21 @@ span.spaces    { background: white }
 <span class="lineno"> 1051 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">DefinednessConstraints locs -&gt; ( [SuchThat locs] ++ [Objective obj h] ) |&gt; onStmts</span></span>
 <span class="lineno"> 1052 </span><span class="spaces">        </span><span class="istickedoff">onStmt (Declaration decl) =</span>
 <span class="lineno"> 1053 </span><span class="spaces">            </span><span class="istickedoff">let</span>
-<span class="lineno"> 1054 </span><span class="spaces">                </span><span class="istickedoff">f (WithLocals h locs) = <span class="nottickedoff">tell [locs] &gt;&gt; return h</span></span>
-<span class="lineno"> 1055 </span><span class="spaces">                </span><span class="istickedoff">f x = return <span class="nottickedoff">x</span></span>
+<span class="lineno"> 1054 </span><span class="spaces">                </span><span class="istickedoff">f (WithLocals h locs) = tell [locs] &gt;&gt; return h</span>
+<span class="lineno"> 1055 </span><span class="spaces">                </span><span class="istickedoff">f x = return x</span>
 <span class="lineno"> 1056 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1057 </span><span class="spaces">                </span><span class="istickedoff">(decl', locals) = runWriter (transformBiM f decl)</span>
 <span class="lineno"> 1058 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1059 </span><span class="spaces">                </span><span class="istickedoff">conv :: InBubble -&gt; [Statement]</span>
-<span class="lineno"> 1060 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">conv (AuxiliaryVars locs) = locs</span></span>
-<span class="lineno"> 1061 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">conv (DefinednessConstraints locs) = [SuchThat locs]</span></span>
+<span class="lineno"> 1060 </span><span class="spaces">                </span><span class="istickedoff">conv (AuxiliaryVars locs) = <span class="nottickedoff">locs</span></span>
+<span class="lineno"> 1061 </span><span class="spaces">                </span><span class="istickedoff">conv (DefinednessConstraints locs) = [SuchThat locs]</span>
 <span class="lineno"> 1062 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1063 </span><span class="spaces">                </span><span class="istickedoff">newStmts :: [Statement]</span>
-<span class="lineno"> 1064 </span><span class="spaces">                </span><span class="istickedoff">newStmts = concatMap <span class="nottickedoff">conv</span> locals</span>
+<span class="lineno"> 1064 </span><span class="spaces">                </span><span class="istickedoff">newStmts = concatMap conv locals</span>
 <span class="lineno"> 1065 </span><span class="spaces">            </span><span class="istickedoff">in</span>
-<span class="lineno"> 1066 </span><span class="spaces">                </span><span class="istickedoff">if <span class="tickonlytrue">null newStmts</span></span>
+<span class="lineno"> 1066 </span><span class="spaces">                </span><span class="istickedoff">if null newStmts</span>
 <span class="lineno"> 1067 </span><span class="spaces">                    </span><span class="istickedoff">then return [Declaration decl]</span>
-<span class="lineno"> 1068 </span><span class="spaces">                    </span><span class="istickedoff">else <span class="nottickedoff">onStmts (newStmts ++ [Declaration decl'])</span></span>
+<span class="lineno"> 1068 </span><span class="spaces">                    </span><span class="istickedoff">else onStmts (newStmts ++ [Declaration decl'])</span>
 <span class="lineno"> 1069 </span><span class="spaces">        </span><span class="istickedoff">onStmt s = return [s]</span>
 <span class="lineno"> 1070 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1071 </span><span class="spaces">        </span><span class="istickedoff">-- a where that has a bubble at the top-most level will be replaced</span>
@@ -1235,7 +1235,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1216 </span><span class="spaces">    </span><span class="istickedoff">&gt;&gt;= sanityChecks                  &gt;&gt;= logDebugIdModel <span class="nottickedoff">&quot;[sanityChecks]&quot;</span></span>
 <span class="lineno"> 1217 </span><span class="spaces">    </span><span class="istickedoff">&gt;&gt;= dealWithCuts                  &gt;&gt;= logDebugIdModel <span class="nottickedoff">&quot;[dealWithCuts]&quot;</span></span>
 <span class="lineno"> 1218 </span><span class="spaces">    </span><span class="istickedoff">&gt;&gt;= removeExtraSlices             &gt;&gt;= logDebugIdModel <span class="nottickedoff">&quot;[removeExtraSlices]&quot;</span></span>
-<span class="lineno"> 1219 </span><span class="spaces">    </span><span class="istickedoff">&gt;&gt;= evaluateModel                 &gt;&gt;= logDebugIdModel <span class="nottickedoff">&quot;[evaluateModel]&quot;</span></span>
+<span class="lineno"> 1219 </span><span class="spaces">    </span><span class="istickedoff">-- &gt;&gt;= evaluateModel                 &gt;&gt;= logDebugIdModel &quot;[evaluateModel]&quot;</span>
 <span class="lineno"> 1220 </span><span class="spaces">    </span><span class="istickedoff">&gt;&gt;= return . addTrueConstraints   &gt;&gt;= logDebugIdModel <span class="nottickedoff">&quot;[addTrueConstraints]&quot;</span></span></span>
 <span class="lineno"> 1221 </span>
 <span class="lineno"> 1222 </span>
@@ -2488,48 +2488,48 @@ span.spaces    { background: white }
 <span class="lineno"> 2469 </span>    EnumerateDomain m =&gt;
 <span class="lineno"> 2470 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno"> 2471 </span>    Model -&gt; m Model
-<span class="lineno"> 2472 </span><span class="decl"><span class="istickedoff">evaluateModel m = do</span>
-<span class="lineno"> 2473 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno"> 2474 </span><span class="spaces">        </span><span class="istickedoff">full (Reference _ (Just (DeclHasRepr _ _ (singletonDomainInt -&gt; Just val)))) =</span>
-<span class="lineno"> 2475 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return val</span></span>
-<span class="lineno"> 2476 </span><span class="spaces">        </span><span class="istickedoff">full p@Constant{} = return p</span>
-<span class="lineno"> 2477 </span><span class="spaces">        </span><span class="istickedoff">full p@Domain{} = return p</span>
-<span class="lineno"> 2478 </span><span class="spaces">        </span><span class="istickedoff">full p = do</span>
-<span class="lineno"> 2479 </span><span class="spaces">            </span><span class="istickedoff">mconstant &lt;- runExceptT (instantiateExpression [] p)</span>
-<span class="lineno"> 2480 </span><span class="spaces">            </span><span class="istickedoff">case mconstant of</span>
-<span class="lineno"> 2481 </span><span class="spaces">                </span><span class="istickedoff">Left{} -&gt; return p</span>
-<span class="lineno"> 2482 </span><span class="spaces">                </span><span class="istickedoff">Right constant -&gt; do</span>
-<span class="lineno"> 2483 </span><span class="spaces">                    </span><span class="istickedoff">if null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe constant]</span>
-<span class="lineno"> 2484 </span><span class="spaces">                        </span><span class="istickedoff">then return p</span>
-<span class="lineno"> 2485 </span><span class="spaces">                        </span><span class="istickedoff">else return (Constant constant)</span>
-<span class="lineno"> 2486 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno"> 2487 </span><span class="spaces">        </span><span class="istickedoff">partial (Op op)</span>
-<span class="lineno"> 2488 </span><span class="spaces">            </span><span class="istickedoff">| Just (x, y) &lt;- case op of</span>
-<span class="lineno"> 2489 </span><span class="spaces">                                </span><span class="istickedoff">MkOpLeq (OpLeq x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2490 </span><span class="spaces">                                </span><span class="istickedoff">MkOpGeq (OpGeq x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2491 </span><span class="spaces">                                </span><span class="istickedoff">MkOpEq  (OpEq  x y) -&gt; Just (x,y)</span>
-<span class="lineno"> 2492 </span><span class="spaces">                                </span><span class="istickedoff">_                   -&gt; Nothing</span>
-<span class="lineno"> 2493 </span><span class="spaces">            </span><span class="istickedoff">, Reference nmX _ &lt;- x</span>
-<span class="lineno"> 2494 </span><span class="spaces">            </span><span class="istickedoff">, Reference nmY _ &lt;- y</span>
-<span class="lineno"> 2495 </span><span class="spaces">            </span><span class="istickedoff">, nmX == nmY</span>
-<span class="lineno"> 2496 </span><span class="spaces">            </span><span class="istickedoff">, categoryOf x &lt;= CatQuantified</span>
-<span class="lineno"> 2497 </span><span class="spaces">            </span><span class="istickedoff">, <span class="tickonlytrue">categoryOf y &lt;= CatQuantified</span></span>
-<span class="lineno"> 2498 </span><span class="spaces">            </span><span class="istickedoff">= return (fromBool True)</span>
-<span class="lineno"> 2499 </span><span class="spaces">        </span><span class="istickedoff">partial p@(Op x) = do</span>
-<span class="lineno"> 2500 </span><span class="spaces">            </span><span class="istickedoff">mx' &lt;- runExceptT (simplifyOp x)</span>
-<span class="lineno"> 2501 </span><span class="spaces">            </span><span class="istickedoff">case mx' of</span>
-<span class="lineno"> 2502 </span><span class="spaces">                </span><span class="istickedoff">Left{} -&gt; return p</span>
-<span class="lineno"> 2503 </span><span class="spaces">                </span><span class="istickedoff">Right x' -&gt; do</span>
-<span class="lineno"> 2504 </span><span class="spaces">                    </span><span class="istickedoff">when (Op x == x') $ <span class="nottickedoff">bug $ vcat</span></span>
-<span class="lineno"> 2505 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;rule_PartialEvaluate, simplifier returns the input unchanged.&quot;</span></span>
-<span class="lineno"> 2506 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;input:&quot; &lt;+&gt; vcat [ pretty (Op x)</span></span>
-<span class="lineno"> 2507 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">, pretty (show (Op x))</span></span>
-<span class="lineno"> 2508 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno"> 2509 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno"> 2510 </span><span class="spaces">                    </span><span class="istickedoff">return x'</span>
-<span class="lineno"> 2511 </span><span class="spaces">        </span><span class="istickedoff">partial p = return p</span>
-<span class="lineno"> 2512 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2513 </span><span class="spaces">    </span><span class="istickedoff">(descendBiM full &gt;=&gt; transformBiM partial) m</span></span>
+<span class="lineno"> 2472 </span><span class="decl"><span class="nottickedoff">evaluateModel m = do</span>
+<span class="lineno"> 2473 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno"> 2474 </span><span class="spaces">        </span><span class="nottickedoff">full (Reference _ (Just (DeclHasRepr _ _ (singletonDomainInt -&gt; Just val)))) =</span>
+<span class="lineno"> 2475 </span><span class="spaces">            </span><span class="nottickedoff">return val</span>
+<span class="lineno"> 2476 </span><span class="spaces">        </span><span class="nottickedoff">full p@Constant{} = return p</span>
+<span class="lineno"> 2477 </span><span class="spaces">        </span><span class="nottickedoff">full p@Domain{} = return p</span>
+<span class="lineno"> 2478 </span><span class="spaces">        </span><span class="nottickedoff">full p = do</span>
+<span class="lineno"> 2479 </span><span class="spaces">            </span><span class="nottickedoff">mconstant &lt;- runExceptT (instantiateExpression [] p)</span>
+<span class="lineno"> 2480 </span><span class="spaces">            </span><span class="nottickedoff">case mconstant of</span>
+<span class="lineno"> 2481 </span><span class="spaces">                </span><span class="nottickedoff">Left{} -&gt; return p</span>
+<span class="lineno"> 2482 </span><span class="spaces">                </span><span class="nottickedoff">Right constant -&gt; do</span>
+<span class="lineno"> 2483 </span><span class="spaces">                    </span><span class="nottickedoff">if null [() | ConstantUndefined{} &lt;- universe constant]</span>
+<span class="lineno"> 2484 </span><span class="spaces">                        </span><span class="nottickedoff">then return p</span>
+<span class="lineno"> 2485 </span><span class="spaces">                        </span><span class="nottickedoff">else return (Constant constant)</span>
+<span class="lineno"> 2486 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno"> 2487 </span><span class="spaces">        </span><span class="nottickedoff">partial (Op op)</span>
+<span class="lineno"> 2488 </span><span class="spaces">            </span><span class="nottickedoff">| Just (x, y) &lt;- case op of</span>
+<span class="lineno"> 2489 </span><span class="spaces">                                </span><span class="nottickedoff">MkOpLeq (OpLeq x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2490 </span><span class="spaces">                                </span><span class="nottickedoff">MkOpGeq (OpGeq x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2491 </span><span class="spaces">                                </span><span class="nottickedoff">MkOpEq  (OpEq  x y) -&gt; Just (x,y)</span>
+<span class="lineno"> 2492 </span><span class="spaces">                                </span><span class="nottickedoff">_                   -&gt; Nothing</span>
+<span class="lineno"> 2493 </span><span class="spaces">            </span><span class="nottickedoff">, Reference nmX _ &lt;- x</span>
+<span class="lineno"> 2494 </span><span class="spaces">            </span><span class="nottickedoff">, Reference nmY _ &lt;- y</span>
+<span class="lineno"> 2495 </span><span class="spaces">            </span><span class="nottickedoff">, nmX == nmY</span>
+<span class="lineno"> 2496 </span><span class="spaces">            </span><span class="nottickedoff">, categoryOf x &lt;= CatQuantified</span>
+<span class="lineno"> 2497 </span><span class="spaces">            </span><span class="nottickedoff">, categoryOf y &lt;= CatQuantified</span>
+<span class="lineno"> 2498 </span><span class="spaces">            </span><span class="nottickedoff">= return (fromBool True)</span>
+<span class="lineno"> 2499 </span><span class="spaces">        </span><span class="nottickedoff">partial p@(Op x) = do</span>
+<span class="lineno"> 2500 </span><span class="spaces">            </span><span class="nottickedoff">mx' &lt;- runExceptT (simplifyOp x)</span>
+<span class="lineno"> 2501 </span><span class="spaces">            </span><span class="nottickedoff">case mx' of</span>
+<span class="lineno"> 2502 </span><span class="spaces">                </span><span class="nottickedoff">Left{} -&gt; return p</span>
+<span class="lineno"> 2503 </span><span class="spaces">                </span><span class="nottickedoff">Right x' -&gt; do</span>
+<span class="lineno"> 2504 </span><span class="spaces">                    </span><span class="nottickedoff">when (Op x == x') $ bug $ vcat</span>
+<span class="lineno"> 2505 </span><span class="spaces">                        </span><span class="nottickedoff">[ &quot;rule_PartialEvaluate, simplifier returns the input unchanged.&quot;</span>
+<span class="lineno"> 2506 </span><span class="spaces">                        </span><span class="nottickedoff">, &quot;input:&quot; &lt;+&gt; vcat [ pretty (Op x)</span>
+<span class="lineno"> 2507 </span><span class="spaces">                                            </span><span class="nottickedoff">, pretty (show (Op x))</span>
+<span class="lineno"> 2508 </span><span class="spaces">                                            </span><span class="nottickedoff">]</span>
+<span class="lineno"> 2509 </span><span class="spaces">                        </span><span class="nottickedoff">]</span>
+<span class="lineno"> 2510 </span><span class="spaces">                    </span><span class="nottickedoff">return x'</span>
+<span class="lineno"> 2511 </span><span class="spaces">        </span><span class="nottickedoff">partial p = return p</span>
+<span class="lineno"> 2512 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno"> 2513 </span><span class="spaces">    </span><span class="nottickedoff">(descendBiM full &gt;=&gt; transformBiM partial) m</span></span>
 <span class="lineno"> 2514 </span>
 <span class="lineno"> 2515 </span>
 <span class="lineno"> 2516 </span>rule_FullEvaluate :: Rule

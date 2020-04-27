@@ -147,30 +147,30 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span>
 <span class="lineno">  129 </span>
 <span class="lineno">  130 </span>rule_ConditionInsideGeneratorDomain :: Rule
-<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">rule_ConditionInsideGeneratorDomain = <span class="nottickedoff">&quot;bubble-up-ConditionInsideGeneratorDomain&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">rule_ConditionInsideGeneratorDomain = &quot;bubble-up-ConditionInsideGeneratorDomain&quot; `namedRule` theRule where</span>
 <span class="lineno">  132 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (goc', newConditions), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainHasRepr pat domain@DomainInt{}) -&gt; do</span>
 <span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff">let</span>
-<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff">f (WithLocals x (DefinednessConstraints cons)) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  138 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">tell cons</span></span>
-<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">f x</span></span>
-<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff">f x = return <span class="nottickedoff">x</span></span>
+<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff">f (WithLocals x (DefinednessConstraints cons)) = do</span>
+<span class="lineno">  138 </span><span class="spaces">                        </span><span class="istickedoff">tell cons</span>
+<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff">f x</span>
+<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff">f x = return x</span>
 <span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">(domain', newConditions) &lt;- runWriterT (transformBiM f domain)</span>
-<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">let <span class="nottickedoff">goc' = Generator (GenDomainHasRepr pat domain')</span></span>
-<span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">if <span class="tickonlytrue">null newConditions</span></span>
+<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">let goc' = Generator (GenDomainHasRepr pat domain')</span>
+<span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">if null newConditions</span>
 <span class="lineno">  144 </span><span class="spaces">                    </span><span class="istickedoff">then na <span class="nottickedoff">&quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
-<span class="lineno">  145 </span><span class="spaces">                    </span><span class="istickedoff">else <span class="nottickedoff">return (goc', newConditions)</span></span>
+<span class="lineno">  145 </span><span class="spaces">                    </span><span class="istickedoff">else return (goc', newConditions)</span>
 <span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
-<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up definedness constraints inside a generator domain.&quot;</span></span>
-<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension body</span></span>
-<span class="lineno">  150 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
-<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ [goc']</span></span>
-<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ map Condition newConditions</span></span>
-<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
-<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up definedness constraints inside a generator domain.&quot;</span></span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension body</span>
+<span class="lineno">  150 </span><span class="spaces">                        </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff">++ [goc']</span>
+<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff">++ map Condition newConditions</span>
+<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
 <span class="lineno">  156 </span>
 <span class="lineno">  157 </span>
