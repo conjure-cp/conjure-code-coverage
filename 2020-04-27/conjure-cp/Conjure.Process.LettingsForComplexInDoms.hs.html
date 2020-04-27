@@ -34,10 +34,10 @@ span.spaces    { background: white }
 <span class="lineno">   15 </span>--   specifically, name-resolution needs to be rerun after representation selection.
 <span class="lineno">   16 </span>--   however, this transformation (as part of `Conjure.UI.Model.prologue`) cleans this up by introducing
 <span class="lineno">   17 </span>--   extra letting statements.
-<span class="lineno">   18 </span>lettingsForComplexInDoms
-<span class="lineno">   19 </span>    :: (MonadFail m, NameGen m)
-<span class="lineno">   20 </span>    =&gt; Model
-<span class="lineno">   21 </span>    -&gt; m Model
+<span class="lineno">   18 </span>lettingsForComplexInDoms ::
+<span class="lineno">   19 </span>    MonadFail m =&gt;
+<span class="lineno">   20 </span>    NameGen m =&gt;
+<span class="lineno">   21 </span>    Model -&gt; m Model
 <span class="lineno">   22 </span><span class="decl"><span class="istickedoff">lettingsForComplexInDoms m = do</span>
 <span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">let</span>
 <span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">expressionExtract expr@Constant{}        = return expr</span>
@@ -93,14 +93,15 @@ span.spaces    { background: white }
 <span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; return st</span>
 <span class="lineno">   75 </span><span class="spaces">        </span><span class="istickedoff">return m { mStatements = statements }</span></span>
 <span class="lineno">   76 </span>
-<span class="lineno">   77 </span>-- | remove domain lettings, only after name resolution
-<span class="lineno">   78 </span>removeDomainLettings :: Monad m =&gt; Model -&gt; m Model
-<span class="lineno">   79 </span><span class="decl"><span class="istickedoff">removeDomainLettings m =</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat [ case st of</span>
-<span class="lineno">   81 </span><span class="spaces">                                        </span><span class="istickedoff">Declaration (Letting _ (Domain _)) -&gt; []</span>
-<span class="lineno">   82 </span><span class="spaces">                                        </span><span class="istickedoff">_ -&gt; [st]</span>
-<span class="lineno">   83 </span><span class="spaces">                                    </span><span class="istickedoff">| st &lt;- mStatements m</span>
-<span class="lineno">   84 </span><span class="spaces">                                    </span><span class="istickedoff">] }</span></span>
+<span class="lineno">   77 </span>
+<span class="lineno">   78 </span>-- | remove domain lettings, only after name resolution
+<span class="lineno">   79 </span>removeDomainLettings :: Monad m =&gt; Model -&gt; m Model
+<span class="lineno">   80 </span><span class="decl"><span class="istickedoff">removeDomainLettings m =</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat [ case st of</span>
+<span class="lineno">   82 </span><span class="spaces">                                        </span><span class="istickedoff">Declaration (Letting _ (Domain _)) -&gt; []</span>
+<span class="lineno">   83 </span><span class="spaces">                                        </span><span class="istickedoff">_ -&gt; [st]</span>
+<span class="lineno">   84 </span><span class="spaces">                                    </span><span class="istickedoff">| st &lt;- mStatements m</span>
+<span class="lineno">   85 </span><span class="spaces">                                    </span><span class="istickedoff">] }</span></span>
 
 </pre>
 </body>
