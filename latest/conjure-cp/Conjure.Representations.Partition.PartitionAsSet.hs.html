@@ -142,7 +142,7 @@ span.spaces    { background: white }
 <span class="lineno">  123 </span><span class="spaces">                </span><span class="istickedoff">partsAren'tEmpty :: Expression -&gt; m [Expression]</span>
 <span class="lineno">  124 </span><span class="spaces">                </span><span class="istickedoff">partsAren'tEmpty rel = do</span>
 <span class="lineno">  125 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  126 </span><span class="spaces">                    </span><span class="istickedoff">return $ return [essence|<span class="nottickedoff"><span class="istickedoff"> and([ |&amp;i| &gt;= 1 | &amp;iPat &lt;- &amp;rel ]) |]</span></span></span>
+<span class="lineno">  126 </span><span class="spaces">                    </span><span class="istickedoff">return $ return [essence| and([ |&amp;i| &gt;= 1 | &amp;iPat &lt;- &amp;rel ]) |]</span>
 <span class="lineno">  127 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  128 </span><span class="spaces">                </span><span class="istickedoff">sumOfParts :: Expression -&gt; m [Expression]</span>
 <span class="lineno">  129 </span><span class="spaces">                </span><span class="istickedoff">sumOfParts rel = do</span>

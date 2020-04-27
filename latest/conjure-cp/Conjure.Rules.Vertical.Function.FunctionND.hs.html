@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Image :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Image = <span class="nottickedoff">&quot;function-image{FunctionND}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Image = &quot;function-image{FunctionND}&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| image(&amp;f,&amp;x) |] = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">Function_ND  &lt;- representationOf f</span>
 <span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">[values]     &lt;- downX1 f</span>
@@ -39,7 +39,7 @@ span.spaces    { background: white }
 <span class="lineno">   20 </span>
 <span class="lineno">   21 </span>
 <span class="lineno">   22 </span>rule_Comprehension :: Rule
-<span class="lineno">   23 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;function-comprehension{FunctionND}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   23 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;function-comprehension{FunctionND}&quot; `namedRule` theRule where</span>
 <span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, func), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet,opToMSet,opToRelation] expr)</span>
@@ -70,7 +70,7 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span>
 <span class="lineno">   52 </span>
 <span class="lineno">   53 </span>rule_Comprehension_Defined :: Rule
-<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined = <span class="nottickedoff">&quot;function-comprehension_defined{FunctionND}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined = &quot;function-comprehension_defined{FunctionND}&quot; `namedRule` theRule where</span>
 <span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>

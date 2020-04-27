@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Image_NotABool :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Image_NotABool = <span class="nottickedoff">&quot;function-image{FunctionNDPartial}-not-a-bool&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Image_NotABool = &quot;function-image{FunctionNDPartial}-not-a-bool&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| image(&amp;f,&amp;x) |] = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">Function_NDPartial  &lt;- representationOf f</span>
 <span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction _ tyTo &lt;- typeOf f</span>
@@ -90,7 +90,7 @@ span.spaces    { background: white }
 <span class="lineno">   71 </span>
 <span class="lineno">   72 </span>
 <span class="lineno">   73 </span>rule_Comprehension :: Rule
-<span class="lineno">   74 </span><span class="decl"><span class="istickedoff">rule_Comprehension = <span class="nottickedoff">&quot;function-comprehension{FunctionNDPartial}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   74 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;function-comprehension{FunctionNDPartial}&quot; `namedRule` theRule where</span>
 <span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, func), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet,opToMSet,opToRelation] expr)</span>

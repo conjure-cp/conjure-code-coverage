@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_Variant_Eq :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Variant_Eq = <span class="nottickedoff">&quot;variant-eq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Variant_Eq = &quot;variant-eq&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(x,y)         &lt;- match opEq p</span>
 <span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
@@ -102,7 +102,7 @@ span.spaces    { background: white }
 <span class="lineno">   83 </span>
 <span class="lineno">   84 </span>
 <span class="lineno">   85 </span>rule_Variant_Index :: Rule
-<span class="lineno">   86 </span><span class="decl"><span class="istickedoff">rule_Variant_Index = <span class="nottickedoff">&quot;variant-index&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   86 </span><span class="decl"><span class="istickedoff">rule_Variant_Index = &quot;variant-index&quot; `namedRule` theRule where</span>
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">(x,arg)        &lt;- match opIndexing p</span>
 <span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant ds &lt;- typeOf x</span>
@@ -123,7 +123,7 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span>
 <span class="lineno">  105 </span>
 <span class="lineno">  106 </span>rule_Variant_Active :: Rule
-<span class="lineno">  107 </span><span class="decl"><span class="istickedoff">rule_Variant_Active = <span class="nottickedoff">&quot;variant-active&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  107 </span><span class="decl"><span class="istickedoff">rule_Variant_Active = &quot;variant-active&quot; `namedRule` theRule where</span>
 <span class="lineno">  108 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">(x,name)       &lt;- match opActive p</span>
 <span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant ds &lt;- typeOf x</span>

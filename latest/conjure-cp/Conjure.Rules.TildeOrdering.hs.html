@@ -25,7 +25,7 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>rule_BoolInt :: Rule
-<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_BoolInt = <span class="nottickedoff">&quot;tildeOrd-bool-int&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_BoolInt = &quot;tildeOrd-bool-int&quot; `namedRule` theRule where</span>
 <span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = do</span>
 <span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">tyx &lt;- typeOf x</span>
 <span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">tyy &lt;- typeOf y</span>
@@ -52,7 +52,7 @@ span.spaces    { background: white }
 <span class="lineno">   33 </span>
 <span class="lineno">   34 </span>
 <span class="lineno">   35 </span>rule_MSet :: Rule
-<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">rule_MSet = <span class="nottickedoff">&quot;tildeLt-mset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">rule_MSet = &quot;tildeLt-mset&quot; `namedRule` theRule where</span>
 <span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = do</span>
 <span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">tyX &lt;- typeOf x</span>
 <span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">tyY &lt;- typeOf y</span>
@@ -68,17 +68,17 @@ span.spaces    { background: white }
 <span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff">-- there exists an i, where freq_x is smaller than freq_y</span>
 <span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff">-- and all j's (s.t. j&lt;i), freq_x = freq_y</span>
 <span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff">-- i.e. all those that are smaller than the ith occur equal nb times</span>
-<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span>
-<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">exists &amp;iPat in &amp;z .</span></span></span></span></span>
-<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">freq(&amp;x, &amp;i) &lt; freq(&amp;y, &amp;i) /\</span></span></span></span></span>
-<span class="lineno">   55 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;jPat in &amp;z , &amp;j ~&lt; &amp;i . freq(&amp;x, &amp;j) = freq(&amp;y, &amp;j))</span></span></span></span></span>
-<span class="lineno">   56 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">return [essence|</span>
+<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff">exists &amp;iPat in &amp;z .</span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff">freq(&amp;x, &amp;i) &lt; freq(&amp;y, &amp;i) /\</span>
+<span class="lineno">   55 </span><span class="spaces">                        </span><span class="istickedoff">(forAll &amp;jPat in &amp;z , &amp;j ~&lt; &amp;i . freq(&amp;x, &amp;j) = freq(&amp;y, &amp;j))</span>
+<span class="lineno">   56 </span><span class="spaces">                               </span><span class="istickedoff">|]</span>
 <span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_MSet&quot;</span></span>
 <span class="lineno">   59 </span>
 <span class="lineno">   60 </span>
 <span class="lineno">   61 </span>rule_ViaMSet :: Rule
-<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">rule_ViaMSet = <span class="nottickedoff">&quot;tildeLt-via-mset&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   62 </span><span class="decl"><span class="istickedoff">rule_ViaMSet = &quot;tildeLt-via-mset&quot; `namedRule` theRule where</span>
 <span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x ~&lt; &amp;y |] = do</span>
 <span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">tyX &lt;- typeOf x</span>
 <span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff">tyY &lt;- typeOf y</span>

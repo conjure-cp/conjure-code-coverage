@@ -42,7 +42,7 @@ span.spaces    { background: white }
 <span class="lineno">   23 </span><span class="spaces">                        </span><span class="istickedoff">Cut x -&gt; do</span>
 <span class="lineno">   24 </span><span class="spaces">                            </span><span class="istickedoff">varName &lt;- nextName &quot;cut&quot;</span>
 <span class="lineno">   25 </span><span class="spaces">                            </span><span class="istickedoff">let varDecl = Declaration (FindOrGiven Find varName DomainBool)</span>
-<span class="lineno">   26 </span><span class="spaces">                            </span><span class="istickedoff">let varRef  = Reference varName (Just (DeclNoRepr Find <span class="nottickedoff">varName</span> DomainBool NoRegion))</span>
+<span class="lineno">   26 </span><span class="spaces">                            </span><span class="istickedoff">let varRef  = Reference varName (Just (DeclNoRepr Find varName DomainBool NoRegion))</span>
 <span class="lineno">   27 </span><span class="spaces">                            </span><span class="istickedoff">tell ( [ varDecl ]</span>
 <span class="lineno">   28 </span><span class="spaces">                                 </span><span class="istickedoff">, [ [essence| !&amp;varRef &lt;-&gt; &amp;x |] ]</span>
 <span class="lineno">   29 </span><span class="spaces">                                 </span><span class="istickedoff">)</span>

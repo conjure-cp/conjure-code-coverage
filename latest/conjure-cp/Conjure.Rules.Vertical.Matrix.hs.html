@@ -32,7 +32,7 @@ span.spaces    { background: white }
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>rule_Comprehension_Literal :: Rule
-<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Literal = Rule <span class="nottickedoff">&quot;matrix-comprehension-literal&quot;</span> theRule where</span>
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Literal = Rule &quot;matrix-comprehension-literal&quot; theRule where</span>
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">theRule z (Comprehension body gensOrConds) = do</span>
 <span class="lineno">   18 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">   19 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat expr) -&gt; return (pat, expr)</span>
@@ -170,7 +170,7 @@ span.spaces    { background: white }
 <span class="lineno">  151 </span>
 <span class="lineno">  152 </span>
 <span class="lineno">  153 </span>rule_Comprehension_LiteralIndexed :: Rule
-<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">rule_Comprehension_LiteralIndexed = <span class="nottickedoff">&quot;matrix-comprehension-literal-indexed&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">rule_Comprehension_LiteralIndexed = &quot;matrix-comprehension-literal-indexed&quot; `namedRule` theRule where</span>
 <span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>
@@ -244,12 +244,12 @@ span.spaces    { background: white }
 <span class="lineno">  225 </span>
 <span class="lineno">  226 </span>
 <span class="lineno">  227 </span>rule_Comprehension_ToSet_List :: Rule
-<span class="lineno">  228 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List = <span class="nottickedoff">&quot;matrix-toSet-listInside&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  228 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List = &quot;matrix-toSet-listInside&quot; `namedRule` theRule where</span>
 <span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff">-- we cannot assume that the list is duplciate-free</span>
 <span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff">(False, Comprehension body gensOrConds) &lt;- match opToSetWithFlag p</span>
 <span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">bodyDomain &lt;- domainOf body</span>
-<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff">let auxDomain = DomainSet <span class="nottickedoff">()</span> (SetAttr SizeAttr_None) bodyDomain</span>
+<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff">let auxDomain = DomainSet () (SetAttr SizeAttr_None) bodyDomain</span>
 <span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  235 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for comprehension over matrix-toSet, list inside&quot;</span></span>
 <span class="lineno">  236 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
@@ -273,7 +273,7 @@ span.spaces    { background: white }
 <span class="lineno">  254 </span>
 <span class="lineno">  255 </span>
 <span class="lineno">  256 </span>rule_Comprehension_ToSet_List_DuplicateFree :: Rule
-<span class="lineno">  257 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List_DuplicateFree = <span class="nottickedoff">&quot;matrix-toSet-listInside-nodups&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  257 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List_DuplicateFree = &quot;matrix-toSet-listInside-nodups&quot; `namedRule` theRule where</span>
 <span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  259 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">  260 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToMSet] expr)</span>
@@ -294,7 +294,7 @@ span.spaces    { background: white }
 <span class="lineno">  275 </span>-- [ i | ... , i &lt;- [ j | ... j ... ], ... i ... ]
 <span class="lineno">  276 </span>-- [ j | ... , ... j ..., ... j ... ]
 <span class="lineno">  277 </span>rule_Comprehension_Nested :: Rule
-<span class="lineno">  278 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Nested = <span class="nottickedoff">&quot;matrix-comprehension-nested&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  278 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Nested = &quot;matrix-comprehension-nested&quot; `namedRule` theRule where</span>
 <span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  280 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \case</span>
 <span class="lineno">  281 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToMSet] expr)</span>
@@ -382,7 +382,7 @@ span.spaces    { background: white }
 <span class="lineno">  363 </span>
 <span class="lineno">  364 </span>
 <span class="lineno">  365 </span>rule_Matrix_Eq :: Rule
-<span class="lineno">  366 </span><span class="decl"><span class="istickedoff">rule_Matrix_Eq = <span class="nottickedoff">&quot;matrix-eq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  366 </span><span class="decl"><span class="istickedoff">rule_Matrix_Eq = &quot;matrix-eq&quot; `namedRule` theRule where</span>
 <span class="lineno">  367 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  368 </span><span class="spaces">        </span><span class="istickedoff">(x,y)                 &lt;- match opEq p</span>
 <span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{}          &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
@@ -401,18 +401,18 @@ span.spaces    { background: white }
 <span class="lineno">  382 </span><span class="spaces">                             </span><span class="istickedoff">(forAll &amp;iPat : &amp;indexX . &amp;x[&amp;i] = &amp;y[&amp;i])</span>
 <span class="lineno">  383 </span><span class="spaces">                                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  384 </span><span class="spaces">                    </span><span class="istickedoff">else</span>
-<span class="lineno">  385 </span><span class="spaces">                         </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span></span></span></span></span>
-<span class="lineno">  386 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;iPat : &amp;indexX . &amp;x[&amp;i] = &amp;y[&amp;i])</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  387 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">/\</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  388 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;iPat : &amp;indexX . exists &amp;jPat : &amp;indexY . &amp;i = &amp;j)</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  389 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">/\</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  390 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(forAll &amp;iPat : &amp;indexY . exists &amp;jPat : &amp;indexX . &amp;i = &amp;j)</span></span></span></span></span></span></span></span></span>
-<span class="lineno">  391 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span></span></span></span></span>
+<span class="lineno">  385 </span><span class="spaces">                         </span><span class="istickedoff">return [essence|</span>
+<span class="lineno">  386 </span><span class="spaces">                             </span><span class="istickedoff">(forAll &amp;iPat : &amp;indexX . &amp;x[&amp;i] = &amp;y[&amp;i])</span>
+<span class="lineno">  387 </span><span class="spaces">                             </span><span class="istickedoff">/\</span>
+<span class="lineno">  388 </span><span class="spaces">                             </span><span class="istickedoff">(forAll &amp;iPat : &amp;indexX . exists &amp;jPat : &amp;indexY . &amp;i = &amp;j)</span>
+<span class="lineno">  389 </span><span class="spaces">                             </span><span class="istickedoff">/\</span>
+<span class="lineno">  390 </span><span class="spaces">                             </span><span class="istickedoff">(forAll &amp;iPat : &amp;indexY . exists &amp;jPat : &amp;indexX . &amp;i = &amp;j)</span>
+<span class="lineno">  391 </span><span class="spaces">                                        </span><span class="istickedoff">|]</span>
 <span class="lineno">  392 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">  393 </span>
 <span class="lineno">  394 </span>
 <span class="lineno">  395 </span>rule_Matrix_Neq :: Rule
-<span class="lineno">  396 </span><span class="decl"><span class="istickedoff">rule_Matrix_Neq = <span class="nottickedoff">&quot;matrix-neq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  396 </span><span class="decl"><span class="istickedoff">rule_Matrix_Neq = &quot;matrix-neq&quot; `namedRule` theRule where</span>
 <span class="lineno">  397 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  398 </span><span class="spaces">        </span><span class="istickedoff">(x,y)                 &lt;- match opNeq p</span>
 <span class="lineno">  399 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{}          &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
@@ -423,11 +423,11 @@ span.spaces    { background: white }
 <span class="lineno">  404 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for matrix !=&quot;</span></span>
 <span class="lineno">  405 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
 <span class="lineno">  406 </span><span class="spaces">                 </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  407 </span><span class="spaces">                 </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"></span></span></span></span></span>
-<span class="lineno">  408 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(exists &amp;iPat : &amp;indexX . &amp;x[&amp;i] != &amp;y[&amp;i])</span></span></span></span></span>
-<span class="lineno">  409 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">\/</span></span></span></span></span>
-<span class="lineno">  410 </span><span class="spaces">                     </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">(exists &amp;iPat : &amp;indexY . &amp;x[&amp;i] != &amp;y[&amp;i])</span></span></span></span></span>
-<span class="lineno">  411 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff">|]</span></span></span></span></span>
+<span class="lineno">  407 </span><span class="spaces">                 </span><span class="istickedoff">return [essence|</span>
+<span class="lineno">  408 </span><span class="spaces">                     </span><span class="istickedoff">(exists &amp;iPat : &amp;indexX . &amp;x[&amp;i] != &amp;y[&amp;i])</span>
+<span class="lineno">  409 </span><span class="spaces">                     </span><span class="istickedoff">\/</span>
+<span class="lineno">  410 </span><span class="spaces">                     </span><span class="istickedoff">(exists &amp;iPat : &amp;indexY . &amp;x[&amp;i] != &amp;y[&amp;i])</span>
+<span class="lineno">  411 </span><span class="spaces">                                </span><span class="istickedoff">|]</span>
 <span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">  413 </span>
 <span class="lineno">  414 </span>
@@ -502,7 +502,7 @@ span.spaces    { background: white }
 <span class="lineno">  483 </span>
 <span class="lineno">  484 </span>
 <span class="lineno">  485 </span>rule_Comprehension_SingletonDomain :: Rule
-<span class="lineno">  486 </span><span class="decl"><span class="istickedoff">rule_Comprehension_SingletonDomain = <span class="nottickedoff">&quot;matrix-comprehension-singleton-domain&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  486 </span><span class="decl"><span class="istickedoff">rule_Comprehension_SingletonDomain = &quot;matrix-comprehension-singleton-domain&quot; `namedRule` theRule where</span>
 <span class="lineno">  487 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  488 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, singleVal), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
 <span class="lineno">  489 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainHasRepr patName (singletonDomainInt -&gt; Just a)) -&gt; return (Single patName, <span class="nottickedoff">a</span>)</span>
@@ -521,7 +521,7 @@ span.spaces    { background: white }
 <span class="lineno">  502 </span>
 <span class="lineno">  503 </span>
 <span class="lineno">  504 </span>rule_Comprehension_Singleton :: Rule
-<span class="lineno">  505 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Singleton = <span class="nottickedoff">&quot;matrix-comprehension-singleton&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  505 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Singleton = &quot;matrix-comprehension-singleton&quot; `namedRule` theRule where</span>
 <span class="lineno">  506 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  507 </span><span class="spaces">        </span><span class="istickedoff">(_, _, _mkQuan, AbstractLiteral (AbsLitMatrix _ [singleVal])) &lt;- match opReducer p</span>
 <span class="lineno">  508 </span><span class="spaces">        </span><span class="istickedoff">return</span>
@@ -541,7 +541,7 @@ span.spaces    { background: white }
 <span class="lineno">  522 </span>
 <span class="lineno">  523 </span>
 <span class="lineno">  524 </span>rule_MatrixIndexing :: Rule
-<span class="lineno">  525 </span><span class="decl"><span class="istickedoff">rule_MatrixIndexing = <span class="nottickedoff">&quot;matrix-indexing&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  525 </span><span class="decl"><span class="istickedoff">rule_MatrixIndexing = &quot;matrix-indexing&quot; `namedRule` theRule where</span>
 <span class="lineno">  526 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  527 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indexer)              &lt;- match opIndexing p</span>
 <span class="lineno">  528 </span><span class="spaces">        </span><span class="istickedoff">(_, DomainInt _ ranges, elems) &lt;- match matrixLiteral matrix</span>
@@ -560,7 +560,7 @@ span.spaces    { background: white }
 <span class="lineno">  541 </span>
 <span class="lineno">  542 </span>
 <span class="lineno">  543 </span>rule_IndexingIdentical :: Rule
-<span class="lineno">  544 </span><span class="decl"><span class="istickedoff">rule_IndexingIdentical = <span class="nottickedoff">&quot;matrix-indexing-identical&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  544 </span><span class="decl"><span class="istickedoff">rule_IndexingIdentical = &quot;matrix-indexing-identical&quot; `namedRule` theRule where</span>
 <span class="lineno">  545 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  546 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indexer)                     &lt;- match opIndexing p</span>
 <span class="lineno">  547 </span><span class="spaces">        </span><span class="istickedoff">(_, indexDomain, firstElem:restElems) &lt;- match matrixLiteral matrix</span>

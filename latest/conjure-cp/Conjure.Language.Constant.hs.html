@@ -269,7 +269,7 @@ span.spaces    { background: white }
 <span class="lineno">  250 </span><span class="spaces">    </span><span class="nottickedoff">abs x = bug $ vcat [ &quot;Num Constant abs&quot;, &quot;x:&quot; &lt;+&gt; pretty x ]</span></span>
 <span class="lineno">  251 </span>    <span class="decl"><span class="nottickedoff">signum (ConstantInt t x) = ConstantInt t (signum x)</span>
 <span class="lineno">  252 </span><span class="spaces">    </span><span class="nottickedoff">signum x = bug $ vcat [ &quot;Num Constant signum&quot;, &quot;x:&quot; &lt;+&gt; pretty x ]</span></span>
-<span class="lineno">  253 </span>    <span class="decl"><span class="istickedoff">fromInteger = ConstantInt <span class="nottickedoff">TagInt</span> . fromInteger</span></span>
+<span class="lineno">  253 </span>    <span class="decl"><span class="istickedoff">fromInteger = ConstantInt TagInt . fromInteger</span></span>
 <span class="lineno">  254 </span>
 <span class="lineno">  255 </span>
 <span class="lineno">  256 </span>valuesInIntDomain :: MonadFail m =&gt; [Range Constant] -&gt; m [Integer]

@@ -36,7 +36,7 @@ span.spaces    { background: white }
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">in  [ ysMap M.! xField | (xField, _) &lt;- xFields ]</span></span>
 <span class="lineno">   18 </span>
 <span class="lineno">   19 </span>rule_Record_Eq :: Rule
-<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">rule_Record_Eq = <span class="nottickedoff">&quot;record-eq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">rule_Record_Eq = &quot;record-eq&quot; `namedRule` theRule where</span>
 <span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff">(x,y)              &lt;- match opEq p</span>
 <span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">TypeRecord xFields &lt;- typeOf x</span>
@@ -92,7 +92,7 @@ span.spaces    { background: white }
 <span class="lineno">   73 </span>
 <span class="lineno">   74 </span>
 <span class="lineno">   75 </span>rule_Record_Index :: Rule
-<span class="lineno">   76 </span><span class="decl"><span class="istickedoff">rule_Record_Index = <span class="nottickedoff">&quot;record-index&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   76 </span><span class="decl"><span class="istickedoff">rule_Record_Index = &quot;record-index&quot; `namedRule` theRule where</span>
 <span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">(t,i)         &lt;- match opIndexing p</span>
 <span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">TypeRecord ds &lt;- typeOf t</span>

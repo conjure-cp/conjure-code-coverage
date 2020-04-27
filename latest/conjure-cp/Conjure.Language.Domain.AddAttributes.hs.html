@@ -270,12 +270,12 @@ span.spaces    { background: white }
 <span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  252 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  253 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">updater &quot;total&quot; Nothing = return $ DomainFunction <span class="nottickedoff">r</span></span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">updater &quot;total&quot; Nothing = return $ DomainFunction r</span>
 <span class="lineno">  255 </span><span class="spaces">                                            </span><span class="istickedoff">(FunctionAttr sizeAttr PartialityAttr_Total jectivityAttr)</span>
 <span class="lineno">  256 </span><span class="spaces">                                            </span><span class="istickedoff">inF inT</span>
 <span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">updater &quot;injective&quot; Nothing = return $</span>
 <span class="lineno">  258 </span><span class="spaces">        </span><span class="istickedoff">case jectivityAttr of</span>
-<span class="lineno">  259 </span><span class="spaces">            </span><span class="istickedoff">JectivityAttr_None       -&gt; DomainFunction <span class="nottickedoff">r</span></span>
+<span class="lineno">  259 </span><span class="spaces">            </span><span class="istickedoff">JectivityAttr_None       -&gt; DomainFunction r</span>
 <span class="lineno">  260 </span><span class="spaces">                                            </span><span class="istickedoff">(FunctionAttr sizeAttr partialityAttr JectivityAttr_Injective )</span>
 <span class="lineno">  261 </span><span class="spaces">                                            </span><span class="istickedoff">inF inT</span>
 <span class="lineno">  262 </span><span class="spaces">            </span><span class="istickedoff">JectivityAttr_Injective  -&gt; <span class="nottickedoff">DomainFunction r</span></span>
@@ -431,7 +431,7 @@ span.spaces    { background: white }
 <span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  413 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  414 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  415 </span><span class="spaces">        </span><span class="istickedoff">Just a  -&gt; return $ DomainRelation <span class="nottickedoff">r</span></span>
+<span class="lineno">  415 </span><span class="spaces">        </span><span class="istickedoff">Just a  -&gt; return $ DomainRelation r</span>
 <span class="lineno">  416 </span><span class="spaces">                                </span><span class="istickedoff">(RelationAttr sizeAttr (binRelAttr `mappend` BinaryRelationAttrs (S.singleton a)))</span>
 <span class="lineno">  417 </span><span class="spaces">                                </span><span class="istickedoff">inners</span>
 <span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">updater attr _ =</span>
