@@ -167,10 +167,10 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">[y] -&gt; return y</span>
 <span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; do</span>
 <span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff">TypeFunction _ tyTo &lt;- typeOf f</span>
-<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">return $ mkUndef tyTo $ vcat</span>
-<span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff">[ &quot;Function is not defined at this point:&quot; &lt;+&gt; pretty a</span>
-<span class="lineno">  153 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;Function value:&quot; &lt;+&gt; pretty f</span>
-<span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff">]</span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">return $ mkUndef tyTo $ <span class="nottickedoff">vcat</span></span>
+<span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Function is not defined at this point:&quot; &lt;+&gt; pretty a</span></span>
+<span class="lineno">  153 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Function value:&quot; &lt;+&gt; pretty f</span></span>
+<span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  155 </span><span class="spaces">            </span><span class="istickedoff">_   -&gt; <span class="nottickedoff">do</span></span>
 <span class="lineno">  156 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeFunction _ tyTo &lt;- typeOf f</span></span>
 <span class="lineno">  157 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ mkUndef tyTo $ vcat</span></span>
@@ -373,7 +373,7 @@ span.spaces    { background: white }
 <span class="lineno">  354 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp p@(OpMin x)</span>
 <span class="lineno">  355 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
 <span class="lineno">  356 </span><span class="spaces">        </span><span class="istickedoff">, any isUndef xs =</span>
-<span class="lineno">  357 </span><span class="spaces">            </span><span class="istickedoff">return $ mkUndef (TypeInt TagInt) $ &quot;Has undefined children:&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">  357 </span><span class="spaces">            </span><span class="istickedoff">return $ mkUndef (TypeInt <span class="nottickedoff">TagInt</span>) $ <span class="nottickedoff">&quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">  358 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpMin (DomainInConstant DomainBool)) = <span class="nottickedoff">return (ConstantBool False)</span></span>
 <span class="lineno">  359 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpMin (DomainInConstant (DomainInt t rs))) = do</span>
 <span class="lineno">  360 </span><span class="spaces">        </span><span class="istickedoff">is &lt;- rangesInts rs</span>
@@ -463,7 +463,7 @@ span.spaces    { background: white }
 <span class="lineno">  444 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return $ mkUndef (TypeInt TagInt) $ &quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">  445 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp p@(OpMod x y)</span>
 <span class="lineno">  446 </span><span class="spaces">        </span><span class="istickedoff">| y /= 0    = ConstantInt TagInt &lt;$&gt; (mod &lt;$&gt; intOut <span class="nottickedoff">&quot;mod x&quot;</span> x &lt;*&gt; intOut <span class="nottickedoff">&quot;mod y&quot;</span> y)</span>
-<span class="lineno">  447 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = return $ mkUndef (TypeInt TagInt) $ &quot;modulo zero:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno">  447 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = return $ mkUndef (TypeInt <span class="nottickedoff">TagInt</span>) $ <span class="nottickedoff">&quot;modulo zero:&quot; &lt;+&gt; pretty p</span></span></span>
 <span class="lineno">  448 </span>
 <span class="lineno">  449 </span>instance EvaluateOp OpNegate where
 <span class="lineno">  450 </span>    <span class="decl"><span class="istickedoff">evaluateOp p | <span class="tickonlyfalse">any isUndef (childrenBi p)</span> =</span>
