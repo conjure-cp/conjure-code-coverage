@@ -2536,14 +2536,14 @@ span.spaces    { background: white }
 <span class="lineno"> 2517 </span><span class="decl"><span class="istickedoff">rule_FullEvaluate = &quot;full-evaluate&quot; `namedRule` theRule where</span>
 <span class="lineno"> 2518 </span><span class="spaces">    </span><span class="istickedoff">theRule Constant{} = na &quot;rule_FullEvaluate&quot;</span>
 <span class="lineno"> 2519 </span><span class="spaces">    </span><span class="istickedoff">theRule Domain{} = na &quot;rule_FullEvaluate&quot;</span>
-<span class="lineno"> 2520 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno"> 2521 </span><span class="spaces">        </span><span class="istickedoff">constant &lt;- instantiateExpression [] p</span>
-<span class="lineno"> 2522 </span><span class="spaces">        </span><span class="istickedoff">unless (null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe constant]) $</span>
-<span class="lineno"> 2523 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_PartialEvaluate, undefined&quot;</span>
-<span class="lineno"> 2524 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno"> 2525 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Full evaluator&quot;</span></span>
-<span class="lineno"> 2526 </span><span class="spaces">            </span><span class="istickedoff">, return $ Constant constant</span>
-<span class="lineno"> 2527 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 2520 </span><span class="spaces">    </span><span class="istickedoff">theRule (Reference _ (Just (Alias x)))                 -- selectively inline, unless x is huge</span>
+<span class="lineno"> 2521 </span><span class="spaces">        </span><span class="istickedoff">| Just Comprehension{} &lt;- match opToSet x</span>
+<span class="lineno"> 2522 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">return (&quot;Inline alias&quot;, return x)</span></span>
+<span class="lineno"> 2523 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno"> 2524 </span><span class="spaces">        </span><span class="istickedoff">constant &lt;- instantiateExpression [] p</span>
+<span class="lineno"> 2525 </span><span class="spaces">        </span><span class="istickedoff">unless (null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe constant]) $</span>
+<span class="lineno"> 2526 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_PartialEvaluate, undefined&quot;</span>
+<span class="lineno"> 2527 </span><span class="spaces">        </span><span class="istickedoff">return (<span class="nottickedoff">&quot;Full evaluator&quot;</span>, return $ Constant constant)</span></span>
 <span class="lineno"> 2528 </span>
 <span class="lineno"> 2529 </span>
 <span class="lineno"> 2530 </span>rule_PartialEvaluate :: Rule
