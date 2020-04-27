@@ -220,7 +220,7 @@ span.spaces    { background: white }
 <span class="lineno">  201 </span><span class="spaces">                </span><span class="istickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain indexDom</span>
 <span class="lineno">  203 </span><span class="spaces">                    </span><span class="istickedoff">let mi = [essence| &amp;inp[&amp;i] |]</span>
-<span class="lineno">  204 </span><span class="spaces">                    </span><span class="istickedoff">res &lt;- innerSO downX1 mi innerDom</span>
+<span class="lineno">  204 </span><span class="spaces">                    </span><span class="istickedoff">res &lt;- innerSO <span class="nottickedoff">downX1</span> mi innerDom</span>
 <span class="lineno">  205 </span><span class="spaces">                    </span><span class="istickedoff">return [essence| [ &amp;res | &amp;iPat : &amp;indexDom ] |]</span>
 <span class="lineno">  206 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;symmetryOrdering matrix&quot; &lt;+&gt; pretty inp &lt;+&gt; pretty domain</span></span></span>
 
