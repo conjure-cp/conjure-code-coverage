@@ -103,7 +103,7 @@ span.spaces    { background: white }
 <span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">domainOf (WithLocals h _) = <span class="nottickedoff">domainOf h</span></span>
 <span class="lineno">   85 </span><span class="spaces">    </span><span class="istickedoff">domainOf (Comprehension h _) = do</span>
 <span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">domH &lt;- domainOf h</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainMatrix (DomainInt <span class="nottickedoff">TagInt</span> [RangeLowerBounded <span class="nottickedoff">1</span>]) domH</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainMatrix (DomainInt TagInt [RangeLowerBounded 1]) domH</span>
 <span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">domainOf x = fail (&quot;domainOf{Expression}:&quot; &lt;+&gt; pretty (show x))</span></span>
 <span class="lineno">   89 </span>
 <span class="lineno">   90 </span>    -- if an empty matrix literal has a type annotation

@@ -306,10 +306,10 @@ span.spaces    { background: white }
 <span class="lineno">  287 </span><span class="decl"><span class="istickedoff">resolveAbsPat _ AbstractPatternMetaVar{} _ = <span class="nottickedoff">bug &quot;resolveAbsPat AbstractPatternMetaVar&quot;</span></span>
 <span class="lineno">  288 </span><span class="spaces"></span><span class="istickedoff">resolveAbsPat _ (Single nm) x = modify ((nm, Alias x) :)</span>
 <span class="lineno">  289 </span><span class="spaces"></span><span class="istickedoff">resolveAbsPat context (AbsPatTuple ps) x =</span>
-<span class="lineno">  290 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">sequence_ [ resolveAbsPat context p [essence| &amp;x[&amp;i] |]</span></span>
-<span class="lineno">  291 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">| (p, i_) &lt;- zip ps allNats</span></span>
-<span class="lineno">  292 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, let i = fromInt i_</span></span>
-<span class="lineno">  293 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="istickedoff">sequence_ [ resolveAbsPat <span class="nottickedoff">context</span> p <span class="nottickedoff">[essence| &amp;x[&amp;i] |]</span></span>
+<span class="lineno">  291 </span><span class="spaces">              </span><span class="istickedoff">| (p, i_) &lt;- zip ps allNats</span>
+<span class="lineno">  292 </span><span class="spaces">              </span><span class="istickedoff">, let <span class="nottickedoff">i = fromInt i_</span></span>
+<span class="lineno">  293 </span><span class="spaces">              </span><span class="istickedoff">]</span>
 <span class="lineno">  294 </span><span class="spaces"></span><span class="istickedoff">resolveAbsPat context (AbsPatMatrix ps) x =</span>
 <span class="lineno">  295 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">sequence_ [ resolveAbsPat context p [essence| &amp;x[&amp;i] |]</span></span>
 <span class="lineno">  296 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">| (p, i_) &lt;- zip ps allNats</span></span>
