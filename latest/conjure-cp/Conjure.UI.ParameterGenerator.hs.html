@@ -502,311 +502,316 @@ span.spaces    { background: white }
 <span class="lineno">  483 </span><span class="spaces">                                </span><span class="nottickedoff">case size of</span>
 <span class="lineno">  484 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_None -&gt; do</span>
 <span class="lineno">  485 </span><span class="spaces">                                        </span><span class="nottickedoff">mdomSize &lt;- runExceptT $ domainSizeOf innerDomainFr</span>
-<span class="lineno">  486 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize maxInt, Nothing, Nothing</span>
-<span class="lineno">  487 </span><span class="spaces">                                               </span><span class="nottickedoff">, case mdomSize of</span>
-<span class="lineno">  488 </span><span class="spaces">                                                   </span><span class="nottickedoff">Left{} -&gt; DomainInt TagInt [RangeBounded minInt maxInt]</span>
-<span class="lineno">  489 </span><span class="spaces">                                                   </span><span class="nottickedoff">Right domSize -&gt; DomainInt TagInt [RangeBounded 0 domSize]</span>
-<span class="lineno">  490 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  491 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_Size a -&gt; do</span>
-<span class="lineno">  492 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  493 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
-<span class="lineno">  494 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just a</span>
-<span class="lineno">  495 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
-<span class="lineno">  496 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  497 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinSize a -&gt; do</span>
-<span class="lineno">  498 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  499 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb maxInt, Just a, Nothing</span>
-<span class="lineno">  500 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb maxInt]</span>
+<span class="lineno">  486 </span><span class="spaces">                                        </span><span class="nottickedoff">case mdomSize of</span>
+<span class="lineno">  487 </span><span class="spaces">                                            </span><span class="nottickedoff">Left{} -&gt;</span>
+<span class="lineno">  488 </span><span class="spaces">                                                </span><span class="nottickedoff">return ( SizeAttr_MaxSize maxInt, Nothing, Nothing</span>
+<span class="lineno">  489 </span><span class="spaces">                                                       </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded minInt maxInt]</span>
+<span class="lineno">  490 </span><span class="spaces">                                                       </span><span class="nottickedoff">)</span>
+<span class="lineno">  491 </span><span class="spaces">                                            </span><span class="nottickedoff">Right domSize -&gt; do</span>
+<span class="lineno">  492 </span><span class="spaces">                                                </span><span class="nottickedoff">domSizeUpp &lt;- upperBoundOfIntExpr domSize</span>
+<span class="lineno">  493 </span><span class="spaces">                                                </span><span class="nottickedoff">return ( SizeAttr_MaxSize maxInt, Nothing, Nothing</span>
+<span class="lineno">  494 </span><span class="spaces">                                                       </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded 0 domSizeUpp]</span>
+<span class="lineno">  495 </span><span class="spaces">                                                       </span><span class="nottickedoff">)</span>
+<span class="lineno">  496 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_Size a -&gt; do</span>
+<span class="lineno">  497 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  498 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
+<span class="lineno">  499 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just a</span>
+<span class="lineno">  500 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
 <span class="lineno">  501 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  502 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MaxSize a -&gt; do</span>
-<span class="lineno">  503 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
-<span class="lineno">  504 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize ub, Nothing, Just a</span>
-<span class="lineno">  505 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded 0 ub]</span>
+<span class="lineno">  502 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinSize a -&gt; do</span>
+<span class="lineno">  503 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  504 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb maxInt, Just a, Nothing</span>
+<span class="lineno">  505 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb maxInt]</span>
 <span class="lineno">  506 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  507 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinMaxSize a b -&gt; do</span>
-<span class="lineno">  508 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  509 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr b</span>
-<span class="lineno">  510 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just b</span>
-<span class="lineno">  511 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
-<span class="lineno">  512 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  513 </span><span class="spaces">                            </span><span class="nottickedoff">return (FunctionAttr sizeOut PartialityAttr_Partial jectivity, lb, ub, cardDomain)</span>
-<span class="lineno">  514 </span><span class="spaces">                        </span><span class="nottickedoff">FunctionAttr _size PartialityAttr_Total jectivity -&gt; do</span>
-<span class="lineno">  515 </span><span class="spaces">                            </span><span class="nottickedoff">return (FunctionAttr SizeAttr_None PartialityAttr_Partial jectivity, Nothing, Nothing, bug &quot;cardDomain not needed&quot;)</span>
-<span class="lineno">  516 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  517 </span><span class="spaces">            </span><span class="nottickedoff">let isTotal = case attr of</span>
-<span class="lineno">  518 </span><span class="spaces">                                </span><span class="nottickedoff">FunctionAttr _ PartialityAttr_Total _ -&gt; True</span>
-<span class="lineno">  519 </span><span class="spaces">                                </span><span class="nottickedoff">_ -&gt; False</span>
-<span class="lineno">  520 </span><span class="spaces">                </span><span class="nottickedoff">isPartial = not isTotal</span>
+<span class="lineno">  507 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MaxSize a -&gt; do</span>
+<span class="lineno">  508 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
+<span class="lineno">  509 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize ub, Nothing, Just a</span>
+<span class="lineno">  510 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded 0 ub]</span>
+<span class="lineno">  511 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  512 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinMaxSize a b -&gt; do</span>
+<span class="lineno">  513 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  514 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr b</span>
+<span class="lineno">  515 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just b</span>
+<span class="lineno">  516 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
+<span class="lineno">  517 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  518 </span><span class="spaces">                            </span><span class="nottickedoff">return (FunctionAttr sizeOut PartialityAttr_Partial jectivity, lb, ub, cardDomain)</span>
+<span class="lineno">  519 </span><span class="spaces">                        </span><span class="nottickedoff">FunctionAttr _size PartialityAttr_Total jectivity -&gt; do</span>
+<span class="lineno">  520 </span><span class="spaces">                            </span><span class="nottickedoff">return (FunctionAttr SizeAttr_None PartialityAttr_Partial jectivity, Nothing, Nothing, bug &quot;cardDomain not needed&quot;)</span>
 <span class="lineno">  521 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  522 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
-<span class="lineno">  523 </span><span class="spaces">                </span><span class="nottickedoff">newDecl | isTotal = []</span>
-<span class="lineno">  524 </span><span class="spaces">                        </span><span class="nottickedoff">| otherwise =</span>
-<span class="lineno">  525 </span><span class="spaces">                            </span><span class="nottickedoff">[ Declaration (FindOrGiven Given nmCardMin cardDomain)</span>
-<span class="lineno">  526 </span><span class="spaces">                            </span><span class="nottickedoff">, Declaration (FindOrGiven Given nmCardMax cardDomain)</span>
-<span class="lineno">  527 </span><span class="spaces">                            </span><span class="nottickedoff">]</span>
-<span class="lineno">  528 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  529 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
-<span class="lineno">  530 </span><span class="spaces">                </span><span class="nottickedoff">cardinalityCons | isTotal = return []</span>
-<span class="lineno">  531 </span><span class="spaces">                                </span><span class="nottickedoff">| otherwise = return $ return</span>
-<span class="lineno">  532 </span><span class="spaces">                    </span><span class="nottickedoff">[essence|</span>
-<span class="lineno">  533 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &gt;= &amp;cardMin /\</span>
-<span class="lineno">  534 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &lt;= &amp;cardMax</span>
-<span class="lineno">  535 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
-<span class="lineno">  536 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  537 </span><span class="spaces">                </span><span class="nottickedoff">totalityCons | isPartial = return []</span>
-<span class="lineno">  538 </span><span class="spaces">                             </span><span class="nottickedoff">| otherwise = do</span>
-<span class="lineno">  539 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  540 </span><span class="spaces">                    </span><span class="nottickedoff">let</span>
-<span class="lineno">  541 </span><span class="spaces">                        </span><span class="nottickedoff">go d = case d of</span>
-<span class="lineno">  542 </span><span class="spaces">                            </span><span class="nottickedoff">DomainInt{} -&gt; do</span>
-<span class="lineno">  543 </span><span class="spaces">                                </span><span class="nottickedoff">dMin &lt;- minOfIntDomain d</span>
-<span class="lineno">  544 </span><span class="spaces">                                </span><span class="nottickedoff">dMax &lt;- maxOfIntDomain d</span>
-<span class="lineno">  545 </span><span class="spaces">                                </span><span class="nottickedoff">return (\ k -&gt; [essence| (&amp;k &gt;= &amp;dMin /\ &amp;k &lt;= &amp;dMax) |] )</span>
-<span class="lineno">  546 </span><span class="spaces">                            </span><span class="nottickedoff">DomainTuple ds -&gt; do</span>
-<span class="lineno">  547 </span><span class="spaces">                                </span><span class="nottickedoff">makers &lt;- mapM go ds</span>
-<span class="lineno">  548 </span><span class="spaces">                                </span><span class="nottickedoff">return $ \ k -&gt; make opAnd $ fromList</span>
-<span class="lineno">  549 </span><span class="spaces">                                    </span><span class="nottickedoff">[ mk [essence| &amp;k[&amp;nExpr] |]</span>
-<span class="lineno">  550 </span><span class="spaces">                                    </span><span class="nottickedoff">| (mk, n) &lt;- zip makers [1..]</span>
-<span class="lineno">  551 </span><span class="spaces">                                    </span><span class="nottickedoff">, let nExpr = fromInt n</span>
-<span class="lineno">  552 </span><span class="spaces">                                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  553 </span><span class="spaces">                            </span><span class="nottickedoff">DomainSet _ _ inner -&gt; do</span>
-<span class="lineno">  554 </span><span class="spaces">                                </span><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span>
-<span class="lineno">  555 </span><span class="spaces">                                </span><span class="nottickedoff">maker &lt;- go inner</span>
-<span class="lineno">  556 </span><span class="spaces">                                </span><span class="nottickedoff">let innerCons = maker j</span>
-<span class="lineno">  557 </span><span class="spaces">                                </span><span class="nottickedoff">return $ \ k -&gt; [essence| forAll &amp;jPat in &amp;k . &amp;innerCons |]</span>
-<span class="lineno">  558 </span><span class="spaces">                            </span><span class="nottickedoff">DomainMSet _ _ inner -&gt; do</span>
+<span class="lineno">  522 </span><span class="spaces">            </span><span class="nottickedoff">let isTotal = case attr of</span>
+<span class="lineno">  523 </span><span class="spaces">                                </span><span class="nottickedoff">FunctionAttr _ PartialityAttr_Total _ -&gt; True</span>
+<span class="lineno">  524 </span><span class="spaces">                                </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  525 </span><span class="spaces">                </span><span class="nottickedoff">isPartial = not isTotal</span>
+<span class="lineno">  526 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  527 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  528 </span><span class="spaces">                </span><span class="nottickedoff">newDecl | isTotal = []</span>
+<span class="lineno">  529 </span><span class="spaces">                        </span><span class="nottickedoff">| otherwise =</span>
+<span class="lineno">  530 </span><span class="spaces">                            </span><span class="nottickedoff">[ Declaration (FindOrGiven Given nmCardMin cardDomain)</span>
+<span class="lineno">  531 </span><span class="spaces">                            </span><span class="nottickedoff">, Declaration (FindOrGiven Given nmCardMax cardDomain)</span>
+<span class="lineno">  532 </span><span class="spaces">                            </span><span class="nottickedoff">]</span>
+<span class="lineno">  533 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  534 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  535 </span><span class="spaces">                </span><span class="nottickedoff">cardinalityCons | isTotal = return []</span>
+<span class="lineno">  536 </span><span class="spaces">                                </span><span class="nottickedoff">| otherwise = return $ return</span>
+<span class="lineno">  537 </span><span class="spaces">                    </span><span class="nottickedoff">[essence|</span>
+<span class="lineno">  538 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &gt;= &amp;cardMin /\</span>
+<span class="lineno">  539 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &lt;= &amp;cardMax</span>
+<span class="lineno">  540 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  541 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  542 </span><span class="spaces">                </span><span class="nottickedoff">totalityCons | isPartial = return []</span>
+<span class="lineno">  543 </span><span class="spaces">                             </span><span class="nottickedoff">| otherwise = do</span>
+<span class="lineno">  544 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  545 </span><span class="spaces">                    </span><span class="nottickedoff">let</span>
+<span class="lineno">  546 </span><span class="spaces">                        </span><span class="nottickedoff">go d = case d of</span>
+<span class="lineno">  547 </span><span class="spaces">                            </span><span class="nottickedoff">DomainInt{} -&gt; do</span>
+<span class="lineno">  548 </span><span class="spaces">                                </span><span class="nottickedoff">dMin &lt;- minOfIntDomain d</span>
+<span class="lineno">  549 </span><span class="spaces">                                </span><span class="nottickedoff">dMax &lt;- maxOfIntDomain d</span>
+<span class="lineno">  550 </span><span class="spaces">                                </span><span class="nottickedoff">return (\ k -&gt; [essence| (&amp;k &gt;= &amp;dMin /\ &amp;k &lt;= &amp;dMax) |] )</span>
+<span class="lineno">  551 </span><span class="spaces">                            </span><span class="nottickedoff">DomainTuple ds -&gt; do</span>
+<span class="lineno">  552 </span><span class="spaces">                                </span><span class="nottickedoff">makers &lt;- mapM go ds</span>
+<span class="lineno">  553 </span><span class="spaces">                                </span><span class="nottickedoff">return $ \ k -&gt; make opAnd $ fromList</span>
+<span class="lineno">  554 </span><span class="spaces">                                    </span><span class="nottickedoff">[ mk [essence| &amp;k[&amp;nExpr] |]</span>
+<span class="lineno">  555 </span><span class="spaces">                                    </span><span class="nottickedoff">| (mk, n) &lt;- zip makers [1..]</span>
+<span class="lineno">  556 </span><span class="spaces">                                    </span><span class="nottickedoff">, let nExpr = fromInt n</span>
+<span class="lineno">  557 </span><span class="spaces">                                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  558 </span><span class="spaces">                            </span><span class="nottickedoff">DomainSet _ _ inner -&gt; do</span>
 <span class="lineno">  559 </span><span class="spaces">                                </span><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">  560 </span><span class="spaces">                                </span><span class="nottickedoff">maker &lt;- go inner</span>
 <span class="lineno">  561 </span><span class="spaces">                                </span><span class="nottickedoff">let innerCons = maker j</span>
 <span class="lineno">  562 </span><span class="spaces">                                </span><span class="nottickedoff">return $ \ k -&gt; [essence| forAll &amp;jPat in &amp;k . &amp;innerCons |]</span>
-<span class="lineno">  563 </span><span class="spaces">                            </span><span class="nottickedoff">_ -&gt; bug $ &quot;Unhandled domain (in function defined):&quot; &lt;+&gt; vcat [pretty d, pretty (show d)]</span>
-<span class="lineno">  564 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  565 </span><span class="spaces">                    </span><span class="nottickedoff">mkCondition &lt;- go innerDomainFr</span>
-<span class="lineno">  566 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  567 </span><span class="spaces">                    </span><span class="nottickedoff">let iCondition = mkCondition i</span>
-<span class="lineno">  568 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  569 </span><span class="spaces">                    </span><span class="nottickedoff">return $ return [essence|</span>
-<span class="lineno">  570 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;iPat : &amp;domFr .</span>
-<span class="lineno">  571 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;iCondition</span>
-<span class="lineno">  572 </span><span class="spaces">                            </span><span class="nottickedoff">&lt;-&gt;</span>
-<span class="lineno">  573 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;i in defined(&amp;x)</span>
-<span class="lineno">  574 </span><span class="spaces">                        </span><span class="nottickedoff">|]</span>
-<span class="lineno">  575 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  576 </span><span class="spaces">                </span><span class="nottickedoff">sizeLbCons =</span>
-<span class="lineno">  577 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeLb of</span>
-<span class="lineno">  578 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
-<span class="lineno">  579 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &gt;= &amp;bound |]</span>
+<span class="lineno">  563 </span><span class="spaces">                            </span><span class="nottickedoff">DomainMSet _ _ inner -&gt; do</span>
+<span class="lineno">  564 </span><span class="spaces">                                </span><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  565 </span><span class="spaces">                                </span><span class="nottickedoff">maker &lt;- go inner</span>
+<span class="lineno">  566 </span><span class="spaces">                                </span><span class="nottickedoff">let innerCons = maker j</span>
+<span class="lineno">  567 </span><span class="spaces">                                </span><span class="nottickedoff">return $ \ k -&gt; [essence| forAll &amp;jPat in &amp;k . &amp;innerCons |]</span>
+<span class="lineno">  568 </span><span class="spaces">                            </span><span class="nottickedoff">_ -&gt; bug $ &quot;Unhandled domain (in function defined):&quot; &lt;+&gt; vcat [pretty d, pretty (show d)]</span>
+<span class="lineno">  569 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  570 </span><span class="spaces">                    </span><span class="nottickedoff">mkCondition &lt;- go innerDomainFr</span>
+<span class="lineno">  571 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  572 </span><span class="spaces">                    </span><span class="nottickedoff">let iCondition = mkCondition i</span>
+<span class="lineno">  573 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  574 </span><span class="spaces">                    </span><span class="nottickedoff">return $ return [essence|</span>
+<span class="lineno">  575 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;iPat : &amp;domFr .</span>
+<span class="lineno">  576 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;iCondition</span>
+<span class="lineno">  577 </span><span class="spaces">                            </span><span class="nottickedoff">&lt;-&gt;</span>
+<span class="lineno">  578 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;i in defined(&amp;x)</span>
+<span class="lineno">  579 </span><span class="spaces">                        </span><span class="nottickedoff">|]</span>
 <span class="lineno">  580 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  581 </span><span class="spaces">                </span><span class="nottickedoff">sizeUbCons =</span>
-<span class="lineno">  582 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeUb of</span>
+<span class="lineno">  581 </span><span class="spaces">                </span><span class="nottickedoff">sizeLbCons =</span>
+<span class="lineno">  582 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeLb of</span>
 <span class="lineno">  583 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
-<span class="lineno">  584 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &lt;= &amp;bound |]</span>
+<span class="lineno">  584 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &gt;= &amp;bound |]</span>
 <span class="lineno">  585 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  586 </span><span class="spaces">            </span><span class="nottickedoff">-- only for bool domains (innerDomainTo)</span>
-<span class="lineno">  587 </span><span class="spaces">            </span><span class="nottickedoff">let nmPercentage  = nm `mappend` &quot;_percentage&quot;</span>
-<span class="lineno">  588 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmPercentage, &quot;i&quot;)]</span>
-<span class="lineno">  589 </span><span class="spaces">            </span><span class="nottickedoff">let refPercentage = Reference nmPercentage Nothing</span>
+<span class="lineno">  586 </span><span class="spaces">                </span><span class="nottickedoff">sizeUbCons =</span>
+<span class="lineno">  587 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeUb of</span>
+<span class="lineno">  588 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
+<span class="lineno">  589 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &lt;= &amp;bound |]</span>
 <span class="lineno">  590 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  591 </span><span class="spaces">            </span><span class="nottickedoff">let isToBool = case innerDomainTo of</span>
-<span class="lineno">  592 </span><span class="spaces">                                </span><span class="nottickedoff">DomainBool -&gt; True</span>
-<span class="lineno">  593 </span><span class="spaces">                                </span><span class="nottickedoff">_ -&gt; False</span>
-<span class="lineno">  594 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  595 </span><span class="spaces">            </span><span class="nottickedoff">let declToBool = Declaration (FindOrGiven Given nmPercentage (DomainInt TagInt [RangeBounded 0 100])) </span>
-<span class="lineno">  596 </span><span class="spaces">            </span><span class="nottickedoff">let consToBool = [essence| sum([ toInt(&amp;i[2]) | &amp;iPat &lt;- &amp;x ]) = &amp;refPercentage * |defined(&amp;x)| / 100 |]</span>
-<span class="lineno">  597 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  598 </span><span class="spaces">            </span><span class="nottickedoff">newCons &lt;- concat &lt;$&gt; sequence [cardinalityCons, totalityCons, sizeLbCons, sizeUbCons]</span>
-<span class="lineno">  599 </span><span class="spaces">            </span><span class="nottickedoff">let innerCons = concat $ concat</span>
-<span class="lineno">  600 </span><span class="spaces">                    </span><span class="nottickedoff">[ [consFr | isPartial ] -- only if the function is not total</span>
-<span class="lineno">  601 </span><span class="spaces">                    </span><span class="nottickedoff">, [consTo]</span>
-<span class="lineno">  602 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  603 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  604 </span><span class="spaces">            </span><span class="nottickedoff">return3</span>
-<span class="lineno">  605 </span><span class="spaces">                </span><span class="nottickedoff">(DomainFunction r attrOut domFr domTo)</span>
-<span class="lineno">  606 </span><span class="spaces">                </span><span class="nottickedoff">(newDecl ++ concat [ declFr | isPartial ] ++ declTo ++ concat [ [declToBool] | isToBool ])</span>
-<span class="lineno">  607 </span><span class="spaces">                </span><span class="nottickedoff">(newCons ++ map liftCons innerCons ++ concat [[consToBool] | isToBool ])</span>
+<span class="lineno">  591 </span><span class="spaces">            </span><span class="nottickedoff">-- only for bool domains (innerDomainTo)</span>
+<span class="lineno">  592 </span><span class="spaces">            </span><span class="nottickedoff">let nmPercentage  = nm `mappend` &quot;_percentage&quot;</span>
+<span class="lineno">  593 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmPercentage, &quot;i&quot;)]</span>
+<span class="lineno">  594 </span><span class="spaces">            </span><span class="nottickedoff">let refPercentage = Reference nmPercentage Nothing</span>
+<span class="lineno">  595 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  596 </span><span class="spaces">            </span><span class="nottickedoff">let isToBool = case innerDomainTo of</span>
+<span class="lineno">  597 </span><span class="spaces">                                </span><span class="nottickedoff">DomainBool -&gt; True</span>
+<span class="lineno">  598 </span><span class="spaces">                                </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  599 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  600 </span><span class="spaces">            </span><span class="nottickedoff">let declToBool = Declaration (FindOrGiven Given nmPercentage (DomainInt TagInt [RangeBounded 0 100])) </span>
+<span class="lineno">  601 </span><span class="spaces">            </span><span class="nottickedoff">let consToBool = [essence| sum([ toInt(&amp;i[2]) | &amp;iPat &lt;- &amp;x ]) = &amp;refPercentage * |defined(&amp;x)| / 100 |]</span>
+<span class="lineno">  602 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  603 </span><span class="spaces">            </span><span class="nottickedoff">newCons &lt;- concat &lt;$&gt; sequence [cardinalityCons, totalityCons, sizeLbCons, sizeUbCons]</span>
+<span class="lineno">  604 </span><span class="spaces">            </span><span class="nottickedoff">let innerCons = concat $ concat</span>
+<span class="lineno">  605 </span><span class="spaces">                    </span><span class="nottickedoff">[ [consFr | isPartial ] -- only if the function is not total</span>
+<span class="lineno">  606 </span><span class="spaces">                    </span><span class="nottickedoff">, [consTo]</span>
+<span class="lineno">  607 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
 <span class="lineno">  608 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  609 </span><span class="spaces">        </span><span class="nottickedoff">DomainRelation r attr innerDomains -&gt; do</span>
-<span class="lineno">  610 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  611 </span><span class="spaces">            </span><span class="nottickedoff">let nmCardMin = nm `mappend` &quot;_cardMin&quot;</span>
-<span class="lineno">  612 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmCardMin, &quot;i&quot;)]</span>
-<span class="lineno">  613 </span><span class="spaces">            </span><span class="nottickedoff">let cardMin = Reference nmCardMin Nothing</span>
-<span class="lineno">  614 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  615 </span><span class="spaces">            </span><span class="nottickedoff">let nmCardMax  = nm `mappend` &quot;_cardMax&quot;</span>
-<span class="lineno">  616 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmCardMax, &quot;i&quot;)]</span>
-<span class="lineno">  617 </span><span class="spaces">            </span><span class="nottickedoff">let cardMax = Reference nmCardMax Nothing</span>
-<span class="lineno">  618 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  619 </span><span class="spaces">            </span><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  620 </span><span class="spaces">            </span><span class="nottickedoff">let liftCons c = [essence| forAll &amp;iPat in &amp;x . &amp;c |]</span>
-<span class="lineno">  621 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  622 </span><span class="spaces">            </span><span class="nottickedoff">inners &lt;- forM (zip [1..] innerDomains) $ \ (n, d) -&gt; do</span>
-<span class="lineno">  623 </span><span class="spaces">                </span><span class="nottickedoff">let nE = fromInt n</span>
-<span class="lineno">  624 </span><span class="spaces">                </span><span class="nottickedoff">let ref = [essence| &amp;i[&amp;nE] |]</span>
-<span class="lineno">  625 </span><span class="spaces">                </span><span class="nottickedoff">(d', decl, cons) &lt;- pgOnDomain ref (nm `mappend` (Name $ pack $ &quot;_relation&quot; ++ show n)) d</span>
-<span class="lineno">  626 </span><span class="spaces">                </span><span class="nottickedoff">return (d', decl, map liftCons cons)</span>
-<span class="lineno">  627 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  628 </span><span class="spaces">            </span><span class="nottickedoff">let maxIntN = maxIntTimes (genericLength innerDomains)</span>
-<span class="lineno">  629 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  630 </span><span class="spaces">            </span><span class="nottickedoff">(attrOut, sizeLb, sizeUb, cardDomain) &lt;-</span>
-<span class="lineno">  631 </span><span class="spaces">                    </span><span class="nottickedoff">case attr of</span>
-<span class="lineno">  632 </span><span class="spaces">                        </span><span class="nottickedoff">RelationAttr size binRelAttr -&gt; do</span>
-<span class="lineno">  633 </span><span class="spaces">                            </span><span class="nottickedoff">(sizeOut, lb, ub, cardDomain) &lt;-</span>
-<span class="lineno">  634 </span><span class="spaces">                                </span><span class="nottickedoff">case size of</span>
-<span class="lineno">  635 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_None -&gt;</span>
-<span class="lineno">  636 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize maxIntN, Nothing, Nothing</span>
-<span class="lineno">  637 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded minInt maxIntN]</span>
-<span class="lineno">  638 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  639 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_Size a -&gt; do</span>
-<span class="lineno">  640 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  641 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
-<span class="lineno">  642 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just a</span>
-<span class="lineno">  643 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
-<span class="lineno">  644 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  645 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinSize a -&gt; do</span>
-<span class="lineno">  646 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  647 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb maxIntN, Just a, Nothing</span>
-<span class="lineno">  648 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb maxIntN]</span>
+<span class="lineno">  609 </span><span class="spaces">            </span><span class="nottickedoff">return3</span>
+<span class="lineno">  610 </span><span class="spaces">                </span><span class="nottickedoff">(DomainFunction r attrOut domFr domTo)</span>
+<span class="lineno">  611 </span><span class="spaces">                </span><span class="nottickedoff">(newDecl ++ concat [ declFr | isPartial ] ++ declTo ++ concat [ [declToBool] | isToBool ])</span>
+<span class="lineno">  612 </span><span class="spaces">                </span><span class="nottickedoff">(newCons ++ map liftCons innerCons ++ concat [[consToBool] | isToBool ])</span>
+<span class="lineno">  613 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  614 </span><span class="spaces">        </span><span class="nottickedoff">DomainRelation r attr innerDomains -&gt; do</span>
+<span class="lineno">  615 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  616 </span><span class="spaces">            </span><span class="nottickedoff">let nmCardMin = nm `mappend` &quot;_cardMin&quot;</span>
+<span class="lineno">  617 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmCardMin, &quot;i&quot;)]</span>
+<span class="lineno">  618 </span><span class="spaces">            </span><span class="nottickedoff">let cardMin = Reference nmCardMin Nothing</span>
+<span class="lineno">  619 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  620 </span><span class="spaces">            </span><span class="nottickedoff">let nmCardMax  = nm `mappend` &quot;_cardMax&quot;</span>
+<span class="lineno">  621 </span><span class="spaces">            </span><span class="nottickedoff">tell [(nmCardMax, &quot;i&quot;)]</span>
+<span class="lineno">  622 </span><span class="spaces">            </span><span class="nottickedoff">let cardMax = Reference nmCardMax Nothing</span>
+<span class="lineno">  623 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  624 </span><span class="spaces">            </span><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  625 </span><span class="spaces">            </span><span class="nottickedoff">let liftCons c = [essence| forAll &amp;iPat in &amp;x . &amp;c |]</span>
+<span class="lineno">  626 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  627 </span><span class="spaces">            </span><span class="nottickedoff">inners &lt;- forM (zip [1..] innerDomains) $ \ (n, d) -&gt; do</span>
+<span class="lineno">  628 </span><span class="spaces">                </span><span class="nottickedoff">let nE = fromInt n</span>
+<span class="lineno">  629 </span><span class="spaces">                </span><span class="nottickedoff">let ref = [essence| &amp;i[&amp;nE] |]</span>
+<span class="lineno">  630 </span><span class="spaces">                </span><span class="nottickedoff">(d', decl, cons) &lt;- pgOnDomain ref (nm `mappend` (Name $ pack $ &quot;_relation&quot; ++ show n)) d</span>
+<span class="lineno">  631 </span><span class="spaces">                </span><span class="nottickedoff">return (d', decl, map liftCons cons)</span>
+<span class="lineno">  632 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  633 </span><span class="spaces">            </span><span class="nottickedoff">let maxIntN = maxIntTimes (genericLength innerDomains)</span>
+<span class="lineno">  634 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  635 </span><span class="spaces">            </span><span class="nottickedoff">(attrOut, sizeLb, sizeUb, cardDomain) &lt;-</span>
+<span class="lineno">  636 </span><span class="spaces">                    </span><span class="nottickedoff">case attr of</span>
+<span class="lineno">  637 </span><span class="spaces">                        </span><span class="nottickedoff">RelationAttr size binRelAttr -&gt; do</span>
+<span class="lineno">  638 </span><span class="spaces">                            </span><span class="nottickedoff">(sizeOut, lb, ub, cardDomain) &lt;-</span>
+<span class="lineno">  639 </span><span class="spaces">                                </span><span class="nottickedoff">case size of</span>
+<span class="lineno">  640 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_None -&gt;</span>
+<span class="lineno">  641 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize maxIntN, Nothing, Nothing</span>
+<span class="lineno">  642 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded minInt maxIntN]</span>
+<span class="lineno">  643 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  644 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_Size a -&gt; do</span>
+<span class="lineno">  645 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  646 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
+<span class="lineno">  647 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just a</span>
+<span class="lineno">  648 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
 <span class="lineno">  649 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  650 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MaxSize a -&gt; do</span>
-<span class="lineno">  651 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
-<span class="lineno">  652 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize ub, Nothing, Just a</span>
-<span class="lineno">  653 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded 0 ub]</span>
+<span class="lineno">  650 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinSize a -&gt; do</span>
+<span class="lineno">  651 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  652 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb maxIntN, Just a, Nothing</span>
+<span class="lineno">  653 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb maxIntN]</span>
 <span class="lineno">  654 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  655 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinMaxSize a b -&gt; do</span>
-<span class="lineno">  656 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  657 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr b</span>
-<span class="lineno">  658 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just b</span>
-<span class="lineno">  659 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
-<span class="lineno">  660 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
-<span class="lineno">  661 </span><span class="spaces">                            </span><span class="nottickedoff">return (RelationAttr sizeOut binRelAttr, lb, ub, cardDomain)</span>
-<span class="lineno">  662 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  663 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
-<span class="lineno">  664 </span><span class="spaces">                </span><span class="nottickedoff">newDecl =</span>
-<span class="lineno">  665 </span><span class="spaces">                    </span><span class="nottickedoff">[ Declaration (FindOrGiven Given nmCardMin cardDomain)</span>
-<span class="lineno">  666 </span><span class="spaces">                    </span><span class="nottickedoff">, Declaration (FindOrGiven Given nmCardMax cardDomain)</span>
-<span class="lineno">  667 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  668 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  669 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
-<span class="lineno">  670 </span><span class="spaces">                </span><span class="nottickedoff">cardinalityCons = return $ return</span>
-<span class="lineno">  671 </span><span class="spaces">                    </span><span class="nottickedoff">[essence|</span>
-<span class="lineno">  672 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &gt;= &amp;cardMin /\</span>
-<span class="lineno">  673 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &lt;= &amp;cardMax</span>
-<span class="lineno">  674 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
-<span class="lineno">  675 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  676 </span><span class="spaces">                </span><span class="nottickedoff">sizeLbCons =</span>
-<span class="lineno">  677 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeLb of</span>
-<span class="lineno">  678 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
-<span class="lineno">  679 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &gt;= &amp;bound |]</span>
+<span class="lineno">  655 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MaxSize a -&gt; do</span>
+<span class="lineno">  656 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr a</span>
+<span class="lineno">  657 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MaxSize ub, Nothing, Just a</span>
+<span class="lineno">  658 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded 0 ub]</span>
+<span class="lineno">  659 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  660 </span><span class="spaces">                                    </span><span class="nottickedoff">SizeAttr_MinMaxSize a b -&gt; do</span>
+<span class="lineno">  661 </span><span class="spaces">                                        </span><span class="nottickedoff">lb &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  662 </span><span class="spaces">                                        </span><span class="nottickedoff">ub &lt;- upperBoundOfIntExpr b</span>
+<span class="lineno">  663 </span><span class="spaces">                                        </span><span class="nottickedoff">return ( SizeAttr_MinMaxSize lb ub, Just a, Just b</span>
+<span class="lineno">  664 </span><span class="spaces">                                               </span><span class="nottickedoff">, DomainInt TagInt [RangeBounded lb ub]</span>
+<span class="lineno">  665 </span><span class="spaces">                                               </span><span class="nottickedoff">)</span>
+<span class="lineno">  666 </span><span class="spaces">                            </span><span class="nottickedoff">return (RelationAttr sizeOut binRelAttr, lb, ub, cardDomain)</span>
+<span class="lineno">  667 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  668 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  669 </span><span class="spaces">                </span><span class="nottickedoff">newDecl =</span>
+<span class="lineno">  670 </span><span class="spaces">                    </span><span class="nottickedoff">[ Declaration (FindOrGiven Given nmCardMin cardDomain)</span>
+<span class="lineno">  671 </span><span class="spaces">                    </span><span class="nottickedoff">, Declaration (FindOrGiven Given nmCardMax cardDomain)</span>
+<span class="lineno">  672 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  673 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  674 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  675 </span><span class="spaces">                </span><span class="nottickedoff">cardinalityCons = return $ return</span>
+<span class="lineno">  676 </span><span class="spaces">                    </span><span class="nottickedoff">[essence|</span>
+<span class="lineno">  677 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &gt;= &amp;cardMin /\</span>
+<span class="lineno">  678 </span><span class="spaces">                        </span><span class="nottickedoff">|&amp;x| &lt;= &amp;cardMax</span>
+<span class="lineno">  679 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
 <span class="lineno">  680 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  681 </span><span class="spaces">                </span><span class="nottickedoff">sizeUbCons =</span>
-<span class="lineno">  682 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeUb of</span>
+<span class="lineno">  681 </span><span class="spaces">                </span><span class="nottickedoff">sizeLbCons =</span>
+<span class="lineno">  682 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeLb of</span>
 <span class="lineno">  683 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
-<span class="lineno">  684 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &lt;= &amp;bound |]</span>
+<span class="lineno">  684 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &gt;= &amp;bound |]</span>
 <span class="lineno">  685 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  686 </span><span class="spaces">            </span><span class="nottickedoff">newCons &lt;- concat &lt;$&gt; sequence [cardinalityCons, sizeLbCons, sizeUbCons]</span>
-<span class="lineno">  687 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  688 </span><span class="spaces">            </span><span class="nottickedoff">return3</span>
-<span class="lineno">  689 </span><span class="spaces">                </span><span class="nottickedoff">(DomainRelation r attrOut (map fst3 inners))</span>
-<span class="lineno">  690 </span><span class="spaces">                </span><span class="nottickedoff">(newDecl ++ concatMap snd3 inners)</span>
-<span class="lineno">  691 </span><span class="spaces">                </span><span class="nottickedoff">(newCons ++ concatMap thd3 inners)</span>
+<span class="lineno">  686 </span><span class="spaces">                </span><span class="nottickedoff">sizeUbCons =</span>
+<span class="lineno">  687 </span><span class="spaces">                    </span><span class="nottickedoff">case sizeUb of</span>
+<span class="lineno">  688 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; return []</span>
+<span class="lineno">  689 </span><span class="spaces">                        </span><span class="nottickedoff">Just bound -&gt; return $ return [essence| |&amp;x| &lt;= &amp;bound |]</span>
+<span class="lineno">  690 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  691 </span><span class="spaces">            </span><span class="nottickedoff">newCons &lt;- concat &lt;$&gt; sequence [cardinalityCons, sizeLbCons, sizeUbCons]</span>
 <span class="lineno">  692 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  693 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; userErr1 $ &quot;Unhandled domain:&quot; &lt;++&gt; vcat [ pretty dom</span>
-<span class="lineno">  694 </span><span class="spaces">                                                      </span><span class="nottickedoff">, pretty (show dom)</span>
-<span class="lineno">  695 </span><span class="spaces">                                                      </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  696 </span>
-<span class="lineno">  697 </span>
-<span class="lineno">  698 </span>-- helper functions
-<span class="lineno">  699 </span>
-<span class="lineno">  700 </span>return3 :: Monad m =&gt; a -&gt; b -&gt; c -&gt; m (a,b,c)
-<span class="lineno">  701 </span><span class="decl"><span class="nottickedoff">return3 x y z = return (x,y,z)</span></span>
+<span class="lineno">  693 </span><span class="spaces">            </span><span class="nottickedoff">return3</span>
+<span class="lineno">  694 </span><span class="spaces">                </span><span class="nottickedoff">(DomainRelation r attrOut (map fst3 inners))</span>
+<span class="lineno">  695 </span><span class="spaces">                </span><span class="nottickedoff">(newDecl ++ concatMap snd3 inners)</span>
+<span class="lineno">  696 </span><span class="spaces">                </span><span class="nottickedoff">(newCons ++ concatMap thd3 inners)</span>
+<span class="lineno">  697 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  698 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; userErr1 $ &quot;Unhandled domain:&quot; &lt;++&gt; vcat [ pretty dom</span>
+<span class="lineno">  699 </span><span class="spaces">                                                      </span><span class="nottickedoff">, pretty (show dom)</span>
+<span class="lineno">  700 </span><span class="spaces">                                                      </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  701 </span>
 <span class="lineno">  702 </span>
-<span class="lineno">  703 </span>minInt :: Expression
-<span class="lineno">  704 </span><span class="decl"><span class="nottickedoff">minInt = Reference &quot;MININT&quot; Nothing</span></span>
-<span class="lineno">  705 </span>
-<span class="lineno">  706 </span>maxInt :: Expression
-<span class="lineno">  707 </span><span class="decl"><span class="nottickedoff">maxInt = Reference &quot;MAXINT&quot; Nothing</span></span>
-<span class="lineno">  708 </span>
-<span class="lineno">  709 </span>maxIntTimes :: Integer -&gt; Expression
-<span class="lineno">  710 </span><span class="decl"><span class="nottickedoff">maxIntTimes n = let m = fromInt n in [essence| &amp;maxInt ** &amp;m |]</span></span>
-<span class="lineno">  711 </span>
-<span class="lineno">  712 </span>
-<span class="lineno">  713 </span>minOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
-<span class="lineno">  714 </span><span class="decl"><span class="nottickedoff">minOfIntDomain (DomainInt _ rs) = do</span>
-<span class="lineno">  715 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM minOfIntRange rs</span>
-<span class="lineno">  716 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
-<span class="lineno">  717 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return minInt</span>
-<span class="lineno">  718 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
-<span class="lineno">  719 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMax $ fromList xs</span>
-<span class="lineno">  720 </span><span class="spaces"></span><span class="nottickedoff">minOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; vcat [pretty d, pretty (show d)]</span></span>
-<span class="lineno">  721 </span>
-<span class="lineno">  722 </span>minOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
-<span class="lineno">  723 </span><span class="decl"><span class="nottickedoff">minOfIntRange (RangeSingle lb) = return lb</span>
-<span class="lineno">  724 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange (RangeLowerBounded lb) = return lb</span>
-<span class="lineno">  725 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange (RangeBounded lb _) = return lb</span>
-<span class="lineno">  726 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange _ = return minInt</span></span>
-<span class="lineno">  727 </span>
-<span class="lineno">  728 </span>lowerBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
-<span class="lineno">  729 </span><span class="decl"><span class="nottickedoff">lowerBoundOfIntExpr x@Constant{} = return x</span>
-<span class="lineno">  730 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x | x == minInt = return minInt</span>
-<span class="lineno">  731 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x | x == maxInt = return maxInt</span>
-<span class="lineno">  732 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = minOfIntDomain dom</span>
-<span class="lineno">  733 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (Alias x))) = lowerBoundOfIntExpr x</span>
-<span class="lineno">  734 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  735 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  736 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
-<span class="lineno">  737 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
-<span class="lineno">  738 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  739 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  740 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
-<span class="lineno">  741 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  742 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  743 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
-<span class="lineno">  744 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  745 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  746 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
-<span class="lineno">  747 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
-<span class="lineno">  748 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- upperBoundOfIntExpr x</span>
-<span class="lineno">  749 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
-<span class="lineno">  750 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
-<span class="lineno">  751 </span>
-<span class="lineno">  752 </span>
-<span class="lineno">  753 </span>maxOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
-<span class="lineno">  754 </span><span class="decl"><span class="nottickedoff">maxOfIntDomain (DomainInt _ rs) = do</span>
-<span class="lineno">  755 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM maxOfIntRange rs</span>
-<span class="lineno">  756 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
-<span class="lineno">  757 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return maxInt</span>
-<span class="lineno">  758 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
-<span class="lineno">  759 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMin $ fromList xs</span>
-<span class="lineno">  760 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; pretty d</span></span>
-<span class="lineno">  761 </span>
-<span class="lineno">  762 </span>maxOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
-<span class="lineno">  763 </span><span class="decl"><span class="nottickedoff">maxOfIntRange (RangeSingle ub) = return ub</span>
-<span class="lineno">  764 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeUpperBounded ub) = return ub</span>
-<span class="lineno">  765 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeBounded _ ub) = return ub</span>
-<span class="lineno">  766 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange _ = return maxInt</span></span>
-<span class="lineno">  767 </span>
-<span class="lineno">  768 </span>upperBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
-<span class="lineno">  769 </span><span class="decl"><span class="nottickedoff">upperBoundOfIntExpr x@Constant{} = return x</span>
-<span class="lineno">  770 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == minInt = return minInt</span>
-<span class="lineno">  771 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == maxInt = return maxInt</span>
-<span class="lineno">  772 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = maxOfIntDomain dom</span>
-<span class="lineno">  773 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (Alias x))) = upperBoundOfIntExpr x</span>
-<span class="lineno">  774 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  775 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  776 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
-<span class="lineno">  777 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
-<span class="lineno">  778 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  779 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  780 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
-<span class="lineno">  781 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  782 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  783 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
-<span class="lineno">  784 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  785 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  786 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
-<span class="lineno">  787 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
-<span class="lineno">  788 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- lowerBoundOfIntExpr x</span>
-<span class="lineno">  789 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
-<span class="lineno">  790 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
+<span class="lineno">  703 </span>-- helper functions
+<span class="lineno">  704 </span>
+<span class="lineno">  705 </span>return3 :: Monad m =&gt; a -&gt; b -&gt; c -&gt; m (a,b,c)
+<span class="lineno">  706 </span><span class="decl"><span class="nottickedoff">return3 x y z = return (x,y,z)</span></span>
+<span class="lineno">  707 </span>
+<span class="lineno">  708 </span>minInt :: Expression
+<span class="lineno">  709 </span><span class="decl"><span class="nottickedoff">minInt = Reference &quot;MININT&quot; Nothing</span></span>
+<span class="lineno">  710 </span>
+<span class="lineno">  711 </span>maxInt :: Expression
+<span class="lineno">  712 </span><span class="decl"><span class="nottickedoff">maxInt = Reference &quot;MAXINT&quot; Nothing</span></span>
+<span class="lineno">  713 </span>
+<span class="lineno">  714 </span>maxIntTimes :: Integer -&gt; Expression
+<span class="lineno">  715 </span><span class="decl"><span class="nottickedoff">maxIntTimes n = let m = fromInt n in [essence| &amp;maxInt ** &amp;m |]</span></span>
+<span class="lineno">  716 </span>
+<span class="lineno">  717 </span>
+<span class="lineno">  718 </span>minOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
+<span class="lineno">  719 </span><span class="decl"><span class="nottickedoff">minOfIntDomain (DomainInt _ rs) = do</span>
+<span class="lineno">  720 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM minOfIntRange rs</span>
+<span class="lineno">  721 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
+<span class="lineno">  722 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return minInt</span>
+<span class="lineno">  723 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
+<span class="lineno">  724 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMax $ fromList xs</span>
+<span class="lineno">  725 </span><span class="spaces"></span><span class="nottickedoff">minOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; vcat [pretty d, pretty (show d)]</span></span>
+<span class="lineno">  726 </span>
+<span class="lineno">  727 </span>minOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
+<span class="lineno">  728 </span><span class="decl"><span class="nottickedoff">minOfIntRange (RangeSingle lb) = return lb</span>
+<span class="lineno">  729 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange (RangeLowerBounded lb) = return lb</span>
+<span class="lineno">  730 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange (RangeBounded lb _) = return lb</span>
+<span class="lineno">  731 </span><span class="spaces"></span><span class="nottickedoff">minOfIntRange _ = return minInt</span></span>
+<span class="lineno">  732 </span>
+<span class="lineno">  733 </span>lowerBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
+<span class="lineno">  734 </span><span class="decl"><span class="nottickedoff">lowerBoundOfIntExpr x@Constant{} = return x</span>
+<span class="lineno">  735 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x | x == minInt = return minInt</span>
+<span class="lineno">  736 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x | x == maxInt = return maxInt</span>
+<span class="lineno">  737 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = minOfIntDomain dom</span>
+<span class="lineno">  738 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (Alias x))) = lowerBoundOfIntExpr x</span>
+<span class="lineno">  739 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  740 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  741 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
+<span class="lineno">  742 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
+<span class="lineno">  743 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  744 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  745 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
+<span class="lineno">  746 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  747 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  748 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
+<span class="lineno">  749 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  750 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  751 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
+<span class="lineno">  752 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
+<span class="lineno">  753 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- upperBoundOfIntExpr x</span>
+<span class="lineno">  754 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
+<span class="lineno">  755 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
+<span class="lineno">  756 </span>
+<span class="lineno">  757 </span>
+<span class="lineno">  758 </span>maxOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
+<span class="lineno">  759 </span><span class="decl"><span class="nottickedoff">maxOfIntDomain (DomainInt _ rs) = do</span>
+<span class="lineno">  760 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM maxOfIntRange rs</span>
+<span class="lineno">  761 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
+<span class="lineno">  762 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return maxInt</span>
+<span class="lineno">  763 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
+<span class="lineno">  764 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMin $ fromList xs</span>
+<span class="lineno">  765 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; pretty d</span></span>
+<span class="lineno">  766 </span>
+<span class="lineno">  767 </span>maxOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
+<span class="lineno">  768 </span><span class="decl"><span class="nottickedoff">maxOfIntRange (RangeSingle ub) = return ub</span>
+<span class="lineno">  769 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeUpperBounded ub) = return ub</span>
+<span class="lineno">  770 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeBounded _ ub) = return ub</span>
+<span class="lineno">  771 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange _ = return maxInt</span></span>
+<span class="lineno">  772 </span>
+<span class="lineno">  773 </span>upperBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
+<span class="lineno">  774 </span><span class="decl"><span class="nottickedoff">upperBoundOfIntExpr x@Constant{} = return x</span>
+<span class="lineno">  775 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == minInt = return minInt</span>
+<span class="lineno">  776 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == maxInt = return maxInt</span>
+<span class="lineno">  777 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = maxOfIntDomain dom</span>
+<span class="lineno">  778 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (Alias x))) = upperBoundOfIntExpr x</span>
+<span class="lineno">  779 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  780 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  781 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
+<span class="lineno">  782 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
+<span class="lineno">  783 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  784 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  785 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
+<span class="lineno">  786 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  787 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  788 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
+<span class="lineno">  789 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  790 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  791 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
+<span class="lineno">  792 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
+<span class="lineno">  793 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- lowerBoundOfIntExpr x</span>
+<span class="lineno">  794 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
+<span class="lineno">  795 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
 
 </pre>
 </body>
