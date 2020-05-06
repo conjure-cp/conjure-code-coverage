@@ -1,0 +1,168 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.Expression.Op
+<span class="lineno">    2 </span>    ( module Conjure.Language.Expression.Op.Internal.Generated
+<span class="lineno">    3 </span>    , module Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">    4 </span>    , mkBinOp, mkOp
+<span class="lineno">    5 </span>    ) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>-- conjure
+<span class="lineno">    8 </span>import Conjure.Prelude
+<span class="lineno">    9 </span>import Conjure.Bug
+<span class="lineno">   10 </span>import Conjure.Language.AdHoc
+<span class="lineno">   11 </span>import Conjure.Language.Pretty
+<span class="lineno">   12 </span>import Conjure.Language.Lexer
+<span class="lineno">   13 </span>import Conjure.Language.Expression.Op.Internal.Common ( simplifyOp
+<span class="lineno">   14 </span>                                                      , Fixity(..), operators, functionals
+<span class="lineno">   15 </span>                                                      , EssenceOperatorParsingDescr(..) )
+<span class="lineno">   16 </span>import Conjure.Language.Expression.Op.Internal.Generated
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>mkBinOp :: (Op x :&lt; x, ExpressionLike x) =&gt; Text -&gt; x -&gt; x -&gt; x
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">mkBinOp op a b =</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">case textToLexeme op of</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">bug (&quot;Unknown binary operator:&quot; &lt;+&gt; pretty op)</span></span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">Just l  -&gt;</span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">let</span>
+<span class="lineno">   26 </span><span class="spaces">                </span><span class="istickedoff">f = case l of</span>
+<span class="lineno">   27 </span><span class="spaces">                    </span><span class="istickedoff">L_Plus        -&gt; \ x y -&gt; inject $ MkOpSum         $ OpSum       $ fromList [x,y]</span>
+<span class="lineno">   28 </span><span class="spaces">                    </span><span class="istickedoff">L_Minus       -&gt; \ x y -&gt; inject $ MkOpMinus       $ OpMinus       x y</span>
+<span class="lineno">   29 </span><span class="spaces">                    </span><span class="istickedoff">L_Times       -&gt; \ x y -&gt; inject $ MkOpProduct     $ OpProduct $ fromList [x,y]</span>
+<span class="lineno">   30 </span><span class="spaces">                    </span><span class="istickedoff">L_Div         -&gt; \ x y -&gt; inject $ MkOpDiv         $ OpDiv         x y</span>
+<span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">L_Mod         -&gt; \ x y -&gt; inject $ MkOpMod         $ OpMod         x y</span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">L_Pow         -&gt; \ x y -&gt; inject $ MkOpPow         $ OpPow         x y</span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">L_Eq          -&gt; \ x y -&gt; inject $ MkOpEq          $ OpEq          x y</span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">L_Neq         -&gt; \ x y -&gt; inject $ MkOpNeq         $ OpNeq         x y</span>
+<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">L_Lt          -&gt; \ x y -&gt; inject $ MkOpLt          $ OpLt          x y</span>
+<span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff">L_Leq         -&gt; \ x y -&gt; inject $ MkOpLeq         $ OpLeq         x y</span>
+<span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">L_Gt          -&gt; \ x y -&gt; inject $ MkOpGt          $ OpGt          x y</span>
+<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff">L_Geq         -&gt; \ x y -&gt; inject $ MkOpGeq         $ OpGeq         x y</span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff">L_in          -&gt; \ x y -&gt; inject $ MkOpIn          $ OpIn          x y</span>
+<span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff">L_And         -&gt; \ x y -&gt; inject $ MkOpAnd         $ OpAnd     $ fromList [x,y]</span>
+<span class="lineno">   41 </span><span class="spaces">                    </span><span class="istickedoff">L_Or          -&gt; \ x y -&gt; inject $ MkOpOr          $ OpOr      $ fromList [x,y]</span>
+<span class="lineno">   42 </span><span class="spaces">                    </span><span class="istickedoff">L_Imply       -&gt; \ x y -&gt; inject $ MkOpImply       $ OpImply       x y</span>
+<span class="lineno">   43 </span><span class="spaces">                    </span><span class="istickedoff">L_Iff         -&gt; \ x y -&gt; inject $ MkOpIff         $ OpIff         x y</span>
+<span class="lineno">   44 </span><span class="spaces">                    </span><span class="istickedoff">L_subset      -&gt; \ x y -&gt; inject $ MkOpSubset      $ OpSubset      x y</span>
+<span class="lineno">   45 </span><span class="spaces">                    </span><span class="istickedoff">L_subsetEq    -&gt; \ x y -&gt; inject $ MkOpSubsetEq    $ OpSubsetEq    x y</span>
+<span class="lineno">   46 </span><span class="spaces">                    </span><span class="istickedoff">L_supset      -&gt; \ x y -&gt; inject $ MkOpSupset      $ OpSupset      x y</span>
+<span class="lineno">   47 </span><span class="spaces">                    </span><span class="istickedoff">L_supsetEq    -&gt; \ x y -&gt; inject $ MkOpSupsetEq    $ OpSupsetEq    x y</span>
+<span class="lineno">   48 </span><span class="spaces">                    </span><span class="istickedoff">L_subsequence -&gt; \ x y -&gt; inject $ MkOpSubsequence $ OpSubsequence x y</span>
+<span class="lineno">   49 </span><span class="spaces">                    </span><span class="istickedoff">L_substring   -&gt; \ x y -&gt; inject $ MkOpSubstring   $ OpSubstring   x y</span>
+<span class="lineno">   50 </span><span class="spaces">                    </span><span class="istickedoff">L_intersect   -&gt; \ x y -&gt; inject $ MkOpIntersect   $ OpIntersect   x y</span>
+<span class="lineno">   51 </span><span class="spaces">                    </span><span class="istickedoff">L_union       -&gt; \ x y -&gt; inject $ MkOpUnion       $ OpUnion       x y</span>
+<span class="lineno">   52 </span><span class="spaces">                    </span><span class="istickedoff">L_LexLt       -&gt; \ x y -&gt; inject $ MkOpLexLt       $ OpLexLt       x y</span>
+<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff">L_LexLeq      -&gt; \ x y -&gt; inject $ MkOpLexLeq      $ OpLexLeq      x y</span>
+<span class="lineno">   54 </span><span class="spaces">                    </span><span class="istickedoff">L_LexGt       -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpLexLt       $ OpLexLt       y x</span></span>
+<span class="lineno">   55 </span><span class="spaces">                    </span><span class="istickedoff">L_LexGeq      -&gt; \ x y -&gt; inject $ MkOpLexLeq      $ OpLexLeq      y x</span>
+<span class="lineno">   56 </span><span class="spaces">                    </span><span class="istickedoff">L_DotLt       -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpDotLt       $ OpDotLt       x y</span></span>
+<span class="lineno">   57 </span><span class="spaces">                    </span><span class="istickedoff">L_DotLeq      -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpDotLeq      $ OpDotLeq      x y</span></span>
+<span class="lineno">   58 </span><span class="spaces">                    </span><span class="istickedoff">L_DotGt       -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpDotLt       $ OpDotLt       y x</span></span>
+<span class="lineno">   59 </span><span class="spaces">                    </span><span class="istickedoff">L_DotGeq      -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpDotLeq      $ OpDotLeq      y x</span></span>
+<span class="lineno">   60 </span><span class="spaces">                    </span><span class="istickedoff">L_TildeLt     -&gt; \ x y -&gt; inject $ MkOpTildeLt     $ OpTildeLt     x y</span>
+<span class="lineno">   61 </span><span class="spaces">                    </span><span class="istickedoff">L_TildeLeq    -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpTildeLeq    $ OpTildeLeq    x y</span></span>
+<span class="lineno">   62 </span><span class="spaces">                    </span><span class="istickedoff">L_TildeGt     -&gt; \ x y -&gt; inject $ MkOpTildeLt     $ OpTildeLt     y x</span>
+<span class="lineno">   63 </span><span class="spaces">                    </span><span class="istickedoff">L_TildeGeq    -&gt; <span class="nottickedoff">\ x y -&gt; inject $ MkOpTildeLeq    $ OpTildeLeq    y x</span></span>
+<span class="lineno">   64 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;Unknown lexeme for binary operator:&quot; &lt;+&gt; pretty (show l))</span></span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">in</span>
+<span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff">f a b</span></span>
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>mkOp :: (Op x :&lt; x, ReferenceContainer x, ExpressionLike x) =&gt; Text -&gt; [x] -&gt; x
+<span class="lineno">   70 </span><span class="decl"><span class="istickedoff">mkOp op xs =</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">case textToLexeme op of</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; case op of</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">&quot;and&quot;       -&gt; inject $ MkOpAnd       $ OpAnd     (arg xs 0 <span class="nottickedoff">&quot;and&quot;</span>)</span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff">&quot;or&quot;        -&gt; inject $ MkOpOr        $ OpOr      (arg xs 0 <span class="nottickedoff">&quot;or&quot;</span>)</span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff">&quot;xor&quot;       -&gt; <span class="nottickedoff">inject $ MkOpXor       $ OpXor     (arg xs 0 &quot;xor&quot;)</span></span>
+<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff">&quot;sum&quot;       -&gt; inject $ MkOpSum       $ OpSum     (arg xs 0 <span class="nottickedoff">&quot;sum&quot;</span>)</span>
+<span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff">&quot;product&quot;   -&gt; inject $ MkOpProduct   $ OpProduct (arg xs 0 <span class="nottickedoff">&quot;product&quot;</span>)</span>
+<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff">&quot;not&quot;       -&gt; inject $ MkOpNot       $ OpNot     (arg xs 0 <span class="nottickedoff">&quot;not&quot;</span>)</span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff">&quot;negate&quot;    -&gt; inject $ MkOpNegate    $ OpNegate  (arg xs 0 <span class="nottickedoff">&quot;negate&quot;</span>)</span>
+<span class="lineno">   80 </span><span class="spaces">            </span><span class="istickedoff">&quot;twoBars&quot;   -&gt; inject $ MkOpTwoBars   $ OpTwoBars (arg xs 0 <span class="nottickedoff">&quot;twoBars&quot;</span>)</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">_     -&gt; <span class="nottickedoff">bug (&quot;Unknown operator:&quot; &lt;+&gt; vcat [pretty op, pretty $ show $ textToLexeme op])</span></span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff">-- _     -&gt; opImage (fromName (Name op)) xs</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">Just l -&gt; case l of</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">L_true         -&gt; inject $ MkOpTrue         $ OpTrue         (arg xs 0 <span class="nottickedoff">&quot;true&quot;</span>)</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">L_toInt        -&gt; inject $ MkOpToInt        $ OpToInt        (arg xs 0 <span class="nottickedoff">&quot;toInt&quot;</span>)</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">L_makeTable    -&gt; <span class="nottickedoff">inject $ MkOpMakeTable    $ OpMakeTable    (arg xs 0 &quot;makeTable&quot;)</span></span>
+<span class="lineno">   87 </span><span class="spaces">            </span><span class="istickedoff">L_defined      -&gt; inject $ MkOpDefined      $ OpDefined      (arg xs 0 <span class="nottickedoff">&quot;defined&quot;</span>)</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">L_range        -&gt; inject $ MkOpRange        $ OpRange        (arg xs 0 <span class="nottickedoff">&quot;range&quot;</span>)</span>
+<span class="lineno">   89 </span><span class="spaces">            </span><span class="istickedoff">L_restrict     -&gt; inject $ MkOpRestrict     $ OpRestrict     (arg xs 0 <span class="nottickedoff">&quot;restrict&quot;</span>) (arg xs 1 <span class="nottickedoff">&quot;restrict&quot;</span>)</span>
+<span class="lineno">   90 </span><span class="spaces">            </span><span class="istickedoff">L_allDiff      -&gt; inject $ MkOpAllDiff      $ OpAllDiff      (arg xs 0 <span class="nottickedoff">&quot;allDiff&quot;</span>)</span>
+<span class="lineno">   91 </span><span class="spaces">            </span><span class="istickedoff">L_alldifferent_except -&gt; inject $ MkOpAllDiffExcept $ OpAllDiffExcept</span>
+<span class="lineno">   92 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 0 <span class="nottickedoff">&quot;allDiffExcept&quot;</span>)</span>
+<span class="lineno">   93 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;allDiffExcept&quot;</span>)</span>
+<span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff">L_catchUndef   -&gt; <span class="nottickedoff">inject $ MkOpCatchUndef   $ OpCatchUndef   (arg xs 0 &quot;catchUndef&quot;)</span></span>
+<span class="lineno">   95 </span><span class="spaces">                                                                         </span><span class="istickedoff"><span class="nottickedoff">(arg xs 1 &quot;catchUndef&quot;)</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff">L_dontCare     -&gt; inject $ MkOpDontCare     $ OpDontCare     (arg xs 0 <span class="nottickedoff">&quot;dontCare&quot;</span>)</span>
+<span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff">L_toSet        -&gt; inject $ MkOpToSet        $ OpToSet        False (arg xs 0 <span class="nottickedoff">&quot;toSet&quot;</span>)</span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff">L_toMSet       -&gt; inject $ MkOpToMSet       $ OpToMSet       (arg xs 0 <span class="nottickedoff">&quot;toMSet&quot;</span>)</span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">L_toRelation   -&gt; inject $ MkOpToRelation   $ OpToRelation   (arg xs 0 <span class="nottickedoff">&quot;toRelation&quot;</span>)</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">L_max          -&gt; inject $ MkOpMax          $ OpMax          (arg xs 0 <span class="nottickedoff">&quot;max&quot;</span>)</span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff">L_min          -&gt; inject $ MkOpMin          $ OpMin          (arg xs 0 <span class="nottickedoff">&quot;min&quot;</span>)</span>
+<span class="lineno">  102 </span><span class="spaces">            </span><span class="istickedoff">L_image        -&gt; <span class="nottickedoff">inject $ MkOpImage        $ OpImage        (arg xs 0 &quot;image&quot;)</span></span>
+<span class="lineno">  103 </span><span class="spaces">                                                                         </span><span class="istickedoff"><span class="nottickedoff">(arg xs 1 &quot;image&quot;)</span></span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">L_transform    -&gt; <span class="nottickedoff">inject $ MkOpTransform    $ OpTransform    (arg xs 0 &quot;transform&quot;)</span></span>
+<span class="lineno">  105 </span><span class="spaces">                                                                         </span><span class="istickedoff"><span class="nottickedoff">(arg xs 1 &quot;transform&quot;)</span></span>
+<span class="lineno">  106 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff">L_imageSet     -&gt; inject $ MkOpImageSet     $ OpImageSet     (arg xs 0 <span class="nottickedoff">&quot;imageSet&quot;</span>)</span>
+<span class="lineno">  108 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;imageSet&quot;</span>)</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff">L_preImage     -&gt; inject $ MkOpPreImage     $ OpPreImage     (arg xs 0 <span class="nottickedoff">&quot;preImage&quot;</span>)</span>
+<span class="lineno">  110 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;preImage&quot;</span>)</span>
+<span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff">L_inverse      -&gt; inject $ MkOpInverse      $ OpInverse      (arg xs 0 <span class="nottickedoff">&quot;inverse&quot;</span>)</span>
+<span class="lineno">  112 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;inverse&quot;</span>)</span>
+<span class="lineno">  113 </span><span class="spaces">            </span><span class="istickedoff">L_freq         -&gt; inject $ MkOpFreq         $ OpFreq         (arg xs 0 <span class="nottickedoff">&quot;freq&quot;</span>)</span>
+<span class="lineno">  114 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;freq&quot;</span>)</span>
+<span class="lineno">  115 </span><span class="spaces">            </span><span class="istickedoff">L_hist         -&gt; inject $ MkOpHist         $ OpHist         (arg xs 0 <span class="nottickedoff">&quot;hist&quot;</span>)</span>
+<span class="lineno">  116 </span><span class="spaces">            </span><span class="istickedoff">L_parts        -&gt; inject $ MkOpParts        $ OpParts        (arg xs 0 <span class="nottickedoff">&quot;parts&quot;</span>)</span>
+<span class="lineno">  117 </span><span class="spaces">            </span><span class="istickedoff">L_together     -&gt; inject $ MkOpTogether     $ OpTogether     (arg xs 0 <span class="nottickedoff">&quot;together&quot;</span>)</span>
+<span class="lineno">  118 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;together&quot;</span>)</span>
+<span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff">L_apart        -&gt; inject $ MkOpApart        $ OpApart        (arg xs 0 <span class="nottickedoff">&quot;apart&quot;</span>)</span>
+<span class="lineno">  120 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;apart&quot;</span>)</span>
+<span class="lineno">  121 </span><span class="spaces">            </span><span class="istickedoff">L_party        -&gt; inject $ MkOpParty        $ OpParty        (arg xs 0 <span class="nottickedoff">&quot;party&quot;</span>)</span>
+<span class="lineno">  122 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;party&quot;</span>)</span>
+<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">L_participants -&gt; inject $ MkOpParticipants $ OpParticipants (arg xs 0 <span class="nottickedoff">&quot;participants&quot;</span>)</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">L_active       -&gt; inject $ MkOpActive       $ OpActive       (arg xs 0 <span class="nottickedoff">&quot;active&quot;</span>)</span>
+<span class="lineno">  125 </span><span class="spaces">                                                                         </span><span class="istickedoff">(arg xs 1 <span class="nottickedoff">&quot;active&quot;</span> |&gt; nameOut |&gt; fromMaybe <span class="nottickedoff">(bug &quot;active&quot;)</span>)</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">L_pred         -&gt; inject $ MkOpPred         $ OpPred         (arg xs 0 <span class="nottickedoff">&quot;pred&quot;</span>)</span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">L_succ         -&gt; inject $ MkOpSucc         $ OpSucc         (arg xs 0 <span class="nottickedoff">&quot;succ&quot;</span>)</span>
+<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">L_factorial    -&gt; inject $ MkOpFactorial    $ OpFactorial    (arg xs 0 <span class="nottickedoff">&quot;factorial&quot;</span>)</span>
+<span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">L_powerSet     -&gt; inject $ MkOpPowerSet     $ OpPowerSet     (arg xs 0 <span class="nottickedoff">&quot;powerSet&quot;</span>)</span>
+<span class="lineno">  130 </span><span class="spaces">            </span><span class="istickedoff">L_concatenate  -&gt; <span class="nottickedoff">inject $ MkOpFlatten      $ OpFlatten      (Just 1)</span></span>
+<span class="lineno">  131 </span><span class="spaces">                                                                         </span><span class="istickedoff"><span class="nottickedoff">(arg xs 0 &quot;concatenate&quot;)</span></span>
+<span class="lineno">  132 </span><span class="spaces">            </span><span class="istickedoff">L_flatten      -&gt;</span>
+<span class="lineno">  133 </span><span class="spaces">                 </span><span class="istickedoff">case xs of</span>
+<span class="lineno">  134 </span><span class="spaces">                     </span><span class="istickedoff">[m]   -&gt; inject $ MkOpFlatten      $ OpFlatten      Nothing  m</span>
+<span class="lineno">  135 </span><span class="spaces">                     </span><span class="istickedoff">[n,m] -&gt;</span>
+<span class="lineno">  136 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">let n' = fromInteger $ fromMaybe (bug &quot;The 1st argument of flatten has to be a constant integer.&quot;) (intOut &quot;flatten&quot; n)</span></span>
+<span class="lineno">  137 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">in  inject $ MkOpFlatten      $ OpFlatten      (Just n') m</span></span>
+<span class="lineno">  138 </span><span class="spaces">                     </span><span class="istickedoff">_     -&gt; <span class="nottickedoff">bug &quot;flatten takes 1 or 2 arguments.&quot;</span></span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;Unknown lexeme for operator:&quot; &lt;+&gt; pretty (show l))</span></span></span>
+<span class="lineno">  140 </span>
+<span class="lineno">  141 </span>arg :: [a] -&gt; Int -&gt; Doc -&gt; a
+<span class="lineno">  142 </span><span class="decl"><span class="istickedoff">arg xs n op =</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="istickedoff">case atMay xs n of</span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">bug (&quot;Missing argument&quot; &lt;+&gt; pretty (n+1) &lt;+&gt; &quot;for operator&quot; &lt;+&gt; op)</span></span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">Just v  -&gt; v</span></span>
+
+</pre>
+</body>
+</html>
