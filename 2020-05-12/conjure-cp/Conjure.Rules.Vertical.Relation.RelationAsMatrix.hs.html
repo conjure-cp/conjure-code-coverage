@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Rules.Vertical.Relation.RelationAsMatrix where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.Rules.Import
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>rule_Image :: Rule
+<span class="lineno">    7 </span><span class="decl"><span class="istickedoff">rule_Image = &quot;relation-image{RelationAsMatrix}&quot; `namedRule` theRule where</span>
+<span class="lineno">    8 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">    9 </span><span class="spaces">        </span><span class="istickedoff">(rel, args)         &lt;- match opRelationImage p</span>
+<span class="lineno">   10 </span><span class="spaces">        </span><span class="istickedoff">TypeRelation{}      &lt;- typeOf rel</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">Relation_AsMatrix   &lt;- representationOf rel</span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">[m]                 &lt;- downX1 rel</span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff">let unroll = foldl (make opIndexing)</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   15 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;relation image, RelationAsMatrix representation&quot;</span></span>
+<span class="lineno">   16 </span><span class="spaces">            </span><span class="istickedoff">, return $ unroll m args</span>
+<span class="lineno">   17 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>rule_Comprehension :: Rule
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;relation-map_in_expr{RelationAsMatrix}&quot; `namedRule` theRule where</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, rel), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   24 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet, opToMSet] expr)</span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">let upd val old        =  lambdaToFunction pat old val</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">TypeRelation{}         &lt;- typeOf rel</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">Relation_AsMatrix      &lt;- representationOf rel</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">[m]                    &lt;- downX1 rel</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">mDom                   &lt;- domainOf m</span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">let (mIndices, _)      =  getIndices mDom</span>
+<span class="lineno">   32 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">-- we need something like:</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">-- Q i in rel . f(i)</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">-- Q j in (indices...) , filter(f) . f(tuple)</span>
+<span class="lineno">   36 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">-- let out fresh = unroll m [] (zip [ quantifiedVar fr TypeInt | fr &lt;- fresh ] mIndices)</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for map_in_expr for relation domains, RelationAsMatrix representation.&quot;</span></span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   42 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   43 </span><span class="spaces">                </span><span class="istickedoff">let lit = AbstractLiteral $ AbsLitTuple</span>
+<span class="lineno">   44 </span><span class="spaces">                                 </span><span class="istickedoff">[ make opIndexing i (fromInt n) | n &lt;- [1 .. genericLength mIndices] ]</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">let indexThis anyMatrix = make opMatrixIndexing anyMatrix</span>
+<span class="lineno">   46 </span><span class="spaces">                                 </span><span class="istickedoff">[ make opIndexing i (fromInt n) | n &lt;- [1 .. genericLength mIndices] ]</span>
+<span class="lineno">   47 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   48 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (upd lit body)</span>
+<span class="lineno">   49 </span><span class="spaces">                         </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">   50 </span><span class="spaces">                         </span><span class="istickedoff">++ [ Generator (GenDomainNoRepr iPat (DomainTuple mIndices))</span>
+<span class="lineno">   51 </span><span class="spaces">                            </span><span class="istickedoff">, Condition (indexThis m)</span>
+<span class="lineno">   52 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">   53 </span><span class="spaces">                         </span><span class="istickedoff">++ transformBi (upd lit) gocAfter</span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
+
+</pre>
+</body>
+</html>
