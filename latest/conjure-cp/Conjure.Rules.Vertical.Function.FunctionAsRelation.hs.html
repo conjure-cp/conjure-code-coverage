@@ -108,6 +108,34 @@ span.spaces    { background: white }
 <span class="lineno">   89 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
 <span class="lineno">   90 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>-- TODO
+<span class="lineno">   95 </span>-- rule_PowerSet_Comprehension :: Rule
+<span class="lineno">   96 </span>-- rule_PowerSet_Comprehension = &quot;function-powerSet-comprehension{FunctionAsRelation}&quot; `namedRule` theRule where
+<span class="lineno">   97 </span>--     theRule (Comprehension body gensOrConds) = do
+<span class="lineno">   98 </span>--         traceM $ show $ &quot;rule_PowerSet_Comprehension [1]&quot; &lt;+&gt; pretty (Comprehension body gensOrConds)
+<span class="lineno">   99 </span>--         (gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of
+<span class="lineno">  100 </span>--             Generator (GenInExpr pat expr) -&gt; return (pat, expr)
+<span class="lineno">  101 </span>--             _ -&gt; na &quot;rule_Comprehension&quot;
+<span class="lineno">  102 </span>--         traceM $ show $ &quot;rule_PowerSet_Comprehension [2]&quot; &lt;+&gt; pretty expr
+<span class="lineno">  103 </span>--         func                  &lt;- matchDefs [opToSet,opToMSet,opToRelation] &lt;$&gt; match opPowerSet expr
+<span class="lineno">  104 </span>--         traceM $ show $ &quot;rule_PowerSet_Comprehension [3]&quot; &lt;+&gt; pretty func
+<span class="lineno">  105 </span>--         repr &lt;- representationOf func
+<span class="lineno">  106 </span>--         traceM $ show $ &quot;rule_PowerSet_Comprehension [4]&quot; &lt;+&gt; pretty repr
+<span class="lineno">  107 </span>--         Function_AsRelation{} &lt;- representationOf func
+<span class="lineno">  108 </span>--         traceM $ &quot;rule_PowerSet_Comprehension [4]&quot;
+<span class="lineno">  109 </span>--         [rel]                 &lt;- downX1 func
+<span class="lineno">  110 </span>--         traceM $ show $ &quot;rule_PowerSet_Comprehension [4]&quot; &lt;+&gt; pretty rel
+<span class="lineno">  111 </span>--         return
+<span class="lineno">  112 </span>--             ( &quot;Mapping over a function, FunctionAsRelation representation&quot;
+<span class="lineno">  113 </span>--             , return $
+<span class="lineno">  114 </span>--                 Comprehension body
+<span class="lineno">  115 </span>--                     $  gocBefore
+<span class="lineno">  116 </span>--                     ++ [ Generator (GenInExpr pat (make opPowerSet rel)) ]
+<span class="lineno">  117 </span>--                     ++ gocAfter
+<span class="lineno">  118 </span>--             )
+<span class="lineno">  119 </span>--     theRule _ = na &quot;rule_PowerSet_Comprehension&quot;
 
 </pre>
 </body>

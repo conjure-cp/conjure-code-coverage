@@ -326,7 +326,7 @@ span.spaces    { background: white }
 <span class="lineno">  307 </span><span class="spaces">    </span><span class="istickedoff">msolutions &lt;- liftIO $ savileRows eprimesParsed essenceParamsParsed</span>
 <span class="lineno">  308 </span><span class="spaces">    </span><span class="istickedoff">case msolutions of</span>
 <span class="lineno">  309 </span><span class="spaces">        </span><span class="istickedoff">Left msg        -&gt; <span class="nottickedoff">userErr msg</span></span>
-<span class="lineno">  310 </span><span class="spaces">        </span><span class="istickedoff">Right []        -&gt; pp logLevel <span class="nottickedoff">&quot;No solutions found.&quot;</span></span>
+<span class="lineno">  310 </span><span class="spaces">        </span><span class="istickedoff">Right []        -&gt; <span class="nottickedoff">pp logLevel &quot;No solutions found.&quot;</span></span>
 <span class="lineno">  311 </span><span class="spaces">        </span><span class="istickedoff">Right solutions -&gt; do</span>
 <span class="lineno">  312 </span><span class="spaces">            </span><span class="istickedoff">when validateSolutionsOpt $ <span class="nottickedoff">liftIO $ validating solutions</span></span>
 <span class="lineno">  313 </span><span class="spaces">            </span><span class="istickedoff">when copySolutions $ <span class="nottickedoff">do</span></span>
