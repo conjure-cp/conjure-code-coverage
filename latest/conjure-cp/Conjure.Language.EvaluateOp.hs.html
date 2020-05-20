@@ -216,7 +216,7 @@ span.spaces    { background: white }
 <span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpIn c (viewConstantFunction -&gt; Just cs)) =</span>
 <span class="lineno">  198 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantBool $ elem c $ map (\ (i,j) -&gt; ConstantAbstract $ AbsLitTuple [i,j] ) cs</span></span>
 <span class="lineno">  199 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpIn c (viewConstantRelation -&gt; Just cs)) =</span>
-<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return $ ConstantBool $ elem c $ map (ConstantAbstract . AbsLitTuple) cs</span></span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff">return $ ConstantBool $ elem c $ map (ConstantAbstract . AbsLitTuple) cs</span>
 <span class="lineno">  201 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = <span class="nottickedoff">na $ &quot;evaluateOp{OpIn}:&quot; &lt;++&gt; pretty (show op)</span></span></span>
 <span class="lineno">  202 </span>
 <span class="lineno">  203 </span>instance EvaluateOp OpIndexing where
