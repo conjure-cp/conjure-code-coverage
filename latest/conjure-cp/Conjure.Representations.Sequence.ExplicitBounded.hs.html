@@ -153,13 +153,13 @@ span.spaces    { background: white }
 <span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">let injectiveCons marker values = do</span>
 <span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff">innerType &lt;- typeOfDomain innerDomain</span>
 <span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff">case innerType of</span>
-<span class="lineno">  137 </span><span class="spaces">                        </span><span class="istickedoff">TypeInt _ -&gt; do</span>
-<span class="lineno">  138 </span><span class="spaces">                            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  139 </span><span class="spaces">                            </span><span class="istickedoff">return $ return $ -- list</span>
-<span class="lineno">  140 </span><span class="spaces">                                </span><span class="istickedoff">[essence| allDiff([ &amp;values[&amp;i]</span>
-<span class="lineno">  141 </span><span class="spaces">                                                  </span><span class="istickedoff">| &amp;iPat : int(1..&amp;maxSize)</span>
-<span class="lineno">  142 </span><span class="spaces">                                                  </span><span class="istickedoff">, &amp;i &lt;= &amp;marker</span>
-<span class="lineno">  143 </span><span class="spaces">                                                  </span><span class="istickedoff">]) |]</span>
+<span class="lineno">  137 </span><span class="spaces">                        </span><span class="istickedoff">TypeInt _ -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno">  138 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  139 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">return $ return $ -- list</span></span>
+<span class="lineno">  140 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[essence| allDiff([ &amp;values[&amp;i]</span></span>
+<span class="lineno">  141 </span><span class="spaces">                                                  </span><span class="istickedoff"><span class="nottickedoff">| &amp;iPat : int(1..&amp;maxSize)</span></span>
+<span class="lineno">  142 </span><span class="spaces">                                                  </span><span class="istickedoff"><span class="nottickedoff">, &amp;i &lt;= &amp;marker</span></span>
+<span class="lineno">  143 </span><span class="spaces">                                                  </span><span class="istickedoff"><span class="nottickedoff">]) |]</span></span>
 <span class="lineno">  144 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; do</span>
 <span class="lineno">  145 </span><span class="spaces">                            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
 <span class="lineno">  146 </span><span class="spaces">                            </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>

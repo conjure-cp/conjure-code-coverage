@@ -648,7 +648,7 @@ span.spaces    { background: white }
 <span class="lineno">  629 </span><span class="spaces">            </span><span class="istickedoff">return $ \ x -&gt; mkOp &quot;not&quot; [x]</span>
 <span class="lineno">  630 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  631 </span><span class="spaces">    </span><span class="istickedoff">in</span>
-<span class="lineno">  632 </span><span class="spaces">        </span><span class="istickedoff">makeExprParser (parseAtomicExpr &lt;?&gt; &quot;expression&quot;)</span>
+<span class="lineno">  632 </span><span class="spaces">        </span><span class="istickedoff">makeExprParser parseAtomicExpr</span>
 <span class="lineno">  633 </span><span class="spaces">            </span><span class="istickedoff">[ [ case descr of</span>
 <span class="lineno">  634 </span><span class="spaces">                    </span><span class="istickedoff">BinaryOp op FLeft             -&gt; InfixL $ do lexeme op</span>
 <span class="lineno">  635 </span><span class="spaces">                                                                 </span><span class="istickedoff">return $ mergeOp op</span>
@@ -662,7 +662,7 @@ span.spaces    { background: white }
 <span class="lineno">  643 </span><span class="spaces">              </span><span class="istickedoff">| (descr, _) &lt;- operatorsInGroup</span>
 <span class="lineno">  644 </span><span class="spaces">              </span><span class="istickedoff">]</span>
 <span class="lineno">  645 </span><span class="spaces">            </span><span class="istickedoff">| operatorsInGroup &lt;- operatorsGrouped</span>
-<span class="lineno">  646 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
+<span class="lineno">  646 </span><span class="spaces">            </span><span class="istickedoff">] &lt;?&gt; &quot;expression&quot;</span></span>
 <span class="lineno">  647 </span>
 <span class="lineno">  648 </span>parseAtomicExpr :: Parser Expression
 <span class="lineno">  649 </span><span class="decl"><span class="istickedoff">parseAtomicExpr = do</span>
