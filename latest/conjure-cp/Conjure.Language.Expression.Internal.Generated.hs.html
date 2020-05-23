@@ -266,54 +266,58 @@ span.spaces    { background: white }
 <span class="lineno">  247 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpSupsetEq</span></span>
 <span class="lineno">  248 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpSupsetEq x)) = return x</span>
 <span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSupsetEq&quot;</span></span>
-<span class="lineno">  250 </span>instance OpTildeLeq Expression :&lt; Expression where
-<span class="lineno">  251 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTildeLeq</span></span>
-<span class="lineno">  252 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTildeLeq x)) = return x</span>
-<span class="lineno">  253 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLeq&quot;</span></span>
-<span class="lineno">  254 </span>instance OpTildeLt Expression :&lt; Expression where
-<span class="lineno">  255 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTildeLt</span></span>
-<span class="lineno">  256 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTildeLt x)) = return x</span>
-<span class="lineno">  257 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLt&quot;</span></span>
-<span class="lineno">  258 </span>instance OpToInt Expression :&lt; Expression where
-<span class="lineno">  259 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToInt</span></span>
-<span class="lineno">  260 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToInt x)) = return x</span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToInt&quot;</span></span>
-<span class="lineno">  262 </span>instance OpToMSet Expression :&lt; Expression where
-<span class="lineno">  263 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToMSet</span></span>
-<span class="lineno">  264 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToMSet x)) = return x</span>
-<span class="lineno">  265 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToMSet&quot;</span></span>
-<span class="lineno">  266 </span>instance OpToRelation Expression :&lt; Expression where
-<span class="lineno">  267 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToRelation</span></span>
-<span class="lineno">  268 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToRelation x)) = return x</span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToRelation&quot;</span></span>
-<span class="lineno">  270 </span>instance OpToSet Expression :&lt; Expression where
-<span class="lineno">  271 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToSet</span></span>
-<span class="lineno">  272 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToSet x)) = return x</span>
-<span class="lineno">  273 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToSet&quot;</span></span>
-<span class="lineno">  274 </span>instance OpTogether Expression :&lt; Expression where
-<span class="lineno">  275 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTogether</span></span>
-<span class="lineno">  276 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTogether x)) = return x</span>
-<span class="lineno">  277 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTogether&quot;</span></span>
-<span class="lineno">  278 </span>instance OpTransform Expression :&lt; Expression where
-<span class="lineno">  279 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTransform</span></span>
-<span class="lineno">  280 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTransform x)) = return x</span>
-<span class="lineno">  281 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTransform&quot;</span></span>
-<span class="lineno">  282 </span>instance OpTrue Expression :&lt; Expression where
-<span class="lineno">  283 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTrue</span></span>
-<span class="lineno">  284 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTrue x)) = return x</span>
-<span class="lineno">  285 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTrue&quot;</span></span>
-<span class="lineno">  286 </span>instance OpTwoBars Expression :&lt; Expression where
-<span class="lineno">  287 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTwoBars</span></span>
-<span class="lineno">  288 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTwoBars x)) = return x</span>
-<span class="lineno">  289 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTwoBars&quot;</span></span>
-<span class="lineno">  290 </span>instance OpUnion Expression :&lt; Expression where
-<span class="lineno">  291 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpUnion</span></span>
-<span class="lineno">  292 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpUnion x)) = return x</span>
-<span class="lineno">  293 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpUnion&quot;</span></span>
-<span class="lineno">  294 </span>instance OpXor Expression :&lt; Expression where
-<span class="lineno">  295 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpXor</span></span>
-<span class="lineno">  296 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpXor x)) = return x</span>
-<span class="lineno">  297 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpXor&quot;</span></span>
+<span class="lineno">  250 </span>instance OpTable Expression :&lt; Expression where
+<span class="lineno">  251 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTable</span></span>
+<span class="lineno">  252 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTable x)) = return x</span>
+<span class="lineno">  253 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTable&quot;</span></span>
+<span class="lineno">  254 </span>instance OpTildeLeq Expression :&lt; Expression where
+<span class="lineno">  255 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTildeLeq</span></span>
+<span class="lineno">  256 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTildeLeq x)) = return x</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLeq&quot;</span></span>
+<span class="lineno">  258 </span>instance OpTildeLt Expression :&lt; Expression where
+<span class="lineno">  259 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTildeLt</span></span>
+<span class="lineno">  260 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTildeLt x)) = return x</span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLt&quot;</span></span>
+<span class="lineno">  262 </span>instance OpToInt Expression :&lt; Expression where
+<span class="lineno">  263 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToInt</span></span>
+<span class="lineno">  264 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToInt x)) = return x</span>
+<span class="lineno">  265 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToInt&quot;</span></span>
+<span class="lineno">  266 </span>instance OpToMSet Expression :&lt; Expression where
+<span class="lineno">  267 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToMSet</span></span>
+<span class="lineno">  268 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToMSet x)) = return x</span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToMSet&quot;</span></span>
+<span class="lineno">  270 </span>instance OpToRelation Expression :&lt; Expression where
+<span class="lineno">  271 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToRelation</span></span>
+<span class="lineno">  272 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToRelation x)) = return x</span>
+<span class="lineno">  273 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToRelation&quot;</span></span>
+<span class="lineno">  274 </span>instance OpToSet Expression :&lt; Expression where
+<span class="lineno">  275 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpToSet</span></span>
+<span class="lineno">  276 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpToSet x)) = return x</span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToSet&quot;</span></span>
+<span class="lineno">  278 </span>instance OpTogether Expression :&lt; Expression where
+<span class="lineno">  279 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTogether</span></span>
+<span class="lineno">  280 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTogether x)) = return x</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTogether&quot;</span></span>
+<span class="lineno">  282 </span>instance OpTransform Expression :&lt; Expression where
+<span class="lineno">  283 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTransform</span></span>
+<span class="lineno">  284 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTransform x)) = return x</span>
+<span class="lineno">  285 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTransform&quot;</span></span>
+<span class="lineno">  286 </span>instance OpTrue Expression :&lt; Expression where
+<span class="lineno">  287 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTrue</span></span>
+<span class="lineno">  288 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTrue x)) = return x</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTrue&quot;</span></span>
+<span class="lineno">  290 </span>instance OpTwoBars Expression :&lt; Expression where
+<span class="lineno">  291 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpTwoBars</span></span>
+<span class="lineno">  292 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpTwoBars x)) = return x</span>
+<span class="lineno">  293 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTwoBars&quot;</span></span>
+<span class="lineno">  294 </span>instance OpUnion Expression :&lt; Expression where
+<span class="lineno">  295 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpUnion</span></span>
+<span class="lineno">  296 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpUnion x)) = return x</span>
+<span class="lineno">  297 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpUnion&quot;</span></span>
+<span class="lineno">  298 </span>instance OpXor Expression :&lt; Expression where
+<span class="lineno">  299 </span>    <span class="decl"><span class="nottickedoff">inject = Op . MkOpXor</span></span>
+<span class="lineno">  300 </span>    <span class="decl"><span class="nottickedoff">project (Op (MkOpXor x)) = return x</span>
+<span class="lineno">  301 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpXor&quot;</span></span>
 
 </pre>
 </body>

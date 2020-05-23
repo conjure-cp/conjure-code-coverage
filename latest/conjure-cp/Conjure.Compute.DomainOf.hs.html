@@ -183,505 +183,510 @@ span.spaces    { background: white }
 <span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSum x) = domainOf x</span>
 <span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupset x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupsetEq x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLeq x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLt x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTogether x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToInt x) = domainOf <span class="nottickedoff">x</span></span>
-<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToMSet x) = domainOf x</span>
-<span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToRelation x) = domainOf x</span>
-<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToSet x) = domainOf x</span>
-<span class="lineno">  174 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTransform x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  175 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTrue x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTwoBars x) = domainOf x</span>
-<span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpUnion x) = domainOf x</span>
-<span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpXor x) = <span class="nottickedoff">domainOf x</span></span></span>
-<span class="lineno">  179 </span>
-<span class="lineno">  180 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (MkOpActive x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAllDiff x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAllDiffExcept x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  183 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAnd x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  184 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpApart x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAttributeAsConstraint x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpCatchUndef x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDefined x) = indexDomainsOf x</span>
-<span class="lineno">  188 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDiv x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  189 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDontCare x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  190 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDotLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  191 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDotLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  192 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  193 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFactorial x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  194 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFlatten x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  195 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFreq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  196 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpGeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpGt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  198 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpHist x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  199 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIff x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  200 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImage x) = indexDomainsOf x</span>
-<span class="lineno">  201 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImageSet x) = indexDomainsOf x</span>
-<span class="lineno">  202 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImply x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  203 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIn x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  204 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIndexing x) = indexDomainsOf x</span>
-<span class="lineno">  205 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIntersect x) = indexDomainsOf x</span>
-<span class="lineno">  206 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpInverse x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  207 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLexLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLexLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  210 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMakeTable x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  212 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMax x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  213 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMin x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  214 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMinus x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  215 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMod x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  216 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNegate x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  217 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  218 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNot x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpOr x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParticipants x) = indexDomainsOf x</span>
-<span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParts x) = indexDomainsOf x</span>
-<span class="lineno">  222 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParty x) = indexDomainsOf x</span>
-<span class="lineno">  223 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPow x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  224 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPowerSet x) = indexDomainsOf x</span>
-<span class="lineno">  225 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPred x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  226 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPreImage x) = indexDomainsOf x</span>
-<span class="lineno">  227 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpProduct x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  228 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRange x) = indexDomainsOf x</span>
-<span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRelationProj x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  230 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRestrict x) = indexDomainsOf x</span>
-<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSlicing x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubsequence x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubset x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubsetEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubstring x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  236 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSucc x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSum x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  238 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSupset x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  239 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSupsetEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTildeLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTildeLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTogether x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  243 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToInt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  244 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToMSet x) = indexDomainsOf x</span>
-<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToRelation x) = indexDomainsOf x</span>
-<span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToSet x) = indexDomainsOf x</span>
-<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTransform (OpTransform _ x)) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTrue x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  249 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTwoBars x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpUnion x) = indexDomainsOf x</span>
-<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpXor x) = <span class="nottickedoff">indexDomainsOf x</span></span></span>
-<span class="lineno">  252 </span>
-<span class="lineno">  253 </span>instance DomainOf Constant where
-<span class="lineno">  254 </span>    <span class="decl"><span class="istickedoff">domainOf ConstantBool{}             = return DomainBool</span>
-<span class="lineno">  255 </span><span class="spaces">    </span><span class="istickedoff">domainOf i@(ConstantInt t _)        = return $ DomainInt t [RangeSingle (Constant i)]</span>
-<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">domainOf (ConstantEnum defn _ _ )   = <span class="nottickedoff">return (DomainEnum defn Nothing Nothing)</span></span>
-<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">domainOf ConstantField{}            = <span class="nottickedoff">fail &quot;DomainOf-Constant-ConstantField&quot;</span></span>
-<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">domainOf (ConstantAbstract x)       = domainOf (fmap Constant x)</span>
-<span class="lineno">  259 </span><span class="spaces">    </span><span class="istickedoff">domainOf (DomainInConstant dom)     = <span class="nottickedoff">return (fmap Constant dom)</span></span>
-<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">domainOf (TypedConstant x ty)       = domainOf (Typed (Constant x) ty)</span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">domainOf ConstantUndefined{}        = <span class="nottickedoff">fail &quot;DomainOf-Constant-ConstantUndefined&quot;</span></span></span>
-<span class="lineno">  262 </span>
-<span class="lineno">  263 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf ConstantBool{}       = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  264 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantInt{}        = return []</span>
-<span class="lineno">  265 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantEnum{}       = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  266 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantField{}      = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (ConstantAbstract x) = indexDomainsOf (fmap Constant x)</span>
-<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf DomainInConstant{}   = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (TypedConstant x ty) = indexDomainsOf (Typed (Constant x) ty)</span>
-<span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantUndefined{}  = <span class="nottickedoff">return []</span></span></span>
-<span class="lineno">  271 </span>
-<span class="lineno">  272 </span>instance DomainOf (AbstractLiteral Expression) where
+<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTable x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLeq x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLt x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTogether x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToInt x) = domainOf <span class="nottickedoff">x</span></span>
+<span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToMSet x) = domainOf x</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToRelation x) = domainOf x</span>
+<span class="lineno">  174 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpToSet x) = domainOf x</span>
+<span class="lineno">  175 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTransform x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTrue x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTwoBars x) = domainOf x</span>
+<span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpUnion x) = domainOf x</span>
+<span class="lineno">  179 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpXor x) = <span class="nottickedoff">domainOf x</span></span></span>
+<span class="lineno">  180 </span>
+<span class="lineno">  181 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (MkOpActive x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAllDiff x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  183 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAllDiffExcept x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  184 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAnd x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpApart x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpAttributeAsConstraint x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpCatchUndef x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  188 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDefined x) = indexDomainsOf x</span>
+<span class="lineno">  189 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDiv x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  190 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDontCare x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  191 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDotLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  192 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpDotLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  193 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  194 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFactorial x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  195 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFlatten x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  196 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpFreq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpGeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  198 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpGt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  199 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpHist x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  200 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIff x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  201 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImage x) = indexDomainsOf x</span>
+<span class="lineno">  202 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImageSet x) = indexDomainsOf x</span>
+<span class="lineno">  203 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImply x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  204 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIn x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  205 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIndexing x) = indexDomainsOf x</span>
+<span class="lineno">  206 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIntersect x) = indexDomainsOf x</span>
+<span class="lineno">  207 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpInverse x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLexLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  210 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLexLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  212 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMakeTable x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  213 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMax x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  214 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMin x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  215 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMinus x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  216 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpMod x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  217 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNegate x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  218 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpNot x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpOr x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParticipants x) = indexDomainsOf x</span>
+<span class="lineno">  222 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParts x) = indexDomainsOf x</span>
+<span class="lineno">  223 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpParty x) = indexDomainsOf x</span>
+<span class="lineno">  224 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPow x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  225 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPowerSet x) = indexDomainsOf x</span>
+<span class="lineno">  226 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPred x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  227 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPreImage x) = indexDomainsOf x</span>
+<span class="lineno">  228 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpProduct x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRange x) = indexDomainsOf x</span>
+<span class="lineno">  230 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRelationProj x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRestrict x) = indexDomainsOf x</span>
+<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSlicing x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubsequence x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubset x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubsetEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  236 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubstring x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSucc x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  238 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSum x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  239 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSupset x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSupsetEq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTable x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTildeLeq x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  243 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTildeLt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  244 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTogether x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToInt x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToMSet x) = indexDomainsOf x</span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToRelation x) = indexDomainsOf x</span>
+<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpToSet x) = indexDomainsOf x</span>
+<span class="lineno">  249 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTransform (OpTransform _ x)) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTrue x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTwoBars x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  252 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpUnion x) = indexDomainsOf x</span>
+<span class="lineno">  253 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpXor x) = <span class="nottickedoff">indexDomainsOf x</span></span></span>
+<span class="lineno">  254 </span>
+<span class="lineno">  255 </span>instance DomainOf Constant where
+<span class="lineno">  256 </span>    <span class="decl"><span class="istickedoff">domainOf ConstantBool{}             = return DomainBool</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">domainOf i@(ConstantInt t _)        = return $ DomainInt t [RangeSingle (Constant i)]</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">domainOf (ConstantEnum defn _ _ )   = <span class="nottickedoff">return (DomainEnum defn Nothing Nothing)</span></span>
+<span class="lineno">  259 </span><span class="spaces">    </span><span class="istickedoff">domainOf ConstantField{}            = <span class="nottickedoff">fail &quot;DomainOf-Constant-ConstantField&quot;</span></span>
+<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">domainOf (ConstantAbstract x)       = domainOf (fmap Constant x)</span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">domainOf (DomainInConstant dom)     = <span class="nottickedoff">return (fmap Constant dom)</span></span>
+<span class="lineno">  262 </span><span class="spaces">    </span><span class="istickedoff">domainOf (TypedConstant x ty)       = domainOf (Typed (Constant x) ty)</span>
+<span class="lineno">  263 </span><span class="spaces">    </span><span class="istickedoff">domainOf ConstantUndefined{}        = <span class="nottickedoff">fail &quot;DomainOf-Constant-ConstantUndefined&quot;</span></span></span>
+<span class="lineno">  264 </span>
+<span class="lineno">  265 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf ConstantBool{}       = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  266 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantInt{}        = return []</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantEnum{}       = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantField{}      = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (ConstantAbstract x) = indexDomainsOf (fmap Constant x)</span>
+<span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf DomainInConstant{}   = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (TypedConstant x ty) = indexDomainsOf (Typed (Constant x) ty)</span>
+<span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf ConstantUndefined{}  = <span class="nottickedoff">return []</span></span></span>
 <span class="lineno">  273 </span>
-<span class="lineno">  274 </span>    <span class="decl"><span class="istickedoff">domainOf (AbsLitTuple        xs) = DomainTuple  &lt;$&gt; mapM domainOf xs</span>
-<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRecord       xs) = DomainRecord &lt;$&gt; sequence [ do t &lt;- domainOf x ; return (n,t)</span>
-<span class="lineno">  277 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
-<span class="lineno">  278 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitVariant Nothing  _ _) = <span class="nottickedoff">fail &quot;Cannot calculate the domain of variant literal.&quot;</span></span>
-<span class="lineno">  280 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitVariant (Just t) _ _) = return (DomainVariant t)</span>
-<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMatrix ind inn ) = DomainMatrix ind &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf inn)</span>
+<span class="lineno">  274 </span>instance DomainOf (AbstractLiteral Expression) where
+<span class="lineno">  275 </span>
+<span class="lineno">  276 </span>    <span class="decl"><span class="istickedoff">domainOf (AbsLitTuple        xs) = DomainTuple  &lt;$&gt; mapM domainOf xs</span>
+<span class="lineno">  277 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  278 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRecord       xs) = DomainRecord &lt;$&gt; sequence [ do t &lt;- domainOf x ; return (n,t)</span>
+<span class="lineno">  279 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,x) &lt;- xs ]</span>
+<span class="lineno">  280 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitVariant Nothing  _ _) = <span class="nottickedoff">fail &quot;Cannot calculate the domain of variant literal.&quot;</span></span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitVariant (Just t) _ _) = return (DomainVariant t)</span>
 <span class="lineno">  283 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSet         [] ) = return $ DomainSet <span class="nottickedoff">def</span> attr (DomainAny <span class="nottickedoff">&quot;domainOf-AbsLitSet-[]&quot;</span> <span class="nottickedoff">TypeAny</span>)</span>
-<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">where attr = SetAttr (SizeAttr_Size <span class="nottickedoff">0</span>)</span>
-<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSet         xs ) = DomainSet def attr &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
-<span class="lineno">  287 </span><span class="spaces">        </span><span class="istickedoff">where attr = SetAttr (SizeAttr_MaxSize $ fromInt $ genericLength xs)</span>
-<span class="lineno">  288 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMSet        [] ) = <span class="nottickedoff">return $ DomainMSet def attr (DomainAny &quot;domainOf-AbsLitMSet-[]&quot; TypeAny)</span></span>
-<span class="lineno">  290 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = MSetAttr (SizeAttr_Size 0) OccurAttr_None</span></span>
-<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMSet        xs ) = DomainMSet <span class="nottickedoff">def</span> <span class="nottickedoff">attr</span> &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
-<span class="lineno">  292 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = MSetAttr (SizeAttr_MaxSize $ fromInt $ genericLength xs) OccurAttr_None</span></span>
-<span class="lineno">  293 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitFunction    [] ) = <span class="nottickedoff">return $ DomainFunction def attr</span></span>
-<span class="lineno">  295 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitFunction-[]-1&quot; TypeAny)</span></span>
-<span class="lineno">  296 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitFunction-[]-2&quot; TypeAny)</span></span>
-<span class="lineno">  297 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = FunctionAttr (SizeAttr_Size 0) def def</span></span>
-<span class="lineno">  298 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitFunction    xs ) = DomainFunction def attr</span>
-<span class="lineno">  299 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;$&gt; (domainUnions =&lt;&lt; mapM (domainOf . fst) xs)</span>
-<span class="lineno">  300 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;*&gt; (domainUnions =&lt;&lt; mapM (domainOf . snd) xs)</span>
-<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff">where attr = FunctionAttr (SizeAttr_MaxSize $ <span class="nottickedoff">fromInt $ genericLength xs</span>) def def</span>
-<span class="lineno">  302 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  303 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSequence    [] ) = return $ DomainSequence def attr</span>
-<span class="lineno">  304 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitSequence-[]&quot; TypeAny)</span></span>
-<span class="lineno">  305 </span><span class="spaces">        </span><span class="istickedoff">where attr = SequenceAttr (SizeAttr_Size <span class="nottickedoff">0</span>) <span class="nottickedoff">def</span></span>
-<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSequence    xs ) = DomainSequence def attr</span>
-<span class="lineno">  307 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
-<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">where attr = SequenceAttr (SizeAttr_MaxSize (fromInt $ genericLength xs)) def</span>
-<span class="lineno">  309 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  310 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRelation    [] ) = return $ DomainRelation <span class="nottickedoff">def</span> <span class="nottickedoff">attr</span> []</span>
-<span class="lineno">  311 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = RelationAttr (SizeAttr_Size 0) def</span></span>
-<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRelation    xss) = do</span>
-<span class="lineno">  313 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- domainUnions =&lt;&lt; mapM (domainOf . AbsLitTuple) xss</span>
-<span class="lineno">  314 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno">  315 </span><span class="spaces">            </span><span class="istickedoff">DomainTuple ts -&gt; return (DomainRelation def attr ts)</span>
-<span class="lineno">  316 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;expecting DomainTuple in domainOf&quot;</span></span>
-<span class="lineno">  317 </span><span class="spaces">        </span><span class="istickedoff">where attr = RelationAttr (SizeAttr_MaxSize <span class="nottickedoff">(fromInt $ genericLength xss)</span>) <span class="nottickedoff">def</span></span>
-<span class="lineno">  318 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  319 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitPartition   [] ) = <span class="nottickedoff">return $ DomainPartition def attr</span></span>
-<span class="lineno">  320 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitPartition-[]&quot; TypeAny)</span></span>
-<span class="lineno">  321 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = PartitionAttr (SizeAttr_Size 0) (SizeAttr_Size 0) False</span></span>
-<span class="lineno">  322 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitPartition   xss) = DomainPartition def attr &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf (concat xss))</span>
-<span class="lineno">  323 </span><span class="spaces">        </span><span class="istickedoff">where attr = PartitionAttr (SizeAttr_MaxSize (fromInt $ genericLength xss))</span>
-<span class="lineno">  324 </span><span class="spaces">                                   </span><span class="istickedoff">(SizeAttr_MaxSize <span class="nottickedoff">(fromInt $ maximum [genericLength xs | xs &lt;- xss])</span>)</span>
-<span class="lineno">  325 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">False</span></span></span>
-<span class="lineno">  326 </span>
-<span class="lineno">  327 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (AbsLitMatrix ind inn) = (ind :) &lt;$&gt; (mapM domainUnions =&lt;&lt; mapM indexDomainsOf inn)</span>
-<span class="lineno">  328 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf _ = return []</span></span>
-<span class="lineno">  329 </span>
-<span class="lineno">  330 </span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMatrix ind inn ) = DomainMatrix ind &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf inn)</span>
+<span class="lineno">  285 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSet         [] ) = return $ DomainSet <span class="nottickedoff">def</span> attr (DomainAny <span class="nottickedoff">&quot;domainOf-AbsLitSet-[]&quot;</span> <span class="nottickedoff">TypeAny</span>)</span>
+<span class="lineno">  287 </span><span class="spaces">        </span><span class="istickedoff">where attr = SetAttr (SizeAttr_Size <span class="nottickedoff">0</span>)</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSet         xs ) = DomainSet def attr &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">where attr = SetAttr (SizeAttr_MaxSize $ fromInt $ genericLength xs)</span>
+<span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMSet        [] ) = <span class="nottickedoff">return $ DomainMSet def attr (DomainAny &quot;domainOf-AbsLitMSet-[]&quot; TypeAny)</span></span>
+<span class="lineno">  292 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = MSetAttr (SizeAttr_Size 0) OccurAttr_None</span></span>
+<span class="lineno">  293 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitMSet        xs ) = DomainMSet <span class="nottickedoff">def</span> <span class="nottickedoff">attr</span> &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
+<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = MSetAttr (SizeAttr_MaxSize $ fromInt $ genericLength xs) OccurAttr_None</span></span>
+<span class="lineno">  295 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitFunction    [] ) = <span class="nottickedoff">return $ DomainFunction def attr</span></span>
+<span class="lineno">  297 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitFunction-[]-1&quot; TypeAny)</span></span>
+<span class="lineno">  298 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitFunction-[]-2&quot; TypeAny)</span></span>
+<span class="lineno">  299 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = FunctionAttr (SizeAttr_Size 0) def def</span></span>
+<span class="lineno">  300 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitFunction    xs ) = DomainFunction def attr</span>
+<span class="lineno">  301 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;$&gt; (domainUnions =&lt;&lt; mapM (domainOf . fst) xs)</span>
+<span class="lineno">  302 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;*&gt; (domainUnions =&lt;&lt; mapM (domainOf . snd) xs)</span>
+<span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff">where attr = FunctionAttr (SizeAttr_MaxSize $ <span class="nottickedoff">fromInt $ genericLength xs</span>) def def</span>
+<span class="lineno">  304 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  305 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSequence    [] ) = return $ DomainSequence def attr</span>
+<span class="lineno">  306 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitSequence-[]&quot; TypeAny)</span></span>
+<span class="lineno">  307 </span><span class="spaces">        </span><span class="istickedoff">where attr = SequenceAttr (SizeAttr_Size <span class="nottickedoff">0</span>) <span class="nottickedoff">def</span></span>
+<span class="lineno">  308 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitSequence    xs ) = DomainSequence def attr</span>
+<span class="lineno">  309 </span><span class="spaces">                                                </span><span class="istickedoff">&lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf xs)</span>
+<span class="lineno">  310 </span><span class="spaces">        </span><span class="istickedoff">where attr = SequenceAttr (SizeAttr_MaxSize (fromInt $ genericLength xs)) def</span>
+<span class="lineno">  311 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRelation    [] ) = return $ DomainRelation <span class="nottickedoff">def</span> <span class="nottickedoff">attr</span> []</span>
+<span class="lineno">  313 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = RelationAttr (SizeAttr_Size 0) def</span></span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitRelation    xss) = do</span>
+<span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- domainUnions =&lt;&lt; mapM (domainOf . AbsLitTuple) xss</span>
+<span class="lineno">  316 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  317 </span><span class="spaces">            </span><span class="istickedoff">DomainTuple ts -&gt; return (DomainRelation def attr ts)</span>
+<span class="lineno">  318 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;expecting DomainTuple in domainOf&quot;</span></span>
+<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff">where attr = RelationAttr (SizeAttr_MaxSize <span class="nottickedoff">(fromInt $ genericLength xss)</span>) <span class="nottickedoff">def</span></span>
+<span class="lineno">  320 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  321 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitPartition   [] ) = <span class="nottickedoff">return $ DomainPartition def attr</span></span>
+<span class="lineno">  322 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(DomainAny &quot;domainOf-AbsLitPartition-[]&quot; TypeAny)</span></span>
+<span class="lineno">  323 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = PartitionAttr (SizeAttr_Size 0) (SizeAttr_Size 0) False</span></span>
+<span class="lineno">  324 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitPartition   xss) = DomainPartition def attr &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf (concat xss))</span>
+<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">where attr = PartitionAttr (SizeAttr_MaxSize (fromInt $ genericLength xss))</span>
+<span class="lineno">  326 </span><span class="spaces">                                   </span><span class="istickedoff">(SizeAttr_MaxSize <span class="nottickedoff">(fromInt $ maximum [genericLength xs | xs &lt;- xss])</span>)</span>
+<span class="lineno">  327 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">False</span></span></span>
+<span class="lineno">  328 </span>
+<span class="lineno">  329 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (AbsLitMatrix ind inn) = (ind :) &lt;$&gt; (mapM domainUnions =&lt;&lt; mapM indexDomainsOf inn)</span>
+<span class="lineno">  330 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf _ = return []</span></span>
 <span class="lineno">  331 </span>
-<span class="lineno">  332 </span>-- all the `Op`s
+<span class="lineno">  332 </span>
 <span class="lineno">  333 </span>
-<span class="lineno">  334 </span>instance DomainOf (OpActive x) where
-<span class="lineno">  335 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  336 </span>
-<span class="lineno">  337 </span>instance DomainOf (OpAllDiff x) where
-<span class="lineno">  338 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  339 </span>
-<span class="lineno">  340 </span>instance DomainOf (OpAllDiffExcept x) where
-<span class="lineno">  341 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  342 </span>
-<span class="lineno">  343 </span>instance DomainOf x =&gt; DomainOf (OpCatchUndef x) where
-<span class="lineno">  344 </span>    <span class="decl"><span class="istickedoff">domainOf (OpCatchUndef x _) = domainOf x</span></span>
-<span class="lineno">  345 </span>
-<span class="lineno">  346 </span>instance DomainOf (OpAnd x) where
-<span class="lineno">  347 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  348 </span>
-<span class="lineno">  349 </span>instance DomainOf (OpApart x) where
-<span class="lineno">  350 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  351 </span>
-<span class="lineno">  352 </span>instance DomainOf (OpAttributeAsConstraint x) where
-<span class="lineno">  353 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  354 </span>
-<span class="lineno">  355 </span>instance DomainOf x =&gt; DomainOf (OpDefined x) where
-<span class="lineno">  356 </span>    <span class="decl"><span class="istickedoff">domainOf (OpDefined f) = do</span>
-<span class="lineno">  357 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
-<span class="lineno">  358 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
-<span class="lineno">  359 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ fr _ -&gt; return $ DomainSet def def fr</span>
-<span class="lineno">  360 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; fail &quot;domainOf, OpDefined, not a function&quot;</span></span>
-<span class="lineno">  361 </span>
-<span class="lineno">  362 </span>instance DomainOf x =&gt; DomainOf (OpDiv x) where
-<span class="lineno">  363 </span>    <span class="decl"><span class="istickedoff">domainOf (OpDiv x y) = do</span>
-<span class="lineno">  364 </span><span class="spaces">        </span><span class="istickedoff">xDom :: Dom &lt;- domainOf x</span>
-<span class="lineno">  365 </span><span class="spaces">        </span><span class="istickedoff">yDom :: Dom &lt;- domainOf y</span>
-<span class="lineno">  366 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  367 </span><span class="spaces">        </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
-<span class="lineno">  368 </span><span class="spaces">        </span><span class="istickedoff">let vals = [essence| [ &amp;i / &amp;j</span>
-<span class="lineno">  369 </span><span class="spaces">                             </span><span class="istickedoff">| &amp;iPat : &amp;xDom</span>
-<span class="lineno">  370 </span><span class="spaces">                             </span><span class="istickedoff">, &amp;jPat : &amp;yDom</span>
-<span class="lineno">  371 </span><span class="spaces">                             </span><span class="istickedoff">] |]</span>
-<span class="lineno">  372 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| min(&amp;vals) |]</span>
-<span class="lineno">  373 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| max(&amp;vals) |]</span>
-<span class="lineno">  374 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span></span>
-<span class="lineno">  375 </span>
-<span class="lineno">  376 </span>instance DomainOf (OpDontCare x) where
-<span class="lineno">  377 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  378 </span>
-<span class="lineno">  379 </span>instance DomainOf (OpDotLeq x) where
-<span class="lineno">  380 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  381 </span>
-<span class="lineno">  382 </span>instance DomainOf (OpDotLt x) where
-<span class="lineno">  383 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  384 </span>
-<span class="lineno">  385 </span>instance DomainOf (OpEq x) where
-<span class="lineno">  386 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  387 </span>
-<span class="lineno">  388 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpFactorial x) where
-<span class="lineno">  389 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpFactorial:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  390 </span>
-<span class="lineno">  391 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpFlatten x) where
-<span class="lineno">  392 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpFlatten (Just 1) x) = domainOf x &gt;&gt;= innerDomainOf</span>
-<span class="lineno">  393 </span><span class="spaces">    </span><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpFlatten:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  394 </span>
-<span class="lineno">  395 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpFreq x) where
-<span class="lineno">  396 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpFreq:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  397 </span>
-<span class="lineno">  398 </span>instance DomainOf (OpGeq x) where
-<span class="lineno">  399 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  400 </span>
-<span class="lineno">  401 </span>instance DomainOf (OpGt x) where
-<span class="lineno">  402 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  403 </span>
-<span class="lineno">  404 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpHist x) where
-<span class="lineno">  405 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpHist:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  406 </span>
-<span class="lineno">  407 </span>instance DomainOf (OpIff x) where
-<span class="lineno">  408 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  409 </span>
-<span class="lineno">  410 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpImage x) where
-<span class="lineno">  411 </span>    <span class="decl"><span class="istickedoff">domainOf (OpImage f _) = do</span>
-<span class="lineno">  412 </span><span class="spaces">        </span><span class="istickedoff">fDomain &lt;- domainOf f</span>
-<span class="lineno">  413 </span><span class="spaces">        </span><span class="istickedoff">case fDomain of</span>
-<span class="lineno">  414 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ _ to -&gt; return to</span>
-<span class="lineno">  415 </span><span class="spaces">            </span><span class="istickedoff">DomainSequence _ _ to -&gt; return to</span>
-<span class="lineno">  416 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpImage, not a function or sequence&quot;</span></span></span>
-<span class="lineno">  417 </span>
-<span class="lineno">  418 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpImageSet x) where
-<span class="lineno">  419 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpImageSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  420 </span>
-<span class="lineno">  421 </span>instance DomainOf (OpImply x) where
-<span class="lineno">  422 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  423 </span>
-<span class="lineno">  424 </span>instance DomainOf (OpIn x) where
-<span class="lineno">  425 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  426 </span>
-<span class="lineno">  427 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x) =&gt; DomainOf (OpIndexing x) where
-<span class="lineno">  428 </span>    <span class="decl"><span class="istickedoff">domainOf (OpIndexing m i) = do</span>
-<span class="lineno">  429 </span><span class="spaces">        </span><span class="istickedoff">iType &lt;- typeOf i</span>
-<span class="lineno">  430 </span><span class="spaces">        </span><span class="istickedoff">case iType of</span>
-<span class="lineno">  431 </span><span class="spaces">            </span><span class="istickedoff">TypeBool{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  432 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  433 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpIndexing, not a bool or int index&quot;</span></span>
-<span class="lineno">  434 </span><span class="spaces">        </span><span class="istickedoff">mDom &lt;- domainOf m</span>
-<span class="lineno">  435 </span><span class="spaces">        </span><span class="istickedoff">case mDom of</span>
-<span class="lineno">  436 </span><span class="spaces">            </span><span class="istickedoff">DomainMatrix _ inner -&gt; return inner</span>
-<span class="lineno">  437 </span><span class="spaces">            </span><span class="istickedoff">DomainTuple inners -&gt; do</span>
-<span class="lineno">  438 </span><span class="spaces">                </span><span class="istickedoff">iInt &lt;- intOut <span class="nottickedoff">&quot;domainOf OpIndexing&quot;</span> i</span>
-<span class="lineno">  439 </span><span class="spaces">                </span><span class="istickedoff">return $ atNote <span class="nottickedoff">&quot;domainOf&quot;</span> inners (fromInteger (iInt-1))</span>
-<span class="lineno">  440 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; fail &quot;domainOf, OpIndexing, not a matrix or tuple&quot;</span></span>
-<span class="lineno">  441 </span>
-<span class="lineno">  442 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf p@(OpIndexing m i) = do</span>
-<span class="lineno">  443 </span><span class="spaces">        </span><span class="istickedoff">iType &lt;- typeOf i</span>
-<span class="lineno">  444 </span><span class="spaces">        </span><span class="istickedoff">case iType of</span>
-<span class="lineno">  445 </span><span class="spaces">            </span><span class="istickedoff">TypeBool{} -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">  446 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  447 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpIndexing, not a bool or int index&quot;</span></span>
-<span class="lineno">  448 </span><span class="spaces">        </span><span class="istickedoff">is &lt;- indexDomainsOf m</span>
-<span class="lineno">  449 </span><span class="spaces">        </span><span class="istickedoff">case is of</span>
-<span class="lineno">  450 </span><span class="spaces">            </span><span class="istickedoff">[] -&gt; fail (&quot;indexDomainsOf{OpIndexing}, not a matrix domain:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
-<span class="lineno">  451 </span><span class="spaces">            </span><span class="istickedoff">(_:is') -&gt; return is'</span></span>
-<span class="lineno">  452 </span>
-<span class="lineno">  453 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpIntersect x) where
-<span class="lineno">  454 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpIntersect:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  455 </span>
-<span class="lineno">  456 </span>instance DomainOf (OpInverse x) where
-<span class="lineno">  457 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  458 </span>
-<span class="lineno">  459 </span>instance DomainOf (OpLeq x) where
-<span class="lineno">  460 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  461 </span>
-<span class="lineno">  462 </span>instance DomainOf (OpLexLeq x) where
-<span class="lineno">  463 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  464 </span>
-<span class="lineno">  465 </span>instance DomainOf (OpLexLt x) where
-<span class="lineno">  466 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  467 </span>
-<span class="lineno">  468 </span>instance DomainOf (OpLt x) where
-<span class="lineno">  469 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  470 </span>
-<span class="lineno">  471 </span>instance DomainOf (OpMakeTable x) where
-<span class="lineno">  472 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  473 </span>
-<span class="lineno">  474 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x, Domain () x :&lt; x) =&gt; DomainOf (OpMax x) where
-<span class="lineno">  475 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMax x)</span>
-<span class="lineno">  476 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">  477 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">not (null xs)</span> = <span class="nottickedoff">do</span></span>
-<span class="lineno">  478 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">doms &lt;- mapM domainOf xs</span></span>
-<span class="lineno">  479 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span></span>
-<span class="lineno">  480 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let low  = [essence| max(&amp;lows) |]</span></span>
-<span class="lineno">  481 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span></span>
-<span class="lineno">  482 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upp  = [essence| max(&amp;upps) |]</span></span>
-<span class="lineno">  483 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeInt t &lt;- typeOfDomain (head doms)</span></span>
-<span class="lineno">  484 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (DomainInt t [RangeBounded low upp] :: Dom)</span></span>
-<span class="lineno">  485 </span><span class="spaces">    </span><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMax:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  486 </span>
-<span class="lineno">  487 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x, Domain () x :&lt; x) =&gt; DomainOf (OpMin x) where
-<span class="lineno">  488 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMin x)</span>
-<span class="lineno">  489 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">  490 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
-<span class="lineno">  491 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
-<span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span>
-<span class="lineno">  493 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| min(&amp;lows) |]</span>
-<span class="lineno">  494 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span>
-<span class="lineno">  495 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| min(&amp;upps) |]</span>
-<span class="lineno">  496 </span><span class="spaces">        </span><span class="istickedoff">TypeInt t &lt;- typeOfDomain (head doms)</span>
-<span class="lineno">  497 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt t [RangeBounded low upp] :: Dom)</span>
-<span class="lineno">  498 </span><span class="spaces">    </span><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMin:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  499 </span>
-<span class="lineno">  500 </span>instance DomainOf x =&gt; DomainOf (OpMinus x) where
-<span class="lineno">  501 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMinus x y) = do</span>
-<span class="lineno">  502 </span><span class="spaces">        </span><span class="istickedoff">xDom :: Dom &lt;- domainOf x</span>
-<span class="lineno">  503 </span><span class="spaces">        </span><span class="istickedoff">yDom :: Dom &lt;- domainOf y</span>
-<span class="lineno">  504 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  505 </span><span class="spaces">        </span><span class="istickedoff">xDom_Min &lt;- minOfDomain xDom</span>
-<span class="lineno">  506 </span><span class="spaces">        </span><span class="istickedoff">xDom_Max &lt;- maxOfDomain xDom</span>
-<span class="lineno">  507 </span><span class="spaces">        </span><span class="istickedoff">yDom_Min &lt;- minOfDomain yDom</span>
-<span class="lineno">  508 </span><span class="spaces">        </span><span class="istickedoff">yDom_Max &lt;- maxOfDomain yDom</span>
-<span class="lineno">  509 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  510 </span><span class="spaces">        </span><span class="istickedoff">let low = [essence| &amp;xDom_Min - &amp;yDom_Max |]</span>
-<span class="lineno">  511 </span><span class="spaces">        </span><span class="istickedoff">let upp = [essence| &amp;xDom_Max - &amp;yDom_Min |]</span>
-<span class="lineno">  512 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  513 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span></span>
-<span class="lineno">  514 </span>
-<span class="lineno">  515 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpMod x) where
-<span class="lineno">  516 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMod:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  517 </span>
-<span class="lineno">  518 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpNegate x) where
-<span class="lineno">  519 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpNegate:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  520 </span>
-<span class="lineno">  521 </span>instance DomainOf (OpNeq x) where
-<span class="lineno">  522 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  523 </span>
-<span class="lineno">  524 </span>instance DomainOf (OpNot x) where
-<span class="lineno">  525 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  526 </span>
-<span class="lineno">  527 </span>instance DomainOf (OpOr x) where
-<span class="lineno">  528 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  529 </span>
-<span class="lineno">  530 </span>instance DomainOf (OpXor x) where
-<span class="lineno">  531 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  532 </span>
-<span class="lineno">  533 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpParticipants x) where
-<span class="lineno">  534 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpParticipants:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  535 </span>
-<span class="lineno">  536 </span>instance DomainOf x =&gt; DomainOf (OpParts x) where
-<span class="lineno">  537 </span>    <span class="decl"><span class="istickedoff">domainOf (OpParts p) = do</span>
-<span class="lineno">  538 </span><span class="spaces">        </span><span class="istickedoff">dom &lt;- domainOf p</span>
-<span class="lineno">  539 </span><span class="spaces">        </span><span class="istickedoff">case dom of</span>
-<span class="lineno">  540 </span><span class="spaces">            </span><span class="istickedoff">DomainPartition _ _ inner -&gt; return $ DomainSet def def $ DomainSet def def inner</span>
-<span class="lineno">  541 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpParts, not a partition&quot;</span></span></span>
-<span class="lineno">  542 </span>
-<span class="lineno">  543 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpParty x) where
-<span class="lineno">  544 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpParty:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  545 </span>
-<span class="lineno">  546 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPow x) where
-<span class="lineno">  547 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpPow:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  548 </span>
-<span class="lineno">  549 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPowerSet x) where
-<span class="lineno">  550 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpPowerSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  551 </span>
-<span class="lineno">  552 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPreImage x) where
-<span class="lineno">  553 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpPreImage:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  554 </span>
-<span class="lineno">  555 </span>instance DomainOf x =&gt; DomainOf (OpPred x) where
-<span class="lineno">  556 </span>    <span class="decl"><span class="istickedoff">domainOf (OpPred x) = domainOf x</span></span>        -- TODO: improve
-<span class="lineno">  557 </span>
-<span class="lineno">  558 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpProduct x) where
-<span class="lineno">  559 </span>    <span class="decl"><span class="istickedoff">domainOf (OpProduct x)</span>
-<span class="lineno">  560 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">  561 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
-<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
-<span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff">-- maximum absolute value in each domain</span>
-<span class="lineno">  565 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max([ |&amp;i| | &amp;iPat : &amp;d ]) |]</span>
-<span class="lineno">  566 </span><span class="spaces">                            </span><span class="istickedoff">| d &lt;- doms ]</span>
-<span class="lineno">  567 </span><span class="spaces">        </span><span class="istickedoff">-- a (too lax) upper bound is multiplying all those together</span>
-<span class="lineno">  568 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| product(&amp;upps) |]</span>
-<span class="lineno">  569 </span><span class="spaces">        </span><span class="istickedoff">-- a (too lax) lower bound is -upp</span>
-<span class="lineno">  570 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| -1 * &amp;upp |]</span>
-<span class="lineno">  571 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainInt TagInt [RangeBounded low upp]</span>
-<span class="lineno">  572 </span><span class="spaces">    </span><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded <span class="nottickedoff">1</span> <span class="nottickedoff">1</span>]</span></span>
-<span class="lineno">  573 </span>
-<span class="lineno">  574 </span>instance DomainOf x =&gt; DomainOf (OpRange x) where
-<span class="lineno">  575 </span>    <span class="decl"><span class="istickedoff">domainOf (OpRange f) = do</span>
-<span class="lineno">  576 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
-<span class="lineno">  577 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
-<span class="lineno">  578 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ _ to -&gt; return $ DomainSet def def to</span>
-<span class="lineno">  579 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpRange, not a function&quot;</span></span></span>
-<span class="lineno">  580 </span>
-<span class="lineno">  581 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpRelationProj x) where
-<span class="lineno">  582 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpRelationProj:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  583 </span>
-<span class="lineno">  584 </span>instance (DomainOf x, Dom :&lt; x) =&gt; DomainOf (OpRestrict x) where
-<span class="lineno">  585 </span>    <span class="decl"><span class="istickedoff">domainOf (OpRestrict f x) = do</span>
-<span class="lineno">  586 </span><span class="spaces">        </span><span class="istickedoff">d    &lt;- project x</span>
-<span class="lineno">  587 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
-<span class="lineno">  588 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
-<span class="lineno">  589 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction fRepr a _ to -&gt; return (DomainFunction <span class="nottickedoff">fRepr</span> <span class="nottickedoff">a</span> d <span class="nottickedoff">to</span>)</span>
-<span class="lineno">  590 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpRestrict, not a function&quot;</span></span></span>
-<span class="lineno">  591 </span>
-<span class="lineno">  592 </span>instance (Pretty x, DomainOf x) =&gt; DomainOf (OpSlicing x) where
-<span class="lineno">  593 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpSlicing x _ _) = domainOf x</span></span>
-<span class="lineno">  594 </span>    <span class="decl"><span class="nottickedoff">indexDomainsOf (OpSlicing x _ _) = indexDomainsOf x</span></span>
-<span class="lineno">  595 </span>
-<span class="lineno">  596 </span>instance DomainOf (OpSubsequence x) where
-<span class="lineno">  597 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = fail &quot;domainOf{OpSubsequence}&quot;</span></span>
-<span class="lineno">  598 </span>
-<span class="lineno">  599 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpSubset x) where
-<span class="lineno">  600 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpSubset:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  601 </span>
-<span class="lineno">  602 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpSubsetEq x) where
-<span class="lineno">  603 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpSubsetEq:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  604 </span>
-<span class="lineno">  605 </span>instance DomainOf (OpSubstring x) where
-<span class="lineno">  606 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = fail &quot;domainOf{OpSubstring}&quot;</span></span>
-<span class="lineno">  607 </span>
-<span class="lineno">  608 </span>instance DomainOf x =&gt; DomainOf (OpSucc x) where
-<span class="lineno">  609 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSucc x) = domainOf x</span></span>        -- TODO: improve
-<span class="lineno">  610 </span>
-<span class="lineno">  611 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpSum x) where
-<span class="lineno">  612 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSum x)</span>
-<span class="lineno">  613 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">  614 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
-<span class="lineno">  615 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
-<span class="lineno">  616 </span><span class="spaces">        </span><span class="istickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span>
-<span class="lineno">  617 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| sum(&amp;lows) |]</span>
-<span class="lineno">  618 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span>
-<span class="lineno">  619 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| sum(&amp;upps) |]</span>
-<span class="lineno">  620 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span>
-<span class="lineno">  621 </span><span class="spaces">    </span><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded 0 0]</span></span>
-<span class="lineno">  622 </span>
-<span class="lineno">  623 </span>
-<span class="lineno">  624 </span>instance DomainOf (OpSupset x) where
-<span class="lineno">  625 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  626 </span>
-<span class="lineno">  627 </span>instance DomainOf (OpSupsetEq x) where
-<span class="lineno">  628 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  629 </span>
-<span class="lineno">  630 </span>instance DomainOf (OpTildeLeq x) where
-<span class="lineno">  631 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  632 </span>
-<span class="lineno">  633 </span>instance DomainOf (OpTildeLt x) where
-<span class="lineno">  634 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  635 </span>
-<span class="lineno">  636 </span>instance DomainOf (OpToInt x) where
-<span class="lineno">  637 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded 0 1]</span></span>
-<span class="lineno">  638 </span>
-<span class="lineno">  639 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpToMSet x) where
-<span class="lineno">  640 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpToMSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  641 </span>
-<span class="lineno">  642 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpToRelation x) where
-<span class="lineno">  643 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpToRelation:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  644 </span>
-<span class="lineno">  645 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpToSet x) where
-<span class="lineno">  646 </span>    <span class="decl"><span class="istickedoff">domainOf (OpToSet _ x) = do</span>
-<span class="lineno">  647 </span><span class="spaces">        </span><span class="istickedoff">domX &lt;- domainOf x</span>
-<span class="lineno">  648 </span><span class="spaces">        </span><span class="istickedoff">innerDomX &lt;- innerDomainOf domX</span>
-<span class="lineno">  649 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainSet () def innerDomX</span></span>
-<span class="lineno">  650 </span>
-<span class="lineno">  651 </span>instance DomainOf (OpTogether x) where
-<span class="lineno">  652 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  653 </span>
-<span class="lineno">  654 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpTransform x) where
-<span class="lineno">  655 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpTransform:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  656 </span>
-<span class="lineno">  657 </span>instance DomainOf (OpTrue x) where
-<span class="lineno">  658 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
-<span class="lineno">  659 </span>
-<span class="lineno">  660 </span>instance (Pretty x, TypeOf x, Domain () x :&lt; x) =&gt; DomainOf (OpTwoBars x) where
-<span class="lineno">  661 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpTwoBars:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  662 </span>
-<span class="lineno">  663 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpUnion x) where
-<span class="lineno">  664 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpUnion:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
-<span class="lineno">  665 </span>
+<span class="lineno">  334 </span>-- all the `Op`s
+<span class="lineno">  335 </span>
+<span class="lineno">  336 </span>instance DomainOf (OpActive x) where
+<span class="lineno">  337 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  338 </span>
+<span class="lineno">  339 </span>instance DomainOf (OpAllDiff x) where
+<span class="lineno">  340 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  341 </span>
+<span class="lineno">  342 </span>instance DomainOf (OpAllDiffExcept x) where
+<span class="lineno">  343 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  344 </span>
+<span class="lineno">  345 </span>instance DomainOf x =&gt; DomainOf (OpCatchUndef x) where
+<span class="lineno">  346 </span>    <span class="decl"><span class="istickedoff">domainOf (OpCatchUndef x _) = domainOf x</span></span>
+<span class="lineno">  347 </span>
+<span class="lineno">  348 </span>instance DomainOf (OpAnd x) where
+<span class="lineno">  349 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  350 </span>
+<span class="lineno">  351 </span>instance DomainOf (OpApart x) where
+<span class="lineno">  352 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  353 </span>
+<span class="lineno">  354 </span>instance DomainOf (OpAttributeAsConstraint x) where
+<span class="lineno">  355 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  356 </span>
+<span class="lineno">  357 </span>instance DomainOf x =&gt; DomainOf (OpDefined x) where
+<span class="lineno">  358 </span>    <span class="decl"><span class="istickedoff">domainOf (OpDefined f) = do</span>
+<span class="lineno">  359 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
+<span class="lineno">  360 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
+<span class="lineno">  361 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ fr _ -&gt; return $ DomainSet def def fr</span>
+<span class="lineno">  362 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; fail &quot;domainOf, OpDefined, not a function&quot;</span></span>
+<span class="lineno">  363 </span>
+<span class="lineno">  364 </span>instance DomainOf x =&gt; DomainOf (OpDiv x) where
+<span class="lineno">  365 </span>    <span class="decl"><span class="istickedoff">domainOf (OpDiv x y) = do</span>
+<span class="lineno">  366 </span><span class="spaces">        </span><span class="istickedoff">xDom :: Dom &lt;- domainOf x</span>
+<span class="lineno">  367 </span><span class="spaces">        </span><span class="istickedoff">yDom :: Dom &lt;- domainOf y</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  370 </span><span class="spaces">        </span><span class="istickedoff">let vals = [essence| [ &amp;i / &amp;j</span>
+<span class="lineno">  371 </span><span class="spaces">                             </span><span class="istickedoff">| &amp;iPat : &amp;xDom</span>
+<span class="lineno">  372 </span><span class="spaces">                             </span><span class="istickedoff">, &amp;jPat : &amp;yDom</span>
+<span class="lineno">  373 </span><span class="spaces">                             </span><span class="istickedoff">] |]</span>
+<span class="lineno">  374 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| min(&amp;vals) |]</span>
+<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| max(&amp;vals) |]</span>
+<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span></span>
+<span class="lineno">  377 </span>
+<span class="lineno">  378 </span>instance DomainOf (OpDontCare x) where
+<span class="lineno">  379 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  380 </span>
+<span class="lineno">  381 </span>instance DomainOf (OpDotLeq x) where
+<span class="lineno">  382 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  383 </span>
+<span class="lineno">  384 </span>instance DomainOf (OpDotLt x) where
+<span class="lineno">  385 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  386 </span>
+<span class="lineno">  387 </span>instance DomainOf (OpEq x) where
+<span class="lineno">  388 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  389 </span>
+<span class="lineno">  390 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpFactorial x) where
+<span class="lineno">  391 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpFactorial:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  392 </span>
+<span class="lineno">  393 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpFlatten x) where
+<span class="lineno">  394 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpFlatten (Just 1) x) = domainOf x &gt;&gt;= innerDomainOf</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpFlatten:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  396 </span>
+<span class="lineno">  397 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpFreq x) where
+<span class="lineno">  398 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpFreq:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  399 </span>
+<span class="lineno">  400 </span>instance DomainOf (OpGeq x) where
+<span class="lineno">  401 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  402 </span>
+<span class="lineno">  403 </span>instance DomainOf (OpGt x) where
+<span class="lineno">  404 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  405 </span>
+<span class="lineno">  406 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpHist x) where
+<span class="lineno">  407 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpHist:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  408 </span>
+<span class="lineno">  409 </span>instance DomainOf (OpIff x) where
+<span class="lineno">  410 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  411 </span>
+<span class="lineno">  412 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpImage x) where
+<span class="lineno">  413 </span>    <span class="decl"><span class="istickedoff">domainOf (OpImage f _) = do</span>
+<span class="lineno">  414 </span><span class="spaces">        </span><span class="istickedoff">fDomain &lt;- domainOf f</span>
+<span class="lineno">  415 </span><span class="spaces">        </span><span class="istickedoff">case fDomain of</span>
+<span class="lineno">  416 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ _ to -&gt; return to</span>
+<span class="lineno">  417 </span><span class="spaces">            </span><span class="istickedoff">DomainSequence _ _ to -&gt; return to</span>
+<span class="lineno">  418 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpImage, not a function or sequence&quot;</span></span></span>
+<span class="lineno">  419 </span>
+<span class="lineno">  420 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpImageSet x) where
+<span class="lineno">  421 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpImageSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  422 </span>
+<span class="lineno">  423 </span>instance DomainOf (OpImply x) where
+<span class="lineno">  424 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  425 </span>
+<span class="lineno">  426 </span>instance DomainOf (OpIn x) where
+<span class="lineno">  427 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  428 </span>
+<span class="lineno">  429 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x) =&gt; DomainOf (OpIndexing x) where
+<span class="lineno">  430 </span>    <span class="decl"><span class="istickedoff">domainOf (OpIndexing m i) = do</span>
+<span class="lineno">  431 </span><span class="spaces">        </span><span class="istickedoff">iType &lt;- typeOf i</span>
+<span class="lineno">  432 </span><span class="spaces">        </span><span class="istickedoff">case iType of</span>
+<span class="lineno">  433 </span><span class="spaces">            </span><span class="istickedoff">TypeBool{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  434 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  435 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpIndexing, not a bool or int index&quot;</span></span>
+<span class="lineno">  436 </span><span class="spaces">        </span><span class="istickedoff">mDom &lt;- domainOf m</span>
+<span class="lineno">  437 </span><span class="spaces">        </span><span class="istickedoff">case mDom of</span>
+<span class="lineno">  438 </span><span class="spaces">            </span><span class="istickedoff">DomainMatrix _ inner -&gt; return inner</span>
+<span class="lineno">  439 </span><span class="spaces">            </span><span class="istickedoff">DomainTuple inners -&gt; do</span>
+<span class="lineno">  440 </span><span class="spaces">                </span><span class="istickedoff">iInt &lt;- intOut <span class="nottickedoff">&quot;domainOf OpIndexing&quot;</span> i</span>
+<span class="lineno">  441 </span><span class="spaces">                </span><span class="istickedoff">return $ atNote <span class="nottickedoff">&quot;domainOf&quot;</span> inners (fromInteger (iInt-1))</span>
+<span class="lineno">  442 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; fail &quot;domainOf, OpIndexing, not a matrix or tuple&quot;</span></span>
+<span class="lineno">  443 </span>
+<span class="lineno">  444 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf p@(OpIndexing m i) = do</span>
+<span class="lineno">  445 </span><span class="spaces">        </span><span class="istickedoff">iType &lt;- typeOf i</span>
+<span class="lineno">  446 </span><span class="spaces">        </span><span class="istickedoff">case iType of</span>
+<span class="lineno">  447 </span><span class="spaces">            </span><span class="istickedoff">TypeBool{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  448 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  449 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpIndexing, not a bool or int index&quot;</span></span>
+<span class="lineno">  450 </span><span class="spaces">        </span><span class="istickedoff">is &lt;- indexDomainsOf m</span>
+<span class="lineno">  451 </span><span class="spaces">        </span><span class="istickedoff">case is of</span>
+<span class="lineno">  452 </span><span class="spaces">            </span><span class="istickedoff">[] -&gt; fail (&quot;indexDomainsOf{OpIndexing}, not a matrix domain:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  453 </span><span class="spaces">            </span><span class="istickedoff">(_:is') -&gt; return is'</span></span>
+<span class="lineno">  454 </span>
+<span class="lineno">  455 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpIntersect x) where
+<span class="lineno">  456 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpIntersect:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  457 </span>
+<span class="lineno">  458 </span>instance DomainOf (OpInverse x) where
+<span class="lineno">  459 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  460 </span>
+<span class="lineno">  461 </span>instance DomainOf (OpLeq x) where
+<span class="lineno">  462 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  463 </span>
+<span class="lineno">  464 </span>instance DomainOf (OpLexLeq x) where
+<span class="lineno">  465 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  466 </span>
+<span class="lineno">  467 </span>instance DomainOf (OpLexLt x) where
+<span class="lineno">  468 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  469 </span>
+<span class="lineno">  470 </span>instance DomainOf (OpLt x) where
+<span class="lineno">  471 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  472 </span>
+<span class="lineno">  473 </span>instance DomainOf (OpMakeTable x) where
+<span class="lineno">  474 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  475 </span>
+<span class="lineno">  476 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x, Domain () x :&lt; x) =&gt; DomainOf (OpMax x) where
+<span class="lineno">  477 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMax x)</span>
+<span class="lineno">  478 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">  479 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">not (null xs)</span> = <span class="nottickedoff">do</span></span>
+<span class="lineno">  480 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">doms &lt;- mapM domainOf xs</span></span>
+<span class="lineno">  481 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span></span>
+<span class="lineno">  482 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let low  = [essence| max(&amp;lows) |]</span></span>
+<span class="lineno">  483 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span></span>
+<span class="lineno">  484 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upp  = [essence| max(&amp;upps) |]</span></span>
+<span class="lineno">  485 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeInt t &lt;- typeOfDomain (head doms)</span></span>
+<span class="lineno">  486 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (DomainInt t [RangeBounded low upp] :: Dom)</span></span>
+<span class="lineno">  487 </span><span class="spaces">    </span><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMax:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  488 </span>
+<span class="lineno">  489 </span>instance (Pretty x, TypeOf x, ExpressionLike x, DomainOf x, Domain () x :&lt; x) =&gt; DomainOf (OpMin x) where
+<span class="lineno">  490 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMin x)</span>
+<span class="lineno">  491 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
+<span class="lineno">  493 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
+<span class="lineno">  494 </span><span class="spaces">        </span><span class="istickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span>
+<span class="lineno">  495 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| min(&amp;lows) |]</span>
+<span class="lineno">  496 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span>
+<span class="lineno">  497 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| min(&amp;upps) |]</span>
+<span class="lineno">  498 </span><span class="spaces">        </span><span class="istickedoff">TypeInt t &lt;- typeOfDomain (head doms)</span>
+<span class="lineno">  499 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt t [RangeBounded low upp] :: Dom)</span>
+<span class="lineno">  500 </span><span class="spaces">    </span><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMin:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  501 </span>
+<span class="lineno">  502 </span>instance DomainOf x =&gt; DomainOf (OpMinus x) where
+<span class="lineno">  503 </span>    <span class="decl"><span class="istickedoff">domainOf (OpMinus x y) = do</span>
+<span class="lineno">  504 </span><span class="spaces">        </span><span class="istickedoff">xDom :: Dom &lt;- domainOf x</span>
+<span class="lineno">  505 </span><span class="spaces">        </span><span class="istickedoff">yDom :: Dom &lt;- domainOf y</span>
+<span class="lineno">  506 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  507 </span><span class="spaces">        </span><span class="istickedoff">xDom_Min &lt;- minOfDomain xDom</span>
+<span class="lineno">  508 </span><span class="spaces">        </span><span class="istickedoff">xDom_Max &lt;- maxOfDomain xDom</span>
+<span class="lineno">  509 </span><span class="spaces">        </span><span class="istickedoff">yDom_Min &lt;- minOfDomain yDom</span>
+<span class="lineno">  510 </span><span class="spaces">        </span><span class="istickedoff">yDom_Max &lt;- maxOfDomain yDom</span>
+<span class="lineno">  511 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  512 </span><span class="spaces">        </span><span class="istickedoff">let low = [essence| &amp;xDom_Min - &amp;yDom_Max |]</span>
+<span class="lineno">  513 </span><span class="spaces">        </span><span class="istickedoff">let upp = [essence| &amp;xDom_Max - &amp;yDom_Min |]</span>
+<span class="lineno">  514 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  515 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span></span>
+<span class="lineno">  516 </span>
+<span class="lineno">  517 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpMod x) where
+<span class="lineno">  518 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpMod:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  519 </span>
+<span class="lineno">  520 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpNegate x) where
+<span class="lineno">  521 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpNegate:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  522 </span>
+<span class="lineno">  523 </span>instance DomainOf (OpNeq x) where
+<span class="lineno">  524 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  525 </span>
+<span class="lineno">  526 </span>instance DomainOf (OpNot x) where
+<span class="lineno">  527 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  528 </span>
+<span class="lineno">  529 </span>instance DomainOf (OpOr x) where
+<span class="lineno">  530 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  531 </span>
+<span class="lineno">  532 </span>instance DomainOf (OpXor x) where
+<span class="lineno">  533 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  534 </span>
+<span class="lineno">  535 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpParticipants x) where
+<span class="lineno">  536 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpParticipants:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  537 </span>
+<span class="lineno">  538 </span>instance DomainOf x =&gt; DomainOf (OpParts x) where
+<span class="lineno">  539 </span>    <span class="decl"><span class="istickedoff">domainOf (OpParts p) = do</span>
+<span class="lineno">  540 </span><span class="spaces">        </span><span class="istickedoff">dom &lt;- domainOf p</span>
+<span class="lineno">  541 </span><span class="spaces">        </span><span class="istickedoff">case dom of</span>
+<span class="lineno">  542 </span><span class="spaces">            </span><span class="istickedoff">DomainPartition _ _ inner -&gt; return $ DomainSet def def $ DomainSet def def inner</span>
+<span class="lineno">  543 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpParts, not a partition&quot;</span></span></span>
+<span class="lineno">  544 </span>
+<span class="lineno">  545 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpParty x) where
+<span class="lineno">  546 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpParty:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  547 </span>
+<span class="lineno">  548 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPow x) where
+<span class="lineno">  549 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny <span class="nottickedoff">(&quot;OpPow:&quot; &lt;++&gt; pretty op)</span> &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  550 </span>
+<span class="lineno">  551 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPowerSet x) where
+<span class="lineno">  552 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpPowerSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  553 </span>
+<span class="lineno">  554 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpPreImage x) where
+<span class="lineno">  555 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpPreImage:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  556 </span>
+<span class="lineno">  557 </span>instance DomainOf x =&gt; DomainOf (OpPred x) where
+<span class="lineno">  558 </span>    <span class="decl"><span class="istickedoff">domainOf (OpPred x) = domainOf x</span></span>        -- TODO: improve
+<span class="lineno">  559 </span>
+<span class="lineno">  560 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpProduct x) where
+<span class="lineno">  561 </span>    <span class="decl"><span class="istickedoff">domainOf (OpProduct x)</span>
+<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
+<span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  565 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
+<span class="lineno">  566 </span><span class="spaces">        </span><span class="istickedoff">-- maximum absolute value in each domain</span>
+<span class="lineno">  567 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max([ |&amp;i| | &amp;iPat : &amp;d ]) |]</span>
+<span class="lineno">  568 </span><span class="spaces">                            </span><span class="istickedoff">| d &lt;- doms ]</span>
+<span class="lineno">  569 </span><span class="spaces">        </span><span class="istickedoff">-- a (too lax) upper bound is multiplying all those together</span>
+<span class="lineno">  570 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| product(&amp;upps) |]</span>
+<span class="lineno">  571 </span><span class="spaces">        </span><span class="istickedoff">-- a (too lax) lower bound is -upp</span>
+<span class="lineno">  572 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| -1 * &amp;upp |]</span>
+<span class="lineno">  573 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainInt TagInt [RangeBounded low upp]</span>
+<span class="lineno">  574 </span><span class="spaces">    </span><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded <span class="nottickedoff">1</span> <span class="nottickedoff">1</span>]</span></span>
+<span class="lineno">  575 </span>
+<span class="lineno">  576 </span>instance DomainOf x =&gt; DomainOf (OpRange x) where
+<span class="lineno">  577 </span>    <span class="decl"><span class="istickedoff">domainOf (OpRange f) = do</span>
+<span class="lineno">  578 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
+<span class="lineno">  579 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
+<span class="lineno">  580 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction _ _ _ to -&gt; return $ DomainSet def def to</span>
+<span class="lineno">  581 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpRange, not a function&quot;</span></span></span>
+<span class="lineno">  582 </span>
+<span class="lineno">  583 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpRelationProj x) where
+<span class="lineno">  584 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpRelationProj:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  585 </span>
+<span class="lineno">  586 </span>instance (DomainOf x, Dom :&lt; x) =&gt; DomainOf (OpRestrict x) where
+<span class="lineno">  587 </span>    <span class="decl"><span class="istickedoff">domainOf (OpRestrict f x) = do</span>
+<span class="lineno">  588 </span><span class="spaces">        </span><span class="istickedoff">d    &lt;- project x</span>
+<span class="lineno">  589 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
+<span class="lineno">  590 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
+<span class="lineno">  591 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction fRepr a _ to -&gt; return (DomainFunction <span class="nottickedoff">fRepr</span> <span class="nottickedoff">a</span> d <span class="nottickedoff">to</span>)</span>
+<span class="lineno">  592 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpRestrict, not a function&quot;</span></span></span>
+<span class="lineno">  593 </span>
+<span class="lineno">  594 </span>instance (Pretty x, DomainOf x) =&gt; DomainOf (OpSlicing x) where
+<span class="lineno">  595 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpSlicing x _ _) = domainOf x</span></span>
+<span class="lineno">  596 </span>    <span class="decl"><span class="nottickedoff">indexDomainsOf (OpSlicing x _ _) = indexDomainsOf x</span></span>
+<span class="lineno">  597 </span>
+<span class="lineno">  598 </span>instance DomainOf (OpSubsequence x) where
+<span class="lineno">  599 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = fail &quot;domainOf{OpSubsequence}&quot;</span></span>
+<span class="lineno">  600 </span>
+<span class="lineno">  601 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpSubset x) where
+<span class="lineno">  602 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpSubset:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  603 </span>
+<span class="lineno">  604 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpSubsetEq x) where
+<span class="lineno">  605 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpSubsetEq:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  606 </span>
+<span class="lineno">  607 </span>instance DomainOf (OpSubstring x) where
+<span class="lineno">  608 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = fail &quot;domainOf{OpSubstring}&quot;</span></span>
+<span class="lineno">  609 </span>
+<span class="lineno">  610 </span>instance DomainOf x =&gt; DomainOf (OpSucc x) where
+<span class="lineno">  611 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSucc x) = domainOf x</span></span>        -- TODO: improve
+<span class="lineno">  612 </span>
+<span class="lineno">  613 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpSum x) where
+<span class="lineno">  614 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSum x)</span>
+<span class="lineno">  615 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">  616 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlytrue">not (null xs)</span> = do</span>
+<span class="lineno">  617 </span><span class="spaces">        </span><span class="istickedoff">doms &lt;- mapM domainOf xs</span>
+<span class="lineno">  618 </span><span class="spaces">        </span><span class="istickedoff">let lows = fromList [ [essence| min(`&amp;d`) |] | d &lt;- doms ]</span>
+<span class="lineno">  619 </span><span class="spaces">        </span><span class="istickedoff">let low  = [essence| sum(&amp;lows) |]</span>
+<span class="lineno">  620 </span><span class="spaces">        </span><span class="istickedoff">let upps = fromList [ [essence| max(`&amp;d`) |] | d &lt;- doms ]</span>
+<span class="lineno">  621 </span><span class="spaces">        </span><span class="istickedoff">let upp  = [essence| sum(&amp;upps) |]</span>
+<span class="lineno">  622 </span><span class="spaces">        </span><span class="istickedoff">return (DomainInt TagInt [RangeBounded low upp] :: Dom)</span>
+<span class="lineno">  623 </span><span class="spaces">    </span><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded 0 0]</span></span>
+<span class="lineno">  624 </span>
+<span class="lineno">  625 </span>
+<span class="lineno">  626 </span>instance DomainOf (OpSupset x) where
+<span class="lineno">  627 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  628 </span>
+<span class="lineno">  629 </span>instance DomainOf (OpSupsetEq x) where
+<span class="lineno">  630 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  631 </span>
+<span class="lineno">  632 </span>instance DomainOf (OpTable x) where
+<span class="lineno">  633 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  634 </span>
+<span class="lineno">  635 </span>instance DomainOf (OpTildeLeq x) where
+<span class="lineno">  636 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  637 </span>
+<span class="lineno">  638 </span>instance DomainOf (OpTildeLt x) where
+<span class="lineno">  639 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  640 </span>
+<span class="lineno">  641 </span>instance DomainOf (OpToInt x) where
+<span class="lineno">  642 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return $ DomainInt TagInt [RangeBounded 0 1]</span></span>
+<span class="lineno">  643 </span>
+<span class="lineno">  644 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpToMSet x) where
+<span class="lineno">  645 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpToMSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  646 </span>
+<span class="lineno">  647 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpToRelation x) where
+<span class="lineno">  648 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpToRelation:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  649 </span>
+<span class="lineno">  650 </span>instance (Pretty x, TypeOf x, DomainOf x) =&gt; DomainOf (OpToSet x) where
+<span class="lineno">  651 </span>    <span class="decl"><span class="istickedoff">domainOf (OpToSet _ x) = do</span>
+<span class="lineno">  652 </span><span class="spaces">        </span><span class="istickedoff">domX &lt;- domainOf x</span>
+<span class="lineno">  653 </span><span class="spaces">        </span><span class="istickedoff">innerDomX &lt;- innerDomainOf domX</span>
+<span class="lineno">  654 </span><span class="spaces">        </span><span class="istickedoff">return $ DomainSet () def innerDomX</span></span>
+<span class="lineno">  655 </span>
+<span class="lineno">  656 </span>instance DomainOf (OpTogether x) where
+<span class="lineno">  657 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  658 </span>
+<span class="lineno">  659 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpTransform x) where
+<span class="lineno">  660 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpTransform:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  661 </span>
+<span class="lineno">  662 </span>instance DomainOf (OpTrue x) where
+<span class="lineno">  663 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  664 </span>
+<span class="lineno">  665 </span>instance (Pretty x, TypeOf x, Domain () x :&lt; x) =&gt; DomainOf (OpTwoBars x) where
+<span class="lineno">  666 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpTwoBars:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  667 </span>
+<span class="lineno">  668 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpUnion x) where
+<span class="lineno">  669 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpUnion:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  670 </span>
 
 </pre>
 </body>
