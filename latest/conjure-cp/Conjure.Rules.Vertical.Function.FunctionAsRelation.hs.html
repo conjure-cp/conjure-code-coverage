@@ -136,6 +136,41 @@ span.spaces    { background: white }
 <span class="lineno">  117 </span>--                     ++ gocAfter
 <span class="lineno">  118 </span>--             )
 <span class="lineno">  119 </span>--     theRule _ = na &quot;rule_PowerSet_Comprehension&quot;
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>
+<span class="lineno">  122 </span>rule_InDefined :: Rule
+<span class="lineno">  123 </span><span class="decl"><span class="istickedoff">rule_InDefined = <span class="nottickedoff">&quot;function-inDefined{FunctionAsRelation}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in defined(&amp;func) |] = do</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf func</span>
+<span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">Function_AsRelation (Relation_AsSet Set_Explicit) &lt;- representationOf func</span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func</span></span>
+<span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">xParts &lt;- <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">vars = fromList xParts</span></span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">[rel] &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">[set] &lt;- <span class="nottickedoff">downX1 rel</span></span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">[matrix] &lt;- <span class="nottickedoff">downX1 set</span></span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">[from, _to] &lt;- <span class="nottickedoff">downX1 matrix</span></span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">parts &lt;- <span class="nottickedoff">downX1 from</span></span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">(index:_) &lt;- <span class="nottickedoff">indexDomainsOf from</span></span>
+<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- <span class="nottickedoff">quantifiedVar</span></span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">oneRow = fromList [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span></span>
+<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span></span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;relation membership to table&quot;</span></span>
+<span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| table(&amp;vars, &amp;table) |]</span></span>
+<span class="lineno">  142 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_InDefined&quot;</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">tableCheck ::</span>
+<span class="lineno">  146 </span><span class="spaces">        </span><span class="istickedoff">MonadFail m =&gt;</span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">(?typeCheckerMode::TypeCheckerMode) =&gt;</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">Expression -&gt; Expression -&gt; m ()</span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func | categoryOf func &lt; CatDecision = do</span></span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case tyX of</span></span>
+<span class="lineno">  152 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeTuple ts | and [ case t of TypeInt{} -&gt; True ; _ -&gt; False | t &lt;- ts ] -&gt; return ()</span></span>
+<span class="lineno">  153 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_In&quot;</span></span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck _ _ = na &quot;rule_In&quot;</span></span></span>
 
 </pre>
 </body>
