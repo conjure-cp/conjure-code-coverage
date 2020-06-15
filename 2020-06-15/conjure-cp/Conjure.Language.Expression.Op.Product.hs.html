@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, DeriveFunctor, DeriveTraversable, DeriveFoldable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE UndecidableInstances #-}
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>module Conjure.Language.Expression.Op.Product where
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>import qualified Data.Aeson as JSON             -- aeson
+<span class="lineno">   10 </span>import qualified Data.HashMap.Strict as M       -- unordered-containers
+<span class="lineno">   11 </span>import qualified Data.Vector as V               -- vector
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>data OpProduct x = OpProduct x
+<span class="lineno">   15 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>instance Serialize x =&gt; Serialize (OpProduct x)
+<span class="lineno">   18 </span>instance Hashable  x =&gt; Hashable  (OpProduct x)
+<span class="lineno">   19 </span>instance ToJSON    x =&gt; ToJSON    (OpProduct x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   20 </span>instance FromJSON  x =&gt; FromJSON  (OpProduct x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>instance (TypeOf x, Pretty x, ExpressionLike x) =&gt; TypeOf (OpProduct x) where
+<span class="lineno">   23 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpProduct x) = do</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">innerTy &lt;- case ty of</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">TypeList t -&gt; return t</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ t -&gt; return t</span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeSet t -&gt; return t</span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet t -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   31 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;The argument has type:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   32 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">case innerTy of</span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">TypeAny | Just [] &lt;- listOut x -&gt; return (TypeInt TagInt)</span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff">TypeInt t | ?typeCheckerMode == RelaxedIntegerTags -&gt; return (TypeInt t)</span>
+<span class="lineno">   36 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return (TypeInt TagInt)</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   38 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;The argument has type:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   39 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>instance BinaryOperator (OpProduct x) where
+<span class="lineno">   42 </span>    <span class="decl"><span class="istickedoff">opLexeme _ = L_Times</span></span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>instance (OpProduct x :&lt; x) =&gt; SimplifyOp OpProduct x where
+<span class="lineno">   45 </span>    <span class="decl"><span class="istickedoff">simplifyOp (OpProduct x)</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=0) xs</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">, length filtered /= length xs      -- there were 0's</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">= return 0</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (OpProduct x)</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=1) xs</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">, length filtered /= length xs      -- there were 1's</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">= case filtered of</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; <span class="nottickedoff">return 1</span></span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="istickedoff">[n] -&gt; return n</span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff">_   -&gt; <span class="nottickedoff">return $ inject $ OpProduct $ fromList filtered</span></span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpProduct}&quot;</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>instance (Pretty x, ExpressionLike x) =&gt; Pretty (OpProduct x) where
+<span class="lineno">   61 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpProduct x) | Just [a,b] &lt;- listOut x = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec _ (OpProduct x) = &quot;product&quot; &lt;&gt; prParens (pretty x)</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpProduct x) where
+<span class="lineno">   65 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpProduct x) | Just xs &lt;- listOut x = JSON.Object $ M.fromList</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpProduct&quot;)</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (OpProduct x) = JSON.Object $ M.fromList</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpProduct&quot;)</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>
