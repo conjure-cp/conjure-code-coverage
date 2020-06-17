@@ -31,7 +31,7 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>record :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
-<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC up symmetryOrdering</span>
+<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC <span class="nottickedoff">up</span> symmetryOrdering</span>
 <span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   18 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -80,21 +80,21 @@ span.spaces    { background: white }
 <span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   62 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, DomainRecord ds) = do</span>
-<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">let names = map (mkName name . fst) ds</span>
-<span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff">vals &lt;- forM names $ \ n -&gt;</span>
-<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">case lookup n ctxt of</span>
-<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, DomainRecord ds) = do</span></span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let names = map (mkName name . fst) ds</span></span>
+<span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">vals &lt;- forM names $ \ n -&gt;</span></span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case lookup n ctxt of</span></span>
+<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; fail $ vcat $</span></span>
 <span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Record up)&quot;</span></span>
 <span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty n</span></span>
 <span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">   72 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty (DomainRecord ds)</span></span>
 <span class="lineno">   73 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">   74 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff">Just val -&gt; return (<span class="nottickedoff">n</span>, val)</span>
-<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff">-- TODO: check if (length ds == length vals)</span>
-<span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitRecord vals))</span>
-<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up}&quot;</span></span>
+<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">Just val -&gt; return (n, val)</span></span>
+<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- TODO: check if (length ds == length vals)</span></span>
+<span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (name, ConstantAbstract (AbsLitRecord vals))</span></span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up _ _ = na &quot;{up}&quot;</span></span>
 <span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
 <span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>

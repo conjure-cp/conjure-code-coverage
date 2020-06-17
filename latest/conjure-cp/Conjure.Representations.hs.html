@@ -124,7 +124,7 @@ span.spaces    { background: white }
 <span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">case refTo of</span>
 <span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">Alias x                   -&gt; downX1 x</span>
 <span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">InComprehension{}         -&gt; fail (&quot;downX1.onReference.InComprehension:&quot; &lt;++&gt; <span class="nottickedoff">pretty (show nm)</span>)</span>
-<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff">DeclNoRepr{}              -&gt; fail (&quot;downX1.onReference.DeclNoRepr:&quot;      &lt;++&gt; <span class="nottickedoff">pretty (show nm)</span>)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff">DeclNoRepr{}              -&gt; <span class="nottickedoff">fail (&quot;downX1.onReference.DeclNoRepr:&quot;      &lt;++&gt; pretty (show nm))</span></span>
 <span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">DeclHasRepr forg _ domain -&gt; downToX1 forg nm domain</span>
 <span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">RecordField{}             -&gt; <span class="nottickedoff">fail (&quot;downX1.onReference.RecordField:&quot;     &lt;++&gt; pretty (show nm))</span></span>
 <span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">VariantField{}            -&gt; <span class="nottickedoff">fail (&quot;downX1.onReference.VariantField:&quot;    &lt;++&gt; pretty (show nm))</span></span></span>

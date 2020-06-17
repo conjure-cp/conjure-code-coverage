@@ -42,136 +42,136 @@ span.spaces    { background: white }
 <span class="lineno">   23 </span>    Model -&gt;      -- essence param
 <span class="lineno">   24 </span>    Model -&gt;      -- essence solution
 <span class="lineno">   25 </span>    m ()
-<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">validateSolution essenceModel essenceParam essenceSolution = flip evalStateT <span class="nottickedoff">[]</span> $</span>
-<span class="lineno">   27 </span><span class="spaces">  </span><span class="istickedoff">forM_ (mStatements essenceModel) $ \ st -&gt; do</span>
-<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">mapM_ introduceRecordFields (universeBi st :: [Domain () Expression])</span>
-<span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">case st of</span>
-<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven Given nm dom) -&gt;</span>
-<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">case [ val | Declaration (Letting nm2 val) &lt;- mStatements essenceParam, nm == nm2 ] of</span>
-<span class="lineno">   32 </span><span class="spaces">                </span><span class="istickedoff">[val] -&gt; do</span>
-<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">valC                  &lt;- gets <span class="nottickedoff">id</span> &gt;&gt;= flip instantiateExpression val</span>
-<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">valC_typed            &lt;- case valC of</span>
-<span class="lineno">   35 </span><span class="spaces">                                                </span><span class="istickedoff">TypedConstant c tyc -&gt; do</span>
-<span class="lineno">   36 </span><span class="spaces">                                                    </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
-<span class="lineno">   37 </span><span class="spaces">                                                    </span><span class="istickedoff">return $ TypedConstant c <span class="nottickedoff">(mostDefined [ty, tyc])</span></span>
-<span class="lineno">   38 </span><span class="spaces">                                                </span><span class="istickedoff">_ -&gt; return valC</span>
-<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff">DomainInConstant domC &lt;- gets id &gt;&gt;= flip instantiateExpression (Domain dom)</span>
-<span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff">failToUserError $ validateConstantForDomain <span class="nottickedoff">nm</span> valC domC</span>
-<span class="lineno">   41 </span><span class="spaces">                    </span><span class="istickedoff">modify ((nm, Constant valC_typed) :)</span>
-<span class="lineno">   42 </span><span class="spaces">                </span><span class="istickedoff">[]    -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span></span>
-<span class="lineno">   43 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span></span>
-<span class="lineno">   44 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">vals  -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;Multiple values for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span></span>
-<span class="lineno">   46 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span></span>
-<span class="lineno">   47 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map pretty vals)</span></span>
-<span class="lineno">   48 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven Find nm dom) -&gt;</span>
-<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">case [ val | Declaration (Letting nm2 val) &lt;- mStatements essenceSolution, nm == nm2 ] of</span>
-<span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff">[val] -&gt; do</span>
-<span class="lineno">   52 </span><span class="spaces">                    </span><span class="istickedoff">valC                  &lt;- gets <span class="nottickedoff">id</span> &gt;&gt;= flip instantiateExpression val</span>
-<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff">valC_typed            &lt;- case valC of</span>
-<span class="lineno">   54 </span><span class="spaces">                                                </span><span class="istickedoff">TypedConstant c tyc -&gt; do</span>
-<span class="lineno">   55 </span><span class="spaces">                                                    </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
-<span class="lineno">   56 </span><span class="spaces">                                                    </span><span class="istickedoff">return $ TypedConstant c (mostDefined [ty, tyc])</span>
-<span class="lineno">   57 </span><span class="spaces">                                                </span><span class="istickedoff">_ -&gt; return valC</span>
-<span class="lineno">   58 </span><span class="spaces">                    </span><span class="istickedoff">DomainInConstant domC &lt;- gets id &gt;&gt;= flip instantiateExpression (Domain dom)</span>
-<span class="lineno">   59 </span><span class="spaces">                    </span><span class="istickedoff">failToUserError $ validateConstantForDomain <span class="nottickedoff">nm</span> valC domC</span>
-<span class="lineno">   60 </span><span class="spaces">                    </span><span class="istickedoff">modify ((nm, Constant valC_typed) :)</span>
-<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff">[]    -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span></span>
-<span class="lineno">   62 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span></span>
-<span class="lineno">   63 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   64 </span><span class="spaces">                </span><span class="istickedoff">vals  -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;Multiple values for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span></span>
-<span class="lineno">   65 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span></span>
-<span class="lineno">   66 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map pretty vals)</span></span>
-<span class="lineno">   67 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven Quantified _ _) -&gt;</span>
-<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">userErr1 $ vcat</span></span>
-<span class="lineno">   70 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;A quantified declaration at the top level.&quot;</span></span>
-<span class="lineno">   71 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;This should never happen.&quot;</span></span>
-<span class="lineno">   72 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span></span>
-<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven LocalFind _ _) -&gt;</span>
-<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">userErr1 $ vcat</span></span>
-<span class="lineno">   76 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;A local decision variable at the top level.&quot;</span></span>
-<span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;This should never happen.&quot;</span></span>
-<span class="lineno">   78 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span></span>
-<span class="lineno">   79 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven CutFind _ _) -&gt;</span>
-<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">userErr1 $ vcat</span></span>
-<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;A 'cut' decision variable at the top level.&quot;</span></span>
-<span class="lineno">   83 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;This should never happen.&quot;</span></span>
-<span class="lineno">   84 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span></span>
-<span class="lineno">   85 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">Declaration (Letting nm val) -&gt; modify ((nm, <span class="nottickedoff">val</span>) :)</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">Declaration (GivenDomainDefnEnum nm@(Name nmText)) -&gt;</span>
-<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">case [ val | Declaration (LettingDomainDefnEnum nm2 val) &lt;- mStatements essenceParam, <span class="tickonlytrue">nm == nm2</span> ] of</span>
-<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">[val] -&gt; do</span>
-<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">let domain = mkDomainIntBTagged (TagEnum nmText) 1 (fromInt (genericLength val))</span>
-<span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff">let values = [ (n, <span class="nottickedoff">Constant (ConstantInt (TagEnum nmText) i)</span>)</span>
-<span class="lineno">   92 </span><span class="spaces">                                 </span><span class="istickedoff">| (n, i) &lt;- zip val allNats</span>
-<span class="lineno">   93 </span><span class="spaces">                                 </span><span class="istickedoff">]</span>
-<span class="lineno">   94 </span><span class="spaces">                    </span><span class="istickedoff">modify (((nm, Domain domain) : values) ++)</span>
-<span class="lineno">   95 </span><span class="spaces">                </span><span class="istickedoff">[]    -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;No value for enum domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span></span>
-<span class="lineno">   96 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   97 </span><span class="spaces">                </span><span class="istickedoff">vals  -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;Multiple values for enum domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span></span>
-<span class="lineno">   98 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map (prettyList prBraces &quot;,&quot;) vals)</span></span>
-<span class="lineno">   99 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">Declaration GivenDomainDefnEnum{} -&gt;</span>
-<span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">bug &quot;validateSolution GivenDomainDefnEnum, some other type of Name&quot;</span></span>
-<span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff">Declaration (LettingDomainDefnEnum nm@(Name nmText) val) -&gt; do</span>
-<span class="lineno">  103 </span><span class="spaces">                    </span><span class="istickedoff">let domain = mkDomainIntBTagged (TagEnum nmText) 1 (fromInt (genericLength val))</span>
-<span class="lineno">  104 </span><span class="spaces">                    </span><span class="istickedoff">let values = [ (n, <span class="nottickedoff">Constant (ConstantInt (TagEnum nmText) i)</span>)</span>
-<span class="lineno">  105 </span><span class="spaces">                                 </span><span class="istickedoff">| (n, i) &lt;- zip val allNats</span>
-<span class="lineno">  106 </span><span class="spaces">                                 </span><span class="istickedoff">]</span>
-<span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff">modify (((nm, Domain domain) : values) ++)</span>
-<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff">Declaration (LettingDomainDefnEnum{}) -&gt;</span>
-<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">bug &quot;validateSolution LettingDomainDefnEnum, some other type of Name&quot;</span></span>
-<span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">Declaration (LettingDomainDefnUnnamed nm@(Name nmText) _) -&gt;</span>
-<span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff">case [ nms | Declaration (LettingDomainDefnEnum nm2 nms) &lt;- mStatements essenceSolution , <span class="tickonlytrue">nm == nm2</span> ] of</span>
-<span class="lineno">  112 </span><span class="spaces">                </span><span class="istickedoff">[nms] -&gt; do</span>
-<span class="lineno">  113 </span><span class="spaces">                    </span><span class="istickedoff">let <span class="nottickedoff">domain = mkDomainIntBTagged (TagUnnamed nmText) 1 (fromInt (genericLength nms))</span></span>
-<span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">let values = [ (n, <span class="nottickedoff">Constant (ConstantInt (TagUnnamed nmText) i)</span>)</span>
-<span class="lineno">  115 </span><span class="spaces">                                 </span><span class="istickedoff">| (i,n) &lt;- zip allNats nms</span>
-<span class="lineno">  116 </span><span class="spaces">                                 </span><span class="istickedoff">]</span>
-<span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff">modify (((nm, <span class="nottickedoff">Domain domain</span>) : values) ++)</span>
-<span class="lineno">  118 </span><span class="spaces">                </span><span class="istickedoff">[]    -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;No value for unnamed domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span></span>
-<span class="lineno">  119 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  120 </span><span class="spaces">                </span><span class="istickedoff">vals  -&gt; <span class="nottickedoff">userErr1 $ vcat [ &quot;Multiple values for unnamed domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span></span>
-<span class="lineno">  121 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map (prettyList prBraces &quot;,&quot;) vals)</span></span>
-<span class="lineno">  122 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">Declaration (LettingDomainDefnUnnamed{}) -&gt;</span>
-<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">bug &quot;validateSolution LettingDomainDefnUnnamed, some other type of Name&quot;</span></span>
-<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">SearchOrder{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">SearchHeuristic{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">Where xs -&gt; do</span>
-<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">vals     &lt;- gets id</span>
-<span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">forM_ xs $ \ x -&gt; do</span>
-<span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">constant &lt;- instantiateExpression vals x</span>
-<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff">case constant of</span>
-<span class="lineno">  132 </span><span class="spaces">                    </span><span class="istickedoff">ConstantBool True -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  133 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">userErr1 $ &quot;Invalid.&quot; &lt;++&gt; vcat [ &quot;Statement evaluates to:&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  134 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Original statement was:&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">  135 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Relevant values:&quot; &lt;++&gt; vcat</span></span>
-<span class="lineno">  136 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">[ &quot;letting&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty val</span></span>
-<span class="lineno">  137 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">| (nm, val) &lt;- vals</span></span>
-<span class="lineno">  138 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, nm `elem` (universeBi x :: [Name])</span></span>
-<span class="lineno">  139 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  140 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">Objective{} -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">SuchThat xs -&gt; do</span>
-<span class="lineno">  143 </span><span class="spaces">            </span><span class="istickedoff">vals     &lt;- gets id</span>
-<span class="lineno">  144 </span><span class="spaces">            </span><span class="istickedoff">forM_ xs $ \ x -&gt; do</span>
-<span class="lineno">  145 </span><span class="spaces">                </span><span class="istickedoff">constant &lt;- instantiateExpression vals x</span>
-<span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">case constant of</span>
-<span class="lineno">  147 </span><span class="spaces">                    </span><span class="istickedoff">ConstantBool True -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  148 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">userErr1 $ &quot;Invalid.&quot; &lt;++&gt; vcat [ &quot;Statement evaluates to:&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  149 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Original statement was:&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">  150 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;Relevant values:&quot; &lt;++&gt; vcat</span></span>
-<span class="lineno">  151 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">[ &quot;letting&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty val</span></span>
-<span class="lineno">  152 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">| (nm, val) &lt;- vals</span></span>
-<span class="lineno">  153 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, nm `elem` (universeBi x :: [Name])</span></span>
-<span class="lineno">  154 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  155 </span><span class="spaces">                                                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">   26 </span><span class="decl"><span class="nottickedoff">validateSolution essenceModel essenceParam essenceSolution = flip evalStateT [] $</span>
+<span class="lineno">   27 </span><span class="spaces">  </span><span class="nottickedoff">forM_ (mStatements essenceModel) $ \ st -&gt; do</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">mapM_ introduceRecordFields (universeBi st :: [Domain () Expression])</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="nottickedoff">case st of</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven Given nm dom) -&gt;</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="nottickedoff">case [ val | Declaration (Letting nm2 val) &lt;- mStatements essenceParam, nm == nm2 ] of</span>
+<span class="lineno">   32 </span><span class="spaces">                </span><span class="nottickedoff">[val] -&gt; do</span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="nottickedoff">valC                  &lt;- gets id &gt;&gt;= flip instantiateExpression val</span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="nottickedoff">valC_typed            &lt;- case valC of</span>
+<span class="lineno">   35 </span><span class="spaces">                                                </span><span class="nottickedoff">TypedConstant c tyc -&gt; do</span>
+<span class="lineno">   36 </span><span class="spaces">                                                    </span><span class="nottickedoff">ty &lt;- typeOfDomain dom</span>
+<span class="lineno">   37 </span><span class="spaces">                                                    </span><span class="nottickedoff">return $ TypedConstant c (mostDefined [ty, tyc])</span>
+<span class="lineno">   38 </span><span class="spaces">                                                </span><span class="nottickedoff">_ -&gt; return valC</span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="nottickedoff">DomainInConstant domC &lt;- gets id &gt;&gt;= flip instantiateExpression (Domain dom)</span>
+<span class="lineno">   40 </span><span class="spaces">                    </span><span class="nottickedoff">failToUserError $ validateConstantForDomain nm valC domC</span>
+<span class="lineno">   41 </span><span class="spaces">                    </span><span class="nottickedoff">modify ((nm, Constant valC_typed) :)</span>
+<span class="lineno">   42 </span><span class="spaces">                </span><span class="nottickedoff">[]    -&gt; userErr1 $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span>
+<span class="lineno">   43 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span>
+<span class="lineno">   44 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="nottickedoff">vals  -&gt; userErr1 $ vcat [ &quot;Multiple values for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span>
+<span class="lineno">   46 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span>
+<span class="lineno">   47 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map pretty vals)</span>
+<span class="lineno">   48 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven Find nm dom) -&gt;</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">case [ val | Declaration (Letting nm2 val) &lt;- mStatements essenceSolution, nm == nm2 ] of</span>
+<span class="lineno">   51 </span><span class="spaces">                </span><span class="nottickedoff">[val] -&gt; do</span>
+<span class="lineno">   52 </span><span class="spaces">                    </span><span class="nottickedoff">valC                  &lt;- gets id &gt;&gt;= flip instantiateExpression val</span>
+<span class="lineno">   53 </span><span class="spaces">                    </span><span class="nottickedoff">valC_typed            &lt;- case valC of</span>
+<span class="lineno">   54 </span><span class="spaces">                                                </span><span class="nottickedoff">TypedConstant c tyc -&gt; do</span>
+<span class="lineno">   55 </span><span class="spaces">                                                    </span><span class="nottickedoff">ty &lt;- typeOfDomain dom</span>
+<span class="lineno">   56 </span><span class="spaces">                                                    </span><span class="nottickedoff">return $ TypedConstant c (mostDefined [ty, tyc])</span>
+<span class="lineno">   57 </span><span class="spaces">                                                </span><span class="nottickedoff">_ -&gt; return valC</span>
+<span class="lineno">   58 </span><span class="spaces">                    </span><span class="nottickedoff">DomainInConstant domC &lt;- gets id &gt;&gt;= flip instantiateExpression (Domain dom)</span>
+<span class="lineno">   59 </span><span class="spaces">                    </span><span class="nottickedoff">failToUserError $ validateConstantForDomain nm valC domC</span>
+<span class="lineno">   60 </span><span class="spaces">                    </span><span class="nottickedoff">modify ((nm, Constant valC_typed) :)</span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="nottickedoff">[]    -&gt; userErr1 $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span>
+<span class="lineno">   62 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span>
+<span class="lineno">   63 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   64 </span><span class="spaces">                </span><span class="nottickedoff">vals  -&gt; userErr1 $ vcat [ &quot;Multiple values for&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span>
+<span class="lineno">   65 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Its domain:&quot; &lt;++&gt; pretty dom</span>
+<span class="lineno">   66 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map pretty vals)</span>
+<span class="lineno">   67 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven Quantified _ _) -&gt;</span>
+<span class="lineno">   69 </span><span class="spaces">            </span><span class="nottickedoff">userErr1 $ vcat</span>
+<span class="lineno">   70 </span><span class="spaces">                </span><span class="nottickedoff">[ &quot;A quantified declaration at the top level.&quot;</span>
+<span class="lineno">   71 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;This should never happen.&quot;</span>
+<span class="lineno">   72 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span>
+<span class="lineno">   73 </span><span class="spaces">                </span><span class="nottickedoff">]</span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven LocalFind _ _) -&gt;</span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="nottickedoff">userErr1 $ vcat</span>
+<span class="lineno">   76 </span><span class="spaces">                </span><span class="nottickedoff">[ &quot;A local decision variable at the top level.&quot;</span>
+<span class="lineno">   77 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;This should never happen.&quot;</span>
+<span class="lineno">   78 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span>
+<span class="lineno">   79 </span><span class="spaces">                </span><span class="nottickedoff">]</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven CutFind _ _) -&gt;</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="nottickedoff">userErr1 $ vcat</span>
+<span class="lineno">   82 </span><span class="spaces">                </span><span class="nottickedoff">[ &quot;A 'cut' decision variable at the top level.&quot;</span>
+<span class="lineno">   83 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;This should never happen.&quot;</span>
+<span class="lineno">   84 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;Statement:&quot; &lt;+&gt; pretty st</span>
+<span class="lineno">   85 </span><span class="spaces">                </span><span class="nottickedoff">]</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (Letting nm val) -&gt; modify ((nm, val) :)</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (GivenDomainDefnEnum nm@(Name nmText)) -&gt;</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="nottickedoff">case [ val | Declaration (LettingDomainDefnEnum nm2 val) &lt;- mStatements essenceParam, nm == nm2 ] of</span>
+<span class="lineno">   89 </span><span class="spaces">                </span><span class="nottickedoff">[val] -&gt; do</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="nottickedoff">let domain = mkDomainIntBTagged (TagEnum nmText) 1 (fromInt (genericLength val))</span>
+<span class="lineno">   91 </span><span class="spaces">                    </span><span class="nottickedoff">let values = [ (n, Constant (ConstantInt (TagEnum nmText) i))</span>
+<span class="lineno">   92 </span><span class="spaces">                                 </span><span class="nottickedoff">| (n, i) &lt;- zip val allNats</span>
+<span class="lineno">   93 </span><span class="spaces">                                 </span><span class="nottickedoff">]</span>
+<span class="lineno">   94 </span><span class="spaces">                    </span><span class="nottickedoff">modify (((nm, Domain domain) : values) ++)</span>
+<span class="lineno">   95 </span><span class="spaces">                </span><span class="nottickedoff">[]    -&gt; userErr1 $ vcat [ &quot;No value for enum domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span>
+<span class="lineno">   96 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">   97 </span><span class="spaces">                </span><span class="nottickedoff">vals  -&gt; userErr1 $ vcat [ &quot;Multiple values for enum domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the parameter file.&quot;</span>
+<span class="lineno">   98 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map (prettyList prBraces &quot;,&quot;) vals)</span>
+<span class="lineno">   99 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">  100 </span><span class="spaces">        </span><span class="nottickedoff">Declaration GivenDomainDefnEnum{} -&gt;</span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="nottickedoff">bug &quot;validateSolution GivenDomainDefnEnum, some other type of Name&quot;</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (LettingDomainDefnEnum nm@(Name nmText) val) -&gt; do</span>
+<span class="lineno">  103 </span><span class="spaces">                    </span><span class="nottickedoff">let domain = mkDomainIntBTagged (TagEnum nmText) 1 (fromInt (genericLength val))</span>
+<span class="lineno">  104 </span><span class="spaces">                    </span><span class="nottickedoff">let values = [ (n, Constant (ConstantInt (TagEnum nmText) i))</span>
+<span class="lineno">  105 </span><span class="spaces">                                 </span><span class="nottickedoff">| (n, i) &lt;- zip val allNats</span>
+<span class="lineno">  106 </span><span class="spaces">                                 </span><span class="nottickedoff">]</span>
+<span class="lineno">  107 </span><span class="spaces">                    </span><span class="nottickedoff">modify (((nm, Domain domain) : values) ++)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (LettingDomainDefnEnum{}) -&gt;</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="nottickedoff">bug &quot;validateSolution LettingDomainDefnEnum, some other type of Name&quot;</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (LettingDomainDefnUnnamed nm@(Name nmText) _) -&gt;</span>
+<span class="lineno">  111 </span><span class="spaces">            </span><span class="nottickedoff">case [ nms | Declaration (LettingDomainDefnEnum nm2 nms) &lt;- mStatements essenceSolution , nm == nm2 ] of</span>
+<span class="lineno">  112 </span><span class="spaces">                </span><span class="nottickedoff">[nms] -&gt; do</span>
+<span class="lineno">  113 </span><span class="spaces">                    </span><span class="nottickedoff">let domain = mkDomainIntBTagged (TagUnnamed nmText) 1 (fromInt (genericLength nms))</span>
+<span class="lineno">  114 </span><span class="spaces">                    </span><span class="nottickedoff">let values = [ (n, Constant (ConstantInt (TagUnnamed nmText) i))</span>
+<span class="lineno">  115 </span><span class="spaces">                                 </span><span class="nottickedoff">| (i,n) &lt;- zip allNats nms</span>
+<span class="lineno">  116 </span><span class="spaces">                                 </span><span class="nottickedoff">]</span>
+<span class="lineno">  117 </span><span class="spaces">                    </span><span class="nottickedoff">modify (((nm, Domain domain) : values) ++)</span>
+<span class="lineno">  118 </span><span class="spaces">                </span><span class="nottickedoff">[]    -&gt; userErr1 $ vcat [ &quot;No value for unnamed domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span>
+<span class="lineno">  119 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">  120 </span><span class="spaces">                </span><span class="nottickedoff">vals  -&gt; userErr1 $ vcat [ &quot;Multiple values for unnamed domain&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;in the solution file.&quot;</span>
+<span class="lineno">  121 </span><span class="spaces">                                         </span><span class="nottickedoff">, &quot;Values:&quot; &lt;++&gt; vcat (map (prettyList prBraces &quot;,&quot;) vals)</span>
+<span class="lineno">  122 </span><span class="spaces">                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">  123 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (LettingDomainDefnUnnamed{}) -&gt;</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="nottickedoff">bug &quot;validateSolution LettingDomainDefnUnnamed, some other type of Name&quot;</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="nottickedoff">SearchOrder{} -&gt; return ()</span>
+<span class="lineno">  126 </span><span class="spaces">        </span><span class="nottickedoff">SearchHeuristic{} -&gt; return ()</span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="nottickedoff">Where xs -&gt; do</span>
+<span class="lineno">  128 </span><span class="spaces">            </span><span class="nottickedoff">vals     &lt;- gets id</span>
+<span class="lineno">  129 </span><span class="spaces">            </span><span class="nottickedoff">forM_ xs $ \ x -&gt; do</span>
+<span class="lineno">  130 </span><span class="spaces">                </span><span class="nottickedoff">constant &lt;- instantiateExpression vals x</span>
+<span class="lineno">  131 </span><span class="spaces">                </span><span class="nottickedoff">case constant of</span>
+<span class="lineno">  132 </span><span class="spaces">                    </span><span class="nottickedoff">ConstantBool True -&gt; return ()</span>
+<span class="lineno">  133 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; userErr1 $ &quot;Invalid.&quot; &lt;++&gt; vcat [ &quot;Statement evaluates to:&quot; &lt;+&gt; pretty constant</span>
+<span class="lineno">  134 </span><span class="spaces">                                                         </span><span class="nottickedoff">, &quot;Original statement was:&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  135 </span><span class="spaces">                                                         </span><span class="nottickedoff">, &quot;Relevant values:&quot; &lt;++&gt; vcat</span>
+<span class="lineno">  136 </span><span class="spaces">                                                             </span><span class="nottickedoff">[ &quot;letting&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty val</span>
+<span class="lineno">  137 </span><span class="spaces">                                                             </span><span class="nottickedoff">| (nm, val) &lt;- vals</span>
+<span class="lineno">  138 </span><span class="spaces">                                                             </span><span class="nottickedoff">, nm `elem` (universeBi x :: [Name])</span>
+<span class="lineno">  139 </span><span class="spaces">                                                             </span><span class="nottickedoff">]</span>
+<span class="lineno">  140 </span><span class="spaces">                                                         </span><span class="nottickedoff">]</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="nottickedoff">Objective{} -&gt; return ()</span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="nottickedoff">SuchThat xs -&gt; do</span>
+<span class="lineno">  143 </span><span class="spaces">            </span><span class="nottickedoff">vals     &lt;- gets id</span>
+<span class="lineno">  144 </span><span class="spaces">            </span><span class="nottickedoff">forM_ xs $ \ x -&gt; do</span>
+<span class="lineno">  145 </span><span class="spaces">                </span><span class="nottickedoff">constant &lt;- instantiateExpression vals x</span>
+<span class="lineno">  146 </span><span class="spaces">                </span><span class="nottickedoff">case constant of</span>
+<span class="lineno">  147 </span><span class="spaces">                    </span><span class="nottickedoff">ConstantBool True -&gt; return ()</span>
+<span class="lineno">  148 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; userErr1 $ &quot;Invalid.&quot; &lt;++&gt; vcat [ &quot;Statement evaluates to:&quot; &lt;+&gt; pretty constant</span>
+<span class="lineno">  149 </span><span class="spaces">                                                         </span><span class="nottickedoff">, &quot;Original statement was:&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  150 </span><span class="spaces">                                                         </span><span class="nottickedoff">, &quot;Relevant values:&quot; &lt;++&gt; vcat</span>
+<span class="lineno">  151 </span><span class="spaces">                                                             </span><span class="nottickedoff">[ &quot;letting&quot; &lt;+&gt; pretty nm &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty val</span>
+<span class="lineno">  152 </span><span class="spaces">                                                             </span><span class="nottickedoff">| (nm, val) &lt;- vals</span>
+<span class="lineno">  153 </span><span class="spaces">                                                             </span><span class="nottickedoff">, nm `elem` (universeBi x :: [Name])</span>
+<span class="lineno">  154 </span><span class="spaces">                                                             </span><span class="nottickedoff">]</span>
+<span class="lineno">  155 </span><span class="spaces">                                                         </span><span class="nottickedoff">]</span></span>
 <span class="lineno">  156 </span>
 <span class="lineno">  157 </span>
 <span class="lineno">  158 </span>introduceRecordFields ::
@@ -182,15 +182,15 @@ span.spaces    { background: white }
 <span class="lineno">  163 </span>    TypeOf x =&gt;
 <span class="lineno">  164 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">  165 </span>    Domain r x -&gt; m ()
-<span class="lineno">  166 </span><span class="decl"><span class="istickedoff">introduceRecordFields (DomainRecord inners) =</span>
-<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">forM_ inners $ \ (n, d) -&gt; do</span>
-<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">t &lt;- typeOfDomain d</span>
-<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff">modify ((n, <span class="nottickedoff">Constant (ConstantField n t)</span>) :)</span>
-<span class="lineno">  170 </span><span class="spaces"></span><span class="istickedoff">introduceRecordFields (DomainVariant inners) =</span>
-<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">forM_ inners $ \ (n, d) -&gt; do</span>
-<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">t &lt;- typeOfDomain d</span>
-<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">modify ((n, <span class="nottickedoff">Constant (ConstantField n t)</span>) :)</span>
-<span class="lineno">  174 </span><span class="spaces"></span><span class="istickedoff">introduceRecordFields _ = return <span class="nottickedoff">()</span></span></span>
+<span class="lineno">  166 </span><span class="decl"><span class="nottickedoff">introduceRecordFields (DomainRecord inners) =</span>
+<span class="lineno">  167 </span><span class="spaces">    </span><span class="nottickedoff">forM_ inners $ \ (n, d) -&gt; do</span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="nottickedoff">t &lt;- typeOfDomain d</span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="nottickedoff">modify ((n, Constant (ConstantField n t)) :)</span>
+<span class="lineno">  170 </span><span class="spaces"></span><span class="nottickedoff">introduceRecordFields (DomainVariant inners) =</span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="nottickedoff">forM_ inners $ \ (n, d) -&gt; do</span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="nottickedoff">t &lt;- typeOfDomain d</span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="nottickedoff">modify ((n, Constant (ConstantField n t)) :)</span>
+<span class="lineno">  174 </span><span class="spaces"></span><span class="nottickedoff">introduceRecordFields _ = return ()</span></span>
 
 </pre>
 </body>
