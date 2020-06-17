@@ -35,7 +35,7 @@ span.spaces    { background: white }
 <span class="lineno">   16 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   17 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">   18 </span>    Representation m
-<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">sequenceExplicitBounded = Representation chck downD structuralCons downC <span class="nottickedoff">up</span> <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">sequenceExplicitBounded = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
 <span class="lineno">   20 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   22 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -273,34 +273,34 @@ span.spaces    { background: white }
 <span class="lineno">  254 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  256 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">  257 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, domain) =</span></span>
-<span class="lineno">  258 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case (lookup (nameMarker domain name) ctxt, lookup (nameValues domain name) ctxt) of</span></span>
-<span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(Just marker, Just constantMatrix) -&gt;</span></span>
-<span class="lineno">  260 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case marker of</span></span>
-<span class="lineno">  261 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">ConstantInt _ card -&gt;</span></span>
-<span class="lineno">  262 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">case viewConstantMatrix constantMatrix of</span></span>
-<span class="lineno">  263 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Just (_, vals) -&gt;</span></span>
-<span class="lineno">  264 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">return (name, ConstantAbstract (AbsLitSequence (genericTake card vals)))</span></span>
-<span class="lineno">  265 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail $ vcat</span></span>
+<span class="lineno">  257 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain) =</span>
+<span class="lineno">  258 </span><span class="spaces">            </span><span class="istickedoff">case (lookup (nameMarker domain name) ctxt, lookup (nameValues domain name) ctxt) of</span>
+<span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff">(Just marker, Just constantMatrix) -&gt;</span>
+<span class="lineno">  260 </span><span class="spaces">                    </span><span class="istickedoff">case marker of</span>
+<span class="lineno">  261 </span><span class="spaces">                        </span><span class="istickedoff">ConstantInt _ card -&gt;</span>
+<span class="lineno">  262 </span><span class="spaces">                            </span><span class="istickedoff">case viewConstantMatrix constantMatrix of</span>
+<span class="lineno">  263 </span><span class="spaces">                                </span><span class="istickedoff">Just (_, vals) -&gt;</span>
+<span class="lineno">  264 </span><span class="spaces">                                    </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitSequence (genericTake card vals)))</span>
+<span class="lineno">  265 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
 <span class="lineno">  266 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  267 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
 <span class="lineno">  268 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  269 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  270 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  271 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; fail $ vcat</span></span>
+<span class="lineno">  271 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
 <span class="lineno">  272 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer literal for:&quot; &lt;+&gt; pretty (nameMarker domain name)</span></span>
 <span class="lineno">  273 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty marker</span></span>
 <span class="lineno">  274 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  275 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  276 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(Nothing, _) -&gt; fail $ vcat $</span></span>
+<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
 <span class="lineno">  278 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Sequence ExplicitBounded up 1)&quot;</span></span>
 <span class="lineno">  279 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameMarker domain name)</span></span>
 <span class="lineno">  280 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  281 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  282 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  283 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  284 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(_, Nothing) -&gt; fail $ vcat $</span></span>
+<span class="lineno">  284 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
 <span class="lineno">  285 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Sequence ExplicitBounded up 2)&quot;</span></span>
 <span class="lineno">  286 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  287 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

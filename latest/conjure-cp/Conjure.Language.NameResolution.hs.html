@@ -43,10 +43,10 @@ span.spaces    { background: white }
 <span class="lineno">   24 </span>    NameGen m =&gt;
 <span class="lineno">   25 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">   26 </span>    [Model] -&gt; m [Model]
-<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">resolveNamesMulti = flip evalStateT [] . go</span>
-<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">   29 </span><span class="spaces">        </span><span class="nottickedoff">go [] = return []</span>
-<span class="lineno">   30 </span><span class="spaces">        </span><span class="nottickedoff">go (m:ms) = (:) &lt;$&gt; resolveNames_ m &lt;*&gt; go ms</span></span>
+<span class="lineno">   27 </span><span class="decl"><span class="istickedoff">resolveNamesMulti = flip evalStateT [] . go</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">go [] = return []</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">go (m:ms) = (:) &lt;$&gt; resolveNames_ m &lt;*&gt; go ms</span></span>
 <span class="lineno">   31 </span>
 <span class="lineno">   32 </span>resolveNames ::
 <span class="lineno">   33 </span>    MonadLog m =&gt;
@@ -136,17 +136,17 @@ span.spaces    { background: white }
 <span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff">x' &lt;- resolveX x</span>
 <span class="lineno">  118 </span><span class="spaces">                    </span><span class="istickedoff">modify ((nm, Alias x') :)</span>
 <span class="lineno">  119 </span><span class="spaces">                    </span><span class="istickedoff">return (Declaration (Letting nm x'))</span>
-<span class="lineno">  120 </span><span class="spaces">                </span><span class="istickedoff">LettingDomainDefnUnnamed nm x -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno">  121 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">x' &lt;- resolveX x</span></span>
-<span class="lineno">  122 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">modify ((nm, Alias (Domain (DomainUnnamed nm x'))) :)</span></span>
-<span class="lineno">  123 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return (Declaration (LettingDomainDefnUnnamed nm x'))</span></span>
-<span class="lineno">  124 </span><span class="spaces">                </span><span class="istickedoff">LettingDomainDefnEnum (Name ename) nms -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno">  125 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">modify ( [ (nm, Alias (Constant (ConstantInt (TagEnum ename) i)))</span></span>
-<span class="lineno">  126 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">| (nm, i) &lt;- zip nms [1..]</span></span>
-<span class="lineno">  127 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">] ++)</span></span>
-<span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return st</span></span>
+<span class="lineno">  120 </span><span class="spaces">                </span><span class="istickedoff">LettingDomainDefnUnnamed nm x -&gt; do</span>
+<span class="lineno">  121 </span><span class="spaces">                    </span><span class="istickedoff">x' &lt;- resolveX x</span>
+<span class="lineno">  122 </span><span class="spaces">                    </span><span class="istickedoff">modify ((nm, Alias (Domain (DomainUnnamed <span class="nottickedoff">nm</span> x'))) :)</span>
+<span class="lineno">  123 </span><span class="spaces">                    </span><span class="istickedoff">return (Declaration (LettingDomainDefnUnnamed nm x'))</span>
+<span class="lineno">  124 </span><span class="spaces">                </span><span class="istickedoff">LettingDomainDefnEnum (Name ename) nms -&gt; do</span>
+<span class="lineno">  125 </span><span class="spaces">                    </span><span class="istickedoff">modify ( [ (nm, Alias (Constant (ConstantInt (TagEnum ename) i)))</span>
+<span class="lineno">  126 </span><span class="spaces">                             </span><span class="istickedoff">| (nm, i) &lt;- zip nms [1..]</span>
+<span class="lineno">  127 </span><span class="spaces">                             </span><span class="istickedoff">] ++)</span>
+<span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff">return st</span>
 <span class="lineno">  129 </span><span class="spaces">                </span><span class="istickedoff">LettingDomainDefnEnum{} -&gt; <span class="nottickedoff">bug &quot;resolveStatement, Name&quot;</span></span>
-<span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">GivenDomainDefnEnum{}       -&gt; <span class="nottickedoff">return st</span>             -- ignoring</span>
+<span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">GivenDomainDefnEnum{}       -&gt; return st             -- ignoring</span>
 <span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">SearchOrder xs -&gt; SearchOrder &lt;$&gt; mapM resolveSearchOrder xs</span>
 <span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">SearchHeuristic nm -&gt; do</span>
 <span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">let allowed = [&quot;static&quot;, &quot;sdf&quot;, &quot;conflict&quot;, &quot;srf&quot;, &quot;ldf&quot;, &quot;wdeg&quot;, &quot;domoverwdeg&quot;]</span>

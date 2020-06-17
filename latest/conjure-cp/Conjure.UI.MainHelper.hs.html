@@ -306,15 +306,15 @@ span.spaces    { background: white }
 <span class="lineno">  287 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">eprimesParsed &lt;- forM eprimes $ \ f -&gt; do</span>
 <span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">p &lt;- readModelInfoFromFile (outputDirectory &lt;/&gt; f)</span>
-<span class="lineno">  290 </span><span class="spaces">        </span><span class="istickedoff">return (f, <span class="nottickedoff">p</span>)</span>
+<span class="lineno">  290 </span><span class="spaces">        </span><span class="istickedoff">return (f, p)</span>
 <span class="lineno">  291 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  292 </span><span class="spaces">    </span><span class="istickedoff">msolutions &lt;- liftIO $ savileRows eprimesParsed essenceParamsParsed</span>
 <span class="lineno">  293 </span><span class="spaces">    </span><span class="istickedoff">case msolutions of</span>
-<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">Left msg        -&gt; userErr msg</span>
+<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">Left msg        -&gt; <span class="nottickedoff">userErr msg</span></span>
 <span class="lineno">  295 </span><span class="spaces">        </span><span class="istickedoff">Right []        -&gt; <span class="nottickedoff">pp logLevel &quot;No solutions found.&quot;</span></span>
-<span class="lineno">  296 </span><span class="spaces">        </span><span class="istickedoff">Right solutions -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno">  297 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">when validateSolutionsOpt $ liftIO $ validating solutions</span></span>
-<span class="lineno">  298 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">when copySolutions $ do</span></span>
+<span class="lineno">  296 </span><span class="spaces">        </span><span class="istickedoff">Right solutions -&gt; do</span>
+<span class="lineno">  297 </span><span class="spaces">            </span><span class="istickedoff">when validateSolutionsOpt $ <span class="nottickedoff">liftIO $ validating solutions</span></span>
+<span class="lineno">  298 </span><span class="spaces">            </span><span class="istickedoff">when copySolutions $ <span class="nottickedoff">do</span></span>
 <span class="lineno">  299 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- clean-up: move the solutions next to the essence file.</span></span>
 <span class="lineno">  300 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- our intention is that a user intending to just solve something</span></span>
 <span class="lineno">  301 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">-- should never have to look into outputDirectory.</span></span>
@@ -364,7 +364,7 @@ span.spaces    { background: white }
 <span class="lineno">  345 </span><span class="spaces">                                                                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  346 </span><span class="spaces">                                                            </span><span class="istickedoff"><span class="nottickedoff">&lt;.&gt; &quot;.solution&quot;)</span></span>
 <span class="lineno">  347 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  348 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">liftIO stopGlobalPool</span></span>
+<span class="lineno">  348 </span><span class="spaces">    </span><span class="istickedoff">liftIO stopGlobalPool</span>
 <span class="lineno">  349 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  350 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  351 </span><span class="spaces">        </span><span class="istickedoff">conjuring :: m [FilePath]</span>
@@ -389,7 +389,7 @@ span.spaces    { background: white }
 <span class="lineno">  370 </span><span class="spaces">        </span><span class="istickedoff">getEprimes = sort . filter (&quot;.eprime&quot; `isSuffixOf`) &lt;$&gt; liftIO (getDirectoryContents outputDirectory)</span>
 <span class="lineno">  371 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  372 </span><span class="spaces">        </span><span class="istickedoff">combineResults :: [Either e [a]] -&gt; Either e [a]</span>
-<span class="lineno">  373 </span><span class="spaces">        </span><span class="istickedoff">combineResults = fmap <span class="nottickedoff">concat</span> . sequence</span>
+<span class="lineno">  373 </span><span class="spaces">        </span><span class="istickedoff">combineResults = fmap concat . sequence</span>
 <span class="lineno">  374 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">savileRows</span>
 <span class="lineno">  376 </span><span class="spaces">            </span><span class="istickedoff">:: [(FilePath, Model)]      -- models</span>
@@ -723,15 +723,15 @@ span.spaces    { background: white }
 <span class="lineno">  704 </span><span class="spaces">    </span><span class="istickedoff">pp logLevel $ <span class="nottickedoff">hsep [&quot;Savile Row:&quot;, pretty modelPath]</span></span>
 <span class="lineno">  705 </span><span class="spaces">    </span><span class="istickedoff">let outBase = dropExtension modelPath</span>
 <span class="lineno">  706 </span><span class="spaces">    </span><span class="istickedoff">srArgs &lt;- liftIO $ srMkArgs ui outBase modelPath</span>
-<span class="lineno">  707 </span><span class="spaces">    </span><span class="istickedoff">let <span class="nottickedoff">tr = translateSolution eprimeModel def</span></span>
+<span class="lineno">  707 </span><span class="spaces">    </span><span class="istickedoff">let tr = translateSolution eprimeModel def</span>
 <span class="lineno">  708 </span><span class="spaces">    </span><span class="istickedoff">when (logLevel &gt;= LogDebug) $ <span class="nottickedoff">do</span></span>
 <span class="lineno">  709 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn &quot;Using the following options for Savile Row:&quot;</span></span>
 <span class="lineno">  710 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn $ &quot;    savilerow &quot; ++ unwords (map (quoteMultiWord . textToString) srArgs)</span></span>
 <span class="lineno">  711 </span><span class="spaces">    </span><span class="istickedoff">(stdoutSR, solutions) &lt;- partitionEithers &lt;$&gt; runHandle savilerowScriptName srArgs</span>
 <span class="lineno">  712 </span><span class="spaces">                                </span><span class="istickedoff">(liftIO . srStdoutHandler</span>
-<span class="lineno">  713 </span><span class="spaces">                                    </span><span class="istickedoff">(<span class="nottickedoff">outBase</span>, <span class="nottickedoff">modelPath</span>, <span class="nottickedoff">&quot;&lt;no param file&gt;&quot;</span>, ui)</span>
-<span class="lineno">  714 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">tr</span> <span class="nottickedoff">(1::Int)</span>)</span>
-<span class="lineno">  715 </span><span class="spaces">    </span><span class="istickedoff">srCleanUp (stringToText $ unlines stdoutSR) <span class="nottickedoff">solutions</span></span>
+<span class="lineno">  713 </span><span class="spaces">                                    </span><span class="istickedoff">(outBase, <span class="nottickedoff">modelPath</span>, <span class="nottickedoff">&quot;&lt;no param file&gt;&quot;</span>, ui)</span>
+<span class="lineno">  714 </span><span class="spaces">                                    </span><span class="istickedoff">tr (1::Int))</span>
+<span class="lineno">  715 </span><span class="spaces">    </span><span class="istickedoff">srCleanUp (stringToText $ unlines stdoutSR) solutions</span>
 <span class="lineno">  716 </span><span class="spaces"></span><span class="istickedoff">savileRowNoParam _ _ = <span class="nottickedoff">bug &quot;savileRowNoParam&quot;</span></span></span>
 <span class="lineno">  717 </span>
 <span class="lineno">  718 </span>
@@ -934,38 +934,38 @@ span.spaces    { background: white }
 <span class="lineno">  915 </span><span class="spaces">        </span><span class="istickedoff">args@(outBase , modelPath, paramPath , Solve{..})</span>
 <span class="lineno">  916 </span><span class="spaces">        </span><span class="istickedoff">tr solutionNumber h = do</span>
 <span class="lineno">  917 </span><span class="spaces">    </span><span class="istickedoff">eof &lt;- hIsEOF h</span>
-<span class="lineno">  918 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlytrue">eof</span></span>
+<span class="lineno">  918 </span><span class="spaces">    </span><span class="istickedoff">if eof</span>
 <span class="lineno">  919 </span><span class="spaces">        </span><span class="istickedoff">then do</span>
 <span class="lineno">  920 </span><span class="spaces">            </span><span class="istickedoff">hClose h</span>
 <span class="lineno">  921 </span><span class="spaces">            </span><span class="istickedoff">return []</span>
-<span class="lineno">  922 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">do</span></span>
-<span class="lineno">  923 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">line &lt;- hGetLine h</span></span>
-<span class="lineno">  924 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case stripPrefix &quot;Solution: &quot; line of</span></span>
-<span class="lineno">  925 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; do</span></span>
-<span class="lineno">  926 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">if isPrefixOf &quot;Created output file for domain filtering&quot; line</span></span>
-<span class="lineno">  927 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">then pp logLevel $ hsep [&quot;Running minion for domain filtering.&quot;]</span></span>
-<span class="lineno">  928 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">else if isPrefixOf &quot;Created output&quot; line</span></span>
-<span class="lineno">  929 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">then pp logLevel $ hsep [&quot;Running solver:&quot;, pretty solver]</span></span>
-<span class="lineno">  930 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">else return ()</span></span>
-<span class="lineno">  931 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">fmap (Left line :)</span></span>
-<span class="lineno">  932 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">(srStdoutHandler args tr solutionNumber h)</span></span>
-<span class="lineno">  933 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just solutionText -&gt; do</span></span>
-<span class="lineno">  934 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">eprimeSol  &lt;- readModel ParserC.parseModel (Just id) (&quot;&lt;memory&gt;&quot;, stringToText solutionText)</span></span>
-<span class="lineno">  935 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">essenceSol &lt;- ignoreLogs $ runNameGen () $ tr eprimeSol</span></span>
-<span class="lineno">  936 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case solutionsInOneFile of</span></span>
-<span class="lineno">  937 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">False -&gt; do</span></span>
-<span class="lineno">  938 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let mkFilename ext = outputDirectory &lt;/&gt; outBase</span></span>
-<span class="lineno">  939 </span><span class="spaces">                                                        </span><span class="istickedoff"><span class="nottickedoff">++ &quot;-solution&quot; ++ padLeft 6 '0' (show solutionNumber)</span></span>
-<span class="lineno">  940 </span><span class="spaces">                                                        </span><span class="istickedoff"><span class="nottickedoff">++ ext</span></span>
-<span class="lineno">  941 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let filenameEprimeSol  = mkFilename &quot;.eprime-solution&quot;</span></span>
-<span class="lineno">  942 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let filenameEssenceSol = mkFilename &quot;.solution&quot;</span></span>
-<span class="lineno">  943 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">writeModel lineWidth Plain (Just filenameEprimeSol) eprimeSol</span></span>
-<span class="lineno">  944 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">writeModel lineWidth Plain (Just filenameEssenceSol) essenceSol</span></span>
-<span class="lineno">  945 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">when (outputFormat == JSON) $</span></span>
+<span class="lineno">  922 </span><span class="spaces">        </span><span class="istickedoff">else do</span>
+<span class="lineno">  923 </span><span class="spaces">            </span><span class="istickedoff">line &lt;- hGetLine h</span>
+<span class="lineno">  924 </span><span class="spaces">            </span><span class="istickedoff">case stripPrefix &quot;Solution: &quot; line of</span>
+<span class="lineno">  925 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; do</span>
+<span class="lineno">  926 </span><span class="spaces">                    </span><span class="istickedoff">if <span class="tickonlyfalse">isPrefixOf &quot;Created output file for domain filtering&quot; line</span></span>
+<span class="lineno">  927 </span><span class="spaces">                        </span><span class="istickedoff">then <span class="nottickedoff">pp logLevel $ hsep [&quot;Running minion for domain filtering.&quot;]</span></span>
+<span class="lineno">  928 </span><span class="spaces">                        </span><span class="istickedoff">else if isPrefixOf &quot;Created output&quot; line</span>
+<span class="lineno">  929 </span><span class="spaces">                            </span><span class="istickedoff">then pp logLevel $ <span class="nottickedoff">hsep [&quot;Running solver:&quot;, pretty solver]</span></span>
+<span class="lineno">  930 </span><span class="spaces">                            </span><span class="istickedoff">else return <span class="nottickedoff">()</span></span>
+<span class="lineno">  931 </span><span class="spaces">                    </span><span class="istickedoff">fmap (Left line :)</span>
+<span class="lineno">  932 </span><span class="spaces">                         </span><span class="istickedoff">(srStdoutHandler args tr solutionNumber h)</span>
+<span class="lineno">  933 </span><span class="spaces">                </span><span class="istickedoff">Just solutionText -&gt; do</span>
+<span class="lineno">  934 </span><span class="spaces">                    </span><span class="istickedoff">eprimeSol  &lt;- readModel ParserC.parseModel (Just id) (&quot;&lt;memory&gt;&quot;, stringToText solutionText)</span>
+<span class="lineno">  935 </span><span class="spaces">                    </span><span class="istickedoff">essenceSol &lt;- ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $ tr eprimeSol</span>
+<span class="lineno">  936 </span><span class="spaces">                    </span><span class="istickedoff">case solutionsInOneFile of</span>
+<span class="lineno">  937 </span><span class="spaces">                        </span><span class="istickedoff">False -&gt; do</span>
+<span class="lineno">  938 </span><span class="spaces">                            </span><span class="istickedoff">let mkFilename ext = outputDirectory &lt;/&gt; outBase</span>
+<span class="lineno">  939 </span><span class="spaces">                                                        </span><span class="istickedoff">++ &quot;-solution&quot; ++ padLeft 6 '0' (show solutionNumber)</span>
+<span class="lineno">  940 </span><span class="spaces">                                                        </span><span class="istickedoff">++ ext</span>
+<span class="lineno">  941 </span><span class="spaces">                            </span><span class="istickedoff">let filenameEprimeSol  = mkFilename &quot;.eprime-solution&quot;</span>
+<span class="lineno">  942 </span><span class="spaces">                            </span><span class="istickedoff">let filenameEssenceSol = mkFilename &quot;.solution&quot;</span>
+<span class="lineno">  943 </span><span class="spaces">                            </span><span class="istickedoff">writeModel lineWidth Plain (Just filenameEprimeSol) eprimeSol</span>
+<span class="lineno">  944 </span><span class="spaces">                            </span><span class="istickedoff">writeModel lineWidth Plain (Just filenameEssenceSol) essenceSol</span>
+<span class="lineno">  945 </span><span class="spaces">                            </span><span class="istickedoff">when (outputFormat == JSON) $</span>
 <span class="lineno">  946 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">writeModel lineWidth JSON (Just (filenameEssenceSol ++ &quot;.json&quot;)) essenceSol</span></span>
-<span class="lineno">  947 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">fmap (Right (modelPath, paramPath, Just filenameEssenceSol) :)</span></span>
-<span class="lineno">  948 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">(srStdoutHandler args tr (solutionNumber+1) h)</span></span>
-<span class="lineno">  949 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">True -&gt; do</span></span>
+<span class="lineno">  947 </span><span class="spaces">                            </span><span class="istickedoff">fmap (Right <span class="nottickedoff">(modelPath, paramPath, Just filenameEssenceSol)</span> :)</span>
+<span class="lineno">  948 </span><span class="spaces">                                 </span><span class="istickedoff">(srStdoutHandler args tr (solutionNumber+1) h)</span>
+<span class="lineno">  949 </span><span class="spaces">                        </span><span class="istickedoff">True -&gt; <span class="nottickedoff">do</span></span>
 <span class="lineno">  950 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let mkFilename ext = outputDirectory &lt;/&gt; outBase</span></span>
 <span class="lineno">  951 </span><span class="spaces">                                                        </span><span class="istickedoff"><span class="nottickedoff">++ ext</span></span>
 <span class="lineno">  952 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">let filenameEprimeSol  = mkFilename &quot;.eprime-solutions&quot;</span></span>
@@ -1001,15 +1001,15 @@ span.spaces    { background: white }
 <span class="lineno">  982 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Invalid instance, a where statement evaluated to false.&quot;</span></span>
 <span class="lineno">  983 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;(It can be an implicit where statement added by Conjure.)&quot;</span></span>
 <span class="lineno">  984 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
-<span class="lineno">  985 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">or [ T.isInfixOf &quot;Exception in thread&quot; combinedSR</span></span>
-<span class="lineno">  986 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlytrue">, <span class="nottickedoff">T.isInfixOf &quot;ERROR&quot; combinedSR</span></span></span>
-<span class="lineno">  987 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlytrue">, <span class="nottickedoff">T.isInfixOf &quot;Sub-process exited with error code&quot; combinedSR</span></span></span>
-<span class="lineno">  988 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlytrue">]</span> -&gt;</span>
-<span class="lineno">  989 </span><span class="spaces">             </span><span class="istickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span>
-<span class="lineno">  990 </span><span class="spaces">                                </span><span class="istickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span>
-<span class="lineno">  991 </span><span class="spaces">                                </span><span class="istickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span>
-<span class="lineno">  992 </span><span class="spaces">                                </span><span class="istickedoff">]])</span>
-<span class="lineno">  993 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">exitCodeSR == 0</span> -&gt; <span class="nottickedoff">return (Right solutions)</span></span>
+<span class="lineno">  985 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">or [ T.isInfixOf &quot;Exception in thread&quot; combinedSR</span></span>
+<span class="lineno">  986 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;ERROR&quot; combinedSR</span></span>
+<span class="lineno">  987 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;Sub-process exited with error code&quot; combinedSR</span></span>
+<span class="lineno">  988 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">]</span> -&gt;</span>
+<span class="lineno">  989 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
+<span class="lineno">  990 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
+<span class="lineno">  991 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
+<span class="lineno">  992 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
+<span class="lineno">  993 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">exitCodeSR == 0</span> -&gt; return (Right solutions)</span>
 <span class="lineno">  994 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt;</span>
 <span class="lineno">  995 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
 <span class="lineno">  996 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
