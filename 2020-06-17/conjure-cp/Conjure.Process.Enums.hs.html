@@ -214,76 +214,76 @@ span.spaces    { background: white }
 <span class="lineno">  195 </span>    -&gt; Domain r x                           -- the domain we are working on
 <span class="lineno">  196 </span>    -&gt; Constant                             -- the constant with ints in place of enums &amp; unnameds
 <span class="lineno">  197 </span>    -&gt; Constant                             -- the constant with enums &amp; unnameds again
-<span class="lineno">  198 </span><span class="decl"><span class="nottickedoff">addEnumsAndUnnamedsBack unnameds ctxt = helper</span>
-<span class="lineno">  199 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  201 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  202 </span><span class="spaces">        </span><span class="nottickedoff">helper domain constant = case (domain, constant) of</span>
-<span class="lineno">  203 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  204 </span><span class="spaces">            </span><span class="nottickedoff">(_, c@ConstantUndefined{}) -&gt; c</span>
-<span class="lineno">  205 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  206 </span><span class="spaces">            </span><span class="nottickedoff">(DomainBool  , c) -&gt; c</span>
-<span class="lineno">  207 </span><span class="spaces">            </span><span class="nottickedoff">(DomainIntE{}, c) -&gt; c</span>
-<span class="lineno">  208 </span><span class="spaces">            </span><span class="nottickedoff">(DomainInt{} , c) -&gt; c</span>
-<span class="lineno">  209 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  210 </span><span class="spaces">            </span><span class="nottickedoff">(DomainEnum      ename _ _, ConstantInt _ i) -&gt;</span>
-<span class="lineno">  211 </span><span class="spaces">                </span><span class="nottickedoff">fromMaybe (bug $ &quot;addEnumsAndUnnamedsBack 1:&quot; &lt;+&gt; pretty (i, ename))</span>
-<span class="lineno">  212 </span><span class="spaces">                          </span><span class="nottickedoff">(M.lookup (i, ename) ctxt)</span>
-<span class="lineno">  213 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  214 </span><span class="spaces">            </span><span class="nottickedoff">(DomainReference ename _  , ConstantInt _ i) -&gt;</span>
-<span class="lineno">  215 </span><span class="spaces">                </span><span class="nottickedoff">if ename `elem` unnameds</span>
-<span class="lineno">  216 </span><span class="spaces">                    </span><span class="nottickedoff">then ConstantEnum ename [] (mconcat [ename, &quot;_&quot;, Name (T.pack (show i))])</span>
-<span class="lineno">  217 </span><span class="spaces">                    </span><span class="nottickedoff">else bug $ &quot;addEnumsAndUnnamedsBack Unnamed:&quot; &lt;++&gt; vcat  [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">  218 </span><span class="spaces">                                                                                  </span><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span>
-<span class="lineno">  219 </span><span class="spaces">                                                                                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  220 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  221 </span><span class="spaces">            </span><span class="nottickedoff">(DomainTuple ds, ConstantAbstract (AbsLitTuple cs)) -&gt;</span>
-<span class="lineno">  222 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitTuple</span>
-<span class="lineno">  223 </span><span class="spaces">                    </span><span class="nottickedoff">[ helper d c</span>
-<span class="lineno">  224 </span><span class="spaces">                    </span><span class="nottickedoff">| (d,c) &lt;- zip ds cs ]</span>
-<span class="lineno">  225 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  226 </span><span class="spaces">            </span><span class="nottickedoff">(DomainRecord ds, ConstantAbstract (AbsLitRecord cs)) -&gt;</span>
-<span class="lineno">  227 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitRecord</span>
-<span class="lineno">  228 </span><span class="spaces">                    </span><span class="nottickedoff">[ (n, helper d c)</span>
-<span class="lineno">  229 </span><span class="spaces">                    </span><span class="nottickedoff">| ((n,d),(_,c)) &lt;- zip ds cs ]</span>
-<span class="lineno">  230 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  231 </span><span class="spaces">            </span><span class="nottickedoff">(DomainVariant ds, ConstantAbstract (AbsLitVariant t n c)) -&gt;</span>
-<span class="lineno">  232 </span><span class="spaces">                </span><span class="nottickedoff">case lookup n ds of</span>
-<span class="lineno">  233 </span><span class="spaces">                    </span><span class="nottickedoff">Nothing -&gt; bug $ &quot;addEnumsAndUnnamedsBack Variant:&quot; &lt;++&gt; vcat [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">  234 </span><span class="spaces">                                                                                  </span><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span>
-<span class="lineno">  235 </span><span class="spaces">                                                                                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  236 </span><span class="spaces">                    </span><span class="nottickedoff">Just d  -&gt; ConstantAbstract $ AbsLitVariant t n (helper d c)</span>
-<span class="lineno">  237 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  238 </span><span class="spaces">            </span><span class="nottickedoff">(DomainMatrix _ inner, ConstantAbstract (AbsLitMatrix index vals)) -&gt;</span>
-<span class="lineno">  239 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitMatrix index $ map (helper inner) vals</span>
-<span class="lineno">  240 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  241 </span><span class="spaces">            </span><span class="nottickedoff">(DomainSet _ _ inner, ConstantAbstract (AbsLitSet vals)) -&gt;</span>
-<span class="lineno">  242 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitSet $ map (helper inner) vals</span>
-<span class="lineno">  243 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  244 </span><span class="spaces">            </span><span class="nottickedoff">(DomainMSet _ _ inner, ConstantAbstract (AbsLitMSet vals)) -&gt;</span>
-<span class="lineno">  245 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitMSet $ map (helper inner) vals</span>
-<span class="lineno">  246 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  247 </span><span class="spaces">            </span><span class="nottickedoff">(DomainFunction _ _ fr to, ConstantAbstract (AbsLitFunction vals)) -&gt;</span>
-<span class="lineno">  248 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitFunction</span>
-<span class="lineno">  249 </span><span class="spaces">                    </span><span class="nottickedoff">[ (helper fr a, helper to b)</span>
-<span class="lineno">  250 </span><span class="spaces">                    </span><span class="nottickedoff">| (a,b) &lt;- vals ]</span>
-<span class="lineno">  251 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  252 </span><span class="spaces">            </span><span class="nottickedoff">(DomainSequence _ _ inner, ConstantAbstract (AbsLitSequence vals)) -&gt;</span>
-<span class="lineno">  253 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitSequence $ map (helper inner) vals</span>
-<span class="lineno">  254 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  255 </span><span class="spaces">            </span><span class="nottickedoff">(DomainRelation _ _ inners, ConstantAbstract (AbsLitRelation vals)) -&gt;</span>
-<span class="lineno">  256 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitRelation</span>
-<span class="lineno">  257 </span><span class="spaces">                    </span><span class="nottickedoff">[ [ helper d c | (d,c) &lt;- zip inners line ]</span>
-<span class="lineno">  258 </span><span class="spaces">                    </span><span class="nottickedoff">| line &lt;- vals ]</span>
-<span class="lineno">  259 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  260 </span><span class="spaces">            </span><span class="nottickedoff">(DomainPartition _ _ inner, ConstantAbstract (AbsLitPartition vals)) -&gt;</span>
-<span class="lineno">  261 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract $ AbsLitPartition</span>
-<span class="lineno">  262 </span><span class="spaces">                    </span><span class="nottickedoff">[ [ helper inner c | c &lt;- line ]</span>
-<span class="lineno">  263 </span><span class="spaces">                    </span><span class="nottickedoff">| line &lt;- vals ]</span>
-<span class="lineno">  264 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">  265 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; bug (&quot;addEnumsAndUnnamedsBack 3:&quot; &lt;++&gt; vcat [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">  266 </span><span class="spaces">                                                             </span><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span>
-<span class="lineno">  267 </span><span class="spaces">                                                             </span><span class="nottickedoff">])</span></span>
+<span class="lineno">  198 </span><span class="decl"><span class="istickedoff">addEnumsAndUnnamedsBack unnameds ctxt = helper</span>
+<span class="lineno">  199 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  200 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  201 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff">helper domain constant = case (domain, constant) of</span>
+<span class="lineno">  203 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  204 </span><span class="spaces">            </span><span class="istickedoff">(_, c@ConstantUndefined{}) -&gt; <span class="nottickedoff">c</span></span>
+<span class="lineno">  205 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  206 </span><span class="spaces">            </span><span class="istickedoff">(DomainBool  , c) -&gt; c</span>
+<span class="lineno">  207 </span><span class="spaces">            </span><span class="istickedoff">(DomainIntE{}, c) -&gt; c</span>
+<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff">(DomainInt{} , c) -&gt; c</span>
+<span class="lineno">  209 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  210 </span><span class="spaces">            </span><span class="istickedoff">(DomainEnum      ename _ _, ConstantInt _ i) -&gt;</span>
+<span class="lineno">  211 </span><span class="spaces">                </span><span class="istickedoff">fromMaybe <span class="nottickedoff">(bug $ &quot;addEnumsAndUnnamedsBack 1:&quot; &lt;+&gt; pretty (i, ename))</span></span>
+<span class="lineno">  212 </span><span class="spaces">                          </span><span class="istickedoff">(M.lookup (i, ename) ctxt)</span>
+<span class="lineno">  213 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  214 </span><span class="spaces">            </span><span class="istickedoff">(DomainReference ename _  , ConstantInt _ i) -&gt;</span>
+<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff">if <span class="tickonlytrue">ename `elem` unnameds</span></span>
+<span class="lineno">  216 </span><span class="spaces">                    </span><span class="istickedoff">then ConstantEnum <span class="nottickedoff">ename</span> [] (mconcat [ename, &quot;_&quot;, Name (T.pack (show i))])</span>
+<span class="lineno">  217 </span><span class="spaces">                    </span><span class="istickedoff">else <span class="nottickedoff">bug $ &quot;addEnumsAndUnnamedsBack Unnamed:&quot; &lt;++&gt; vcat  [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  218 </span><span class="spaces">                                                                                  </span><span class="istickedoff"><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  219 </span><span class="spaces">                                                                                  </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  220 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  221 </span><span class="spaces">            </span><span class="istickedoff">(DomainTuple ds, ConstantAbstract (AbsLitTuple cs)) -&gt;</span>
+<span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitTuple</span>
+<span class="lineno">  223 </span><span class="spaces">                    </span><span class="istickedoff">[ helper d c</span>
+<span class="lineno">  224 </span><span class="spaces">                    </span><span class="istickedoff">| (d,c) &lt;- zip ds cs ]</span>
+<span class="lineno">  225 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  226 </span><span class="spaces">            </span><span class="istickedoff">(DomainRecord ds, ConstantAbstract (AbsLitRecord cs)) -&gt;</span>
+<span class="lineno">  227 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitRecord</span>
+<span class="lineno">  228 </span><span class="spaces">                    </span><span class="istickedoff">[ (n, helper d c)</span>
+<span class="lineno">  229 </span><span class="spaces">                    </span><span class="istickedoff">| ((n,d),(_,c)) &lt;- zip ds cs ]</span>
+<span class="lineno">  230 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  231 </span><span class="spaces">            </span><span class="istickedoff">(DomainVariant ds, ConstantAbstract (AbsLitVariant t n c)) -&gt;</span>
+<span class="lineno">  232 </span><span class="spaces">                </span><span class="istickedoff">case lookup n ds of</span>
+<span class="lineno">  233 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">bug $ &quot;addEnumsAndUnnamedsBack Variant:&quot; &lt;++&gt; vcat [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  234 </span><span class="spaces">                                                                                  </span><span class="istickedoff"><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  235 </span><span class="spaces">                                                                                  </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  236 </span><span class="spaces">                    </span><span class="istickedoff">Just d  -&gt; ConstantAbstract $ AbsLitVariant t n (helper d c)</span>
+<span class="lineno">  237 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  238 </span><span class="spaces">            </span><span class="istickedoff">(DomainMatrix _ inner, ConstantAbstract (AbsLitMatrix index vals)) -&gt;</span>
+<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitMatrix index $ map (helper inner) vals</span>
+<span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  241 </span><span class="spaces">            </span><span class="istickedoff">(DomainSet _ _ inner, ConstantAbstract (AbsLitSet vals)) -&gt;</span>
+<span class="lineno">  242 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitSet $ map (helper inner) vals</span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  244 </span><span class="spaces">            </span><span class="istickedoff">(DomainMSet _ _ inner, ConstantAbstract (AbsLitMSet vals)) -&gt;</span>
+<span class="lineno">  245 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitMSet $ map (helper inner) vals</span>
+<span class="lineno">  246 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  247 </span><span class="spaces">            </span><span class="istickedoff">(DomainFunction _ _ fr to, ConstantAbstract (AbsLitFunction vals)) -&gt;</span>
+<span class="lineno">  248 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitFunction</span>
+<span class="lineno">  249 </span><span class="spaces">                    </span><span class="istickedoff">[ (helper fr a, helper to b)</span>
+<span class="lineno">  250 </span><span class="spaces">                    </span><span class="istickedoff">| (a,b) &lt;- vals ]</span>
+<span class="lineno">  251 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  252 </span><span class="spaces">            </span><span class="istickedoff">(DomainSequence _ _ inner, ConstantAbstract (AbsLitSequence vals)) -&gt;</span>
+<span class="lineno">  253 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitSequence $ map (helper inner) vals</span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  255 </span><span class="spaces">            </span><span class="istickedoff">(DomainRelation _ _ inners, ConstantAbstract (AbsLitRelation vals)) -&gt;</span>
+<span class="lineno">  256 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitRelation</span>
+<span class="lineno">  257 </span><span class="spaces">                    </span><span class="istickedoff">[ [ helper d c | (d,c) &lt;- zip inners line ]</span>
+<span class="lineno">  258 </span><span class="spaces">                    </span><span class="istickedoff">| line &lt;- vals ]</span>
+<span class="lineno">  259 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  260 </span><span class="spaces">            </span><span class="istickedoff">(DomainPartition _ _ inner, ConstantAbstract (AbsLitPartition vals)) -&gt;</span>
+<span class="lineno">  261 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract $ AbsLitPartition</span>
+<span class="lineno">  262 </span><span class="spaces">                    </span><span class="istickedoff">[ [ helper inner c | c &lt;- line ]</span>
+<span class="lineno">  263 </span><span class="spaces">                    </span><span class="istickedoff">| line &lt;- vals ]</span>
+<span class="lineno">  264 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  265 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;addEnumsAndUnnamedsBack 3:&quot; &lt;++&gt; vcat [ &quot;domain  :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  266 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;constant:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  267 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">])</span></span></span>
 <span class="lineno">  268 </span>
 <span class="lineno">  269 </span>-- first Name is the value, the second Name is the name of the enum domain
 <span class="lineno">  270 </span>nameToX :: MonadFail m =&gt; M.HashMap Name (Name, Integer) -&gt; Expression -&gt; m Expression
