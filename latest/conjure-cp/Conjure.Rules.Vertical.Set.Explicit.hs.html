@@ -136,6 +136,38 @@ span.spaces    { background: white }
 <span class="lineno">  117 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Vertical rule for set max, Explicit representation.&quot;</span></span>
 <span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff">, return [essence| &amp;m[&amp;maxInIndex] |]</span>
 <span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>
+<span class="lineno">  122 </span>rule_In :: Rule
+<span class="lineno">  123 </span><span class="decl"><span class="istickedoff">rule_In = &quot;set-in-table{Explicit}&quot; `namedRule` theRule where</span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in &amp;set |] = do</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf set</span>
+<span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">Set_Explicit &lt;- representationOf set</span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">tableCheck x set</span>
+<span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">xParts &lt;- downX1 x</span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">let vars = fromList xParts</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">[matrix] &lt;- downX1 set</span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">(index:_) &lt;- indexDomainsOf matrix</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">parts &lt;- downX1 matrix</span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">let oneRow = fromList [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">let table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span>
+<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;set membership to table&quot;</span></span>
+<span class="lineno">  138 </span><span class="spaces">            </span><span class="istickedoff">, return [essence| table(&amp;vars, &amp;table) |]</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_In&quot;</span>
+<span class="lineno">  141 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">tableCheck ::</span>
+<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">MonadFail m =&gt;</span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">(?typeCheckerMode::TypeCheckerMode) =&gt;</span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">Expression -&gt; Expression -&gt; m ()</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff">tableCheck x set | categoryOf set &lt; CatDecision = do</span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">tyX &lt;- typeOf x</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">case tyX of</span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">TypeTuple ts | <span class="tickonlytrue">and [ case t of TypeInt{} -&gt; True ; _ -&gt; <span class="nottickedoff">False</span> | t &lt;- ts ]</span> -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na &quot;rule_In&quot;</span>
+<span class="lineno">  151 </span><span class="spaces">    </span><span class="istickedoff">tableCheck _ _ = na &quot;rule_In&quot;</span></span>
 
 </pre>
 </body>

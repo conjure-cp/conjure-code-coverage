@@ -617,7 +617,7 @@ span.spaces    { background: white }
 <span class="lineno">  598 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSum x) = typeOf x</span>
 <span class="lineno">  599 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSupset x) = typeOf x</span>
 <span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSupsetEq x) = typeOf x</span>
-<span class="lineno">  601 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTable x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  601 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTable x) = typeOf x</span>
 <span class="lineno">  602 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTildeLeq x) = <span class="nottickedoff">typeOf x</span></span>
 <span class="lineno">  603 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTildeLt x) = typeOf x</span>
 <span class="lineno">  604 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpToInt x) = typeOf x</span>
@@ -764,7 +764,7 @@ span.spaces    { background: white }
 <span class="lineno">  745 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSum x) = simplifyOp x</span>
 <span class="lineno">  746 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupset x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  747 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupsetEq x) = <span class="nottickedoff">simplifyOp x</span></span>
-<span class="lineno">  748 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTable x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  748 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTable x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  749 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLeq x) = <span class="nottickedoff">simplifyOp x</span></span>
 <span class="lineno">  750 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLt x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  751 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToInt x) = simplifyOp <span class="nottickedoff">x</span></span>
@@ -839,7 +839,7 @@ span.spaces    { background: white }
 <span class="lineno">  820 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSum x) = prettyPrec prec x</span>
 <span class="lineno">  821 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupset x) = prettyPrec prec x</span>
 <span class="lineno">  822 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupsetEq x) = prettyPrec prec x</span>
-<span class="lineno">  823 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTable x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  823 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTable x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
 <span class="lineno">  824 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLeq x) = <span class="nottickedoff">prettyPrec prec x</span></span>
 <span class="lineno">  825 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLt x) = prettyPrec prec x</span>
 <span class="lineno">  826 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToInt x) = prettyPrec <span class="nottickedoff">prec</span> x</span>

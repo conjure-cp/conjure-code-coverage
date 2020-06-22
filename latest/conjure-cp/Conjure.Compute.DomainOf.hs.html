@@ -183,7 +183,7 @@ span.spaces    { background: white }
 <span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSum x) = domainOf x</span>
 <span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupset x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupsetEq x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTable x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTable x) = domainOf <span class="nottickedoff">x</span></span>
 <span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLeq x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTildeLt x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTogether x) = <span class="nottickedoff">domainOf x</span></span>
@@ -649,7 +649,7 @@ span.spaces    { background: white }
 <span class="lineno">  630 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
 <span class="lineno">  631 </span>
 <span class="lineno">  632 </span>instance DomainOf (OpTable x) where
-<span class="lineno">  633 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
+<span class="lineno">  633 </span>    <span class="decl"><span class="istickedoff">domainOf _ = return DomainBool</span></span>
 <span class="lineno">  634 </span>
 <span class="lineno">  635 </span>instance DomainOf (OpTildeLeq x) where
 <span class="lineno">  636 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
