@@ -58,7 +58,7 @@ span.spaces    { background: white }
 <span class="lineno">   39 </span>import Conjure.Language.AdHoc ( toSimpleJSON )
 <span class="lineno">   40 </span>
 <span class="lineno">   41 </span>-- base
-<span class="lineno">   42 </span>import System.IO ( Handle, hSetBuffering, stdout, BufferMode(..) )
+<span class="lineno">   42 </span>import System.IO ( Handle, hSetBuffering, stdout, BufferMode(..), hPutStrLn, stderr )
 <span class="lineno">   43 </span>import System.Environment ( getEnvironment )
 <span class="lineno">   44 </span>import System.Info ( os )
 <span class="lineno">   45 </span>import GHC.Conc ( numCapabilities )
@@ -167,7 +167,7 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">model0 &lt;- if or [ s `isSuffixOf` essence</span></span>
 <span class="lineno">  149 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">| s &lt;- [&quot;.param&quot;, &quot;.eprime-param&quot;, &quot;.solution&quot;, &quot;.eprime.solution&quot;] ]</span></span>
 <span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">then do</span></span>
-<span class="lineno">  151 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn &quot;Parsing as a parameter file&quot;</span></span>
+<span class="lineno">  151 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">liftIO $ hPutStrLn stderr &quot;Parsing as a parameter file&quot;</span></span>
 <span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">readParamOrSolutionFromFile essence</span></span>
 <span class="lineno">  153 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">else readModelFromFile essence</span></span>
 <span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let model1 = model0</span></span>
