@@ -169,8 +169,45 @@ span.spaces    { background: white }
 <span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
 <span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case tyX of</span></span>
 <span class="lineno">  152 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeTuple ts | and [ case t of TypeInt{} -&gt; True ; _ -&gt; False | t &lt;- ts ] -&gt; return ()</span></span>
-<span class="lineno">  153 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_In&quot;</span></span>
-<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck _ _ = na &quot;rule_In&quot;</span></span></span>
+<span class="lineno">  153 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;tableCheck&quot;</span></span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck _ _ = na &quot;tableCheck&quot;</span></span></span>
+<span class="lineno">  155 </span>
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>rule_InToSet :: Rule
+<span class="lineno">  158 </span><span class="decl"><span class="istickedoff">rule_InToSet = <span class="nottickedoff">&quot;function-inToSet{FunctionAsRelation}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in toSet(&amp;func) |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} &lt;- typeOf func</span></span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Function_AsRelation (Relation_AsSet Set_Explicit) &lt;- representationOf func</span></span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func</span></span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[keyFrom, keyTo] &lt;- downX1 x</span></span>
+<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">keyFromParts &lt;- downX1 keyFrom</span></span>
+<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let vars = fromList (keyFromParts ++ [keyTo])</span></span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel] &lt;- downX1 func</span></span>
+<span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[set] &lt;- downX1 rel</span></span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[matrix] &lt;- downX1 set</span></span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[from, to] &lt;- downX1 matrix</span></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- downX1 from</span></span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(index:_) &lt;- indexDomainsOf from</span></span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let oneRow = fromList $ [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span></span>
+<span class="lineno">  174 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">++ [ [essence| &amp;to[&amp;i] |] ]</span></span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span></span>
+<span class="lineno">  176 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  177 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;relation membership to table&quot;</span></span>
+<span class="lineno">  178 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| table(&amp;vars, &amp;table) |]</span></span>
+<span class="lineno">  179 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_InToSet&quot;</span>
+<span class="lineno">  181 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">tableCheck ::</span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">MonadFail m =&gt;</span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">(?typeCheckerMode::TypeCheckerMode) =&gt;</span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">Expression -&gt; Expression -&gt; m ()</span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func | categoryOf func &lt; CatDecision = do</span></span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tyX &lt;- typeOf x</span></span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case tyX of</span></span>
+<span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeTuple [TypeTuple ts, to] | and [ case t of TypeInt{} -&gt; True ; _ -&gt; False | t &lt;- (to:ts) ] -&gt; return ()</span></span>
+<span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;tableCheck&quot;</span></span>
+<span class="lineno">  191 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">tableCheck _ _ = na &quot;tableCheck&quot;</span></span></span>
 
 </pre>
 </body>
