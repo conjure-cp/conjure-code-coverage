@@ -171,7 +171,7 @@ span.spaces    { background: white }
 <span class="lineno">  152 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpParty x) = domainOf x</span>
 <span class="lineno">  153 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPow x) = domainOf x</span>
 <span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPowerSet x) = domainOf x</span>
-<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPred x) = domainOf x</span>
+<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPred x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  156 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPreImage x) = domainOf x</span>
 <span class="lineno">  157 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpProduct x) = domainOf x</span>
 <span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpRange x) = domainOf x</span>
@@ -182,7 +182,7 @@ span.spaces    { background: white }
 <span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSubset x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSubsetEq x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSubstring x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSucc x) = domainOf x</span>
+<span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSucc x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSum x) = domainOf x</span>
 <span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupset x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSupsetEq x) = <span class="nottickedoff">domainOf x</span></span>
@@ -253,7 +253,7 @@ span.spaces    { background: white }
 <span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpProduct x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRange x) = indexDomainsOf x</span>
 <span class="lineno">  236 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRelationProj x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRestrict x) = indexDomainsOf x</span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpRestrict x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  238 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSlicing x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  239 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubsequence x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpSubset x) = <span class="nottickedoff">indexDomainsOf x</span></span>
@@ -580,7 +580,7 @@ span.spaces    { background: white }
 <span class="lineno">  561 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpPreImage:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
 <span class="lineno">  562 </span>
 <span class="lineno">  563 </span>instance DomainOf x =&gt; DomainOf (OpPred x) where
-<span class="lineno">  564 </span>    <span class="decl"><span class="istickedoff">domainOf (OpPred x) = domainOf x</span></span>        -- TODO: improve
+<span class="lineno">  564 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpPred x) = domainOf x</span></span>        -- TODO: improve
 <span class="lineno">  565 </span>
 <span class="lineno">  566 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpProduct x) where
 <span class="lineno">  567 </span>    <span class="decl"><span class="istickedoff">domainOf (OpProduct x)</span>
@@ -633,7 +633,7 @@ span.spaces    { background: white }
 <span class="lineno">  614 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = fail &quot;domainOf{OpSubstring}&quot;</span></span>
 <span class="lineno">  615 </span>
 <span class="lineno">  616 </span>instance DomainOf x =&gt; DomainOf (OpSucc x) where
-<span class="lineno">  617 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSucc x) = domainOf x</span></span>        -- TODO: improve
+<span class="lineno">  617 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpSucc x) = domainOf x</span></span>        -- TODO: improve
 <span class="lineno">  618 </span>
 <span class="lineno">  619 </span>instance (ExpressionLike x, DomainOf x) =&gt; DomainOf (OpSum x) where
 <span class="lineno">  620 </span>    <span class="decl"><span class="istickedoff">domainOf (OpSum x)</span>

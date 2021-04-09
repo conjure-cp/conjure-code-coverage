@@ -102,7 +102,7 @@ span.spaces    { background: white }
 <span class="lineno">   83 </span>    -&gt; m (Expression -&gt; m Expression)               -- the constraint generator
 <span class="lineno">   84 </span>
 <span class="lineno">   85 </span><span class="decl"><span class="istickedoff">attributeToConstraint domain@DomainSet{} = generator where</span>
-<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
 <span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span>
 <span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>

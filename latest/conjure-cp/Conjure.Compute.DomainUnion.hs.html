@@ -174,7 +174,7 @@ span.spaces    { background: white }
 <span class="lineno">  155 </span>
 <span class="lineno">  156 </span>instance DomainUnion JectivityAttr where
 <span class="lineno">  157 </span>    <span class="decl"><span class="istickedoff">domainUnion x y | <span class="tickonlytrue">x == y</span> = return <span class="nottickedoff">x</span></span>
-<span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">domainUnion _ _ = <span class="nottickedoff">bug &quot;domainUnion JectivityAttr_Injective&quot;</span></span></span>
+<span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">domainUnion _ _ = <span class="nottickedoff">return JectivityAttr_None</span></span></span>
 <span class="lineno">  159 </span>
 <span class="lineno">  160 </span>
 <span class="lineno">  161 </span>instance
