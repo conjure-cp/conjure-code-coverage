@@ -29,7 +29,7 @@ span.spaces    { background: white }
 <span class="lineno">   10 </span>import Data.Numbers.Primes ( isPrime )
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>-- statistics
-<span class="lineno">   13 </span>import Statistics.Sample ( mean, stdDev, harmonicMean, geometricMean, skewness, kurtosis )
+<span class="lineno">   13 </span>import Statistics.Sample ( mean, stdDev, harmonicMean, geometricMean, skewness )
 <span class="lineno">   14 </span>import Statistics.Correlation ( pearson )
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>-- vector
@@ -289,38 +289,37 @@ span.spaces    { background: white }
 <span class="lineno">  270 </span><span class="spaces">                            </span><span class="nottickedoff">, (&quot;harmonicMean&quot;, harmonicMean)</span>
 <span class="lineno">  271 </span><span class="spaces">                            </span><span class="nottickedoff">, (&quot;geometricMean&quot;, geometricMean)</span>
 <span class="lineno">  272 </span><span class="spaces">                            </span><span class="nottickedoff">, (&quot;skewness&quot;, skewness)</span>
-<span class="lineno">  273 </span><span class="spaces">                            </span><span class="nottickedoff">, (&quot;kurtosis&quot;, kurtosis)</span>
-<span class="lineno">  274 </span><span class="spaces">                            </span><span class="nottickedoff">]</span>
-<span class="lineno">  275 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  276 </span><span class="spaces"></span><span class="nottickedoff">collectionStats _ = []</span></span>
-<span class="lineno">  277 </span>
-<span class="lineno">  278 </span>density :: DirectFeatureGen
-<span class="lineno">  279 </span>-- density (_, Just DomainBool, _) = []
-<span class="lineno">  280 </span>-- density (_, Just DomainInt{}, _) = []
-<span class="lineno">  281 </span>-- density (_, Nothing, _) = []
-<span class="lineno">  282 </span>-- -- density _ (name, Just domain@(DomainSet{}), ConstantSet _ xs) =
-<span class="lineno">  283 </span>-- density (name, Just domain, constant) | trace (show $ vcat [ &quot;domain   :&quot; &lt;+&gt; pretty domain
-<span class="lineno">  284 </span>--                                                            , &quot;domain-  :&quot; &lt;+&gt; pretty (show domain)
-<span class="lineno">  285 </span>--                                                            , &quot;constant :&quot; &lt;+&gt; pretty constant
-<span class="lineno">  286 </span>--                                                            , &quot;constant-:&quot; &lt;+&gt; pretty (show constant)
-<span class="lineno">  287 </span>--                                                            ]) False = bug &quot;&quot;
-<span class="lineno">  288 </span><span class="decl"><span class="nottickedoff">density _ = []</span></span>
+<span class="lineno">  273 </span><span class="spaces">                            </span><span class="nottickedoff">]</span>
+<span class="lineno">  274 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="nottickedoff">collectionStats _ = []</span></span>
+<span class="lineno">  276 </span>
+<span class="lineno">  277 </span>density :: DirectFeatureGen
+<span class="lineno">  278 </span>-- density (_, Just DomainBool, _) = []
+<span class="lineno">  279 </span>-- density (_, Just DomainInt{}, _) = []
+<span class="lineno">  280 </span>-- density (_, Nothing, _) = []
+<span class="lineno">  281 </span>-- -- density _ (name, Just domain@(DomainSet{}), ConstantSet _ xs) =
+<span class="lineno">  282 </span>-- density (name, Just domain, constant) | trace (show $ vcat [ &quot;domain   :&quot; &lt;+&gt; pretty domain
+<span class="lineno">  283 </span>--                                                            , &quot;domain-  :&quot; &lt;+&gt; pretty (show domain)
+<span class="lineno">  284 </span>--                                                            , &quot;constant :&quot; &lt;+&gt; pretty constant
+<span class="lineno">  285 </span>--                                                            , &quot;constant-:&quot; &lt;+&gt; pretty (show constant)
+<span class="lineno">  286 </span>--                                                            ]) False = bug &quot;&quot;
+<span class="lineno">  287 </span><span class="decl"><span class="nottickedoff">density _ = []</span></span>
+<span class="lineno">  288 </span>
 <span class="lineno">  289 </span>
 <span class="lineno">  290 </span>
-<span class="lineno">  291 </span>
-<span class="lineno">  292 </span>--------------------------------------------------------------------------------
-<span class="lineno">  293 </span>-- quadratic, via indicators
-<span class="lineno">  294 </span>
-<span class="lineno">  295 </span>allFeatureGen2s :: [FeatureGen2]
-<span class="lineno">  296 </span><span class="decl"><span class="nottickedoff">allFeatureGen2s = [intIntRatio]</span></span>
-<span class="lineno">  297 </span>
-<span class="lineno">  298 </span>intIntRatio :: FeatureGen2
-<span class="lineno">  299 </span><span class="decl"><span class="nottickedoff">intIntRatio _ (nmX, ConstantInt _ x) (nmY, ConstantInt _ y) =</span>
-<span class="lineno">  300 </span><span class="spaces">    </span><span class="nottickedoff">Just (nmX ++ nmY ++ [&quot;intIntRatio&quot;], D (fromIntegral x / fromIntegral y))</span>
-<span class="lineno">  301 </span><span class="spaces"></span><span class="nottickedoff">intIntRatio _ _ _ = Nothing</span></span>
+<span class="lineno">  291 </span>--------------------------------------------------------------------------------
+<span class="lineno">  292 </span>-- quadratic, via indicators
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>allFeatureGen2s :: [FeatureGen2]
+<span class="lineno">  295 </span><span class="decl"><span class="nottickedoff">allFeatureGen2s = [intIntRatio]</span></span>
+<span class="lineno">  296 </span>
+<span class="lineno">  297 </span>intIntRatio :: FeatureGen2
+<span class="lineno">  298 </span><span class="decl"><span class="nottickedoff">intIntRatio _ (nmX, ConstantInt _ x) (nmY, ConstantInt _ y) =</span>
+<span class="lineno">  299 </span><span class="spaces">    </span><span class="nottickedoff">Just (nmX ++ nmY ++ [&quot;intIntRatio&quot;], D (fromIntegral x / fromIntegral y))</span>
+<span class="lineno">  300 </span><span class="spaces"></span><span class="nottickedoff">intIntRatio _ _ _ = Nothing</span></span>
+<span class="lineno">  301 </span>
 <span class="lineno">  302 </span>
 <span class="lineno">  303 </span>
-<span class="lineno">  304 </span>
 
 </pre>
 </body>
