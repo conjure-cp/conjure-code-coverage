@@ -1,0 +1,969 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, DeriveFunctor, DeriveTraversable, DeriveFoldable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE UndecidableInstances #-}
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>module Conjure.Language.Expression.Op.Internal.Generated
+<span class="lineno">    5 </span>    ( Op(..)
+<span class="lineno">    6 </span>    , valuesInIntDomain
+<span class="lineno">    7 </span>    , OpActive(..)
+<span class="lineno">    8 </span>    , OpAllDiff(..)
+<span class="lineno">    9 </span>    , OpAllDiffExcept(..)
+<span class="lineno">   10 </span>    , OpAnd(..)
+<span class="lineno">   11 </span>    , OpApart(..)
+<span class="lineno">   12 </span>    , OpAtLeast(..)
+<span class="lineno">   13 </span>    , OpAtMost(..)
+<span class="lineno">   14 </span>    , OpAttributeAsConstraint(..)
+<span class="lineno">   15 </span>    , OpCatchUndef(..)
+<span class="lineno">   16 </span>    , OpDefined(..)
+<span class="lineno">   17 </span>    , OpDiv(..)
+<span class="lineno">   18 </span>    , OpDontCare(..)
+<span class="lineno">   19 </span>    , OpDotLeq(..)
+<span class="lineno">   20 </span>    , OpDotLt(..)
+<span class="lineno">   21 </span>    , OpEq(..)
+<span class="lineno">   22 </span>    , OpFactorial(..)
+<span class="lineno">   23 </span>    , OpFlatten(..)
+<span class="lineno">   24 </span>    , OpFreq(..)
+<span class="lineno">   25 </span>    , OpGCC(..)
+<span class="lineno">   26 </span>    , OpGeq(..)
+<span class="lineno">   27 </span>    , OpGt(..)
+<span class="lineno">   28 </span>    , OpHist(..)
+<span class="lineno">   29 </span>    , OpIff(..)
+<span class="lineno">   30 </span>    , OpImage(..)
+<span class="lineno">   31 </span>    , OpImageSet(..)
+<span class="lineno">   32 </span>    , OpImply(..)
+<span class="lineno">   33 </span>    , OpIn(..)
+<span class="lineno">   34 </span>    , OpIndexing(..)
+<span class="lineno">   35 </span>    , OpIntersect(..)
+<span class="lineno">   36 </span>    , OpInverse(..)
+<span class="lineno">   37 </span>    , OpLeq(..)
+<span class="lineno">   38 </span>    , OpLexLeq(..)
+<span class="lineno">   39 </span>    , OpLexLt(..)
+<span class="lineno">   40 </span>    , OpLt(..)
+<span class="lineno">   41 </span>    , OpMakeTable(..)
+<span class="lineno">   42 </span>    , OpMax(..)
+<span class="lineno">   43 </span>    , OpMin(..)
+<span class="lineno">   44 </span>    , OpMinus(..)
+<span class="lineno">   45 </span>    , OpMod(..)
+<span class="lineno">   46 </span>    , OpNegate(..)
+<span class="lineno">   47 </span>    , OpNeq(..)
+<span class="lineno">   48 </span>    , OpNot(..)
+<span class="lineno">   49 </span>    , OpOr(..)
+<span class="lineno">   50 </span>    , OpParticipants(..)
+<span class="lineno">   51 </span>    , OpParts(..)
+<span class="lineno">   52 </span>    , OpParty(..)
+<span class="lineno">   53 </span>    , OpPow(..)
+<span class="lineno">   54 </span>    , OpPowerSet(..)
+<span class="lineno">   55 </span>    , OpPreImage(..)
+<span class="lineno">   56 </span>    , OpPred(..)
+<span class="lineno">   57 </span>    , OpProduct(..)
+<span class="lineno">   58 </span>    , OpRange(..)
+<span class="lineno">   59 </span>    , OpRelationProj(..)
+<span class="lineno">   60 </span>    , OpRestrict(..)
+<span class="lineno">   61 </span>    , OpSlicing(..)
+<span class="lineno">   62 </span>    , OpSubsequence(..)
+<span class="lineno">   63 </span>    , OpSubset(..)
+<span class="lineno">   64 </span>    , OpSubsetEq(..)
+<span class="lineno">   65 </span>    , OpSubstring(..)
+<span class="lineno">   66 </span>    , OpSucc(..)
+<span class="lineno">   67 </span>    , OpSum(..)
+<span class="lineno">   68 </span>    , OpSupset(..)
+<span class="lineno">   69 </span>    , OpSupsetEq(..)
+<span class="lineno">   70 </span>    , OpTable(..)
+<span class="lineno">   71 </span>    , OpTildeLeq(..)
+<span class="lineno">   72 </span>    , OpTildeLt(..)
+<span class="lineno">   73 </span>    , OpToInt(..)
+<span class="lineno">   74 </span>    , OpToMSet(..)
+<span class="lineno">   75 </span>    , OpToRelation(..)
+<span class="lineno">   76 </span>    , OpToSet(..)
+<span class="lineno">   77 </span>    , OpTogether(..)
+<span class="lineno">   78 </span>    , OpTransform(..)
+<span class="lineno">   79 </span>    , OpTrue(..)
+<span class="lineno">   80 </span>    , OpTwoBars(..)
+<span class="lineno">   81 </span>    , OpUnion(..)
+<span class="lineno">   82 </span>    , OpXor(..)
+<span class="lineno">   83 </span>    ) where
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>-- conjure
+<span class="lineno">   86 </span>import Conjure.Prelude
+<span class="lineno">   87 </span>import Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>import Conjure.Language.Expression.Op.Active
+<span class="lineno">   90 </span>import Conjure.Language.Expression.Op.AllDiff
+<span class="lineno">   91 </span>import Conjure.Language.Expression.Op.AllDiffExcept
+<span class="lineno">   92 </span>import Conjure.Language.Expression.Op.And
+<span class="lineno">   93 </span>import Conjure.Language.Expression.Op.Apart
+<span class="lineno">   94 </span>import Conjure.Language.Expression.Op.AtLeast
+<span class="lineno">   95 </span>import Conjure.Language.Expression.Op.AtMost
+<span class="lineno">   96 </span>import Conjure.Language.Expression.Op.AttributeAsConstraint
+<span class="lineno">   97 </span>import Conjure.Language.Expression.Op.CatchUndef
+<span class="lineno">   98 </span>import Conjure.Language.Expression.Op.Defined
+<span class="lineno">   99 </span>import Conjure.Language.Expression.Op.Div
+<span class="lineno">  100 </span>import Conjure.Language.Expression.Op.DontCare
+<span class="lineno">  101 </span>import Conjure.Language.Expression.Op.DotLeq
+<span class="lineno">  102 </span>import Conjure.Language.Expression.Op.DotLt
+<span class="lineno">  103 </span>import Conjure.Language.Expression.Op.Eq
+<span class="lineno">  104 </span>import Conjure.Language.Expression.Op.Factorial
+<span class="lineno">  105 </span>import Conjure.Language.Expression.Op.Flatten
+<span class="lineno">  106 </span>import Conjure.Language.Expression.Op.Freq
+<span class="lineno">  107 </span>import Conjure.Language.Expression.Op.GCC
+<span class="lineno">  108 </span>import Conjure.Language.Expression.Op.Geq
+<span class="lineno">  109 </span>import Conjure.Language.Expression.Op.Gt
+<span class="lineno">  110 </span>import Conjure.Language.Expression.Op.Hist
+<span class="lineno">  111 </span>import Conjure.Language.Expression.Op.Iff
+<span class="lineno">  112 </span>import Conjure.Language.Expression.Op.Image
+<span class="lineno">  113 </span>import Conjure.Language.Expression.Op.ImageSet
+<span class="lineno">  114 </span>import Conjure.Language.Expression.Op.Imply
+<span class="lineno">  115 </span>import Conjure.Language.Expression.Op.In
+<span class="lineno">  116 </span>import Conjure.Language.Expression.Op.Indexing
+<span class="lineno">  117 </span>import Conjure.Language.Expression.Op.Intersect
+<span class="lineno">  118 </span>import Conjure.Language.Expression.Op.Inverse
+<span class="lineno">  119 </span>import Conjure.Language.Expression.Op.Leq
+<span class="lineno">  120 </span>import Conjure.Language.Expression.Op.LexLeq
+<span class="lineno">  121 </span>import Conjure.Language.Expression.Op.LexLt
+<span class="lineno">  122 </span>import Conjure.Language.Expression.Op.Lt
+<span class="lineno">  123 </span>import Conjure.Language.Expression.Op.MakeTable
+<span class="lineno">  124 </span>import Conjure.Language.Expression.Op.Max
+<span class="lineno">  125 </span>import Conjure.Language.Expression.Op.Min
+<span class="lineno">  126 </span>import Conjure.Language.Expression.Op.Minus
+<span class="lineno">  127 </span>import Conjure.Language.Expression.Op.Mod
+<span class="lineno">  128 </span>import Conjure.Language.Expression.Op.Negate
+<span class="lineno">  129 </span>import Conjure.Language.Expression.Op.Neq
+<span class="lineno">  130 </span>import Conjure.Language.Expression.Op.Not
+<span class="lineno">  131 </span>import Conjure.Language.Expression.Op.Or
+<span class="lineno">  132 </span>import Conjure.Language.Expression.Op.Participants
+<span class="lineno">  133 </span>import Conjure.Language.Expression.Op.Parts
+<span class="lineno">  134 </span>import Conjure.Language.Expression.Op.Party
+<span class="lineno">  135 </span>import Conjure.Language.Expression.Op.Pow
+<span class="lineno">  136 </span>import Conjure.Language.Expression.Op.PowerSet
+<span class="lineno">  137 </span>import Conjure.Language.Expression.Op.PreImage
+<span class="lineno">  138 </span>import Conjure.Language.Expression.Op.Pred
+<span class="lineno">  139 </span>import Conjure.Language.Expression.Op.Product
+<span class="lineno">  140 </span>import Conjure.Language.Expression.Op.Range
+<span class="lineno">  141 </span>import Conjure.Language.Expression.Op.RelationProj
+<span class="lineno">  142 </span>import Conjure.Language.Expression.Op.Restrict
+<span class="lineno">  143 </span>import Conjure.Language.Expression.Op.Slicing
+<span class="lineno">  144 </span>import Conjure.Language.Expression.Op.Subsequence
+<span class="lineno">  145 </span>import Conjure.Language.Expression.Op.Subset
+<span class="lineno">  146 </span>import Conjure.Language.Expression.Op.SubsetEq
+<span class="lineno">  147 </span>import Conjure.Language.Expression.Op.Substring
+<span class="lineno">  148 </span>import Conjure.Language.Expression.Op.Succ
+<span class="lineno">  149 </span>import Conjure.Language.Expression.Op.Sum
+<span class="lineno">  150 </span>import Conjure.Language.Expression.Op.Supset
+<span class="lineno">  151 </span>import Conjure.Language.Expression.Op.SupsetEq
+<span class="lineno">  152 </span>import Conjure.Language.Expression.Op.Table
+<span class="lineno">  153 </span>import Conjure.Language.Expression.Op.TildeLeq
+<span class="lineno">  154 </span>import Conjure.Language.Expression.Op.TildeLt
+<span class="lineno">  155 </span>import Conjure.Language.Expression.Op.ToInt
+<span class="lineno">  156 </span>import Conjure.Language.Expression.Op.ToMSet
+<span class="lineno">  157 </span>import Conjure.Language.Expression.Op.ToRelation
+<span class="lineno">  158 </span>import Conjure.Language.Expression.Op.ToSet
+<span class="lineno">  159 </span>import Conjure.Language.Expression.Op.Together
+<span class="lineno">  160 </span>import Conjure.Language.Expression.Op.Transform
+<span class="lineno">  161 </span>import Conjure.Language.Expression.Op.True
+<span class="lineno">  162 </span>import Conjure.Language.Expression.Op.TwoBars
+<span class="lineno">  163 </span>import Conjure.Language.Expression.Op.Union
+<span class="lineno">  164 </span>import Conjure.Language.Expression.Op.Xor
+<span class="lineno">  165 </span>
+<span class="lineno">  166 </span>data Op x
+<span class="lineno">  167 </span>    = MkOpActive (OpActive x)
+<span class="lineno">  168 </span>    | MkOpAllDiff (OpAllDiff x)
+<span class="lineno">  169 </span>    | MkOpAllDiffExcept (OpAllDiffExcept x)
+<span class="lineno">  170 </span>    | MkOpAnd (OpAnd x)
+<span class="lineno">  171 </span>    | MkOpApart (OpApart x)
+<span class="lineno">  172 </span>    | MkOpAtLeast (OpAtLeast x)
+<span class="lineno">  173 </span>    | MkOpAtMost (OpAtMost x)
+<span class="lineno">  174 </span>    | MkOpAttributeAsConstraint (OpAttributeAsConstraint x)
+<span class="lineno">  175 </span>    | MkOpCatchUndef (OpCatchUndef x)
+<span class="lineno">  176 </span>    | MkOpDefined (OpDefined x)
+<span class="lineno">  177 </span>    | MkOpDiv (OpDiv x)
+<span class="lineno">  178 </span>    | MkOpDontCare (OpDontCare x)
+<span class="lineno">  179 </span>    | MkOpDotLeq (OpDotLeq x)
+<span class="lineno">  180 </span>    | MkOpDotLt (OpDotLt x)
+<span class="lineno">  181 </span>    | MkOpEq (OpEq x)
+<span class="lineno">  182 </span>    | MkOpFactorial (OpFactorial x)
+<span class="lineno">  183 </span>    | MkOpFlatten (OpFlatten x)
+<span class="lineno">  184 </span>    | MkOpFreq (OpFreq x)
+<span class="lineno">  185 </span>    | MkOpGCC (OpGCC x)
+<span class="lineno">  186 </span>    | MkOpGeq (OpGeq x)
+<span class="lineno">  187 </span>    | MkOpGt (OpGt x)
+<span class="lineno">  188 </span>    | MkOpHist (OpHist x)
+<span class="lineno">  189 </span>    | MkOpIff (OpIff x)
+<span class="lineno">  190 </span>    | MkOpImage (OpImage x)
+<span class="lineno">  191 </span>    | MkOpImageSet (OpImageSet x)
+<span class="lineno">  192 </span>    | MkOpImply (OpImply x)
+<span class="lineno">  193 </span>    | MkOpIn (OpIn x)
+<span class="lineno">  194 </span>    | MkOpIndexing (OpIndexing x)
+<span class="lineno">  195 </span>    | MkOpIntersect (OpIntersect x)
+<span class="lineno">  196 </span>    | MkOpInverse (OpInverse x)
+<span class="lineno">  197 </span>    | MkOpLeq (OpLeq x)
+<span class="lineno">  198 </span>    | MkOpLexLeq (OpLexLeq x)
+<span class="lineno">  199 </span>    | MkOpLexLt (OpLexLt x)
+<span class="lineno">  200 </span>    | MkOpLt (OpLt x)
+<span class="lineno">  201 </span>    | MkOpMakeTable (OpMakeTable x)
+<span class="lineno">  202 </span>    | MkOpMax (OpMax x)
+<span class="lineno">  203 </span>    | MkOpMin (OpMin x)
+<span class="lineno">  204 </span>    | MkOpMinus (OpMinus x)
+<span class="lineno">  205 </span>    | MkOpMod (OpMod x)
+<span class="lineno">  206 </span>    | MkOpNegate (OpNegate x)
+<span class="lineno">  207 </span>    | MkOpNeq (OpNeq x)
+<span class="lineno">  208 </span>    | MkOpNot (OpNot x)
+<span class="lineno">  209 </span>    | MkOpOr (OpOr x)
+<span class="lineno">  210 </span>    | MkOpParticipants (OpParticipants x)
+<span class="lineno">  211 </span>    | MkOpParts (OpParts x)
+<span class="lineno">  212 </span>    | MkOpParty (OpParty x)
+<span class="lineno">  213 </span>    | MkOpPow (OpPow x)
+<span class="lineno">  214 </span>    | MkOpPowerSet (OpPowerSet x)
+<span class="lineno">  215 </span>    | MkOpPreImage (OpPreImage x)
+<span class="lineno">  216 </span>    | MkOpPred (OpPred x)
+<span class="lineno">  217 </span>    | MkOpProduct (OpProduct x)
+<span class="lineno">  218 </span>    | MkOpRange (OpRange x)
+<span class="lineno">  219 </span>    | MkOpRelationProj (OpRelationProj x)
+<span class="lineno">  220 </span>    | MkOpRestrict (OpRestrict x)
+<span class="lineno">  221 </span>    | MkOpSlicing (OpSlicing x)
+<span class="lineno">  222 </span>    | MkOpSubsequence (OpSubsequence x)
+<span class="lineno">  223 </span>    | MkOpSubset (OpSubset x)
+<span class="lineno">  224 </span>    | MkOpSubsetEq (OpSubsetEq x)
+<span class="lineno">  225 </span>    | MkOpSubstring (OpSubstring x)
+<span class="lineno">  226 </span>    | MkOpSucc (OpSucc x)
+<span class="lineno">  227 </span>    | MkOpSum (OpSum x)
+<span class="lineno">  228 </span>    | MkOpSupset (OpSupset x)
+<span class="lineno">  229 </span>    | MkOpSupsetEq (OpSupsetEq x)
+<span class="lineno">  230 </span>    | MkOpTable (OpTable x)
+<span class="lineno">  231 </span>    | MkOpTildeLeq (OpTildeLeq x)
+<span class="lineno">  232 </span>    | MkOpTildeLt (OpTildeLt x)
+<span class="lineno">  233 </span>    | MkOpToInt (OpToInt x)
+<span class="lineno">  234 </span>    | MkOpToMSet (OpToMSet x)
+<span class="lineno">  235 </span>    | MkOpToRelation (OpToRelation x)
+<span class="lineno">  236 </span>    | MkOpToSet (OpToSet x)
+<span class="lineno">  237 </span>    | MkOpTogether (OpTogether x)
+<span class="lineno">  238 </span>    | MkOpTransform (OpTransform x)
+<span class="lineno">  239 </span>    | MkOpTrue (OpTrue x)
+<span class="lineno">  240 </span>    | MkOpTwoBars (OpTwoBars x)
+<span class="lineno">  241 </span>    | MkOpUnion (OpUnion x)
+<span class="lineno">  242 </span>    | MkOpXor (OpXor x)
+<span class="lineno">  243 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff">Ord</span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  244 </span>
+<span class="lineno">  245 </span>instance Serialize x =&gt; Serialize (Op x)
+<span class="lineno">  246 </span>instance Hashable  x =&gt; Hashable  (Op x)
+<span class="lineno">  247 </span>instance ToJSON    x =&gt; ToJSON    (Op x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  248 </span>instance FromJSON  x =&gt; FromJSON  (Op x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  249 </span>
+<span class="lineno">  250 </span>
+<span class="lineno">  251 </span>instance OpActive x :&lt; Op x where
+<span class="lineno">  252 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpActive</span></span>
+<span class="lineno">  253 </span>    <span class="decl"><span class="nottickedoff">project (MkOpActive x) = return x</span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpActive&quot;</span></span>
+<span class="lineno">  255 </span>instance OpAllDiff x :&lt; Op x where
+<span class="lineno">  256 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAllDiff</span></span>
+<span class="lineno">  257 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAllDiff x) = return x</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAllDiff&quot;</span></span>
+<span class="lineno">  259 </span>instance OpAllDiffExcept x :&lt; Op x where
+<span class="lineno">  260 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAllDiffExcept</span></span>
+<span class="lineno">  261 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAllDiffExcept x) = return x</span>
+<span class="lineno">  262 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAllDiffExcept&quot;</span></span>
+<span class="lineno">  263 </span>instance OpAnd x :&lt; Op x where
+<span class="lineno">  264 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAnd</span></span>
+<span class="lineno">  265 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAnd x) = return x</span>
+<span class="lineno">  266 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAnd&quot;</span></span>
+<span class="lineno">  267 </span>instance OpApart x :&lt; Op x where
+<span class="lineno">  268 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpApart</span></span>
+<span class="lineno">  269 </span>    <span class="decl"><span class="nottickedoff">project (MkOpApart x) = return x</span>
+<span class="lineno">  270 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpApart&quot;</span></span>
+<span class="lineno">  271 </span>instance OpAtLeast x :&lt; Op x where
+<span class="lineno">  272 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAtLeast</span></span>
+<span class="lineno">  273 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAtLeast x) = return x</span>
+<span class="lineno">  274 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAtLeast&quot;</span></span>
+<span class="lineno">  275 </span>instance OpAtMost x :&lt; Op x where
+<span class="lineno">  276 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAtMost</span></span>
+<span class="lineno">  277 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAtMost x) = return x</span>
+<span class="lineno">  278 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAtMost&quot;</span></span>
+<span class="lineno">  279 </span>instance OpAttributeAsConstraint x :&lt; Op x where
+<span class="lineno">  280 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpAttributeAsConstraint</span></span>
+<span class="lineno">  281 </span>    <span class="decl"><span class="nottickedoff">project (MkOpAttributeAsConstraint x) = return x</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpAttributeAsConstraint&quot;</span></span>
+<span class="lineno">  283 </span>instance OpCatchUndef x :&lt; Op x where
+<span class="lineno">  284 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpCatchUndef</span></span>
+<span class="lineno">  285 </span>    <span class="decl"><span class="nottickedoff">project (MkOpCatchUndef x) = return x</span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpCatchUndef&quot;</span></span>
+<span class="lineno">  287 </span>instance OpDefined x :&lt; Op x where
+<span class="lineno">  288 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpDefined</span></span>
+<span class="lineno">  289 </span>    <span class="decl"><span class="nottickedoff">project (MkOpDefined x) = return x</span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpDefined&quot;</span></span>
+<span class="lineno">  291 </span>instance OpDiv x :&lt; Op x where
+<span class="lineno">  292 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpDiv</span></span>
+<span class="lineno">  293 </span>    <span class="decl"><span class="nottickedoff">project (MkOpDiv x) = return x</span>
+<span class="lineno">  294 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpDiv&quot;</span></span>
+<span class="lineno">  295 </span>instance OpDontCare x :&lt; Op x where
+<span class="lineno">  296 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpDontCare</span></span>
+<span class="lineno">  297 </span>    <span class="decl"><span class="nottickedoff">project (MkOpDontCare x) = return x</span>
+<span class="lineno">  298 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpDontCare&quot;</span></span>
+<span class="lineno">  299 </span>instance OpDotLeq x :&lt; Op x where
+<span class="lineno">  300 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpDotLeq</span></span>
+<span class="lineno">  301 </span>    <span class="decl"><span class="nottickedoff">project (MkOpDotLeq x) = return x</span>
+<span class="lineno">  302 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpDotLeq&quot;</span></span>
+<span class="lineno">  303 </span>instance OpDotLt x :&lt; Op x where
+<span class="lineno">  304 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpDotLt</span></span>
+<span class="lineno">  305 </span>    <span class="decl"><span class="nottickedoff">project (MkOpDotLt x) = return x</span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpDotLt&quot;</span></span>
+<span class="lineno">  307 </span>instance OpEq x :&lt; Op x where
+<span class="lineno">  308 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpEq</span></span>
+<span class="lineno">  309 </span>    <span class="decl"><span class="nottickedoff">project (MkOpEq x) = return x</span>
+<span class="lineno">  310 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpEq&quot;</span></span>
+<span class="lineno">  311 </span>instance OpFactorial x :&lt; Op x where
+<span class="lineno">  312 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpFactorial</span></span>
+<span class="lineno">  313 </span>    <span class="decl"><span class="nottickedoff">project (MkOpFactorial x) = return x</span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpFactorial&quot;</span></span>
+<span class="lineno">  315 </span>instance OpFlatten x :&lt; Op x where
+<span class="lineno">  316 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpFlatten</span></span>
+<span class="lineno">  317 </span>    <span class="decl"><span class="nottickedoff">project (MkOpFlatten x) = return x</span>
+<span class="lineno">  318 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpFlatten&quot;</span></span>
+<span class="lineno">  319 </span>instance OpFreq x :&lt; Op x where
+<span class="lineno">  320 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpFreq</span></span>
+<span class="lineno">  321 </span>    <span class="decl"><span class="nottickedoff">project (MkOpFreq x) = return x</span>
+<span class="lineno">  322 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpFreq&quot;</span></span>
+<span class="lineno">  323 </span>instance OpGCC x :&lt; Op x where
+<span class="lineno">  324 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpGCC</span></span>
+<span class="lineno">  325 </span>    <span class="decl"><span class="nottickedoff">project (MkOpGCC x) = return x</span>
+<span class="lineno">  326 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpGCC&quot;</span></span>
+<span class="lineno">  327 </span>instance OpGeq x :&lt; Op x where
+<span class="lineno">  328 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpGeq</span></span>
+<span class="lineno">  329 </span>    <span class="decl"><span class="nottickedoff">project (MkOpGeq x) = return x</span>
+<span class="lineno">  330 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpGeq&quot;</span></span>
+<span class="lineno">  331 </span>instance OpGt x :&lt; Op x where
+<span class="lineno">  332 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpGt</span></span>
+<span class="lineno">  333 </span>    <span class="decl"><span class="nottickedoff">project (MkOpGt x) = return x</span>
+<span class="lineno">  334 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpGt&quot;</span></span>
+<span class="lineno">  335 </span>instance OpHist x :&lt; Op x where
+<span class="lineno">  336 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpHist</span></span>
+<span class="lineno">  337 </span>    <span class="decl"><span class="nottickedoff">project (MkOpHist x) = return x</span>
+<span class="lineno">  338 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpHist&quot;</span></span>
+<span class="lineno">  339 </span>instance OpIff x :&lt; Op x where
+<span class="lineno">  340 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpIff</span></span>
+<span class="lineno">  341 </span>    <span class="decl"><span class="nottickedoff">project (MkOpIff x) = return x</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpIff&quot;</span></span>
+<span class="lineno">  343 </span>instance OpImage x :&lt; Op x where
+<span class="lineno">  344 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpImage</span></span>
+<span class="lineno">  345 </span>    <span class="decl"><span class="nottickedoff">project (MkOpImage x) = return x</span>
+<span class="lineno">  346 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpImage&quot;</span></span>
+<span class="lineno">  347 </span>instance OpImageSet x :&lt; Op x where
+<span class="lineno">  348 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpImageSet</span></span>
+<span class="lineno">  349 </span>    <span class="decl"><span class="nottickedoff">project (MkOpImageSet x) = return x</span>
+<span class="lineno">  350 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpImageSet&quot;</span></span>
+<span class="lineno">  351 </span>instance OpImply x :&lt; Op x where
+<span class="lineno">  352 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpImply</span></span>
+<span class="lineno">  353 </span>    <span class="decl"><span class="nottickedoff">project (MkOpImply x) = return x</span>
+<span class="lineno">  354 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpImply&quot;</span></span>
+<span class="lineno">  355 </span>instance OpIn x :&lt; Op x where
+<span class="lineno">  356 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpIn</span></span>
+<span class="lineno">  357 </span>    <span class="decl"><span class="nottickedoff">project (MkOpIn x) = return x</span>
+<span class="lineno">  358 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpIn&quot;</span></span>
+<span class="lineno">  359 </span>instance OpIndexing x :&lt; Op x where
+<span class="lineno">  360 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpIndexing</span></span>
+<span class="lineno">  361 </span>    <span class="decl"><span class="nottickedoff">project (MkOpIndexing x) = return x</span>
+<span class="lineno">  362 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpIndexing&quot;</span></span>
+<span class="lineno">  363 </span>instance OpIntersect x :&lt; Op x where
+<span class="lineno">  364 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpIntersect</span></span>
+<span class="lineno">  365 </span>    <span class="decl"><span class="nottickedoff">project (MkOpIntersect x) = return x</span>
+<span class="lineno">  366 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpIntersect&quot;</span></span>
+<span class="lineno">  367 </span>instance OpInverse x :&lt; Op x where
+<span class="lineno">  368 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpInverse</span></span>
+<span class="lineno">  369 </span>    <span class="decl"><span class="nottickedoff">project (MkOpInverse x) = return x</span>
+<span class="lineno">  370 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpInverse&quot;</span></span>
+<span class="lineno">  371 </span>instance OpLeq x :&lt; Op x where
+<span class="lineno">  372 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpLeq</span></span>
+<span class="lineno">  373 </span>    <span class="decl"><span class="nottickedoff">project (MkOpLeq x) = return x</span>
+<span class="lineno">  374 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpLeq&quot;</span></span>
+<span class="lineno">  375 </span>instance OpLexLeq x :&lt; Op x where
+<span class="lineno">  376 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpLexLeq</span></span>
+<span class="lineno">  377 </span>    <span class="decl"><span class="nottickedoff">project (MkOpLexLeq x) = return x</span>
+<span class="lineno">  378 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpLexLeq&quot;</span></span>
+<span class="lineno">  379 </span>instance OpLexLt x :&lt; Op x where
+<span class="lineno">  380 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpLexLt</span></span>
+<span class="lineno">  381 </span>    <span class="decl"><span class="nottickedoff">project (MkOpLexLt x) = return x</span>
+<span class="lineno">  382 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpLexLt&quot;</span></span>
+<span class="lineno">  383 </span>instance OpLt x :&lt; Op x where
+<span class="lineno">  384 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpLt</span></span>
+<span class="lineno">  385 </span>    <span class="decl"><span class="nottickedoff">project (MkOpLt x) = return x</span>
+<span class="lineno">  386 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpLt&quot;</span></span>
+<span class="lineno">  387 </span>instance OpMakeTable x :&lt; Op x where
+<span class="lineno">  388 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpMakeTable</span></span>
+<span class="lineno">  389 </span>    <span class="decl"><span class="nottickedoff">project (MkOpMakeTable x) = return x</span>
+<span class="lineno">  390 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpMakeTable&quot;</span></span>
+<span class="lineno">  391 </span>instance OpMax x :&lt; Op x where
+<span class="lineno">  392 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpMax</span></span>
+<span class="lineno">  393 </span>    <span class="decl"><span class="nottickedoff">project (MkOpMax x) = return x</span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpMax&quot;</span></span>
+<span class="lineno">  395 </span>instance OpMin x :&lt; Op x where
+<span class="lineno">  396 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpMin</span></span>
+<span class="lineno">  397 </span>    <span class="decl"><span class="nottickedoff">project (MkOpMin x) = return x</span>
+<span class="lineno">  398 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpMin&quot;</span></span>
+<span class="lineno">  399 </span>instance OpMinus x :&lt; Op x where
+<span class="lineno">  400 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpMinus</span></span>
+<span class="lineno">  401 </span>    <span class="decl"><span class="nottickedoff">project (MkOpMinus x) = return x</span>
+<span class="lineno">  402 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpMinus&quot;</span></span>
+<span class="lineno">  403 </span>instance OpMod x :&lt; Op x where
+<span class="lineno">  404 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpMod</span></span>
+<span class="lineno">  405 </span>    <span class="decl"><span class="nottickedoff">project (MkOpMod x) = return x</span>
+<span class="lineno">  406 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpMod&quot;</span></span>
+<span class="lineno">  407 </span>instance OpNegate x :&lt; Op x where
+<span class="lineno">  408 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpNegate</span></span>
+<span class="lineno">  409 </span>    <span class="decl"><span class="nottickedoff">project (MkOpNegate x) = return x</span>
+<span class="lineno">  410 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpNegate&quot;</span></span>
+<span class="lineno">  411 </span>instance OpNeq x :&lt; Op x where
+<span class="lineno">  412 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpNeq</span></span>
+<span class="lineno">  413 </span>    <span class="decl"><span class="nottickedoff">project (MkOpNeq x) = return x</span>
+<span class="lineno">  414 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpNeq&quot;</span></span>
+<span class="lineno">  415 </span>instance OpNot x :&lt; Op x where
+<span class="lineno">  416 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpNot</span></span>
+<span class="lineno">  417 </span>    <span class="decl"><span class="nottickedoff">project (MkOpNot x) = return x</span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpNot&quot;</span></span>
+<span class="lineno">  419 </span>instance OpOr x :&lt; Op x where
+<span class="lineno">  420 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpOr</span></span>
+<span class="lineno">  421 </span>    <span class="decl"><span class="nottickedoff">project (MkOpOr x) = return x</span>
+<span class="lineno">  422 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpOr&quot;</span></span>
+<span class="lineno">  423 </span>instance OpParticipants x :&lt; Op x where
+<span class="lineno">  424 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpParticipants</span></span>
+<span class="lineno">  425 </span>    <span class="decl"><span class="nottickedoff">project (MkOpParticipants x) = return x</span>
+<span class="lineno">  426 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpParticipants&quot;</span></span>
+<span class="lineno">  427 </span>instance OpParts x :&lt; Op x where
+<span class="lineno">  428 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpParts</span></span>
+<span class="lineno">  429 </span>    <span class="decl"><span class="nottickedoff">project (MkOpParts x) = return x</span>
+<span class="lineno">  430 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpParts&quot;</span></span>
+<span class="lineno">  431 </span>instance OpParty x :&lt; Op x where
+<span class="lineno">  432 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpParty</span></span>
+<span class="lineno">  433 </span>    <span class="decl"><span class="nottickedoff">project (MkOpParty x) = return x</span>
+<span class="lineno">  434 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpParty&quot;</span></span>
+<span class="lineno">  435 </span>instance OpPow x :&lt; Op x where
+<span class="lineno">  436 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpPow</span></span>
+<span class="lineno">  437 </span>    <span class="decl"><span class="nottickedoff">project (MkOpPow x) = return x</span>
+<span class="lineno">  438 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpPow&quot;</span></span>
+<span class="lineno">  439 </span>instance OpPowerSet x :&lt; Op x where
+<span class="lineno">  440 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpPowerSet</span></span>
+<span class="lineno">  441 </span>    <span class="decl"><span class="nottickedoff">project (MkOpPowerSet x) = return x</span>
+<span class="lineno">  442 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpPowerSet&quot;</span></span>
+<span class="lineno">  443 </span>instance OpPreImage x :&lt; Op x where
+<span class="lineno">  444 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpPreImage</span></span>
+<span class="lineno">  445 </span>    <span class="decl"><span class="nottickedoff">project (MkOpPreImage x) = return x</span>
+<span class="lineno">  446 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpPreImage&quot;</span></span>
+<span class="lineno">  447 </span>instance OpPred x :&lt; Op x where
+<span class="lineno">  448 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpPred</span></span>
+<span class="lineno">  449 </span>    <span class="decl"><span class="nottickedoff">project (MkOpPred x) = return x</span>
+<span class="lineno">  450 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpPred&quot;</span></span>
+<span class="lineno">  451 </span>instance OpProduct x :&lt; Op x where
+<span class="lineno">  452 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpProduct</span></span>
+<span class="lineno">  453 </span>    <span class="decl"><span class="nottickedoff">project (MkOpProduct x) = return x</span>
+<span class="lineno">  454 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpProduct&quot;</span></span>
+<span class="lineno">  455 </span>instance OpRange x :&lt; Op x where
+<span class="lineno">  456 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpRange</span></span>
+<span class="lineno">  457 </span>    <span class="decl"><span class="nottickedoff">project (MkOpRange x) = return x</span>
+<span class="lineno">  458 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpRange&quot;</span></span>
+<span class="lineno">  459 </span>instance OpRelationProj x :&lt; Op x where
+<span class="lineno">  460 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpRelationProj</span></span>
+<span class="lineno">  461 </span>    <span class="decl"><span class="nottickedoff">project (MkOpRelationProj x) = return x</span>
+<span class="lineno">  462 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpRelationProj&quot;</span></span>
+<span class="lineno">  463 </span>instance OpRestrict x :&lt; Op x where
+<span class="lineno">  464 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpRestrict</span></span>
+<span class="lineno">  465 </span>    <span class="decl"><span class="nottickedoff">project (MkOpRestrict x) = return x</span>
+<span class="lineno">  466 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpRestrict&quot;</span></span>
+<span class="lineno">  467 </span>instance OpSlicing x :&lt; Op x where
+<span class="lineno">  468 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSlicing</span></span>
+<span class="lineno">  469 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSlicing x) = return x</span>
+<span class="lineno">  470 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSlicing&quot;</span></span>
+<span class="lineno">  471 </span>instance OpSubsequence x :&lt; Op x where
+<span class="lineno">  472 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSubsequence</span></span>
+<span class="lineno">  473 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSubsequence x) = return x</span>
+<span class="lineno">  474 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSubsequence&quot;</span></span>
+<span class="lineno">  475 </span>instance OpSubset x :&lt; Op x where
+<span class="lineno">  476 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSubset</span></span>
+<span class="lineno">  477 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSubset x) = return x</span>
+<span class="lineno">  478 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSubset&quot;</span></span>
+<span class="lineno">  479 </span>instance OpSubsetEq x :&lt; Op x where
+<span class="lineno">  480 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSubsetEq</span></span>
+<span class="lineno">  481 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSubsetEq x) = return x</span>
+<span class="lineno">  482 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSubsetEq&quot;</span></span>
+<span class="lineno">  483 </span>instance OpSubstring x :&lt; Op x where
+<span class="lineno">  484 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSubstring</span></span>
+<span class="lineno">  485 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSubstring x) = return x</span>
+<span class="lineno">  486 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSubstring&quot;</span></span>
+<span class="lineno">  487 </span>instance OpSucc x :&lt; Op x where
+<span class="lineno">  488 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSucc</span></span>
+<span class="lineno">  489 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSucc x) = return x</span>
+<span class="lineno">  490 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSucc&quot;</span></span>
+<span class="lineno">  491 </span>instance OpSum x :&lt; Op x where
+<span class="lineno">  492 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSum</span></span>
+<span class="lineno">  493 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSum x) = return x</span>
+<span class="lineno">  494 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSum&quot;</span></span>
+<span class="lineno">  495 </span>instance OpSupset x :&lt; Op x where
+<span class="lineno">  496 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSupset</span></span>
+<span class="lineno">  497 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSupset x) = return x</span>
+<span class="lineno">  498 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSupset&quot;</span></span>
+<span class="lineno">  499 </span>instance OpSupsetEq x :&lt; Op x where
+<span class="lineno">  500 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpSupsetEq</span></span>
+<span class="lineno">  501 </span>    <span class="decl"><span class="nottickedoff">project (MkOpSupsetEq x) = return x</span>
+<span class="lineno">  502 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpSupsetEq&quot;</span></span>
+<span class="lineno">  503 </span>instance OpTable x :&lt; Op x where
+<span class="lineno">  504 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTable</span></span>
+<span class="lineno">  505 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTable x) = return x</span>
+<span class="lineno">  506 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTable&quot;</span></span>
+<span class="lineno">  507 </span>instance OpTildeLeq x :&lt; Op x where
+<span class="lineno">  508 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTildeLeq</span></span>
+<span class="lineno">  509 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTildeLeq x) = return x</span>
+<span class="lineno">  510 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLeq&quot;</span></span>
+<span class="lineno">  511 </span>instance OpTildeLt x :&lt; Op x where
+<span class="lineno">  512 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTildeLt</span></span>
+<span class="lineno">  513 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTildeLt x) = return x</span>
+<span class="lineno">  514 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTildeLt&quot;</span></span>
+<span class="lineno">  515 </span>instance OpToInt x :&lt; Op x where
+<span class="lineno">  516 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpToInt</span></span>
+<span class="lineno">  517 </span>    <span class="decl"><span class="nottickedoff">project (MkOpToInt x) = return x</span>
+<span class="lineno">  518 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToInt&quot;</span></span>
+<span class="lineno">  519 </span>instance OpToMSet x :&lt; Op x where
+<span class="lineno">  520 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpToMSet</span></span>
+<span class="lineno">  521 </span>    <span class="decl"><span class="nottickedoff">project (MkOpToMSet x) = return x</span>
+<span class="lineno">  522 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToMSet&quot;</span></span>
+<span class="lineno">  523 </span>instance OpToRelation x :&lt; Op x where
+<span class="lineno">  524 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpToRelation</span></span>
+<span class="lineno">  525 </span>    <span class="decl"><span class="nottickedoff">project (MkOpToRelation x) = return x</span>
+<span class="lineno">  526 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToRelation&quot;</span></span>
+<span class="lineno">  527 </span>instance OpToSet x :&lt; Op x where
+<span class="lineno">  528 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpToSet</span></span>
+<span class="lineno">  529 </span>    <span class="decl"><span class="nottickedoff">project (MkOpToSet x) = return x</span>
+<span class="lineno">  530 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpToSet&quot;</span></span>
+<span class="lineno">  531 </span>instance OpTogether x :&lt; Op x where
+<span class="lineno">  532 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTogether</span></span>
+<span class="lineno">  533 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTogether x) = return x</span>
+<span class="lineno">  534 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTogether&quot;</span></span>
+<span class="lineno">  535 </span>instance OpTransform x :&lt; Op x where
+<span class="lineno">  536 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTransform</span></span>
+<span class="lineno">  537 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTransform x) = return x</span>
+<span class="lineno">  538 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTransform&quot;</span></span>
+<span class="lineno">  539 </span>instance OpTrue x :&lt; Op x where
+<span class="lineno">  540 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTrue</span></span>
+<span class="lineno">  541 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTrue x) = return x</span>
+<span class="lineno">  542 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTrue&quot;</span></span>
+<span class="lineno">  543 </span>instance OpTwoBars x :&lt; Op x where
+<span class="lineno">  544 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpTwoBars</span></span>
+<span class="lineno">  545 </span>    <span class="decl"><span class="nottickedoff">project (MkOpTwoBars x) = return x</span>
+<span class="lineno">  546 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpTwoBars&quot;</span></span>
+<span class="lineno">  547 </span>instance OpUnion x :&lt; Op x where
+<span class="lineno">  548 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpUnion</span></span>
+<span class="lineno">  549 </span>    <span class="decl"><span class="nottickedoff">project (MkOpUnion x) = return x</span>
+<span class="lineno">  550 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpUnion&quot;</span></span>
+<span class="lineno">  551 </span>instance OpXor x :&lt; Op x where
+<span class="lineno">  552 </span>    <span class="decl"><span class="nottickedoff">inject = MkOpXor</span></span>
+<span class="lineno">  553 </span>    <span class="decl"><span class="nottickedoff">project (MkOpXor x) = return x</span>
+<span class="lineno">  554 </span><span class="spaces">    </span><span class="nottickedoff">project _ = fail &quot;projecting OpXor&quot;</span></span>
+<span class="lineno">  555 </span>
+<span class="lineno">  556 </span>instance ( Pretty x
+<span class="lineno">  557 </span>         , ExpressionLike x
+<span class="lineno">  558 </span>         , ReferenceContainer x
+<span class="lineno">  559 </span>         , TypeOf x
+<span class="lineno">  560 </span>         , Domain () x :&lt; x
+<span class="lineno">  561 </span>         ) =&gt; TypeOf (Op x) where
+<span class="lineno">  562 </span>    <span class="decl"><span class="istickedoff">typeOf (MkOpActive x) = typeOf x</span>
+<span class="lineno">  563 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAllDiff x) = typeOf x</span>
+<span class="lineno">  564 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAllDiffExcept x) = typeOf x</span>
+<span class="lineno">  565 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAnd x) = typeOf x</span>
+<span class="lineno">  566 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpApart x) = typeOf x</span>
+<span class="lineno">  567 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAtLeast x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  568 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAtMost x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  569 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpAttributeAsConstraint x) = typeOf x</span>
+<span class="lineno">  570 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpCatchUndef x) = typeOf x</span>
+<span class="lineno">  571 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpDefined x) = typeOf x</span>
+<span class="lineno">  572 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpDiv x) = typeOf x</span>
+<span class="lineno">  573 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpDontCare x) = typeOf x</span>
+<span class="lineno">  574 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpDotLeq x) = typeOf x</span>
+<span class="lineno">  575 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpDotLt x) = typeOf x</span>
+<span class="lineno">  576 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpEq x) = typeOf x</span>
+<span class="lineno">  577 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpFactorial x) = typeOf x</span>
+<span class="lineno">  578 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpFlatten x) = typeOf x</span>
+<span class="lineno">  579 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpFreq x) = typeOf x</span>
+<span class="lineno">  580 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpGCC x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  581 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpGeq x) = typeOf x</span>
+<span class="lineno">  582 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpGt x) = typeOf x</span>
+<span class="lineno">  583 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpHist x) = typeOf x</span>
+<span class="lineno">  584 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpIff x) = typeOf x</span>
+<span class="lineno">  585 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpImage x) = typeOf x</span>
+<span class="lineno">  586 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpImageSet x) = typeOf x</span>
+<span class="lineno">  587 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpImply x) = typeOf x</span>
+<span class="lineno">  588 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpIn x) = typeOf x</span>
+<span class="lineno">  589 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpIndexing x) = typeOf x</span>
+<span class="lineno">  590 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpIntersect x) = typeOf x</span>
+<span class="lineno">  591 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpInverse x) = typeOf x</span>
+<span class="lineno">  592 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpLeq x) = typeOf x</span>
+<span class="lineno">  593 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpLexLeq x) = typeOf x</span>
+<span class="lineno">  594 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpLexLt x) = typeOf x</span>
+<span class="lineno">  595 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpLt x) = typeOf x</span>
+<span class="lineno">  596 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpMakeTable x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  597 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpMax x) = typeOf x</span>
+<span class="lineno">  598 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpMin x) = typeOf x</span>
+<span class="lineno">  599 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpMinus x) = typeOf x</span>
+<span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpMod x) = typeOf x</span>
+<span class="lineno">  601 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpNegate x) = typeOf x</span>
+<span class="lineno">  602 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpNeq x) = typeOf x</span>
+<span class="lineno">  603 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpNot x) = typeOf x</span>
+<span class="lineno">  604 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpOr x) = typeOf x</span>
+<span class="lineno">  605 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpParticipants x) = typeOf x</span>
+<span class="lineno">  606 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpParts x) = typeOf x</span>
+<span class="lineno">  607 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpParty x) = typeOf x</span>
+<span class="lineno">  608 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpPow x) = typeOf x</span>
+<span class="lineno">  609 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpPowerSet x) = typeOf x</span>
+<span class="lineno">  610 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpPreImage x) = typeOf x</span>
+<span class="lineno">  611 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpPred x) = typeOf x</span>
+<span class="lineno">  612 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpProduct x) = typeOf x</span>
+<span class="lineno">  613 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpRange x) = typeOf x</span>
+<span class="lineno">  614 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpRelationProj x) = typeOf x</span>
+<span class="lineno">  615 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpRestrict x) = typeOf x</span>
+<span class="lineno">  616 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSlicing x) = typeOf x</span>
+<span class="lineno">  617 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSubsequence x) = typeOf x</span>
+<span class="lineno">  618 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSubset x) = typeOf x</span>
+<span class="lineno">  619 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSubsetEq x) = typeOf x</span>
+<span class="lineno">  620 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSubstring x) = typeOf x</span>
+<span class="lineno">  621 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSucc x) = typeOf x</span>
+<span class="lineno">  622 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSum x) = typeOf x</span>
+<span class="lineno">  623 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSupset x) = typeOf x</span>
+<span class="lineno">  624 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpSupsetEq x) = typeOf x</span>
+<span class="lineno">  625 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTable x) = typeOf x</span>
+<span class="lineno">  626 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTildeLeq x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  627 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTildeLt x) = typeOf x</span>
+<span class="lineno">  628 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpToInt x) = typeOf x</span>
+<span class="lineno">  629 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpToMSet x) = typeOf x</span>
+<span class="lineno">  630 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpToRelation x) = typeOf x</span>
+<span class="lineno">  631 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpToSet x) = typeOf x</span>
+<span class="lineno">  632 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTogether x) = typeOf x</span>
+<span class="lineno">  633 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTransform x) = <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">  634 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTrue x) = typeOf x</span>
+<span class="lineno">  635 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpTwoBars x) = typeOf x</span>
+<span class="lineno">  636 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpUnion x) = typeOf x</span>
+<span class="lineno">  637 </span><span class="spaces">    </span><span class="istickedoff">typeOf (MkOpXor x) = <span class="nottickedoff">typeOf x</span></span></span>
+<span class="lineno">  638 </span>
+<span class="lineno">  639 </span>instance ( OpActive x :&lt; x
+<span class="lineno">  640 </span>         , OpAllDiff x :&lt; x
+<span class="lineno">  641 </span>         , OpAllDiffExcept x :&lt; x
+<span class="lineno">  642 </span>         , OpAnd x :&lt; x
+<span class="lineno">  643 </span>         , OpApart x :&lt; x
+<span class="lineno">  644 </span>         , OpAtLeast x :&lt; x
+<span class="lineno">  645 </span>         , OpAtMost x :&lt; x
+<span class="lineno">  646 </span>         , OpAttributeAsConstraint x :&lt; x
+<span class="lineno">  647 </span>         , OpCatchUndef x :&lt; x
+<span class="lineno">  648 </span>         , OpDefined x :&lt; x
+<span class="lineno">  649 </span>         , OpDiv x :&lt; x
+<span class="lineno">  650 </span>         , OpDontCare x :&lt; x
+<span class="lineno">  651 </span>         , OpDotLeq x :&lt; x
+<span class="lineno">  652 </span>         , OpDotLt x :&lt; x
+<span class="lineno">  653 </span>         , OpEq x :&lt; x
+<span class="lineno">  654 </span>         , OpFactorial x :&lt; x
+<span class="lineno">  655 </span>         , OpFlatten x :&lt; x
+<span class="lineno">  656 </span>         , OpFreq x :&lt; x
+<span class="lineno">  657 </span>         , OpGCC x :&lt; x
+<span class="lineno">  658 </span>         , OpGeq x :&lt; x
+<span class="lineno">  659 </span>         , OpGt x :&lt; x
+<span class="lineno">  660 </span>         , OpHist x :&lt; x
+<span class="lineno">  661 </span>         , OpIff x :&lt; x
+<span class="lineno">  662 </span>         , OpImage x :&lt; x
+<span class="lineno">  663 </span>         , OpImageSet x :&lt; x
+<span class="lineno">  664 </span>         , OpImply x :&lt; x
+<span class="lineno">  665 </span>         , OpIn x :&lt; x
+<span class="lineno">  666 </span>         , OpIndexing x :&lt; x
+<span class="lineno">  667 </span>         , OpIntersect x :&lt; x
+<span class="lineno">  668 </span>         , OpInverse x :&lt; x
+<span class="lineno">  669 </span>         , OpLeq x :&lt; x
+<span class="lineno">  670 </span>         , OpLexLeq x :&lt; x
+<span class="lineno">  671 </span>         , OpLexLt x :&lt; x
+<span class="lineno">  672 </span>         , OpLt x :&lt; x
+<span class="lineno">  673 </span>         , OpMakeTable x :&lt; x
+<span class="lineno">  674 </span>         , OpMax x :&lt; x
+<span class="lineno">  675 </span>         , OpMin x :&lt; x
+<span class="lineno">  676 </span>         , OpMinus x :&lt; x
+<span class="lineno">  677 </span>         , OpMod x :&lt; x
+<span class="lineno">  678 </span>         , OpNegate x :&lt; x
+<span class="lineno">  679 </span>         , OpNeq x :&lt; x
+<span class="lineno">  680 </span>         , OpNot x :&lt; x
+<span class="lineno">  681 </span>         , OpOr x :&lt; x
+<span class="lineno">  682 </span>         , OpParticipants x :&lt; x
+<span class="lineno">  683 </span>         , OpParts x :&lt; x
+<span class="lineno">  684 </span>         , OpParty x :&lt; x
+<span class="lineno">  685 </span>         , OpPow x :&lt; x
+<span class="lineno">  686 </span>         , OpPowerSet x :&lt; x
+<span class="lineno">  687 </span>         , OpPreImage x :&lt; x
+<span class="lineno">  688 </span>         , OpPred x :&lt; x
+<span class="lineno">  689 </span>         , OpProduct x :&lt; x
+<span class="lineno">  690 </span>         , OpRange x :&lt; x
+<span class="lineno">  691 </span>         , OpRelationProj x :&lt; x
+<span class="lineno">  692 </span>         , OpRestrict x :&lt; x
+<span class="lineno">  693 </span>         , OpSlicing x :&lt; x
+<span class="lineno">  694 </span>         , OpSubsequence x :&lt; x
+<span class="lineno">  695 </span>         , OpSubset x :&lt; x
+<span class="lineno">  696 </span>         , OpSubsetEq x :&lt; x
+<span class="lineno">  697 </span>         , OpSubstring x :&lt; x
+<span class="lineno">  698 </span>         , OpSucc x :&lt; x
+<span class="lineno">  699 </span>         , OpSum x :&lt; x
+<span class="lineno">  700 </span>         , OpSupset x :&lt; x
+<span class="lineno">  701 </span>         , OpSupsetEq x :&lt; x
+<span class="lineno">  702 </span>         , OpTable x :&lt; x
+<span class="lineno">  703 </span>         , OpTildeLeq x :&lt; x
+<span class="lineno">  704 </span>         , OpTildeLt x :&lt; x
+<span class="lineno">  705 </span>         , OpToInt x :&lt; x
+<span class="lineno">  706 </span>         , OpToMSet x :&lt; x
+<span class="lineno">  707 </span>         , OpToRelation x :&lt; x
+<span class="lineno">  708 </span>         , OpToSet x :&lt; x
+<span class="lineno">  709 </span>         , OpTogether x :&lt; x
+<span class="lineno">  710 </span>         , OpTransform x :&lt; x
+<span class="lineno">  711 </span>         , OpTrue x :&lt; x
+<span class="lineno">  712 </span>         , OpTwoBars x :&lt; x
+<span class="lineno">  713 </span>         , OpUnion x :&lt; x
+<span class="lineno">  714 </span>         , OpXor x :&lt; x) =&gt; SimplifyOp Op x where
+<span class="lineno">  715 </span>    <span class="decl"><span class="istickedoff">simplifyOp (MkOpActive x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiff x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiffExcept x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  718 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAnd x) = simplifyOp x</span>
+<span class="lineno">  719 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpApart x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  720 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAtLeast x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  721 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAtMost x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  722 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAttributeAsConstraint x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  723 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpCatchUndef x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  724 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDefined x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  725 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDiv x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  726 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDontCare x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  727 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDotLeq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  728 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpDotLt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  729 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpEq x) = simplifyOp x</span>
+<span class="lineno">  730 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpFactorial x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  731 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpFlatten x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  732 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpFreq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  733 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpGCC x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  734 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpGeq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  735 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpGt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  736 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpHist x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  737 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIff x) = simplifyOp x</span>
+<span class="lineno">  738 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImage x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  739 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImageSet x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  740 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpImply x) = simplifyOp x</span>
+<span class="lineno">  741 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIn x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  742 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIndexing x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  743 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpIntersect x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  744 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpInverse x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  745 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpLeq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  746 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpLexLeq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  747 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpLexLt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  748 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpLt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  749 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpMakeTable x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  750 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpMax x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  751 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpMin x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  752 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpMinus x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  753 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpMod x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  754 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpNegate x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  755 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpNeq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  756 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpNot x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  757 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpOr x) = simplifyOp x</span>
+<span class="lineno">  758 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParticipants x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  759 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParts x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  760 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpParty x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  761 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPow x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  762 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPowerSet x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  763 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPreImage x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  764 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpPred x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  765 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpProduct x) = simplifyOp x</span>
+<span class="lineno">  766 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpRange x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  767 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpRelationProj x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  768 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpRestrict x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  769 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSlicing x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  770 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubsequence x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  771 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubset x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  772 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubsetEq x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  773 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSubstring x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  774 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSucc x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  775 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSum x) = simplifyOp x</span>
+<span class="lineno">  776 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupset x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  777 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpSupsetEq x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  778 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTable x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  779 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLeq x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  780 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTildeLt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  781 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToInt x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  782 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToMSet x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  783 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToRelation x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  784 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpToSet x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  785 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTogether x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  786 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTransform x) = <span class="nottickedoff">simplifyOp x</span></span>
+<span class="lineno">  787 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTrue x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  788 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpTwoBars x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  789 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpUnion x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  790 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpXor x) = <span class="nottickedoff">simplifyOp x</span></span></span>
+<span class="lineno">  791 </span>
+<span class="lineno">  792 </span>instance (Pretty x, ExpressionLike x) =&gt; Pretty (Op x) where
+<span class="lineno">  793 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec (MkOpActive x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  794 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAllDiff x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  795 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAllDiffExcept x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  796 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAnd x) = prettyPrec prec x</span>
+<span class="lineno">  797 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpApart x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  798 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAtLeast x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  799 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAtMost x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  800 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpAttributeAsConstraint x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  801 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpCatchUndef x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  802 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpDefined x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  803 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpDiv x) = prettyPrec prec x</span>
+<span class="lineno">  804 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpDontCare x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  805 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpDotLeq x) = prettyPrec prec x</span>
+<span class="lineno">  806 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpDotLt x) = prettyPrec prec x</span>
+<span class="lineno">  807 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpEq x) = prettyPrec prec x</span>
+<span class="lineno">  808 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpFactorial x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  809 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpFlatten x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  810 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpFreq x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  811 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpGCC x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  812 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpGeq x) = prettyPrec prec x</span>
+<span class="lineno">  813 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpGt x) = prettyPrec prec x</span>
+<span class="lineno">  814 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpHist x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  815 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIff x) = prettyPrec prec x</span>
+<span class="lineno">  816 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImage x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  817 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImageSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  818 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpImply x) = prettyPrec prec x</span>
+<span class="lineno">  819 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIn x) = prettyPrec prec x</span>
+<span class="lineno">  820 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIndexing x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  821 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpIntersect x) = prettyPrec prec x</span>
+<span class="lineno">  822 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpInverse x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  823 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpLeq x) = prettyPrec prec x</span>
+<span class="lineno">  824 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpLexLeq x) = prettyPrec prec x</span>
+<span class="lineno">  825 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpLexLt x) = prettyPrec prec x</span>
+<span class="lineno">  826 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpLt x) = prettyPrec prec x</span>
+<span class="lineno">  827 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpMakeTable x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  828 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpMax x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  829 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpMin x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  830 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpMinus x) = prettyPrec prec x</span>
+<span class="lineno">  831 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpMod x) = prettyPrec prec x</span>
+<span class="lineno">  832 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpNegate x) = prettyPrec prec x</span>
+<span class="lineno">  833 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpNeq x) = prettyPrec prec x</span>
+<span class="lineno">  834 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpNot x) = prettyPrec prec x</span>
+<span class="lineno">  835 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpOr x) = prettyPrec prec x</span>
+<span class="lineno">  836 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpParticipants x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  837 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpParts x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  838 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpParty x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  839 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPow x) = prettyPrec prec x</span>
+<span class="lineno">  840 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPowerSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  841 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPreImage x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  842 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpPred x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  843 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpProduct x) = prettyPrec prec x</span>
+<span class="lineno">  844 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpRange x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  845 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpRelationProj x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  846 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpRestrict x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  847 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSlicing x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  848 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubsequence x) = prettyPrec prec x</span>
+<span class="lineno">  849 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubset x) = prettyPrec prec x</span>
+<span class="lineno">  850 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubsetEq x) = prettyPrec prec x</span>
+<span class="lineno">  851 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSubstring x) = prettyPrec prec x</span>
+<span class="lineno">  852 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSucc x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  853 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSum x) = prettyPrec prec x</span>
+<span class="lineno">  854 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupset x) = prettyPrec prec x</span>
+<span class="lineno">  855 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpSupsetEq x) = prettyPrec prec x</span>
+<span class="lineno">  856 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTable x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  857 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLeq x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  858 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTildeLt x) = prettyPrec prec x</span>
+<span class="lineno">  859 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToInt x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  860 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToMSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  861 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToRelation x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  862 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpToSet x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  863 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTogether x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  864 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTransform x) = <span class="nottickedoff">prettyPrec prec x</span></span>
+<span class="lineno">  865 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTrue x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  866 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpTwoBars x) = prettyPrec <span class="nottickedoff">prec</span> x</span>
+<span class="lineno">  867 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpUnion x) = prettyPrec prec x</span>
+<span class="lineno">  868 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec prec (MkOpXor x) = <span class="nottickedoff">prettyPrec prec x</span></span></span>
+<span class="lineno">  869 </span>
+<span class="lineno">  870 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (Op x) where
+<span class="lineno">  871 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (MkOpActive x) = varSymBreakingDescription x</span>
+<span class="lineno">  872 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAllDiff x) = varSymBreakingDescription x</span>
+<span class="lineno">  873 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAllDiffExcept x) = varSymBreakingDescription x</span>
+<span class="lineno">  874 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAnd x) = varSymBreakingDescription x</span>
+<span class="lineno">  875 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpApart x) = varSymBreakingDescription x</span>
+<span class="lineno">  876 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAtLeast x) = varSymBreakingDescription x</span>
+<span class="lineno">  877 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAtMost x) = varSymBreakingDescription x</span>
+<span class="lineno">  878 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpAttributeAsConstraint x) = varSymBreakingDescription x</span>
+<span class="lineno">  879 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpCatchUndef x) = varSymBreakingDescription x</span>
+<span class="lineno">  880 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpDefined x) = varSymBreakingDescription x</span>
+<span class="lineno">  881 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpDiv x) = varSymBreakingDescription x</span>
+<span class="lineno">  882 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpDontCare x) = varSymBreakingDescription x</span>
+<span class="lineno">  883 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpDotLeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  884 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpDotLt x) = varSymBreakingDescription x</span>
+<span class="lineno">  885 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpEq x) = varSymBreakingDescription x</span>
+<span class="lineno">  886 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpFactorial x) = varSymBreakingDescription x</span>
+<span class="lineno">  887 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpFlatten x) = varSymBreakingDescription x</span>
+<span class="lineno">  888 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpFreq x) = varSymBreakingDescription x</span>
+<span class="lineno">  889 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpGCC x) = varSymBreakingDescription x</span>
+<span class="lineno">  890 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpGeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  891 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpGt x) = varSymBreakingDescription x</span>
+<span class="lineno">  892 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpHist x) = varSymBreakingDescription x</span>
+<span class="lineno">  893 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpIff x) = varSymBreakingDescription x</span>
+<span class="lineno">  894 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpImage x) = varSymBreakingDescription x</span>
+<span class="lineno">  895 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpImageSet x) = varSymBreakingDescription x</span>
+<span class="lineno">  896 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpImply x) = varSymBreakingDescription x</span>
+<span class="lineno">  897 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpIn x) = varSymBreakingDescription x</span>
+<span class="lineno">  898 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpIndexing x) = varSymBreakingDescription x</span>
+<span class="lineno">  899 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpIntersect x) = varSymBreakingDescription x</span>
+<span class="lineno">  900 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpInverse x) = varSymBreakingDescription x</span>
+<span class="lineno">  901 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpLeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  902 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpLexLeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  903 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpLexLt x) = varSymBreakingDescription x</span>
+<span class="lineno">  904 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpLt x) = varSymBreakingDescription x</span>
+<span class="lineno">  905 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpMakeTable x) = varSymBreakingDescription x</span>
+<span class="lineno">  906 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpMax x) = varSymBreakingDescription x</span>
+<span class="lineno">  907 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpMin x) = varSymBreakingDescription x</span>
+<span class="lineno">  908 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpMinus x) = varSymBreakingDescription x</span>
+<span class="lineno">  909 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpMod x) = varSymBreakingDescription x</span>
+<span class="lineno">  910 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpNegate x) = varSymBreakingDescription x</span>
+<span class="lineno">  911 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpNeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  912 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpNot x) = varSymBreakingDescription x</span>
+<span class="lineno">  913 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpOr x) = varSymBreakingDescription x</span>
+<span class="lineno">  914 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpParticipants x) = varSymBreakingDescription x</span>
+<span class="lineno">  915 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpParts x) = varSymBreakingDescription x</span>
+<span class="lineno">  916 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpParty x) = varSymBreakingDescription x</span>
+<span class="lineno">  917 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpPow x) = varSymBreakingDescription x</span>
+<span class="lineno">  918 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpPowerSet x) = varSymBreakingDescription x</span>
+<span class="lineno">  919 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpPreImage x) = varSymBreakingDescription x</span>
+<span class="lineno">  920 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpPred x) = varSymBreakingDescription x</span>
+<span class="lineno">  921 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpProduct x) = varSymBreakingDescription x</span>
+<span class="lineno">  922 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpRange x) = varSymBreakingDescription x</span>
+<span class="lineno">  923 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpRelationProj x) = varSymBreakingDescription x</span>
+<span class="lineno">  924 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpRestrict x) = varSymBreakingDescription x</span>
+<span class="lineno">  925 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSlicing x) = varSymBreakingDescription x</span>
+<span class="lineno">  926 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSubsequence x) = varSymBreakingDescription x</span>
+<span class="lineno">  927 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSubset x) = varSymBreakingDescription x</span>
+<span class="lineno">  928 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSubsetEq x) = varSymBreakingDescription x</span>
+<span class="lineno">  929 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSubstring x) = varSymBreakingDescription x</span>
+<span class="lineno">  930 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSucc x) = varSymBreakingDescription x</span>
+<span class="lineno">  931 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSum x) = varSymBreakingDescription x</span>
+<span class="lineno">  932 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSupset x) = varSymBreakingDescription x</span>
+<span class="lineno">  933 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpSupsetEq x) = varSymBreakingDescription x</span>
+<span class="lineno">  934 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTable x) = varSymBreakingDescription x</span>
+<span class="lineno">  935 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTildeLeq x) = varSymBreakingDescription x</span>
+<span class="lineno">  936 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTildeLt x) = varSymBreakingDescription x</span>
+<span class="lineno">  937 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpToInt x) = varSymBreakingDescription x</span>
+<span class="lineno">  938 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpToMSet x) = varSymBreakingDescription x</span>
+<span class="lineno">  939 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpToRelation x) = varSymBreakingDescription x</span>
+<span class="lineno">  940 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpToSet x) = varSymBreakingDescription x</span>
+<span class="lineno">  941 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTogether x) = varSymBreakingDescription x</span>
+<span class="lineno">  942 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTransform x) = varSymBreakingDescription x</span>
+<span class="lineno">  943 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTrue x) = varSymBreakingDescription x</span>
+<span class="lineno">  944 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpTwoBars x) = varSymBreakingDescription x</span>
+<span class="lineno">  945 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpUnion x) = varSymBreakingDescription x</span>
+<span class="lineno">  946 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (MkOpXor x) = varSymBreakingDescription x</span></span>
+
+</pre>
+</body>
+</html>
