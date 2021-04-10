@@ -147,7 +147,7 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpHist x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpIff x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  130 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpImage x) = domainOf x</span>
-<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpImageSet x) = domainOf x</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpImageSet x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpImply x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpIn x) = domainOf <span class="nottickedoff">x</span></span>
 <span class="lineno">  134 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpIndexing x) = domainOf x</span>
@@ -176,7 +176,7 @@ span.spaces    { background: white }
 <span class="lineno">  157 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpProduct x) = domainOf x</span>
 <span class="lineno">  158 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpRange x) = domainOf x</span>
 <span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpRelationProj x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpRestrict x) = domainOf x</span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpRestrict x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  161 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSlicing x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  162 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSubsequence x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpSubset x) = <span class="nottickedoff">domainOf x</span></span>
@@ -224,7 +224,7 @@ span.spaces    { background: white }
 <span class="lineno">  205 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpHist x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  206 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIff x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  207 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImage x) = indexDomainsOf x</span>
-<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImageSet x) = indexDomainsOf x</span>
+<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImageSet x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpImply x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  210 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIn x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpIndexing x) = indexDomainsOf x</span>
@@ -443,7 +443,7 @@ span.spaces    { background: white }
 <span class="lineno">  424 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpImage, not a function or sequence&quot;</span></span></span>
 <span class="lineno">  425 </span>
 <span class="lineno">  426 </span>instance (Pretty x, TypeOf x) =&gt; DomainOf (OpImageSet x) where
-<span class="lineno">  427 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpImageSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
+<span class="lineno">  427 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpImageSet:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
 <span class="lineno">  428 </span>
 <span class="lineno">  429 </span>instance DomainOf (OpImply x) where
 <span class="lineno">  430 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
@@ -609,12 +609,12 @@ span.spaces    { background: white }
 <span class="lineno">  590 </span>    <span class="decl"><span class="nottickedoff">domainOf op = mkDomainAny (&quot;OpRelationProj:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
 <span class="lineno">  591 </span>
 <span class="lineno">  592 </span>instance (DomainOf x, Dom :&lt; x) =&gt; DomainOf (OpRestrict x) where
-<span class="lineno">  593 </span>    <span class="decl"><span class="istickedoff">domainOf (OpRestrict f x) = do</span>
-<span class="lineno">  594 </span><span class="spaces">        </span><span class="istickedoff">d    &lt;- project x</span>
-<span class="lineno">  595 </span><span class="spaces">        </span><span class="istickedoff">fDom &lt;- domainOf f</span>
-<span class="lineno">  596 </span><span class="spaces">        </span><span class="istickedoff">case fDom of</span>
-<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction fRepr a _ to -&gt; return (DomainFunction <span class="nottickedoff">fRepr</span> <span class="nottickedoff">a</span> d <span class="nottickedoff">to</span>)</span>
-<span class="lineno">  598 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;domainOf, OpRestrict, not a function&quot;</span></span></span>
+<span class="lineno">  593 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpRestrict f x) = do</span>
+<span class="lineno">  594 </span><span class="spaces">        </span><span class="nottickedoff">d    &lt;- project x</span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="nottickedoff">fDom &lt;- domainOf f</span>
+<span class="lineno">  596 </span><span class="spaces">        </span><span class="nottickedoff">case fDom of</span>
+<span class="lineno">  597 </span><span class="spaces">            </span><span class="nottickedoff">DomainFunction fRepr a _ to -&gt; return (DomainFunction fRepr a d to)</span>
+<span class="lineno">  598 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; fail &quot;domainOf, OpRestrict, not a function&quot;</span></span>
 <span class="lineno">  599 </span>
 <span class="lineno">  600 </span>instance (Pretty x, DomainOf x) =&gt; DomainOf (OpSlicing x) where
 <span class="lineno">  601 </span>    <span class="decl"><span class="nottickedoff">domainOf (OpSlicing x _ _) = domainOf x</span></span>

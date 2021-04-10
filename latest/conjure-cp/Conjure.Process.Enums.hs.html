@@ -291,7 +291,7 @@ span.spaces    { background: white }
 <span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; fail (pretty nm &lt;+&gt; &quot;is used in a domain, but it isn't a member of the enum domain.&quot;)</span>
 <span class="lineno">  273 </span><span class="spaces">    </span><span class="istickedoff">Just (Name ename, i)  -&gt; return (fromIntWithTag i (TagEnum ename))</span>
 <span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">Just (ename, i) -&gt; <span class="nottickedoff">bug $ &quot;nameToX, nm:&quot; &lt;+&gt; vcat [pretty (show ename), pretty i]</span></span>
-<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff">nameToX _ x = return x</span></span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff">nameToX _ x = <span class="nottickedoff">return x</span></span></span>
 
 </pre>
 </body>

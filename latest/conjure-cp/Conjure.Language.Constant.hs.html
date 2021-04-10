@@ -237,8 +237,8 @@ span.spaces    { background: white }
 <span class="lineno">  218 </span>
 <span class="lineno">  219 </span>instance DomainContainer Constant (Domain ()) where
 <span class="lineno">  220 </span>    <span class="decl"><span class="nottickedoff">fromDomain = DomainInConstant</span></span>
-<span class="lineno">  221 </span>    <span class="decl"><span class="istickedoff">domainOut (DomainInConstant dom) = return dom</span>
-<span class="lineno">  222 </span><span class="spaces">    </span><span class="istickedoff">domainOut _ = <span class="nottickedoff">fail &quot;domainOut{Constant}&quot;</span></span></span>
+<span class="lineno">  221 </span>    <span class="decl"><span class="nottickedoff">domainOut (DomainInConstant dom) = return dom</span>
+<span class="lineno">  222 </span><span class="spaces">    </span><span class="nottickedoff">domainOut _ = fail &quot;domainOut{Constant}&quot;</span></span>
 <span class="lineno">  223 </span>
 <span class="lineno">  224 </span>mkUndef :: Type -&gt; Doc -&gt; Constant
 <span class="lineno">  225 </span><span class="decl"><span class="istickedoff">mkUndef TypeBool _ = ConstantBool False</span>

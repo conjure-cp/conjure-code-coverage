@@ -125,24 +125,24 @@ span.spaces    { background: white }
 <span class="lineno">  106 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  108 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff">attributeToConstraint domain@(DomainFunction _ _ inF inT) = generator where</span>
-<span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff">generator    &quot;size&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
-<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot;  (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
-<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;total&quot;      Nothing  = return $ \ x -&gt; do</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">return [essence| forAll &amp;iPat : &amp;inF . &amp;i in defined(&amp;x) |]</span>
-<span class="lineno">  116 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;injective&quot;  Nothing  = return $ \ x -&gt; do</span>
-<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">return [essence| allDiff([ &amp;x(&amp;i) | &amp;iPat : &amp;inF ]) |]</span>
-<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;surjective&quot; Nothing  = <span class="nottickedoff">return $ \ x -&gt; do</span></span>
+<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff">attributeToConstraint domain@(DomainFunction _ _ inF inT) = <span class="nottickedoff">generator</span> where</span>
+<span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator    &quot;size&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| =  &amp;val |]</span></span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;minSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;maxSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;total&quot;      Nothing  = return $ \ x -&gt; do</span></span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;iPat : &amp;inF . &amp;i in defined(&amp;x) |]</span></span>
+<span class="lineno">  116 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;injective&quot;  Nothing  = return $ \ x -&gt; do</span></span>
+<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| allDiff([ &amp;x(&amp;i) | &amp;iPat : &amp;inF ]) |]</span></span>
+<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;surjective&quot; Nothing  = return $ \ x -&gt; do</span></span>
 <span class="lineno">  120 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
 <span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;iPat : &amp;inT . &amp;i in range(&amp;x) |]</span></span>
-<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;bijective&quot;  Nothing  = <span class="nottickedoff">return $ \ x -&gt; do</span></span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;bijective&quot;  Nothing  = return $ \ x -&gt; do</span></span>
 <span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">a &lt;- generator &quot;injective&quot;  Nothing &gt;&gt;= \ gen -&gt; gen x</span></span>
 <span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">b &lt;- generator &quot;injective&quot;  Nothing &gt;&gt;= \ gen -&gt; gen x</span></span>
 <span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;a /\ &amp;b |]</span></span>
-<span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
+<span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
 <span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>

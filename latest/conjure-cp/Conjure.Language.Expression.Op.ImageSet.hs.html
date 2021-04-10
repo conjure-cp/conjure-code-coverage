@@ -30,7 +30,7 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>data OpImageSet x = OpImageSet x x
-<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   14 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>instance Serialize x =&gt; Serialize (OpImageSet x)
 <span class="lineno">   17 </span>instance Hashable  x =&gt; Hashable  (OpImageSet x)
@@ -38,28 +38,28 @@ span.spaces    { background: white }
 <span class="lineno">   19 </span>instance FromJSON  x =&gt; FromJSON  (OpImageSet x) where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   20 </span>
 <span class="lineno">   21 </span>instance (TypeOf x, Pretty x) =&gt; TypeOf (OpImageSet x) where
-<span class="lineno">   22 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpImageSet f x) = do</span>
-<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">tyF &lt;- typeOf f</span>
-<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">(from, to) &lt;- case tyF of</span>
-<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction from to -&gt; return (from, to)</span>
-<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence      to -&gt; <span class="nottickedoff">return (TypeInt TagInt, to)</span></span>
-<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ &quot;(function application)&quot; &lt;+&gt; pretty p</span></span>
-<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">xTy &lt;- typeOf x</span>
-<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">typesUnify [xTy, from]</span></span>
-<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">then return (TypeSet to)</span>
-<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">raiseTypeError $ vcat</span></span>
-<span class="lineno">   32 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ pretty p</span></span>
-<span class="lineno">   33 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;f     :&quot; &lt;+&gt; pretty f</span></span>
-<span class="lineno">   34 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;f type:&quot; &lt;+&gt; pretty (TypeFunction from to)</span></span>
-<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;x     :&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;x type:&quot; &lt;+&gt; pretty xTy</span></span>
-<span class="lineno">   37 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">   22 </span>    <span class="decl"><span class="nottickedoff">typeOf p@(OpImageSet f x) = do</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="nottickedoff">tyF &lt;- typeOf f</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="nottickedoff">(from, to) &lt;- case tyF of</span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="nottickedoff">TypeFunction from to -&gt; return (from, to)</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="nottickedoff">TypeSequence      to -&gt; return (TypeInt TagInt, to)</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; raiseTypeError $ &quot;(function application)&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="nottickedoff">xTy &lt;- typeOf x</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="nottickedoff">if typesUnify [xTy, from]</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="nottickedoff">then return (TypeSet to)</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="nottickedoff">else raiseTypeError $ vcat</span>
+<span class="lineno">   32 </span><span class="spaces">                </span><span class="nottickedoff">[ pretty p</span>
+<span class="lineno">   33 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;f     :&quot; &lt;+&gt; pretty f</span>
+<span class="lineno">   34 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;f type:&quot; &lt;+&gt; pretty (TypeFunction from to)</span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;x     :&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="nottickedoff">, &quot;x type:&quot; &lt;+&gt; pretty xTy</span>
+<span class="lineno">   37 </span><span class="spaces">                </span><span class="nottickedoff">]</span></span>
 <span class="lineno">   38 </span>
 <span class="lineno">   39 </span>instance SimplifyOp OpImageSet x where
-<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpImageSet}&quot;</span></span>
+<span class="lineno">   40 </span>    <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpImageSet}&quot;</span></span>
 <span class="lineno">   41 </span>
 <span class="lineno">   42 </span>instance Pretty x =&gt; Pretty (OpImageSet x) where
-<span class="lineno">   43 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpImageSet a b) = &quot;imageSet&quot; &lt;&gt; prettyList prParens &quot;,&quot; [a,b]</span></span>
+<span class="lineno">   43 </span>    <span class="decl"><span class="nottickedoff">prettyPrec _ (OpImageSet a b) = &quot;imageSet&quot; &lt;&gt; prettyList prParens &quot;,&quot; [a,b]</span></span>
 <span class="lineno">   44 </span>
 <span class="lineno">   45 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpImageSet x) where
 <span class="lineno">   46 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpImageSet a b) = JSON.Object $ M.fromList</span>

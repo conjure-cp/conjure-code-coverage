@@ -187,11 +187,11 @@ span.spaces    { background: white }
 <span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">, responsesRepresentation       = &quot;&quot;</span>
 <span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">}</span>
 <span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">-- catching the (SR timeout) error, and raising a user error</span>
-<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">catch solve $ \ (e :: SomeException) -&gt; userErr1 $ vcat</span>
-<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">[ &quot;Enumerate domain: too many.&quot;</span>
-<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">, &quot;When working on domain:&quot; &lt;++&gt; pretty d</span>
-<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">, &quot;Exception:&quot; &lt;++&gt; pretty (show e)</span>
-<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">]</span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">catch solve $ <span class="nottickedoff">\ (e :: SomeException) -&gt; userErr1 $ vcat</span></span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Enumerate domain: too many.&quot;</span></span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on domain:&quot; &lt;++&gt; pretty d</span></span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Exception:&quot; &lt;++&gt; pretty (show e)</span></span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">solutions   &lt;- filter (&quot;.solution&quot; `isSuffixOf`) &lt;$&gt; getDirectoryContents outDir</span>
 <span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">when (length solutions &gt;= enumerateDomainMax) $ <span class="nottickedoff">userErr1 $ vcat</span></span>
 <span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Enumerate domain: too many.&quot;</span></span>

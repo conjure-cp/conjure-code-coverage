@@ -155,23 +155,23 @@ span.spaces    { background: white }
 <span class="lineno">  136 </span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>rule_Inverse :: Rule
-<span class="lineno">  139 </span><span class="decl"><span class="istickedoff">rule_Inverse = &quot;function-inverse&quot; `namedRule` theRule where</span>
-<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| inverse(&amp;a, &amp;b) |] = do</span>
-<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">case a of WithLocals{} -&gt; <span class="nottickedoff">na &quot;bubble-delay&quot;</span> ; _ -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">case b of WithLocals{} -&gt; <span class="nottickedoff">na &quot;bubble-delay&quot;</span> ; _ -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf a</span>
-<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf b</span>
-<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for function inverse&quot;</span></span>
-<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">return</span>
-<span class="lineno">  150 </span><span class="spaces">                    </span><span class="istickedoff">[essence|</span>
-<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff">(forAll &amp;iPat in &amp;a . &amp;b(&amp;i[2]) = &amp;i[1])</span>
-<span class="lineno">  152 </span><span class="spaces">                            </span><span class="istickedoff">/\</span>
-<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff">(forAll &amp;iPat in &amp;b . &amp;a(&amp;i[2]) = &amp;i[1])</span>
-<span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff">|]</span>
-<span class="lineno">  155 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  139 </span><span class="decl"><span class="istickedoff">rule_Inverse = <span class="nottickedoff">&quot;function-inverse&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| inverse(&amp;a, &amp;b) |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case a of WithLocals{} -&gt; na &quot;bubble-delay&quot; ; _ -&gt; return ()</span></span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case b of WithLocals{} -&gt; na &quot;bubble-delay&quot; ; _ -&gt; return ()</span></span>
+<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} &lt;- typeOf a</span></span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} &lt;- typeOf b</span></span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for function inverse&quot;</span></span>
+<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  150 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
+<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(forAll &amp;iPat in &amp;a . &amp;b(&amp;i[2]) = &amp;i[1])</span></span>
+<span class="lineno">  152 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">/\</span></span>
+<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(forAll &amp;iPat in &amp;b . &amp;a(&amp;i[2]) = &amp;i[1])</span></span>
+<span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">  155 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  156 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Inverse&quot;</span></span>
 <span class="lineno">  157 </span>
 <span class="lineno">  158 </span>
@@ -389,70 +389,70 @@ span.spaces    { background: white }
 <span class="lineno">  370 </span>
 <span class="lineno">  371 </span>
 <span class="lineno">  372 </span>rule_Comprehension_Defined_Size :: Rule
-<span class="lineno">  373 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined_Size = &quot;function-defined-size&quot; `namedRule` theRule where</span>
-<span class="lineno">  374 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| size(defined(&amp;func), &amp;n) |] = do</span>
-<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction _ _ domFr _domTo &lt;- domainOf func</span>
-<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  377 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;size(defined(func), n)&quot;</span></span>
-<span class="lineno">  378 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff">(auxName, aux) &lt;- auxiliaryVar</span>
-<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff">(kPat, k) &lt;- quantifiedVar</span>
-<span class="lineno">  381 </span><span class="spaces">                </span><span class="istickedoff">(lPat, l) &lt;- quantifiedVar</span>
-<span class="lineno">  382 </span><span class="spaces">                </span><span class="istickedoff">let k1 = [essence| &amp;k[1] |]</span>
-<span class="lineno">  383 </span><span class="spaces">                </span><span class="istickedoff">let l1 = [essence| &amp;l[1] |]</span>
-<span class="lineno">  384 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals</span>
-<span class="lineno">  385 </span><span class="spaces">                    </span><span class="istickedoff">(fromBool True)</span>
-<span class="lineno">  386 </span><span class="spaces">                    </span><span class="istickedoff">(AuxiliaryVars</span>
-<span class="lineno">  387 </span><span class="spaces">                        </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName</span>
-<span class="lineno">  388 </span><span class="spaces">                                </span><span class="istickedoff">(DomainSet def (SetAttr (SizeAttr_Size n)) (forgetRepr domFr)))</span>
-<span class="lineno">  389 </span><span class="spaces">                        </span><span class="istickedoff">, SuchThat</span>
-<span class="lineno">  390 </span><span class="spaces">                            </span><span class="istickedoff">[ make opAnd $ Comprehension</span>
-<span class="lineno">  391 </span><span class="spaces">                                </span><span class="istickedoff">[essence| &amp;k1 in &amp;aux |]</span>
-<span class="lineno">  392 </span><span class="spaces">                                </span><span class="istickedoff">[ Generator (GenInExpr kPat func) ]</span>
-<span class="lineno">  393 </span><span class="spaces">                            </span><span class="istickedoff">, make opAnd $</span>
-<span class="lineno">  394 </span><span class="spaces">                                </span><span class="istickedoff">Comprehension</span>
-<span class="lineno">  395 </span><span class="spaces">                                    </span><span class="istickedoff">(make opOr $ Comprehension</span>
-<span class="lineno">  396 </span><span class="spaces">                                        </span><span class="istickedoff">[essence| &amp;l1 = &amp;k |]</span>
-<span class="lineno">  397 </span><span class="spaces">                                        </span><span class="istickedoff">[ Generator (GenInExpr lPat func) ]</span>
-<span class="lineno">  398 </span><span class="spaces">                                    </span><span class="istickedoff">)</span>
-<span class="lineno">  399 </span><span class="spaces">                                    </span><span class="istickedoff">[ Generator (GenInExpr kPat aux) ]</span>
-<span class="lineno">  400 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
-<span class="lineno">  401 </span><span class="spaces">                        </span><span class="istickedoff">])</span>
-<span class="lineno">  402 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  373 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined_Size = <span class="nottickedoff">&quot;function-defined-size&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  374 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| size(defined(&amp;func), &amp;n) |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">DomainFunction _ _ domFr _domTo &lt;- domainOf func</span></span>
+<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  377 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;size(defined(func), n)&quot;</span></span>
+<span class="lineno">  378 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(auxName, aux) &lt;- auxiliaryVar</span></span>
+<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(kPat, k) &lt;- quantifiedVar</span></span>
+<span class="lineno">  381 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(lPat, l) &lt;- quantifiedVar</span></span>
+<span class="lineno">  382 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let k1 = [essence| &amp;k[1] |]</span></span>
+<span class="lineno">  383 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let l1 = [essence| &amp;l[1] |]</span></span>
+<span class="lineno">  384 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ WithLocals</span></span>
+<span class="lineno">  385 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(fromBool True)</span></span>
+<span class="lineno">  386 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(AuxiliaryVars</span></span>
+<span class="lineno">  387 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind auxName</span></span>
+<span class="lineno">  388 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(DomainSet def (SetAttr (SizeAttr_Size n)) (forgetRepr domFr)))</span></span>
+<span class="lineno">  389 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, SuchThat</span></span>
+<span class="lineno">  390 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension</span></span>
+<span class="lineno">  391 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[essence| &amp;k1 in &amp;aux |]</span></span>
+<span class="lineno">  392 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr kPat func) ]</span></span>
+<span class="lineno">  393 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $</span></span>
+<span class="lineno">  394 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Comprehension</span></span>
+<span class="lineno">  395 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">(make opOr $ Comprehension</span></span>
+<span class="lineno">  396 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[essence| &amp;l1 = &amp;k |]</span></span>
+<span class="lineno">  397 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr lPat func) ]</span></span>
+<span class="lineno">  398 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  399 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr kPat aux) ]</span></span>
+<span class="lineno">  400 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  401 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
+<span class="lineno">  402 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  403 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Defined_Size&quot;</span></span>
 <span class="lineno">  404 </span>
 <span class="lineno">  405 </span>
 <span class="lineno">  406 </span>rule_Comprehension_Range_Size :: Rule
-<span class="lineno">  407 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Range_Size = &quot;function-range-size&quot; `namedRule` theRule where</span>
-<span class="lineno">  408 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| size(range(&amp;func), &amp;n) |] = do</span>
-<span class="lineno">  409 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction _ _ _domFr domTo &lt;- domainOf func</span>
-<span class="lineno">  410 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  411 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;size(range(func), n)&quot;</span></span>
-<span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  413 </span><span class="spaces">                </span><span class="istickedoff">(auxName, aux) &lt;- auxiliaryVar</span>
-<span class="lineno">  414 </span><span class="spaces">                </span><span class="istickedoff">(kPat, k) &lt;- quantifiedVar</span>
-<span class="lineno">  415 </span><span class="spaces">                </span><span class="istickedoff">(lPat, l) &lt;- quantifiedVar</span>
-<span class="lineno">  416 </span><span class="spaces">                </span><span class="istickedoff">let k2 = [essence| &amp;k[2] |]</span>
-<span class="lineno">  417 </span><span class="spaces">                </span><span class="istickedoff">let l2 = [essence| &amp;l[2] |]</span>
-<span class="lineno">  418 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals</span>
-<span class="lineno">  419 </span><span class="spaces">                    </span><span class="istickedoff">(fromBool True)</span>
-<span class="lineno">  420 </span><span class="spaces">                    </span><span class="istickedoff">(AuxiliaryVars</span>
-<span class="lineno">  421 </span><span class="spaces">                        </span><span class="istickedoff">[ Declaration (FindOrGiven LocalFind auxName</span>
-<span class="lineno">  422 </span><span class="spaces">                                </span><span class="istickedoff">(DomainSet def (SetAttr (SizeAttr_Size n)) (forgetRepr domTo)))</span>
-<span class="lineno">  423 </span><span class="spaces">                        </span><span class="istickedoff">, SuchThat</span>
-<span class="lineno">  424 </span><span class="spaces">                            </span><span class="istickedoff">[ make opAnd $ Comprehension</span>
-<span class="lineno">  425 </span><span class="spaces">                                </span><span class="istickedoff">[essence| &amp;k2 in &amp;aux |]</span>
-<span class="lineno">  426 </span><span class="spaces">                                </span><span class="istickedoff">[ Generator (GenInExpr kPat func) ]</span>
-<span class="lineno">  427 </span><span class="spaces">                            </span><span class="istickedoff">, make opAnd $</span>
-<span class="lineno">  428 </span><span class="spaces">                                </span><span class="istickedoff">Comprehension</span>
-<span class="lineno">  429 </span><span class="spaces">                                    </span><span class="istickedoff">(make opOr $ Comprehension</span>
-<span class="lineno">  430 </span><span class="spaces">                                        </span><span class="istickedoff">[essence| &amp;l2 = &amp;k |]</span>
-<span class="lineno">  431 </span><span class="spaces">                                        </span><span class="istickedoff">[ Generator (GenInExpr lPat func) ]</span>
-<span class="lineno">  432 </span><span class="spaces">                                    </span><span class="istickedoff">)</span>
-<span class="lineno">  433 </span><span class="spaces">                                    </span><span class="istickedoff">[ Generator (GenInExpr kPat aux) ]</span>
-<span class="lineno">  434 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
-<span class="lineno">  435 </span><span class="spaces">                        </span><span class="istickedoff">])</span>
-<span class="lineno">  436 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  407 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Range_Size = <span class="nottickedoff">&quot;function-range-size&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  408 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| size(range(&amp;func), &amp;n) |] = <span class="nottickedoff">do</span></span>
+<span class="lineno">  409 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">DomainFunction _ _ _domFr domTo &lt;- domainOf func</span></span>
+<span class="lineno">  410 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  411 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;size(range(func), n)&quot;</span></span>
+<span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  413 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(auxName, aux) &lt;- auxiliaryVar</span></span>
+<span class="lineno">  414 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(kPat, k) &lt;- quantifiedVar</span></span>
+<span class="lineno">  415 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(lPat, l) &lt;- quantifiedVar</span></span>
+<span class="lineno">  416 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let k2 = [essence| &amp;k[2] |]</span></span>
+<span class="lineno">  417 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let l2 = [essence| &amp;l[2] |]</span></span>
+<span class="lineno">  418 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ WithLocals</span></span>
+<span class="lineno">  419 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(fromBool True)</span></span>
+<span class="lineno">  420 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(AuxiliaryVars</span></span>
+<span class="lineno">  421 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind auxName</span></span>
+<span class="lineno">  422 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(DomainSet def (SetAttr (SizeAttr_Size n)) (forgetRepr domTo)))</span></span>
+<span class="lineno">  423 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, SuchThat</span></span>
+<span class="lineno">  424 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension</span></span>
+<span class="lineno">  425 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[essence| &amp;k2 in &amp;aux |]</span></span>
+<span class="lineno">  426 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr kPat func) ]</span></span>
+<span class="lineno">  427 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $</span></span>
+<span class="lineno">  428 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Comprehension</span></span>
+<span class="lineno">  429 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">(make opOr $ Comprehension</span></span>
+<span class="lineno">  430 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[essence| &amp;l2 = &amp;k |]</span></span>
+<span class="lineno">  431 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr lPat func) ]</span></span>
+<span class="lineno">  432 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  433 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ Generator (GenInExpr kPat aux) ]</span></span>
+<span class="lineno">  434 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  435 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
+<span class="lineno">  436 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  437 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Range_Size&quot;</span></span>
 <span class="lineno">  438 </span>
 <span class="lineno">  439 </span>
@@ -468,40 +468,40 @@ span.spaces    { background: white }
 <span class="lineno">  449 </span>
 <span class="lineno">  450 </span>
 <span class="lineno">  451 </span>rule_Restrict_Image :: Rule
-<span class="lineno">  452 </span><span class="decl"><span class="istickedoff">rule_Restrict_Image = &quot;function-restrict-image&quot; `namedRule` theRule where</span>
+<span class="lineno">  452 </span><span class="decl"><span class="istickedoff">rule_Restrict_Image = <span class="nottickedoff">&quot;function-restrict-image&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  453 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  454 </span><span class="spaces">        </span><span class="istickedoff">(func', arg) &lt;- match opImage p</span>
 <span class="lineno">  455 </span><span class="spaces">        </span><span class="istickedoff">(func , dom) &lt;- match opRestrict func'</span>
-<span class="lineno">  456 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf func</span>
-<span class="lineno">  457 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  458 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Function image on a restricted function.&quot;</span></span>
-<span class="lineno">  459 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  460 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  461 </span><span class="spaces">                </span><span class="istickedoff">let bob = [essence| exists &amp;iPat : &amp;dom . &amp;i = &amp;arg |]</span>
-<span class="lineno">  462 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals (make opImage func arg) (DefinednessConstraints [bob])</span>
-<span class="lineno">  463 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  456 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- <span class="nottickedoff">typeOf func</span></span>
+<span class="lineno">  457 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  458 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Function image on a restricted function.&quot;</span></span>
+<span class="lineno">  459 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  460 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  461 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let bob = [essence| exists &amp;iPat : &amp;dom . &amp;i = &amp;arg |]</span></span>
+<span class="lineno">  462 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ WithLocals (make opImage func arg) (DefinednessConstraints [bob])</span></span>
+<span class="lineno">  463 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
 <span class="lineno">  464 </span>
 <span class="lineno">  465 </span>
 <span class="lineno">  466 </span>rule_Restrict_Comprehension :: Rule
-<span class="lineno">  467 </span><span class="decl"><span class="istickedoff">rule_Restrict_Comprehension = &quot;function-restrict-comprehension&quot; `namedRule` theRule where</span>
+<span class="lineno">  467 </span><span class="decl"><span class="istickedoff">rule_Restrict_Comprehension = <span class="nottickedoff">&quot;function-restrict-comprehension&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  468 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  469 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (iPat, iPatName, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno">  470 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr iPat@(Single iPatName) expr) -&gt; return (iPat, iPatName, expr)</span>
+<span class="lineno">  470 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr iPat@(Single iPatName) expr) -&gt; return (<span class="nottickedoff">iPat</span>, <span class="nottickedoff">iPatName</span>, expr)</span>
 <span class="lineno">  471 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Restrict_Comprehension&quot;</span></span>
 <span class="lineno">  472 </span><span class="spaces">        </span><span class="istickedoff">(func, dom) &lt;- match opRestrict expr</span>
-<span class="lineno">  473 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf func</span>
-<span class="lineno">  474 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  475 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Mapping over restrict(func, dom)&quot;</span></span>
-<span class="lineno">  476 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  477 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
-<span class="lineno">  478 </span><span class="spaces">                </span><span class="istickedoff">let i = Reference iPatName Nothing</span>
-<span class="lineno">  479 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension body</span>
-<span class="lineno">  480 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
-<span class="lineno">  481 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenInExpr iPat func)</span>
-<span class="lineno">  482 </span><span class="spaces">                       </span><span class="istickedoff">, Condition [essence| exists &amp;jPat : &amp;dom . &amp;j = &amp;i[1] |]</span>
-<span class="lineno">  483 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
-<span class="lineno">  484 </span><span class="spaces">                    </span><span class="istickedoff">++ gocAfter</span>
-<span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  473 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- <span class="nottickedoff">typeOf func</span></span>
+<span class="lineno">  474 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  475 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Mapping over restrict(func, dom)&quot;</span></span>
+<span class="lineno">  476 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  477 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">  478 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let i = Reference iPatName Nothing</span></span>
+<span class="lineno">  479 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension body</span></span>
+<span class="lineno">  480 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">  481 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr iPat func)</span></span>
+<span class="lineno">  482 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| exists &amp;jPat : &amp;dom . &amp;j = &amp;i[1] |]</span></span>
+<span class="lineno">  483 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  484 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ gocAfter</span></span>
+<span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  486 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Restrict_Comprehension&quot;</span></span>
 <span class="lineno">  487 </span>
 <span class="lineno">  488 </span>
@@ -520,7 +520,7 @@ span.spaces    { background: white }
 <span class="lineno">  501 </span><span class="spaces">        </span><span class="istickedoff">(func, arg) &lt;- match opImage p</span>
 <span class="lineno">  502 </span><span class="spaces">        </span><span class="istickedoff">case match opRestrict func of</span>
 <span class="lineno">  503 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  504 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; na &quot;rule_Image_Bool&quot;         -- do not use this rule for restricted functions</span>
+<span class="lineno">  504 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; <span class="nottickedoff">na &quot;rule_Image_Bool&quot;</span>         -- do not use this rule for restricted functions</span>
 <span class="lineno">  505 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction _ TypeBool &lt;- typeOf func</span>
 <span class="lineno">  506 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  507 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Function image, bool.&quot;</span></span>
@@ -582,7 +582,7 @@ span.spaces    { background: white }
 <span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff">(func, arg) &lt;- match opImage p</span>
 <span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff">case match opRestrict func of</span>
 <span class="lineno">  565 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  566 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; na &quot;rule_Image_Int&quot;          -- do not use this rule for restricted functions</span>
+<span class="lineno">  566 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; <span class="nottickedoff">na &quot;rule_Image_Int&quot;</span>          -- do not use this rule for restricted functions</span>
 <span class="lineno">  567 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction _ (TypeInt _) &lt;- typeOf func</span>
 <span class="lineno">  568 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  569 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Function image, int.&quot;</span></span>
@@ -678,30 +678,30 @@ span.spaces    { background: white }
 <span class="lineno">  659 </span>-- | [ ..i.. | i &lt;- imageSet(f,x), ..i.. ] ~~&gt;
 <span class="lineno">  660 </span>--   [ ..b.. | (a,b) &lt;- f, a = i, ..b.. ]
 <span class="lineno">  661 </span>rule_Comprehension_ImageSet :: Rule
-<span class="lineno">  662 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ImageSet = &quot;function-imageSet-comprehension&quot; `namedRule` theRule where</span>
+<span class="lineno">  662 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ImageSet = <span class="nottickedoff">&quot;function-imageSet-comprehension&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  663 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
 <span class="lineno">  664 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
-<span class="lineno">  665 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, expr)</span>
+<span class="lineno">  665 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (<span class="nottickedoff">pat</span>, expr)</span>
 <span class="lineno">  666 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension_ImageSet&quot;</span></span>
 <span class="lineno">  667 </span><span class="spaces">        </span><span class="istickedoff">(mkModifier, expr2) &lt;- match opModifierNoP expr</span>
 <span class="lineno">  668 </span><span class="spaces">        </span><span class="istickedoff">(func, arg) &lt;- match opImageSet expr2</span>
-<span class="lineno">  669 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf func</span>
-<span class="lineno">  670 </span><span class="spaces">        </span><span class="istickedoff">case match opRestrict func of</span>
-<span class="lineno">  671 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  672 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; <span class="nottickedoff">na &quot;rule_Comprehension_ImageSet&quot;</span>         -- do not use this rule for restricted functions</span>
-<span class="lineno">  673 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction pat old val</span>
-<span class="lineno">  674 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  675 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Mapping over the imageSet of a function&quot;</span></span>
-<span class="lineno">  676 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  677 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  678 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension</span>
-<span class="lineno">  679 </span><span class="spaces">                    </span><span class="istickedoff">(upd [essence| &amp;i[2] |] body)</span>
-<span class="lineno">  680 </span><span class="spaces">                    </span><span class="istickedoff">$  gocBefore</span>
-<span class="lineno">  681 </span><span class="spaces">                    </span><span class="istickedoff">++ [ Generator (GenInExpr iPat (mkModifier func))</span>
-<span class="lineno">  682 </span><span class="spaces">                       </span><span class="istickedoff">, Condition [essence| &amp;i[1] = &amp;arg |]</span>
-<span class="lineno">  683 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
-<span class="lineno">  684 </span><span class="spaces">                    </span><span class="istickedoff">++ transformBi <span class="nottickedoff">(upd [essence| &amp;i[2] |])</span> gocAfter</span>
-<span class="lineno">  685 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  669 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- <span class="nottickedoff">typeOf func</span></span>
+<span class="lineno">  670 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case match opRestrict func of</span></span>
+<span class="lineno">  671 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; return ()</span></span>
+<span class="lineno">  672 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just{}  -&gt; na &quot;rule_Comprehension_ImageSet&quot;</span>         -- do not use this rule for restricted functions</span>
+<span class="lineno">  673 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction pat old val</span></span>
+<span class="lineno">  674 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  675 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Mapping over the imageSet of a function&quot;</span></span>
+<span class="lineno">  676 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">  677 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno">  678 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension</span></span>
+<span class="lineno">  679 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(upd [essence| &amp;i[2] |] body)</span></span>
+<span class="lineno">  680 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">  681 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenInExpr iPat (mkModifier func))</span></span>
+<span class="lineno">  682 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">, Condition [essence| &amp;i[1] = &amp;arg |]</span></span>
+<span class="lineno">  683 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  684 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">++ transformBi (upd [essence| &amp;i[2] |]) gocAfter</span></span>
+<span class="lineno">  685 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  686 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_ImageSet&quot;</span></span>
 <span class="lineno">  687 </span>
 <span class="lineno">  688 </span>

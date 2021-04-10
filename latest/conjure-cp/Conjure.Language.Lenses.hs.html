@@ -238,7 +238,7 @@ span.spaces    { background: white }
 <span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">, followAliases extract</span>
 <span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">extract (Op (MkOpRestrict (OpRestrict x (Domain d)))) = return (x, d)</span>
+<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">extract (Op (MkOpRestrict (OpRestrict x (Domain d)))) = <span class="nottickedoff">return (x, d)</span></span>
 <span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.opRestrict:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span></span>
 <span class="lineno">  224 </span>
 <span class="lineno">  225 </span>
@@ -446,7 +446,7 @@ span.spaces    { background: white }
 <span class="lineno">  427 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  428 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  429 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff">MkOpImageSet (OpImageSet x y) -&gt; return (x,y)</span>
+<span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff">MkOpImageSet (OpImageSet x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
 <span class="lineno">  431 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opImageSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
 <span class="lineno">  432 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  433 </span>
@@ -1206,7 +1206,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1187 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; <span class="nottickedoff">return (inject . MkOpToSet      . OpToSet False , x)</span></span>
 <span class="lineno"> 1188 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (<span class="nottickedoff">inject . MkOpToMSet     . OpToMSet</span>      , x)</span>
 <span class="lineno"> 1189 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; <span class="nottickedoff">return (inject . MkOpToRelation . OpToRelation  , x)</span></span>
-<span class="lineno"> 1190 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (id                                      , p)</span>
+<span class="lineno"> 1190 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (<span class="nottickedoff">id</span>                                      , p)</span>
 <span class="lineno"> 1191 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 1192 </span>
 <span class="lineno"> 1193 </span>

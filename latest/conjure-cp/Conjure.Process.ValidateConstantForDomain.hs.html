@@ -57,7 +57,7 @@ span.spaces    { background: white }
 <span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeUpperBounded (ConstantInt _ a))              = <span class="nottickedoff">i &lt;= a</span></span>
 <span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeBounded (ConstantInt _ a) (ConstantInt _ b)) = i &gt;= a &amp;&amp; i &lt;= b</span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">intInRange _                                                   = <span class="nottickedoff">False</span></span>
-<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">in  unless (any intInRange rs) (constantNotInDomain <span class="nottickedoff">name</span> <span class="nottickedoff">c</span> <span class="nottickedoff">d</span>)</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">in  unless (any intInRange rs) <span class="nottickedoff">(constantNotInDomain name c d)</span></span>
 <span class="lineno">   42 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   43 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ (ConstantInt _ i) (DomainUnnamed _ (ConstantInt _ a)) | <span class="tickonlytrue">i &gt;= 1 &amp;&amp; i &lt;= a</span> = return <span class="nottickedoff">()</span></span>
 <span class="lineno">   44 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -254,7 +254,7 @@ span.spaces    { background: white }
 <span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff">case mres of</span>
 <span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">Right () -&gt; return ()</span>
 <span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt;</span>
-<span class="lineno">  238 </span><span class="spaces">            </span><span class="istickedoff">fail $ <span class="nottickedoff">vcat</span></span>
+<span class="lineno">  238 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat</span></span>
 <span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
 <span class="lineno">  240 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
@@ -264,12 +264,12 @@ span.spaces    { background: white }
 <span class="lineno">  245 </span>
 <span class="lineno">  246 </span>
 <span class="lineno">  247 </span>constantNotInDomain :: (MonadFail m, Pretty r) =&gt; Name -&gt; Constant -&gt; Domain r Constant -&gt; m ()
-<span class="lineno">  248 </span><span class="decl"><span class="istickedoff">constantNotInDomain n c d = fail $ <span class="nottickedoff">vcat</span></span>
-<span class="lineno">  249 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
-<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Name  :&quot; &lt;+&gt; pretty n</span></span>
-<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
-<span class="lineno">  252 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
-<span class="lineno">  253 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  248 </span><span class="decl"><span class="nottickedoff">constantNotInDomain n c d = fail $ vcat</span>
+<span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Name  :&quot; &lt;+&gt; pretty n</span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span>
+<span class="lineno">  252 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span>
+<span class="lineno">  253 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
 <span class="lineno">  254 </span>
 <span class="lineno">  255 </span>
 
