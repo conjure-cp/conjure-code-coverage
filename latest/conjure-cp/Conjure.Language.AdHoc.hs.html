@@ -30,71 +30,84 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>import qualified Data.Aeson.Types as JSON ( Value )
 <span class="lineno">   12 </span>import qualified Data.Vector as V               -- vector
 <span class="lineno">   13 </span>
-<span class="lineno">   14 </span>
-<span class="lineno">   15 </span>class ExpressionLike a where
-<span class="lineno">   16 </span>    fromInt :: Integer -&gt; a
-<span class="lineno">   17 </span>    fromIntWithTag :: Integer -&gt; IntTag -&gt; a
-<span class="lineno">   18 </span>    intOut :: MonadFail m =&gt; Doc -&gt; a -&gt; m Integer
-<span class="lineno">   19 </span>
-<span class="lineno">   20 </span>    fromBool :: Bool -&gt; a
-<span class="lineno">   21 </span>    boolOut :: MonadFail m =&gt; a -&gt; m Bool
+<span class="lineno">   14 </span>-- scientific
+<span class="lineno">   15 </span>import Data.Scientific ( floatingOrInteger )
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>class ExpressionLike a where
+<span class="lineno">   19 </span>    fromInt :: Integer -&gt; a
+<span class="lineno">   20 </span>    fromIntWithTag :: Integer -&gt; IntTag -&gt; a
+<span class="lineno">   21 </span>    intOut :: MonadFail m =&gt; Doc -&gt; a -&gt; m Integer
 <span class="lineno">   22 </span>
-<span class="lineno">   23 </span>    fromList :: [a] -&gt; a
-<span class="lineno">   24 </span>    listOut :: MonadFail m =&gt; a -&gt; m [a]
+<span class="lineno">   23 </span>    fromBool :: Bool -&gt; a
+<span class="lineno">   24 </span>    boolOut :: MonadFail m =&gt; a -&gt; m Bool
 <span class="lineno">   25 </span>
-<span class="lineno">   26 </span>class ReferenceContainer a where
-<span class="lineno">   27 </span>    fromName :: Name -&gt; a
-<span class="lineno">   28 </span>    nameOut :: MonadFail m =&gt; a -&gt; m Name
-<span class="lineno">   29 </span>
-<span class="lineno">   30 </span>class DomainContainer a dom where
-<span class="lineno">   31 </span>    fromDomain :: dom a -&gt; a
-<span class="lineno">   32 </span>    domainOut :: MonadFail m =&gt; a -&gt; m (dom a)
-<span class="lineno">   33 </span>
-<span class="lineno">   34 </span>class CanBeAnAlias a where
-<span class="lineno">   35 </span>    isAlias :: a -&gt; Maybe a
+<span class="lineno">   26 </span>    fromList :: [a] -&gt; a
+<span class="lineno">   27 </span>    listOut :: MonadFail m =&gt; a -&gt; m [a]
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>class ReferenceContainer a where
+<span class="lineno">   30 </span>    fromName :: Name -&gt; a
+<span class="lineno">   31 </span>    nameOut :: MonadFail m =&gt; a -&gt; m Name
+<span class="lineno">   32 </span>
+<span class="lineno">   33 </span>class DomainContainer a dom where
+<span class="lineno">   34 </span>    fromDomain :: dom a -&gt; a
+<span class="lineno">   35 </span>    domainOut :: MonadFail m =&gt; a -&gt; m (dom a)
 <span class="lineno">   36 </span>
-<span class="lineno">   37 </span>class VarSymBreakingDescription a where
-<span class="lineno">   38 </span>    varSymBreakingDescription :: a -&gt; JSON.Value
+<span class="lineno">   37 </span>class CanBeAnAlias a where
+<span class="lineno">   38 </span>    isAlias :: a -&gt; Maybe a
 <span class="lineno">   39 </span>
-<span class="lineno">   40 </span>class (:&lt;) a b where
-<span class="lineno">   41 </span>    inject :: a -&gt; b
-<span class="lineno">   42 </span>    project :: MonadFail m =&gt; b -&gt; m a
-<span class="lineno">   43 </span>
-<span class="lineno">   44 </span>class SimpleJSON a where
-<span class="lineno">   45 </span>    toSimpleJSON :: MonadUserError m =&gt; a -&gt; m JSON.Value
-<span class="lineno">   46 </span>    fromSimpleJSON :: MonadUserError m =&gt; JSON.Value -&gt; m a
-<span class="lineno">   47 </span>
-<span class="lineno">   48 </span>instance SimpleJSON x =&gt; SimpleJSON [x] where
-<span class="lineno">   49 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON xs = do</span>
-<span class="lineno">   50 </span><span class="spaces">        </span><span class="nottickedoff">ys &lt;- mapM toSimpleJSON xs</span>
-<span class="lineno">   51 </span><span class="spaces">        </span><span class="nottickedoff">return $ JSON.Array $ V.fromList ys</span></span>
-<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON _ = noFromSimpleJSON</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>instance (SimpleJSON x, SimpleJSON y) =&gt; SimpleJSON (x,y) where
-<span class="lineno">   55 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON (x,y) = do</span>
-<span class="lineno">   56 </span><span class="spaces">        </span><span class="nottickedoff">x' &lt;- toSimpleJSON x</span>
-<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">y' &lt;- toSimpleJSON y</span>
-<span class="lineno">   58 </span><span class="spaces">        </span><span class="nottickedoff">return $ JSON.Array $ V.fromList [x', y']</span></span>
-<span class="lineno">   59 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON _ = noFromSimpleJSON</span></span>
+<span class="lineno">   40 </span>class VarSymBreakingDescription a where
+<span class="lineno">   41 </span>    varSymBreakingDescription :: a -&gt; JSON.Value
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>class (:&lt;) a b where
+<span class="lineno">   44 </span>    inject :: a -&gt; b
+<span class="lineno">   45 </span>    project :: MonadFail m =&gt; b -&gt; m a
+<span class="lineno">   46 </span>
+<span class="lineno">   47 </span>class SimpleJSON a where
+<span class="lineno">   48 </span>    toSimpleJSON :: MonadUserError m =&gt; a -&gt; m JSON.Value
+<span class="lineno">   49 </span>    fromSimpleJSON :: MonadUserError m =&gt; JSON.Value -&gt; m a
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance SimpleJSON Integer where
+<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON = return . toJSON</span></span>
+<span class="lineno">   53 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON x =</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="nottickedoff">case x of</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">JSON.Number y -&gt;</span>
+<span class="lineno">   56 </span><span class="spaces">                </span><span class="nottickedoff">case floatingOrInteger y of</span>
+<span class="lineno">   57 </span><span class="spaces">                    </span><span class="nottickedoff">Right z -&gt; return z</span>
+<span class="lineno">   58 </span><span class="spaces">                    </span><span class="nottickedoff">Left (_ :: Double) -&gt; noFromSimpleJSON</span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; noFromSimpleJSON</span></span>
 <span class="lineno">   60 </span>
-<span class="lineno">   61 </span>
-<span class="lineno">   62 </span>noToSimpleJSON :: (MonadUserError m, Pretty a) =&gt;  a -&gt; m b
-<span class="lineno">   63 </span><span class="decl"><span class="nottickedoff">noToSimpleJSON a = userErr1 $ vcat</span>
-<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Cannot convert the following to simple JSON:&quot;</span>
-<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">, pretty a</span>
-<span class="lineno">   67 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Let us know if you need support for this please!&quot;</span>
-<span class="lineno">   69 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;As a workaround you can use --output-format=astjson&quot;</span>
-<span class="lineno">   70 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   71 </span>
-<span class="lineno">   72 </span>noFromSimpleJSON :: MonadUserError m =&gt; m a
-<span class="lineno">   73 </span><span class="decl"><span class="nottickedoff">noFromSimpleJSON = userErr1 $ vcat</span>
-<span class="lineno">   74 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Cannot convert simple JSON to Essence yet.&quot;</span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Let us know if you need support for this please!&quot;</span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;As a workaround you can use --output-format=astjson&quot;</span>
-<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   78 </span>
+<span class="lineno">   61 </span>instance SimpleJSON x =&gt; SimpleJSON [x] where
+<span class="lineno">   62 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON xs = do</span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">ys &lt;- mapM toSimpleJSON xs</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">return $ JSON.Array $ V.fromList ys</span></span>
+<span class="lineno">   65 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON _ = noFromSimpleJSON</span></span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>instance (SimpleJSON x, SimpleJSON y) =&gt; SimpleJSON (x,y) where
+<span class="lineno">   68 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON (x,y) = do</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">x' &lt;- toSimpleJSON x</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">y' &lt;- toSimpleJSON y</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">return $ JSON.Array $ V.fromList [x', y']</span></span>
+<span class="lineno">   72 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON _ = noFromSimpleJSON</span></span>
+<span class="lineno">   73 </span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>noToSimpleJSON :: (MonadUserError m, Pretty a) =&gt;  a -&gt; m b
+<span class="lineno">   76 </span><span class="decl"><span class="nottickedoff">noToSimpleJSON a = userErr1 $ vcat</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Cannot convert the following to simple JSON:&quot;</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">, pretty a</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Let us know if you need support for this please!&quot;</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;As a workaround you can use --output-format=astjson&quot;</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>noFromSimpleJSON :: MonadUserError m =&gt; m a
+<span class="lineno">   86 </span><span class="decl"><span class="nottickedoff">noFromSimpleJSON = userErr1 $ vcat</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Cannot convert simple JSON to Essence yet.&quot;</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Let us know if you need support for this please!&quot;</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;As a workaround you can use --output-format=astjson&quot;</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   91 </span>
 
 </pre>
 </body>
