@@ -2554,10 +2554,10 @@ span.spaces    { background: white }
 <span class="lineno"> 2535 </span><span class="spaces">            </span><span class="nottickedoff">mconstant &lt;- runExceptT (instantiateExpression [] p)</span>
 <span class="lineno"> 2536 </span><span class="spaces">            </span><span class="nottickedoff">case mconstant of</span>
 <span class="lineno"> 2537 </span><span class="spaces">                </span><span class="nottickedoff">Left{} -&gt; return p</span>
-<span class="lineno"> 2538 </span><span class="spaces">                </span><span class="nottickedoff">Right constant -&gt; do</span>
-<span class="lineno"> 2539 </span><span class="spaces">                    </span><span class="nottickedoff">if null [() | ConstantUndefined{} &lt;- universe constant]</span>
-<span class="lineno"> 2540 </span><span class="spaces">                        </span><span class="nottickedoff">then return p</span>
-<span class="lineno"> 2541 </span><span class="spaces">                        </span><span class="nottickedoff">else return (Constant constant)</span>
+<span class="lineno"> 2538 </span><span class="spaces">                </span><span class="nottickedoff">Right constant -&gt;</span>
+<span class="lineno"> 2539 </span><span class="spaces">                    </span><span class="nottickedoff">if null [() | ConstantUndefined{} &lt;- universe constant] -- if there are no undefined values in it</span>
+<span class="lineno"> 2540 </span><span class="spaces">                        </span><span class="nottickedoff">then return (Constant constant)</span>
+<span class="lineno"> 2541 </span><span class="spaces">                        </span><span class="nottickedoff">else return p</span>
 <span class="lineno"> 2542 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
 <span class="lineno"> 2543 </span><span class="spaces">        </span><span class="nottickedoff">partial (Op op)</span>
 <span class="lineno"> 2544 </span><span class="spaces">            </span><span class="nottickedoff">| Just (x, y) &lt;- case op of</span>
