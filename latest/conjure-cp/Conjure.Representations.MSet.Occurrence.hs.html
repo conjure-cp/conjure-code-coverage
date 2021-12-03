@@ -75,7 +75,7 @@ span.spaces    { background: white }
 <span class="lineno">   56 </span><span class="spaces">                        </span><span class="istickedoff">let</span>
 <span class="lineno">   57 </span><span class="spaces">                            </span><span class="istickedoff">minOccur = getMinOccur attrs</span>
 <span class="lineno">   58 </span><span class="spaces">                            </span><span class="istickedoff">minOccurCons =</span>
-<span class="lineno">   59 </span><span class="spaces">                                </span><span class="istickedoff">[ [essence| forAll &amp;iPat : &amp;innerDomain . &amp;m[&amp;i] = 0 \/ &amp;m[&amp;i] &gt;= &amp;minOccur |]</span>
+<span class="lineno">   59 </span><span class="spaces">                                </span><span class="istickedoff">[ [essence| forAll &amp;iPat : &amp;innerDomain . &amp;m[&amp;i] &gt;= &amp;minOccur |]</span>
 <span class="lineno">   60 </span><span class="spaces">                                </span><span class="istickedoff">| minOccur /= 0 ]</span>
 <span class="lineno">   61 </span><span class="spaces">                        </span><span class="istickedoff">let</span>
 <span class="lineno">   62 </span><span class="spaces">                            </span><span class="istickedoff">cardinality = [essence| sum &amp;iPat : &amp;innerDomain . &amp;m[&amp;i] |]</span>

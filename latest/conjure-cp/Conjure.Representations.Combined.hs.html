@@ -251,114 +251,100 @@ span.spaces    { background: white }
 <span class="lineno">  232 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  233 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">  234 </span>    AllRepresentations m
-<span class="lineno">  235 </span><span class="decl"><span class="nottickedoff">reprsStandardOrderNoLevels = return $ concat</span>
-<span class="lineno">  236 </span><span class="spaces">    </span><span class="nottickedoff">[ [ primitive, tuple, record, variant, matrix downD1 downC1 up1</span>
-<span class="lineno">  237 </span><span class="spaces">      </span><span class="nottickedoff">, setOccurrence, setExplicit, setExplicitVarSizeWithDummy</span>
-<span class="lineno">  238 </span><span class="spaces">      </span><span class="nottickedoff">, setExplicitVarSizeWithMarker, setExplicitVarSizeWithFlags</span>
-<span class="lineno">  239 </span><span class="spaces">      </span><span class="nottickedoff">, msetExplicitWithFlags, msetExplicitWithRepetition, msetOccurrence</span>
-<span class="lineno">  240 </span><span class="spaces">      </span><span class="nottickedoff">, function1D, function1DPartial, functionND, functionNDPartial, functionNDPartialDummy</span>
-<span class="lineno">  241 </span><span class="spaces">      </span><span class="nottickedoff">, sequenceExplicitBounded</span>
-<span class="lineno">  242 </span><span class="spaces">      </span><span class="nottickedoff">, relationAsMatrix</span>
-<span class="lineno">  243 </span><span class="spaces">      </span><span class="nottickedoff">, partitionAsSet     dispatch (reprOptions reprsStandardOrderNoLevels) False</span>
-<span class="lineno">  244 </span><span class="spaces">      </span><span class="nottickedoff">, partitionOccurrence</span>
-<span class="lineno">  245 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  246 </span><span class="spaces">    </span><span class="nottickedoff">, [ functionAsRelation dispatch (reprOptions reprsStandardOrderNoLevels)</span>
-<span class="lineno">  247 </span><span class="spaces">      </span><span class="nottickedoff">, relationAsSet      dispatch (reprOptions reprsStandardOrderNoLevels) False</span>
-<span class="lineno">  248 </span><span class="spaces">      </span><span class="nottickedoff">]</span>
-<span class="lineno">  249 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  250 </span>
-<span class="lineno">  251 </span>
-<span class="lineno">  252 </span>-- | A list of all representations.
-<span class="lineno">  253 </span>--   As a crude measure, implementing levels here.
-<span class="lineno">  254 </span>--   We shouldn't have levels between representations in the long run.
-<span class="lineno">  255 </span>reprsStandardOrder ::
-<span class="lineno">  256 </span>    MonadFail m =&gt;
-<span class="lineno">  257 </span>    NameGen m =&gt;
-<span class="lineno">  258 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  259 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  260 </span>    AllRepresentations m
-<span class="lineno">  261 </span><span class="decl"><span class="istickedoff">reprsStandardOrder =</span>
-<span class="lineno">  262 </span><span class="spaces">    </span><span class="istickedoff">[ [ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
-<span class="lineno">  263 </span><span class="spaces">      </span><span class="istickedoff">, setExplicit, setOccurrence, setExplicitVarSizeWithDummy</span>
-<span class="lineno">  264 </span><span class="spaces">      </span><span class="istickedoff">, setExplicitVarSizeWithMarker, setExplicitVarSizeWithFlags</span>
-<span class="lineno">  265 </span><span class="spaces">      </span><span class="istickedoff">, msetExplicitWithFlags, msetExplicitWithRepetition, msetOccurrence</span>
-<span class="lineno">  266 </span><span class="spaces">      </span><span class="istickedoff">, function1D, function1DPartial, functionND, functionNDPartial, functionNDPartialDummy</span>
-<span class="lineno">  267 </span><span class="spaces">      </span><span class="istickedoff">, sequenceExplicitBounded</span>
-<span class="lineno">  268 </span><span class="spaces">      </span><span class="istickedoff">, relationAsMatrix</span>
-<span class="lineno">  269 </span><span class="spaces">      </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
-<span class="lineno">  270 </span><span class="spaces">      </span><span class="istickedoff">, partitionOccurrence</span>
-<span class="lineno">  271 </span><span class="spaces">      </span><span class="istickedoff">]</span>
-<span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">, [ functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder)</span>
-<span class="lineno">  273 </span><span class="spaces">      </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
-<span class="lineno">  274 </span><span class="spaces">      </span><span class="istickedoff">]</span>
-<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
-<span class="lineno">  276 </span>
-<span class="lineno">  277 </span>
-<span class="lineno">  278 </span>-- | Sparser representations are to be preferred for parameters.
-<span class="lineno">  279 </span>reprsSparseOrder ::
-<span class="lineno">  280 </span>    MonadFail m =&gt;
-<span class="lineno">  281 </span>    NameGen m =&gt;
-<span class="lineno">  282 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  283 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  284 </span>    AllRepresentations m
-<span class="lineno">  285 </span><span class="decl"><span class="istickedoff">reprsSparseOrder = map return</span>
-<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff">[ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
-<span class="lineno">  287 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">, setExplicit, setExplicitVarSizeWithDummy, setExplicitVarSizeWithMarker</span>
-<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">, setOccurrence, setExplicitVarSizeWithFlags              -- redundant</span>
+<span class="lineno">  235 </span><span class="decl"><span class="nottickedoff">reprsStandardOrderNoLevels = [concat reprsStandardOrder]</span></span>
+<span class="lineno">  236 </span>
+<span class="lineno">  237 </span>
+<span class="lineno">  238 </span>-- | A list of all representations.
+<span class="lineno">  239 </span>--   As a crude measure, implementing levels here.
+<span class="lineno">  240 </span>--   We shouldn't have levels between representations in the long run.
+<span class="lineno">  241 </span>reprsStandardOrder ::
+<span class="lineno">  242 </span>    MonadFail m =&gt;
+<span class="lineno">  243 </span>    NameGen m =&gt;
+<span class="lineno">  244 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  245 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  246 </span>    AllRepresentations m
+<span class="lineno">  247 </span><span class="decl"><span class="istickedoff">reprsStandardOrder =</span>
+<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff">[ [ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
+<span class="lineno">  249 </span><span class="spaces">      </span><span class="istickedoff">, setExplicit, setOccurrence, setExplicitVarSizeWithDummy</span>
+<span class="lineno">  250 </span><span class="spaces">      </span><span class="istickedoff">, setExplicitVarSizeWithMarker, setExplicitVarSizeWithFlags</span>
+<span class="lineno">  251 </span><span class="spaces">      </span><span class="istickedoff">, msetExplicitWithFlags, msetExplicitWithRepetition, msetOccurrence</span>
+<span class="lineno">  252 </span><span class="spaces">      </span><span class="istickedoff">, function1D, function1DPartial, functionND, functionNDPartial, functionNDPartialDummy</span>
+<span class="lineno">  253 </span><span class="spaces">      </span><span class="istickedoff">, sequenceExplicitBounded</span>
+<span class="lineno">  254 </span><span class="spaces">      </span><span class="istickedoff">, relationAsMatrix</span>
+<span class="lineno">  255 </span><span class="spaces">      </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
+<span class="lineno">  256 </span><span class="spaces">      </span><span class="istickedoff">, partitionOccurrence</span>
+<span class="lineno">  257 </span><span class="spaces">      </span><span class="istickedoff">]</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">, [ functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder)</span>
+<span class="lineno">  259 </span><span class="spaces">      </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
+<span class="lineno">  260 </span><span class="spaces">      </span><span class="istickedoff">]</span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  262 </span>
+<span class="lineno">  263 </span>
+<span class="lineno">  264 </span>-- | Sparser representations are to be preferred for parameters.
+<span class="lineno">  265 </span>reprsSparseOrder ::
+<span class="lineno">  266 </span>    MonadFail m =&gt;
+<span class="lineno">  267 </span>    NameGen m =&gt;
+<span class="lineno">  268 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  269 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  270 </span>    AllRepresentations m
+<span class="lineno">  271 </span><span class="decl"><span class="istickedoff">reprsSparseOrder = map return</span>
+<span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">[ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
+<span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">, setExplicit, setExplicitVarSizeWithDummy, setExplicitVarSizeWithMarker</span>
+<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">, setOccurrence, setExplicitVarSizeWithFlags              -- redundant</span>
+<span class="lineno">  276 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithFlags</span>
+<span class="lineno">  278 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithRepetition, msetOccurrence              -- redundant</span>
+<span class="lineno">  279 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  280 </span><span class="spaces">    </span><span class="istickedoff">, function1D, functionND</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">, functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder)</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">, function1DPartial, functionNDPartial                    -- redundant</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">, functionNDPartialDummy                                  -- redundant</span>
+<span class="lineno">  284 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  285 </span><span class="spaces">    </span><span class="istickedoff">, sequenceExplicitBounded</span>
+<span class="lineno">  286 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  287 </span><span class="spaces">    </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">, relationAsMatrix</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
 <span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithFlags</span>
-<span class="lineno">  292 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithRepetition, msetOccurrence              -- redundant</span>
-<span class="lineno">  293 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">, function1D, functionND</span>
-<span class="lineno">  295 </span><span class="spaces">    </span><span class="istickedoff">, functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder)</span>
-<span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">, function1DPartial, functionNDPartial                    -- redundant</span>
-<span class="lineno">  297 </span><span class="spaces">    </span><span class="istickedoff">, functionNDPartialDummy                                  -- redundant</span>
-<span class="lineno">  298 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff">, sequenceExplicitBounded</span>
-<span class="lineno">  300 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  301 </span><span class="spaces">    </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
-<span class="lineno">  302 </span><span class="spaces">    </span><span class="istickedoff">, relationAsMatrix</span>
-<span class="lineno">  303 </span><span class="spaces">    </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
-<span class="lineno">  304 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  305 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">partitionOccurrence</span>                                     -- redundant</span>
-<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
-<span class="lineno">  307 </span>
-<span class="lineno">  308 </span>
-<span class="lineno">  309 </span>-- | For a domain, produce a list of domains with different representation options.
-<span class="lineno">  310 </span>--   This function should never return an empty list.
-<span class="lineno">  311 </span>reprOptions ::
-<span class="lineno">  312 </span>    Monad m =&gt;
-<span class="lineno">  313 </span>    Functor m =&gt;
-<span class="lineno">  314 </span>    Data x =&gt;
-<span class="lineno">  315 </span>    Pretty x =&gt;
-<span class="lineno">  316 </span>    ExpressionLike x =&gt;
-<span class="lineno">  317 </span>    AllRepresentations m -&gt; Domain () x -&gt; m [Domain HasRepresentation x]
-<span class="lineno">  318 </span><span class="decl"><span class="istickedoff">reprOptions reprs (expandDomainReference -&gt; domain) = go reprs</span>
-<span class="lineno">  319 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  320 </span><span class="spaces">        </span><span class="istickedoff">go [] = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  321 </span><span class="spaces">        </span><span class="istickedoff">go (reprsThisLevel:reprsNextLevels) = do</span>
-<span class="lineno">  322 </span><span class="spaces">            </span><span class="istickedoff">matchesOnThisLevel &lt;- concat &lt;$&gt; sequence [ rCheck r (reprOptions reprs) domain</span>
-<span class="lineno">  323 </span><span class="spaces">                                                      </span><span class="istickedoff">| r &lt;- reprsThisLevel</span>
-<span class="lineno">  324 </span><span class="spaces">                                                      </span><span class="istickedoff">]</span>
-<span class="lineno">  325 </span><span class="spaces">            </span><span class="istickedoff">if null matchesOnThisLevel</span>
-<span class="lineno">  326 </span><span class="spaces">                </span><span class="istickedoff">then go reprsNextLevels</span>
-<span class="lineno">  327 </span><span class="spaces">                </span><span class="istickedoff">else return matchesOnThisLevel</span></span>
+<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">partitionOccurrence</span>                                     -- redundant</span>
+<span class="lineno">  292 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>
+<span class="lineno">  295 </span>-- | For a domain, produce a list of domains with different representation options.
+<span class="lineno">  296 </span>--   This function should never return an empty list.
+<span class="lineno">  297 </span>reprOptions ::
+<span class="lineno">  298 </span>    Monad m =&gt;
+<span class="lineno">  299 </span>    Functor m =&gt;
+<span class="lineno">  300 </span>    Data x =&gt;
+<span class="lineno">  301 </span>    Pretty x =&gt;
+<span class="lineno">  302 </span>    ExpressionLike x =&gt;
+<span class="lineno">  303 </span>    AllRepresentations m -&gt; Domain () x -&gt; m [Domain HasRepresentation x]
+<span class="lineno">  304 </span><span class="decl"><span class="istickedoff">reprOptions reprs (expandDomainReference -&gt; domain) = go reprs</span>
+<span class="lineno">  305 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  306 </span><span class="spaces">        </span><span class="istickedoff">go [] = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  307 </span><span class="spaces">        </span><span class="istickedoff">go (reprsThisLevel:reprsNextLevels) = do</span>
+<span class="lineno">  308 </span><span class="spaces">            </span><span class="istickedoff">matchesOnThisLevel &lt;- concat &lt;$&gt; sequence [ rCheck r (reprOptions reprs) domain</span>
+<span class="lineno">  309 </span><span class="spaces">                                                      </span><span class="istickedoff">| r &lt;- reprsThisLevel</span>
+<span class="lineno">  310 </span><span class="spaces">                                                      </span><span class="istickedoff">]</span>
+<span class="lineno">  311 </span><span class="spaces">            </span><span class="istickedoff">if null matchesOnThisLevel</span>
+<span class="lineno">  312 </span><span class="spaces">                </span><span class="istickedoff">then go reprsNextLevels</span>
+<span class="lineno">  313 </span><span class="spaces">                </span><span class="istickedoff">else return matchesOnThisLevel</span></span>
+<span class="lineno">  314 </span>
+<span class="lineno">  315 </span>
+<span class="lineno">  316 </span>-- | For a domain, returns the structural constraints.
+<span class="lineno">  317 </span>--   Makes recursive calls to generate the complete structural constraints.
+<span class="lineno">  318 </span>--   Takes in a function to refine inner guys.
+<span class="lineno">  319 </span>getStructurals ::
+<span class="lineno">  320 </span>    MonadFail m =&gt;
+<span class="lineno">  321 </span>    NameGen m =&gt;
+<span class="lineno">  322 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  323 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  324 </span>    (Expression -&gt; m [Expression]) -&gt;
+<span class="lineno">  325 </span>    DomainX Expression -&gt;
+<span class="lineno">  326 </span>    m (Expression -&gt; m [Expression])
+<span class="lineno">  327 </span><span class="decl"><span class="istickedoff">getStructurals downX1 domain = rStructural (dispatch domain) (getStructurals downX1) downX1 domain</span></span>
 <span class="lineno">  328 </span>
-<span class="lineno">  329 </span>
-<span class="lineno">  330 </span>-- | For a domain, returns the structural constraints.
-<span class="lineno">  331 </span>--   Makes recursive calls to generate the complete structural constraints.
-<span class="lineno">  332 </span>--   Takes in a function to refine inner guys.
-<span class="lineno">  333 </span>getStructurals ::
-<span class="lineno">  334 </span>    MonadFail m =&gt;
-<span class="lineno">  335 </span>    NameGen m =&gt;
-<span class="lineno">  336 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  337 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  338 </span>    (Expression -&gt; m [Expression]) -&gt;
-<span class="lineno">  339 </span>    DomainX Expression -&gt;
-<span class="lineno">  340 </span>    m (Expression -&gt; m [Expression])
-<span class="lineno">  341 </span><span class="decl"><span class="istickedoff">getStructurals downX1 domain = rStructural (dispatch domain) (getStructurals downX1) downX1 domain</span></span>
-<span class="lineno">  342 </span>
 
 </pre>
 </body>
