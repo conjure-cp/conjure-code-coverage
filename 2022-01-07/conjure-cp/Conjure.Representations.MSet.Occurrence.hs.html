@@ -1,0 +1,142 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Representations.MSet.Occurrence ( msetOccurrence ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>-- conjure
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Language
+<span class="lineno">    8 </span>import Conjure.Representations.Internal
+<span class="lineno">    9 </span>import Conjure.Representations.Common
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>msetOccurrence :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   13 </span><span class="decl"><span class="istickedoff">msetOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   14 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   15 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   17 </span><span class="spaces">        </span><span class="istickedoff">chck :: TypeOf_ReprCheck m</span>
+<span class="lineno">   18 </span><span class="spaces">        </span><span class="istickedoff">chck f (DomainMSet _ attrs innerDomain@DomainInt{}) = map (DomainMSet MSet_Occurrence attrs) &lt;$&gt; f innerDomain</span>
+<span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff">chck _ _ = return []</span>
+<span class="lineno">   20 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   21 </span><span class="spaces">        </span><span class="istickedoff">outName :: Domain HasRepresentation x -&gt; Name -&gt; Name</span>
+<span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff">outName = mkOutName Nothing</span>
+<span class="lineno">   23 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">getMinOccur attrs = case attrs of</span>
+<span class="lineno">   25 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinOccur x) -&gt; <span class="nottickedoff">x</span></span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinMaxOccur x _) -&gt; x</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ _ -&gt; 0</span>
+<span class="lineno">   28 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">getMaxOccur attrs = case attrs of</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; return x</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; return x</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return x</span>
+<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return x</span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;getMaxOccur, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
+<span class="lineno">   36 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">downD (name, domain@(DomainMSet MSet_Occurrence attrs innerDomain@DomainInt{})) = do</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">maxOccur &lt;- getMaxOccur attrs</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">return $ Just</span>
+<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff">[ ( outName domain name</span>
+<span class="lineno">   42 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix (forgetRepr innerDomain) (DomainInt TagInt [RangeBounded 0 maxOccur])</span>
+<span class="lineno">   43 </span><span class="spaces">                  </span><span class="istickedoff">)</span>
+<span class="lineno">   44 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">downD _ = <span class="nottickedoff">na &quot;{downD} Occurrence&quot;</span></span>
+<span class="lineno">   46 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">structuralCons :: TypeOf_Structural m</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ downX1 (DomainMSet MSet_Occurrence</span>
+<span class="lineno">   49 </span><span class="spaces">                                    </span><span class="istickedoff">attrs@(MSetAttr sizeAttr _occurAttr)</span>
+<span class="lineno">   50 </span><span class="spaces">                                    </span><span class="istickedoff">innerDomain@DomainInt{}) =</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">return $ \ mset -&gt; do</span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">refs &lt;- downX1 mset</span>
+<span class="lineno">   53 </span><span class="spaces">                </span><span class="istickedoff">case refs of</span>
+<span class="lineno">   54 </span><span class="spaces">                    </span><span class="istickedoff">[m] -&gt; do</span>
+<span class="lineno">   55 </span><span class="spaces">                        </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   56 </span><span class="spaces">                        </span><span class="istickedoff">let</span>
+<span class="lineno">   57 </span><span class="spaces">                            </span><span class="istickedoff">minOccur = getMinOccur attrs</span>
+<span class="lineno">   58 </span><span class="spaces">                            </span><span class="istickedoff">minOccurCons =</span>
+<span class="lineno">   59 </span><span class="spaces">                                </span><span class="istickedoff">[ [essence| forAll &amp;iPat : &amp;innerDomain . &amp;m[&amp;i] &gt;= &amp;minOccur |]</span>
+<span class="lineno">   60 </span><span class="spaces">                                </span><span class="istickedoff">| minOccur /= 0 ]</span>
+<span class="lineno">   61 </span><span class="spaces">                        </span><span class="istickedoff">let</span>
+<span class="lineno">   62 </span><span class="spaces">                            </span><span class="istickedoff">cardinality = [essence| sum &amp;iPat : &amp;innerDomain . &amp;m[&amp;i] |]</span>
+<span class="lineno">   63 </span><span class="spaces">                            </span><span class="istickedoff">cardinalityCons = mkSizeCons sizeAttr cardinality</span>
+<span class="lineno">   64 </span><span class="spaces">                        </span><span class="istickedoff">return (minOccurCons ++ cardinalityCons)</span>
+<span class="lineno">   65 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;{structuralCons} Occurrence&quot;</span></span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ _ _ = <span class="nottickedoff">na &quot;{structuralCons} Occurrence&quot;</span></span>
+<span class="lineno">   67 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC ( name</span></span>
+<span class="lineno">   70 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, domain@(DomainMSet MSet_Occurrence _attrs innerDomain@(DomainInt t intRanges))</span></span>
+<span class="lineno">   71 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract (AbsLitMSet constants)</span></span>
+<span class="lineno">   72 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">) = do</span></span>
+<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerDomainVals &lt;- valuesInIntDomain intRanges</span></span>
+<span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Just</span></span>
+<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ ( outName domain name</span></span>
+<span class="lineno">   76 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">, DomainMatrix (forgetRepr innerDomain) DomainBool</span></span>
+<span class="lineno">   77 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitMatrix (forgetRepr innerDomain)</span></span>
+<span class="lineno">   78 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">[ ConstantBool isIn</span></span>
+<span class="lineno">   79 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">| v &lt;- innerDomainVals</span></span>
+<span class="lineno">   80 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">, let isIn = ConstantInt t v `elem` constants</span></span>
+<span class="lineno">   81 </span><span class="spaces">                          </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   82 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC _ = na &quot;{downC} Occurrence&quot;</span></span>
+<span class="lineno">   85 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainMSet _ _ (DomainInt t intRanges)))=</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
+<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">Just constantMatrix -&gt;</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constantMatrix of</span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt; do</span>
+<span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff">innerDomainVals &lt;- valuesInIntDomain intRanges</span>
+<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract $ AbsLitMSet $ concat</span>
+<span class="lineno">   94 </span><span class="spaces">                                            </span><span class="istickedoff">[ case viewConstantInt x of</span>
+<span class="lineno">   95 </span><span class="spaces">                                                </span><span class="istickedoff">Just n -&gt; replicate (fromInteger n) (ConstantInt <span class="nottickedoff">t</span> v)</span>
+<span class="lineno">   96 </span><span class="spaces">                                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">[]</span></span>
+<span class="lineno">   97 </span><span class="spaces">                                            </span><span class="istickedoff">| (v,x) &lt;- zip innerDomainVals vals</span>
+<span class="lineno">   98 </span><span class="spaces">                                            </span><span class="istickedoff">] )</span>
+<span class="lineno">   99 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  100 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  101 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
+<span class="lineno">  102 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  103 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  104 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  105 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  106 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in MSet Occurrence up)&quot;</span></span>
+<span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  109 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  110 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
+<span class="lineno">  111 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} Occurrence&quot;</span></span>
+<span class="lineno">  113 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do </span></span>
+<span class="lineno">  116 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[inner] &lt;- downX1 inp</span></span>
+<span class="lineno">  117 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
+<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
+<span class="lineno">  119 </span>
+
+</pre>
+</body>
+</html>
