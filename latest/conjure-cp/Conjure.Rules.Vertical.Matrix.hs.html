@@ -603,6 +603,23 @@ span.spaces    { background: white }
 <span class="lineno">  584 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension (make opMatrixIndexingSlicing m is') (concat gocs)</span></span>
 <span class="lineno">  585 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
 <span class="lineno">  586 </span>
+<span class="lineno">  587 </span>
+<span class="lineno">  588 </span>-- freq(matrix,arg) ~~&gt; sum([ toInt(arg = i) | i in matrix ])
+<span class="lineno">  589 </span>rule_Freq :: Rule
+<span class="lineno">  590 </span><span class="decl"><span class="istickedoff">rule_Freq = &quot;matrix-freq&quot; `namedRule` theRule where</span>
+<span class="lineno">  591 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  592 </span><span class="spaces">        </span><span class="istickedoff">(m, arg) &lt;- match opFreq p</span>
+<span class="lineno">  593 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{}  &lt;- typeOf m</span>
+<span class="lineno">  594 </span><span class="spaces">        </span><span class="istickedoff">[indexDom] &lt;- indexDomainsOf m</span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  596 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for matrix-freq.&quot;</span></span>
+<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  598 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  599 </span><span class="spaces">                </span><span class="istickedoff">let mis = (make opMatrixIndexing m [i])</span>
+<span class="lineno">  600 </span><span class="spaces">                </span><span class="istickedoff">return $ make opSum $ Comprehension [essence| toInt(&amp;mis = &amp;arg) |]</span>
+<span class="lineno">  601 </span><span class="spaces">                            </span><span class="istickedoff">[Generator (GenDomainNoRepr iPat indexDom)]</span>
+<span class="lineno">  602 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  603 </span>
 
 </pre>
 </body>

@@ -140,7 +140,7 @@ span.spaces    { background: white }
 <span class="lineno">  121 </span>
 <span class="lineno">  122 </span>instance EvaluateOp OpFreq where
 <span class="lineno">  123 </span>    <span class="decl"><span class="istickedoff">evaluateOp (OpFreq (viewConstantMSet -&gt; Just cs) c) = return $ (ConstantInt TagInt) $ sum [ <span class="nottickedoff">1</span> | i &lt;- cs, <span class="tickonlyfalse">c == i</span> ]</span>
-<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = <span class="nottickedoff">na $ &quot;evaluateOp{OpFreq}:&quot; &lt;++&gt; pretty (show op)</span></span></span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = na $ &quot;evaluateOp{OpFreq}:&quot; &lt;++&gt; pretty (show op)</span></span>
 <span class="lineno">  125 </span>
 <span class="lineno">  126 </span>instance EvaluateOp OpGeq where
 <span class="lineno">  127 </span>    <span class="decl"><span class="istickedoff">evaluateOp (OpGeq x y) = return $ ConstantBool $ x &gt;= y</span></span>
