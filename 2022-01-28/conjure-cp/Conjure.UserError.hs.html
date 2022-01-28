@@ -120,7 +120,7 @@ span.spaces    { background: white }
 <span class="lineno">  101 </span><span class="spaces">        </span><span class="istickedoff">return (Right res)</span></span>
 <span class="lineno">  102 </span>
 <span class="lineno">  103 </span>instance MonadFail m =&gt; MonadFail (UserErrorT m) where
-<span class="lineno">  104 </span>    <span class="decl"><span class="istickedoff">fail = lift . Prelude.fail</span></span>
+<span class="lineno">  104 </span>    <span class="decl"><span class="nottickedoff">fail = lift . Prelude.fail</span></span>
 <span class="lineno">  105 </span>
 <span class="lineno">  106 </span>instance MonadFail m =&gt; MonadUserError (UserErrorT m) where
 <span class="lineno">  107 </span>    <span class="decl"><span class="istickedoff">userErr msgs = UserErrorT $ return $ Left msgs</span></span>
