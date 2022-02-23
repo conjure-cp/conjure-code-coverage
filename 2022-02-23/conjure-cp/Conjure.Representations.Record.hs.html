@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Representations.Record
+<span class="lineno">    4 </span>    ( record
+<span class="lineno">    5 </span>    ) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>-- conjure
+<span class="lineno">    8 </span>import Conjure.Prelude
+<span class="lineno">    9 </span>import Conjure.Bug
+<span class="lineno">   10 </span>import Conjure.Language
+<span class="lineno">   11 </span>import Conjure.Representations.Internal
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>record :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC up symmetryOrdering</span>
+<span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   18 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff">chck :: TypeOf_ReprCheck m</span>
+<span class="lineno">   20 </span><span class="spaces">        </span><span class="istickedoff">chck f (DomainRecord ds) = do</span>
+<span class="lineno">   21 </span><span class="spaces">            </span><span class="istickedoff">let names = map fst ds</span>
+<span class="lineno">   22 </span><span class="spaces">            </span><span class="istickedoff">outDoms &lt;- sequence &lt;$&gt; mapM (f . snd) ds</span>
+<span class="lineno">   23 </span><span class="spaces">            </span><span class="istickedoff">return [ DomainRecord (zip names ds') | ds' &lt;- outDoms ]</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">chck _ _ = return []</span>
+<span class="lineno">   25 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">mkName name n = mconcat [name, &quot;_&quot;, n]</span>
+<span class="lineno">   27 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">downD (name, DomainRecord ds) = return $ Just</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">[ (mkName name n, d)</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">| (n,d) &lt;- ds</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">]</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">downD _ = <span class="nottickedoff">na &quot;{downD}&quot;</span></span>
+<span class="lineno">   34 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">structuralCons :: TypeOf_Structural m</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">structuralCons f downX1 (DomainRecord ds) = return $ \ tup -&gt; do</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">refs &lt;- downX1 tup</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">concat &lt;$&gt; sequence</span>
+<span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff">[ do</span>
+<span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff">innerStructuralConsGen &lt;- f dom</span>
+<span class="lineno">   41 </span><span class="spaces">                    </span><span class="istickedoff">outs                   &lt;- innerStructuralConsGen <span class="nottickedoff">ref</span></span>
+<span class="lineno">   42 </span><span class="spaces">                    </span><span class="istickedoff">return outs</span>
+<span class="lineno">   43 </span><span class="spaces">                </span><span class="istickedoff">| (ref, (_n, dom)) &lt;- zip refs ds</span>
+<span class="lineno">   44 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ _ _ = <span class="nottickedoff">na &quot;{structuralCons} record&quot;</span></span>
+<span class="lineno">   46 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">-- TODO: check if (length ds == length cs)</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">downC (name, DomainRecord ds, ConstantAbstract (AbsLitRecord cs))</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">sort (map fst ds) == sort (map fst cs)</span> = return $ Just</span>
+<span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff">[ case lookup n cs of</span>
+<span class="lineno">   52 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">bug &quot;Record.downC&quot;</span></span>
+<span class="lineno">   53 </span><span class="spaces">                    </span><span class="istickedoff">Just c  -&gt; (mkName name n, d, c)</span>
+<span class="lineno">   54 </span><span class="spaces">                </span><span class="istickedoff">| (n,d) &lt;- ds</span>
+<span class="lineno">   55 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">downC (n, d, c) =</span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">na $ &quot;{downC} record&quot; &lt;+&gt; vcat</span></span>
+<span class="lineno">   58 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;name  :&quot; &lt;+&gt; pretty n</span></span>
+<span class="lineno">   59 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;domain:&quot; &lt;+&gt; pretty d</span></span>
+<span class="lineno">   60 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;value :&quot; &lt;+&gt; pretty c</span></span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   62 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, DomainRecord ds) = do</span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">let names = map (mkName name . fst) ds</span>
+<span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff">vals &lt;- forM names $ \ n -&gt;</span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">case lookup n ctxt of</span>
+<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Record up)&quot;</span></span>
+<span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty n</span></span>
+<span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">   72 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty (DomainRecord ds)</span></span>
+<span class="lineno">   73 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
+<span class="lineno">   74 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff">Just val -&gt; return (<span class="nottickedoff">n</span>, val)</span>
+<span class="lineno">   76 </span><span class="spaces">            </span><span class="istickedoff">-- TODO: check if (length ds == length vals)</span>
+<span class="lineno">   77 </span><span class="spaces">            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitRecord vals))</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up}&quot;</span></span>
+<span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff">xs &lt;- downX1 inp</span>
+<span class="lineno">   83 </span><span class="spaces">            </span><span class="istickedoff">Just xsDoms' &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">let xsDoms = map snd xsDoms'</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- sequence [ innerSO <span class="nottickedoff">downX1</span> x xDom | (x, xDom) &lt;- zip xs xsDoms ]</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">return $ AbstractLiteral $ AbsLitTuple soValues</span></span>
+<span class="lineno">   87 </span>
+
+</pre>
+</body>
+</html>
