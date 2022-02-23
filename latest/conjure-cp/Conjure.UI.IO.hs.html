@@ -200,27 +200,37 @@ span.spaces    { background: white }
 <span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
 <span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
 <span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
-<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span></span>
-<span class="lineno">  185 </span>
-<span class="lineno">  186 </span>
-<span class="lineno">  187 </span>writeModels ::
-<span class="lineno">  188 </span>    MonadIO m =&gt;
-<span class="lineno">  189 </span>    MonadUserError m =&gt;
-<span class="lineno">  190 </span>    Int -&gt;
-<span class="lineno">  191 </span>    OutputFormat -&gt;
-<span class="lineno">  192 </span>    FilePath -&gt;
-<span class="lineno">  193 </span>    String -&gt;
-<span class="lineno">  194 </span>    [Model] -&gt;
-<span class="lineno">  195 </span>    m ()
-<span class="lineno">  196 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
-<span class="lineno">  197 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
-<span class="lineno">  198 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
-<span class="lineno">  199 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
-<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
-<span class="lineno">  201 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
-<span class="lineno">  202 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
-<span class="lineno">  203 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
-<span class="lineno">  204 </span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span>
+<span class="lineno">  185 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc Nothing spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
+<span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (show spec')</span></span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
+<span class="lineno">  190 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc (Just fp) spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  191 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
+<span class="lineno">  192 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
+<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span></span>
+<span class="lineno">  195 </span>
+<span class="lineno">  196 </span>
+<span class="lineno">  197 </span>writeModels ::
+<span class="lineno">  198 </span>    MonadIO m =&gt;
+<span class="lineno">  199 </span>    MonadUserError m =&gt;
+<span class="lineno">  200 </span>    Int -&gt;
+<span class="lineno">  201 </span>    OutputFormat -&gt;
+<span class="lineno">  202 </span>    FilePath -&gt;
+<span class="lineno">  203 </span>    String -&gt;
+<span class="lineno">  204 </span>    [Model] -&gt;
+<span class="lineno">  205 </span>    m ()
+<span class="lineno">  206 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
+<span class="lineno">  207 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
+<span class="lineno">  208 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
+<span class="lineno">  210 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
+<span class="lineno">  211 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
+<span class="lineno">  214 </span>
 
 </pre>
 </body>
