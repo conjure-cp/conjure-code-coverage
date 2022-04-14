@@ -17,334 +17,333 @@ span.spaces    { background: white }
 <span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
 </pre>
 <pre>
-<span class="lineno">    1 </span>{-# LANGUAGE ViewPatterns #-}
-<span class="lineno">    2 </span>
-<span class="lineno">    3 </span>module Conjure.Representations.Combined
-<span class="lineno">    4 </span>    ( downD, downC, up
-<span class="lineno">    5 </span>    , downD1, downC1, up1
-<span class="lineno">    6 </span>    , downToX1
-<span class="lineno">    7 </span>    , symmetryOrderingDispatch
-<span class="lineno">    8 </span>    , reprOptions, getStructurals
-<span class="lineno">    9 </span>    , reprsStandardOrderNoLevels, reprsStandardOrder, reprsSparseOrder
-<span class="lineno">   10 </span>    ) where
-<span class="lineno">   11 </span>
-<span class="lineno">   12 </span>-- conjure
-<span class="lineno">   13 </span>import Conjure.Prelude
-<span class="lineno">   14 </span>import Conjure.Bug
-<span class="lineno">   15 </span>import Conjure.Language
-<span class="lineno">   16 </span>import Conjure.Language.Instantiate
-<span class="lineno">   17 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
-<span class="lineno">   18 </span>
-<span class="lineno">   19 </span>import Conjure.Representations.Internal
-<span class="lineno">   20 </span>import Conjure.Representations.Primitive
-<span class="lineno">   21 </span>import Conjure.Representations.Tuple
-<span class="lineno">   22 </span>import Conjure.Representations.Matrix
-<span class="lineno">   23 </span>import Conjure.Representations.Record
-<span class="lineno">   24 </span>import Conjure.Representations.Variant
-<span class="lineno">   25 </span>import Conjure.Representations.Set.Occurrence
-<span class="lineno">   26 </span>import Conjure.Representations.Set.Explicit
-<span class="lineno">   27 </span>import Conjure.Representations.Set.ExplicitVarSizeWithDummy
-<span class="lineno">   28 </span>import Conjure.Representations.Set.ExplicitVarSizeWithMarker
-<span class="lineno">   29 </span>import Conjure.Representations.Set.ExplicitVarSizeWithFlags
-<span class="lineno">   30 </span>import Conjure.Representations.MSet.Occurrence
-<span class="lineno">   31 </span>import Conjure.Representations.MSet.ExplicitWithFlags
-<span class="lineno">   32 </span>import Conjure.Representations.MSet.ExplicitWithRepetition
-<span class="lineno">   33 </span>import Conjure.Representations.Function.Function1D
-<span class="lineno">   34 </span>import Conjure.Representations.Function.Function1DPartial
-<span class="lineno">   35 </span>import Conjure.Representations.Function.FunctionND
-<span class="lineno">   36 </span>import Conjure.Representations.Function.FunctionNDPartial
-<span class="lineno">   37 </span>import Conjure.Representations.Function.FunctionNDPartialDummy
-<span class="lineno">   38 </span>import Conjure.Representations.Function.FunctionAsRelation
-<span class="lineno">   39 </span>import Conjure.Representations.Sequence.ExplicitBounded
-<span class="lineno">   40 </span>import Conjure.Representations.Relation.RelationAsMatrix
-<span class="lineno">   41 </span>import Conjure.Representations.Relation.RelationAsSet
-<span class="lineno">   42 </span>import Conjure.Representations.Partition.Occurrence
-<span class="lineno">   43 </span>import Conjure.Representations.Partition.PartitionAsSet
+<span class="lineno">    1 </span>
+<span class="lineno">    2 </span>module Conjure.Representations.Combined
+<span class="lineno">    3 </span>    ( downD, downC, up
+<span class="lineno">    4 </span>    , downD1, downC1, up1
+<span class="lineno">    5 </span>    , downToX1
+<span class="lineno">    6 </span>    , symmetryOrderingDispatch
+<span class="lineno">    7 </span>    , reprOptions, getStructurals
+<span class="lineno">    8 </span>    , reprsStandardOrderNoLevels, reprsStandardOrder, reprsSparseOrder
+<span class="lineno">    9 </span>    ) where
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>-- conjure
+<span class="lineno">   12 </span>import Conjure.Prelude
+<span class="lineno">   13 </span>import Conjure.Bug
+<span class="lineno">   14 </span>import Conjure.Language
+<span class="lineno">   15 </span>import Conjure.Language.Instantiate
+<span class="lineno">   16 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>import Conjure.Representations.Internal
+<span class="lineno">   19 </span>import Conjure.Representations.Primitive
+<span class="lineno">   20 </span>import Conjure.Representations.Tuple
+<span class="lineno">   21 </span>import Conjure.Representations.Matrix
+<span class="lineno">   22 </span>import Conjure.Representations.Record
+<span class="lineno">   23 </span>import Conjure.Representations.Variant
+<span class="lineno">   24 </span>import Conjure.Representations.Set.Occurrence
+<span class="lineno">   25 </span>import Conjure.Representations.Set.Explicit
+<span class="lineno">   26 </span>import Conjure.Representations.Set.ExplicitVarSizeWithDummy
+<span class="lineno">   27 </span>import Conjure.Representations.Set.ExplicitVarSizeWithMarker
+<span class="lineno">   28 </span>import Conjure.Representations.Set.ExplicitVarSizeWithFlags
+<span class="lineno">   29 </span>import Conjure.Representations.MSet.Occurrence
+<span class="lineno">   30 </span>import Conjure.Representations.MSet.ExplicitWithFlags
+<span class="lineno">   31 </span>import Conjure.Representations.MSet.ExplicitWithRepetition
+<span class="lineno">   32 </span>import Conjure.Representations.Function.Function1D
+<span class="lineno">   33 </span>import Conjure.Representations.Function.Function1DPartial
+<span class="lineno">   34 </span>import Conjure.Representations.Function.FunctionND
+<span class="lineno">   35 </span>import Conjure.Representations.Function.FunctionNDPartial
+<span class="lineno">   36 </span>import Conjure.Representations.Function.FunctionNDPartialDummy
+<span class="lineno">   37 </span>import Conjure.Representations.Function.FunctionAsRelation
+<span class="lineno">   38 </span>import Conjure.Representations.Sequence.ExplicitBounded
+<span class="lineno">   39 </span>import Conjure.Representations.Relation.RelationAsMatrix
+<span class="lineno">   40 </span>import Conjure.Representations.Relation.RelationAsSet
+<span class="lineno">   41 </span>import Conjure.Representations.Partition.Occurrence
+<span class="lineno">   42 </span>import Conjure.Representations.Partition.PartitionAsSet
+<span class="lineno">   43 </span>
 <span class="lineno">   44 </span>
-<span class="lineno">   45 </span>
-<span class="lineno">   46 </span>-- | Refine (down) a domain, outputting refinement expressions (X) one level (1).
-<span class="lineno">   47 </span>--   The domain is allowed to be at the class level.
-<span class="lineno">   48 </span>downToX1 ::
-<span class="lineno">   49 </span>    MonadFail m =&gt;
-<span class="lineno">   50 </span>    NameGen m =&gt;
-<span class="lineno">   51 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   52 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   53 </span>    FindOrGiven -&gt; Name -&gt; DomainX Expression -&gt; m [Expression]
-<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">downToX1 forg name domain = rDownToX (dispatch domain) forg name domain</span></span>
-<span class="lineno">   55 </span>
-<span class="lineno">   56 </span>-- | Refine (down) a domain (D), one level (1).
-<span class="lineno">   57 </span>--   The domain is allowed to be at the class level.
-<span class="lineno">   58 </span>downD1 ::
-<span class="lineno">   59 </span>    MonadFail m =&gt;
-<span class="lineno">   60 </span>    NameGen m =&gt;
-<span class="lineno">   61 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   62 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   63 </span>    (Name, DomainX Expression) -&gt; m (Maybe [(Name, DomainX Expression)])
-<span class="lineno">   64 </span><span class="decl"><span class="istickedoff">downD1 (name, domain) = rDownD (dispatch domain) (name, domain)</span></span>
-<span class="lineno">   65 </span>
-<span class="lineno">   66 </span>-- | Refine (down) a domain, together with a constant (C), one level (1).
-<span class="lineno">   67 </span>--   The domain has to be fully instantiated.
-<span class="lineno">   68 </span>downC1 ::
-<span class="lineno">   69 </span>    MonadFail m =&gt;
-<span class="lineno">   70 </span>    NameGen m =&gt;
-<span class="lineno">   71 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   72 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   73 </span>    (Name, DomainC, Constant) -&gt; m (Maybe [(Name, DomainC, Constant)])
-<span class="lineno">   74 </span><span class="decl"><span class="istickedoff">downC1 (name, domain, constant) = rDownC (dispatch domain) (name, domain, constant)</span></span>
+<span class="lineno">   45 </span>-- | Refine (down) a domain, outputting refinement expressions (X) one level (1).
+<span class="lineno">   46 </span>--   The domain is allowed to be at the class level.
+<span class="lineno">   47 </span>downToX1 ::
+<span class="lineno">   48 </span>    MonadFail m =&gt;
+<span class="lineno">   49 </span>    NameGen m =&gt;
+<span class="lineno">   50 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   51 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   52 </span>    FindOrGiven -&gt; Name -&gt; DomainX Expression -&gt; m [Expression]
+<span class="lineno">   53 </span><span class="decl"><span class="istickedoff">downToX1 forg name domain = rDownToX (dispatch domain) forg name domain</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>-- | Refine (down) a domain (D), one level (1).
+<span class="lineno">   56 </span>--   The domain is allowed to be at the class level.
+<span class="lineno">   57 </span>downD1 ::
+<span class="lineno">   58 </span>    MonadFail m =&gt;
+<span class="lineno">   59 </span>    NameGen m =&gt;
+<span class="lineno">   60 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   61 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   62 </span>    (Name, DomainX Expression) -&gt; m (Maybe [(Name, DomainX Expression)])
+<span class="lineno">   63 </span><span class="decl"><span class="istickedoff">downD1 (name, domain) = rDownD (dispatch domain) (name, domain)</span></span>
+<span class="lineno">   64 </span>
+<span class="lineno">   65 </span>-- | Refine (down) a domain, together with a constant (C), one level (1).
+<span class="lineno">   66 </span>--   The domain has to be fully instantiated.
+<span class="lineno">   67 </span>downC1 ::
+<span class="lineno">   68 </span>    MonadFail m =&gt;
+<span class="lineno">   69 </span>    NameGen m =&gt;
+<span class="lineno">   70 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   71 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   72 </span>    (Name, DomainC, Constant) -&gt; m (Maybe [(Name, DomainC, Constant)])
+<span class="lineno">   73 </span><span class="decl"><span class="istickedoff">downC1 (name, domain, constant) = rDownC (dispatch domain) (name, domain, constant)</span></span>
+<span class="lineno">   74 </span>
 <span class="lineno">   75 </span>
-<span class="lineno">   76 </span>
-<span class="lineno">   77 </span>-- | Translate a bunch of low level constants up, one level.
-<span class="lineno">   78 </span>--   The high level domain (i.e. the target domain) has to be given.
-<span class="lineno">   79 </span>--   The domain has to be fully instantiated.
-<span class="lineno">   80 </span>up1 ::
-<span class="lineno">   81 </span>    MonadFail m =&gt;
-<span class="lineno">   82 </span>    NameGen m =&gt;
-<span class="lineno">   83 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   84 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   85 </span>    (Name, DomainC) -&gt; [(Name, Constant)] -&gt; m (Name, Constant)
-<span class="lineno">   86 </span><span class="decl"><span class="istickedoff">up1 (name, domain) ctxt = rUp (dispatch domain) ctxt (name, domain)</span></span>
+<span class="lineno">   76 </span>-- | Translate a bunch of low level constants up, one level.
+<span class="lineno">   77 </span>--   The high level domain (i.e. the target domain) has to be given.
+<span class="lineno">   78 </span>--   The domain has to be fully instantiated.
+<span class="lineno">   79 </span>up1 ::
+<span class="lineno">   80 </span>    MonadFail m =&gt;
+<span class="lineno">   81 </span>    NameGen m =&gt;
+<span class="lineno">   82 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   83 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   84 </span>    (Name, DomainC) -&gt; [(Name, Constant)] -&gt; m (Name, Constant)
+<span class="lineno">   85 </span><span class="decl"><span class="istickedoff">up1 (name, domain) ctxt = rUp (dispatch domain) ctxt (name, domain)</span></span>
+<span class="lineno">   86 </span>
 <span class="lineno">   87 </span>
-<span class="lineno">   88 </span>
-<span class="lineno">   89 </span>-- | Refine (down) a domain (D), all the way.
-<span class="lineno">   90 </span>--   The domain is allowed to be at the class level.
-<span class="lineno">   91 </span>downD ::
-<span class="lineno">   92 </span>    MonadFail m =&gt;
-<span class="lineno">   93 </span>    NameGen m =&gt;
-<span class="lineno">   94 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   95 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   96 </span>    (Name, DomainX Expression) -&gt; m [(Name, DomainX Expression)]
-<span class="lineno">   97 </span><span class="decl"><span class="istickedoff">downD inp@(_, domain) = do</span>
-<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">mout &lt;- rDownD (dispatch domain) inp</span>
-<span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">case mout of</span>
-<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return [inp]</span>
-<span class="lineno">  101 </span><span class="spaces">        </span><span class="istickedoff">Just outs -&gt; concatMapM downD outs</span></span>
-<span class="lineno">  102 </span>
-<span class="lineno">  103 </span>-- | Refine (down) a domain, together with a constant (C), all the way.
-<span class="lineno">  104 </span>--   The domain has to be fully instantiated.
-<span class="lineno">  105 </span>downC ::
-<span class="lineno">  106 </span>    MonadFail m =&gt;
-<span class="lineno">  107 </span>    NameGen m =&gt;
-<span class="lineno">  108 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  109 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  110 </span>    (Name, DomainC, Constant) -&gt; m [(Name, DomainC, Constant)]
-<span class="lineno">  111 </span><span class="decl"><span class="istickedoff">downC inp0 = do</span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">let inp1 = case inp0 of (nm, dom, TypedConstant con _) -&gt; (nm, dom, con)</span>
-<span class="lineno">  113 </span><span class="spaces">                            </span><span class="istickedoff">_                              -&gt; inp0</span>
-<span class="lineno">  114 </span><span class="spaces">    </span><span class="istickedoff">mout &lt;- downC1 inp1</span>
-<span class="lineno">  115 </span><span class="spaces">    </span><span class="istickedoff">case mout of</span>
-<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return [inp0]</span>
-<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">Just outs -&gt; concatMapM downC outs</span></span>
-<span class="lineno">  118 </span>
-<span class="lineno">  119 </span>-- | Translate a bunch of low level constants up, all the way.
-<span class="lineno">  120 </span>--   The high level domain (i.e. the target domain) has to be given.
-<span class="lineno">  121 </span>--   The domain has to be fully instantiated.
-<span class="lineno">  122 </span>up ::
-<span class="lineno">  123 </span>    MonadFail m =&gt;
-<span class="lineno">  124 </span>    NameGen m =&gt;
-<span class="lineno">  125 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  126 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  127 </span>    [(Name, Constant)] -&gt; (Name, DomainC) -&gt; m (Name, Constant)
-<span class="lineno">  128 </span><span class="decl"><span class="istickedoff">up ctxt (name, highDomain) = do</span>
-<span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff">toDescend'</span>
-<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">-- :: Maybe [(Name, DomainX x)]</span>
-<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">&lt;- downD1 (name, fmap Constant highDomain)</span>
-<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">case toDescend' of</span>
-<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt;</span>
-<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">case lookup name ctxt of</span>
-<span class="lineno">  135 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat</span></span>
-<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
-<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
-<span class="lineno">  138 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
-<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff">Just val -&gt; return (name, val)</span>
-<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">Just toDescend -&gt; do</span>
-<span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff">midConstants</span>
-<span class="lineno">  142 </span><span class="spaces">                 </span><span class="istickedoff">:: [(Name, Constant)]</span>
-<span class="lineno">  143 </span><span class="spaces">                 </span><span class="istickedoff">&lt;- sequence [ do d' &lt;- instantiateDomain <span class="nottickedoff">[]</span> d</span>
-<span class="lineno">  144 </span><span class="spaces">                                  </span><span class="istickedoff">up ctxt (n, d')</span>
-<span class="lineno">  145 </span><span class="spaces">                             </span><span class="istickedoff">| (n, d) &lt;- toDescend</span>
-<span class="lineno">  146 </span><span class="spaces">                             </span><span class="istickedoff">]</span>
-<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">up1 (name, highDomain) midConstants</span></span>
+<span class="lineno">   88 </span>-- | Refine (down) a domain (D), all the way.
+<span class="lineno">   89 </span>--   The domain is allowed to be at the class level.
+<span class="lineno">   90 </span>downD ::
+<span class="lineno">   91 </span>    MonadFail m =&gt;
+<span class="lineno">   92 </span>    NameGen m =&gt;
+<span class="lineno">   93 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   94 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   95 </span>    (Name, DomainX Expression) -&gt; m [(Name, DomainX Expression)]
+<span class="lineno">   96 </span><span class="decl"><span class="istickedoff">downD inp@(_, domain) = do</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="istickedoff">mout &lt;- rDownD (dispatch domain) inp</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">case mout of</span>
+<span class="lineno">   99 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return [inp]</span>
+<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">Just outs -&gt; concatMapM downD outs</span></span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>-- | Refine (down) a domain, together with a constant (C), all the way.
+<span class="lineno">  103 </span>--   The domain has to be fully instantiated.
+<span class="lineno">  104 </span>downC ::
+<span class="lineno">  105 </span>    MonadFail m =&gt;
+<span class="lineno">  106 </span>    NameGen m =&gt;
+<span class="lineno">  107 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  108 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  109 </span>    (Name, DomainC, Constant) -&gt; m [(Name, DomainC, Constant)]
+<span class="lineno">  110 </span><span class="decl"><span class="istickedoff">downC inp0 = do</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">let inp1 = case inp0 of (nm, dom, TypedConstant con _) -&gt; (nm, dom, con)</span>
+<span class="lineno">  112 </span><span class="spaces">                            </span><span class="istickedoff">_                              -&gt; inp0</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff">mout &lt;- downC1 inp1</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="istickedoff">case mout of</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return [inp0]</span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">Just outs -&gt; concatMapM downC outs</span></span>
+<span class="lineno">  117 </span>
+<span class="lineno">  118 </span>-- | Translate a bunch of low level constants up, all the way.
+<span class="lineno">  119 </span>--   The high level domain (i.e. the target domain) has to be given.
+<span class="lineno">  120 </span>--   The domain has to be fully instantiated.
+<span class="lineno">  121 </span>up ::
+<span class="lineno">  122 </span>    MonadFail m =&gt;
+<span class="lineno">  123 </span>    NameGen m =&gt;
+<span class="lineno">  124 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  125 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  126 </span>    [(Name, Constant)] -&gt; (Name, DomainC) -&gt; m (Name, Constant)
+<span class="lineno">  127 </span><span class="decl"><span class="istickedoff">up ctxt (name, highDomain) = do</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">toDescend'</span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">-- :: Maybe [(Name, DomainX x)]</span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">&lt;- downD1 (name, fmap Constant highDomain)</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">case toDescend' of</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt;</span>
+<span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">case lookup name ctxt of</span>
+<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
+<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
+<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
+<span class="lineno">  138 </span><span class="spaces">                </span><span class="istickedoff">Just val -&gt; return (name, val)</span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">Just toDescend -&gt; do</span>
+<span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff">midConstants</span>
+<span class="lineno">  141 </span><span class="spaces">                 </span><span class="istickedoff">:: [(Name, Constant)]</span>
+<span class="lineno">  142 </span><span class="spaces">                 </span><span class="istickedoff">&lt;- sequence [ do d' &lt;- instantiateDomain <span class="nottickedoff">[]</span> d</span>
+<span class="lineno">  143 </span><span class="spaces">                                  </span><span class="istickedoff">up ctxt (n, d')</span>
+<span class="lineno">  144 </span><span class="spaces">                             </span><span class="istickedoff">| (n, d) &lt;- toDescend</span>
+<span class="lineno">  145 </span><span class="spaces">                             </span><span class="istickedoff">]</span>
+<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">up1 (name, highDomain) midConstants</span></span>
+<span class="lineno">  147 </span>
 <span class="lineno">  148 </span>
-<span class="lineno">  149 </span>
-<span class="lineno">  150 </span>-- | ...
-<span class="lineno">  151 </span>symmetryOrderingDispatch ::
-<span class="lineno">  152 </span>    MonadFail m =&gt;
-<span class="lineno">  153 </span>    NameGen m =&gt;
-<span class="lineno">  154 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  155 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  156 </span>    (Expression -&gt; m [Expression]) -&gt;
-<span class="lineno">  157 </span>    Expression -&gt;
-<span class="lineno">  158 </span>    DomainX Expression -&gt;
-<span class="lineno">  159 </span>    m Expression
-<span class="lineno">  160 </span><span class="decl"><span class="istickedoff">symmetryOrderingDispatch downX1 inp domain =</span>
-<span class="lineno">  161 </span><span class="spaces">    </span><span class="istickedoff">rSymmetryOrdering</span>
-<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">(dispatch domain)</span>
-<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrderingDispatch downX1</span>
-<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff">inp domain</span></span>
+<span class="lineno">  149 </span>-- | ...
+<span class="lineno">  150 </span>symmetryOrderingDispatch ::
+<span class="lineno">  151 </span>    MonadFail m =&gt;
+<span class="lineno">  152 </span>    NameGen m =&gt;
+<span class="lineno">  153 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  154 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  155 </span>    (Expression -&gt; m [Expression]) -&gt;
+<span class="lineno">  156 </span>    Expression -&gt;
+<span class="lineno">  157 </span>    DomainX Expression -&gt;
+<span class="lineno">  158 </span>    m Expression
+<span class="lineno">  159 </span><span class="decl"><span class="istickedoff">symmetryOrderingDispatch downX1 inp domain =</span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">rSymmetryOrdering</span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">(dispatch domain)</span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrderingDispatch downX1</span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff">inp domain</span></span>
+<span class="lineno">  164 </span>
 <span class="lineno">  165 </span>
-<span class="lineno">  166 </span>
-<span class="lineno">  167 </span>-- | Combine all known representations into one.
-<span class="lineno">  168 </span>--   Dispatch into the actual implementation of the representation depending on the provided domain.
-<span class="lineno">  169 </span>dispatch ::
-<span class="lineno">  170 </span>    MonadFail m =&gt;
-<span class="lineno">  171 </span>    NameGen m =&gt;
-<span class="lineno">  172 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  173 </span>    Pretty x =&gt;
-<span class="lineno">  174 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  175 </span>    Domain HasRepresentation x -&gt; Representation m
-<span class="lineno">  176 </span><span class="decl"><span class="istickedoff">dispatch domain = do</span>
-<span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">let <span class="nottickedoff">nope = bug $ &quot;No representation for the domain:&quot; &lt;+&gt; pretty domain</span></span>
-<span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">case domain of</span>
-<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">DomainBool{}    -&gt; primitive</span>
-<span class="lineno">  180 </span><span class="spaces">        </span><span class="istickedoff">DomainIntE{}    -&gt; primitive</span>
-<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff">DomainInt{}     -&gt; primitive</span>
-<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff">DomainTuple{}   -&gt; tuple</span>
-<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">DomainRecord{}  -&gt; record</span>
-<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">DomainVariant{} -&gt; variant</span>
-<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix{}  -&gt; matrix downD1 downC1 up1</span>
-<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">DomainSet r _ _ -&gt; case r of</span>
-<span class="lineno">  187 </span><span class="spaces">            </span><span class="istickedoff">Set_Occurrence                    -&gt; setOccurrence</span>
-<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff">Set_Explicit                      -&gt; setExplicit</span>
-<span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithDummy      -&gt; setExplicitVarSizeWithDummy</span>
-<span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithMarker     -&gt; setExplicitVarSizeWithMarker</span>
-<span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithFlags      -&gt; setExplicitVarSizeWithFlags</span>
-<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff">DomainMSet r _ _ -&gt; case r of</span>
-<span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff">MSet_Occurrence                   -&gt; msetOccurrence</span>
-<span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">MSet_ExplicitWithFlags            -&gt; msetExplicitWithFlags</span>
-<span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff">MSet_ExplicitWithRepetition       -&gt; msetExplicitWithRepetition</span>
-<span class="lineno">  197 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  198 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction r _ _ _ -&gt; case r of</span>
-<span class="lineno">  199 </span><span class="spaces">            </span><span class="istickedoff">Function_1D                       -&gt; function1D</span>
-<span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff">Function_1DPartial                -&gt; function1DPartial</span>
-<span class="lineno">  201 </span><span class="spaces">            </span><span class="istickedoff">Function_ND                       -&gt; functionND</span>
-<span class="lineno">  202 </span><span class="spaces">            </span><span class="istickedoff">Function_NDPartial                -&gt; functionNDPartial</span>
-<span class="lineno">  203 </span><span class="spaces">            </span><span class="istickedoff">Function_NDPartialDummy           -&gt; functionNDPartialDummy</span>
-<span class="lineno">  204 </span><span class="spaces">            </span><span class="istickedoff">Function_AsRelation{}             -&gt; functionAsRelation dispatch</span>
-<span class="lineno">  205 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
-<span class="lineno">  206 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff">DomainSequence r _ _ -&gt; case r of</span>
-<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff">Sequence_ExplicitBounded          -&gt; sequenceExplicitBounded</span>
-<span class="lineno">  209 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">DomainRelation r _ _ -&gt; case r of</span>
-<span class="lineno">  211 </span><span class="spaces">            </span><span class="istickedoff">Relation_AsMatrix                 -&gt; relationAsMatrix</span>
-<span class="lineno">  212 </span><span class="spaces">            </span><span class="istickedoff">Relation_AsSet{}                  -&gt; relationAsSet dispatch</span>
-<span class="lineno">  213 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
-<span class="lineno">  214 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;useLevels inside dispatch&quot;)</span></span>
-<span class="lineno">  215 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff">DomainPartition r _ _ -&gt; case r of</span>
-<span class="lineno">  217 </span><span class="spaces">            </span><span class="istickedoff">Partition_Occurrence              -&gt; partitionOccurrence</span>
-<span class="lineno">  218 </span><span class="spaces">            </span><span class="istickedoff">Partition_AsSet{}                 -&gt; partitionAsSet dispatch</span>
-<span class="lineno">  219 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
-<span class="lineno">  220 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;useLevels inside dispatch&quot;)</span></span>
-<span class="lineno">  221 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
-<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span></span>
+<span class="lineno">  166 </span>-- | Combine all known representations into one.
+<span class="lineno">  167 </span>--   Dispatch into the actual implementation of the representation depending on the provided domain.
+<span class="lineno">  168 </span>dispatch ::
+<span class="lineno">  169 </span>    MonadFail m =&gt;
+<span class="lineno">  170 </span>    NameGen m =&gt;
+<span class="lineno">  171 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  172 </span>    Pretty x =&gt;
+<span class="lineno">  173 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  174 </span>    Domain HasRepresentation x -&gt; Representation m
+<span class="lineno">  175 </span><span class="decl"><span class="istickedoff">dispatch domain = do</span>
+<span class="lineno">  176 </span><span class="spaces">    </span><span class="istickedoff">let <span class="nottickedoff">nope = bug $ &quot;No representation for the domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  177 </span><span class="spaces">    </span><span class="istickedoff">case domain of</span>
+<span class="lineno">  178 </span><span class="spaces">        </span><span class="istickedoff">DomainBool{}    -&gt; primitive</span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">DomainIntE{}    -&gt; primitive</span>
+<span class="lineno">  180 </span><span class="spaces">        </span><span class="istickedoff">DomainInt{}     -&gt; primitive</span>
+<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff">DomainTuple{}   -&gt; tuple</span>
+<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff">DomainRecord{}  -&gt; record</span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">DomainVariant{} -&gt; variant</span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">DomainMatrix{}  -&gt; matrix downD1 downC1 up1</span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">DomainSet r _ _ -&gt; case r of</span>
+<span class="lineno">  186 </span><span class="spaces">            </span><span class="istickedoff">Set_Occurrence                    -&gt; setOccurrence</span>
+<span class="lineno">  187 </span><span class="spaces">            </span><span class="istickedoff">Set_Explicit                      -&gt; setExplicit</span>
+<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithDummy      -&gt; setExplicitVarSizeWithDummy</span>
+<span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithMarker     -&gt; setExplicitVarSizeWithMarker</span>
+<span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff">Set_ExplicitVarSizeWithFlags      -&gt; setExplicitVarSizeWithFlags</span>
+<span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  192 </span><span class="spaces">        </span><span class="istickedoff">DomainMSet r _ _ -&gt; case r of</span>
+<span class="lineno">  193 </span><span class="spaces">            </span><span class="istickedoff">MSet_Occurrence                   -&gt; msetOccurrence</span>
+<span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff">MSet_ExplicitWithFlags            -&gt; msetExplicitWithFlags</span>
+<span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff">MSet_ExplicitWithRepetition       -&gt; msetExplicitWithRepetition</span>
+<span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction r _ _ _ -&gt; case r of</span>
+<span class="lineno">  198 </span><span class="spaces">            </span><span class="istickedoff">Function_1D                       -&gt; function1D</span>
+<span class="lineno">  199 </span><span class="spaces">            </span><span class="istickedoff">Function_1DPartial                -&gt; function1DPartial</span>
+<span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff">Function_ND                       -&gt; functionND</span>
+<span class="lineno">  201 </span><span class="spaces">            </span><span class="istickedoff">Function_NDPartial                -&gt; functionNDPartial</span>
+<span class="lineno">  202 </span><span class="spaces">            </span><span class="istickedoff">Function_NDPartialDummy           -&gt; functionNDPartialDummy</span>
+<span class="lineno">  203 </span><span class="spaces">            </span><span class="istickedoff">Function_AsRelation{}             -&gt; functionAsRelation dispatch</span>
+<span class="lineno">  204 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
+<span class="lineno">  205 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">DomainSequence r _ _ -&gt; case r of</span>
+<span class="lineno">  207 </span><span class="spaces">            </span><span class="istickedoff">Sequence_ExplicitBounded          -&gt; sequenceExplicitBounded</span>
+<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  209 </span><span class="spaces">        </span><span class="istickedoff">DomainRelation r _ _ -&gt; case r of</span>
+<span class="lineno">  210 </span><span class="spaces">            </span><span class="istickedoff">Relation_AsMatrix                 -&gt; relationAsMatrix</span>
+<span class="lineno">  211 </span><span class="spaces">            </span><span class="istickedoff">Relation_AsSet{}                  -&gt; relationAsSet dispatch</span>
+<span class="lineno">  212 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
+<span class="lineno">  213 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;useLevels inside dispatch&quot;)</span></span>
+<span class="lineno">  214 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">DomainPartition r _ _ -&gt; case r of</span>
+<span class="lineno">  216 </span><span class="spaces">            </span><span class="istickedoff">Partition_Occurrence              -&gt; partitionOccurrence</span>
+<span class="lineno">  217 </span><span class="spaces">            </span><span class="istickedoff">Partition_AsSet{}                 -&gt; partitionAsSet dispatch</span>
+<span class="lineno">  218 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprOptions inside dispatch&quot;)</span></span>
+<span class="lineno">  219 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;useLevels inside dispatch&quot;)</span></span>
+<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span>
+<span class="lineno">  221 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">nope</span></span></span>
+<span class="lineno">  222 </span>
 <span class="lineno">  223 </span>
-<span class="lineno">  224 </span>
-<span class="lineno">  225 </span>type AllRepresentations m = [[Representation m]]
+<span class="lineno">  224 </span>type AllRepresentations m = [[Representation m]]
+<span class="lineno">  225 </span>
 <span class="lineno">  226 </span>
-<span class="lineno">  227 </span>
-<span class="lineno">  228 </span>-- | No levels!
-<span class="lineno">  229 </span>reprsStandardOrderNoLevels ::
-<span class="lineno">  230 </span>    MonadFail m =&gt;
-<span class="lineno">  231 </span>    NameGen m =&gt;
-<span class="lineno">  232 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  233 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  234 </span>    AllRepresentations m
-<span class="lineno">  235 </span><span class="decl"><span class="nottickedoff">reprsStandardOrderNoLevels = [concat reprsStandardOrder]</span></span>
+<span class="lineno">  227 </span>-- | No levels!
+<span class="lineno">  228 </span>reprsStandardOrderNoLevels ::
+<span class="lineno">  229 </span>    MonadFail m =&gt;
+<span class="lineno">  230 </span>    NameGen m =&gt;
+<span class="lineno">  231 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  232 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  233 </span>    AllRepresentations m
+<span class="lineno">  234 </span><span class="decl"><span class="nottickedoff">reprsStandardOrderNoLevels = [concat reprsStandardOrder]</span></span>
+<span class="lineno">  235 </span>
 <span class="lineno">  236 </span>
-<span class="lineno">  237 </span>
-<span class="lineno">  238 </span>-- | A list of all representations.
-<span class="lineno">  239 </span>--   As a crude measure, implementing levels here.
-<span class="lineno">  240 </span>--   We shouldn't have levels between representations in the long run.
-<span class="lineno">  241 </span>reprsStandardOrder ::
-<span class="lineno">  242 </span>    MonadFail m =&gt;
-<span class="lineno">  243 </span>    NameGen m =&gt;
-<span class="lineno">  244 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  245 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  246 </span>    AllRepresentations m
-<span class="lineno">  247 </span><span class="decl"><span class="istickedoff">reprsStandardOrder =</span>
-<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff">[ [ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
-<span class="lineno">  249 </span><span class="spaces">      </span><span class="istickedoff">, setExplicit, setOccurrence, setExplicitVarSizeWithDummy</span>
-<span class="lineno">  250 </span><span class="spaces">      </span><span class="istickedoff">, setExplicitVarSizeWithMarker, setExplicitVarSizeWithFlags</span>
-<span class="lineno">  251 </span><span class="spaces">      </span><span class="istickedoff">, msetExplicitWithFlags, msetExplicitWithRepetition, msetOccurrence</span>
-<span class="lineno">  252 </span><span class="spaces">      </span><span class="istickedoff">, function1D, function1DPartial, functionND, functionNDPartial, functionNDPartialDummy</span>
-<span class="lineno">  253 </span><span class="spaces">      </span><span class="istickedoff">, sequenceExplicitBounded</span>
-<span class="lineno">  254 </span><span class="spaces">      </span><span class="istickedoff">, relationAsMatrix</span>
-<span class="lineno">  255 </span><span class="spaces">      </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
-<span class="lineno">  256 </span><span class="spaces">      </span><span class="istickedoff">, partitionOccurrence</span>
-<span class="lineno">  257 </span><span class="spaces">      </span><span class="istickedoff">]</span>
-<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">, [ functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder)</span>
-<span class="lineno">  259 </span><span class="spaces">      </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
-<span class="lineno">  260 </span><span class="spaces">      </span><span class="istickedoff">]</span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  237 </span>-- | A list of all representations.
+<span class="lineno">  238 </span>--   As a crude measure, implementing levels here.
+<span class="lineno">  239 </span>--   We shouldn't have levels between representations in the long run.
+<span class="lineno">  240 </span>reprsStandardOrder ::
+<span class="lineno">  241 </span>    MonadFail m =&gt;
+<span class="lineno">  242 </span>    NameGen m =&gt;
+<span class="lineno">  243 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  244 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  245 </span>    AllRepresentations m
+<span class="lineno">  246 </span><span class="decl"><span class="istickedoff">reprsStandardOrder =</span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">[ [ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
+<span class="lineno">  248 </span><span class="spaces">      </span><span class="istickedoff">, setExplicit, setOccurrence, setExplicitVarSizeWithDummy</span>
+<span class="lineno">  249 </span><span class="spaces">      </span><span class="istickedoff">, setExplicitVarSizeWithMarker, setExplicitVarSizeWithFlags</span>
+<span class="lineno">  250 </span><span class="spaces">      </span><span class="istickedoff">, msetExplicitWithFlags, msetExplicitWithRepetition, msetOccurrence</span>
+<span class="lineno">  251 </span><span class="spaces">      </span><span class="istickedoff">, function1D, function1DPartial, functionND, functionNDPartial, functionNDPartialDummy</span>
+<span class="lineno">  252 </span><span class="spaces">      </span><span class="istickedoff">, sequenceExplicitBounded</span>
+<span class="lineno">  253 </span><span class="spaces">      </span><span class="istickedoff">, relationAsMatrix</span>
+<span class="lineno">  254 </span><span class="spaces">      </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
+<span class="lineno">  255 </span><span class="spaces">      </span><span class="istickedoff">, partitionOccurrence</span>
+<span class="lineno">  256 </span><span class="spaces">      </span><span class="istickedoff">]</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">, [ functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder)</span>
+<span class="lineno">  258 </span><span class="spaces">      </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsStandardOrder) True</span>
+<span class="lineno">  259 </span><span class="spaces">      </span><span class="istickedoff">]</span>
+<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  261 </span>
 <span class="lineno">  262 </span>
-<span class="lineno">  263 </span>
-<span class="lineno">  264 </span>-- | Sparser representations are to be preferred for parameters.
-<span class="lineno">  265 </span>reprsSparseOrder ::
-<span class="lineno">  266 </span>    MonadFail m =&gt;
-<span class="lineno">  267 </span>    NameGen m =&gt;
-<span class="lineno">  268 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  269 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  270 </span>    AllRepresentations m
-<span class="lineno">  271 </span><span class="decl"><span class="istickedoff">reprsSparseOrder = map return</span>
-<span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">[ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
-<span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">, setExplicit, setExplicitVarSizeWithDummy, setExplicitVarSizeWithMarker</span>
-<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">, setOccurrence, setExplicitVarSizeWithFlags              -- redundant</span>
-<span class="lineno">  276 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithFlags</span>
-<span class="lineno">  278 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithRepetition, msetOccurrence              -- redundant</span>
-<span class="lineno">  279 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  280 </span><span class="spaces">    </span><span class="istickedoff">, function1D, functionND</span>
-<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">, functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder)</span>
-<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">, function1DPartial, functionNDPartial                    -- redundant</span>
-<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">, functionNDPartialDummy                                  -- redundant</span>
-<span class="lineno">  284 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  285 </span><span class="spaces">    </span><span class="istickedoff">, sequenceExplicitBounded</span>
-<span class="lineno">  286 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  287 </span><span class="spaces">    </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
-<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">, relationAsMatrix</span>
-<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
-<span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">partitionOccurrence</span>                                     -- redundant</span>
-<span class="lineno">  292 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  263 </span>-- | Sparser representations are to be preferred for parameters.
+<span class="lineno">  264 </span>reprsSparseOrder ::
+<span class="lineno">  265 </span>    MonadFail m =&gt;
+<span class="lineno">  266 </span>    NameGen m =&gt;
+<span class="lineno">  267 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  268 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  269 </span>    AllRepresentations m
+<span class="lineno">  270 </span><span class="decl"><span class="istickedoff">reprsSparseOrder = map return</span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">[ primitive, tuple, record, variant, matrix <span class="nottickedoff">downD1</span> <span class="nottickedoff">downC1</span> <span class="nottickedoff">up1</span></span>
+<span class="lineno">  272 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  273 </span><span class="spaces">    </span><span class="istickedoff">, setExplicit, setExplicitVarSizeWithDummy, setExplicitVarSizeWithMarker</span>
+<span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">, setOccurrence, setExplicitVarSizeWithFlags              -- redundant</span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithFlags</span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">, msetExplicitWithRepetition, msetOccurrence              -- redundant</span>
+<span class="lineno">  278 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">, function1D, functionND</span>
+<span class="lineno">  280 </span><span class="spaces">    </span><span class="istickedoff">, functionAsRelation <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder)</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">, function1DPartial, functionNDPartial                    -- redundant</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">, functionNDPartialDummy                                  -- redundant</span>
+<span class="lineno">  283 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">, sequenceExplicitBounded</span>
+<span class="lineno">  285 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff">, relationAsSet      <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
+<span class="lineno">  287 </span><span class="spaces">    </span><span class="istickedoff">, relationAsMatrix</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">, partitionAsSet     <span class="nottickedoff">dispatch</span> (reprOptions reprsSparseOrder) False</span>
+<span class="lineno">  289 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">partitionOccurrence</span>                                     -- redundant</span>
+<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">  292 </span>
 <span class="lineno">  293 </span>
-<span class="lineno">  294 </span>
-<span class="lineno">  295 </span>-- | For a domain, produce a list of domains with different representation options.
-<span class="lineno">  296 </span>--   This function should never return an empty list.
-<span class="lineno">  297 </span>reprOptions ::
-<span class="lineno">  298 </span>    Monad m =&gt;
-<span class="lineno">  299 </span>    Functor m =&gt;
-<span class="lineno">  300 </span>    Data x =&gt;
-<span class="lineno">  301 </span>    Pretty x =&gt;
-<span class="lineno">  302 </span>    ExpressionLike x =&gt;
-<span class="lineno">  303 </span>    AllRepresentations m -&gt; Domain () x -&gt; m [Domain HasRepresentation x]
-<span class="lineno">  304 </span><span class="decl"><span class="istickedoff">reprOptions reprs (expandDomainReference -&gt; domain) = go reprs</span>
-<span class="lineno">  305 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  306 </span><span class="spaces">        </span><span class="istickedoff">go [] = <span class="nottickedoff">return []</span></span>
-<span class="lineno">  307 </span><span class="spaces">        </span><span class="istickedoff">go (reprsThisLevel:reprsNextLevels) = do</span>
-<span class="lineno">  308 </span><span class="spaces">            </span><span class="istickedoff">matchesOnThisLevel &lt;- concat &lt;$&gt; sequence [ rCheck r (reprOptions reprs) domain</span>
-<span class="lineno">  309 </span><span class="spaces">                                                      </span><span class="istickedoff">| r &lt;- reprsThisLevel</span>
-<span class="lineno">  310 </span><span class="spaces">                                                      </span><span class="istickedoff">]</span>
-<span class="lineno">  311 </span><span class="spaces">            </span><span class="istickedoff">if null matchesOnThisLevel</span>
-<span class="lineno">  312 </span><span class="spaces">                </span><span class="istickedoff">then go reprsNextLevels</span>
-<span class="lineno">  313 </span><span class="spaces">                </span><span class="istickedoff">else return matchesOnThisLevel</span></span>
+<span class="lineno">  294 </span>-- | For a domain, produce a list of domains with different representation options.
+<span class="lineno">  295 </span>--   This function should never return an empty list.
+<span class="lineno">  296 </span>reprOptions ::
+<span class="lineno">  297 </span>    Monad m =&gt;
+<span class="lineno">  298 </span>    Functor m =&gt;
+<span class="lineno">  299 </span>    Data x =&gt;
+<span class="lineno">  300 </span>    Pretty x =&gt;
+<span class="lineno">  301 </span>    ExpressionLike x =&gt;
+<span class="lineno">  302 </span>    AllRepresentations m -&gt; Domain () x -&gt; m [Domain HasRepresentation x]
+<span class="lineno">  303 </span><span class="decl"><span class="istickedoff">reprOptions reprs (expandDomainReference -&gt; domain) = go reprs</span>
+<span class="lineno">  304 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  305 </span><span class="spaces">        </span><span class="istickedoff">go [] = <span class="nottickedoff">return []</span></span>
+<span class="lineno">  306 </span><span class="spaces">        </span><span class="istickedoff">go (reprsThisLevel:reprsNextLevels) = do</span>
+<span class="lineno">  307 </span><span class="spaces">            </span><span class="istickedoff">matchesOnThisLevel &lt;- concat &lt;$&gt; sequence [ rCheck r (reprOptions reprs) domain</span>
+<span class="lineno">  308 </span><span class="spaces">                                                      </span><span class="istickedoff">| r &lt;- reprsThisLevel</span>
+<span class="lineno">  309 </span><span class="spaces">                                                      </span><span class="istickedoff">]</span>
+<span class="lineno">  310 </span><span class="spaces">            </span><span class="istickedoff">if null matchesOnThisLevel</span>
+<span class="lineno">  311 </span><span class="spaces">                </span><span class="istickedoff">then go reprsNextLevels</span>
+<span class="lineno">  312 </span><span class="spaces">                </span><span class="istickedoff">else return matchesOnThisLevel</span></span>
+<span class="lineno">  313 </span>
 <span class="lineno">  314 </span>
-<span class="lineno">  315 </span>
-<span class="lineno">  316 </span>-- | For a domain, returns the structural constraints.
-<span class="lineno">  317 </span>--   Makes recursive calls to generate the complete structural constraints.
-<span class="lineno">  318 </span>--   Takes in a function to refine inner guys.
-<span class="lineno">  319 </span>getStructurals ::
-<span class="lineno">  320 </span>    MonadFail m =&gt;
-<span class="lineno">  321 </span>    NameGen m =&gt;
-<span class="lineno">  322 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  323 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  324 </span>    (Expression -&gt; m [Expression]) -&gt;
-<span class="lineno">  325 </span>    DomainX Expression -&gt;
-<span class="lineno">  326 </span>    m (Expression -&gt; m [Expression])
-<span class="lineno">  327 </span><span class="decl"><span class="istickedoff">getStructurals downX1 domain = rStructural (dispatch domain) (getStructurals downX1) downX1 domain</span></span>
-<span class="lineno">  328 </span>
+<span class="lineno">  315 </span>-- | For a domain, returns the structural constraints.
+<span class="lineno">  316 </span>--   Makes recursive calls to generate the complete structural constraints.
+<span class="lineno">  317 </span>--   Takes in a function to refine inner guys.
+<span class="lineno">  318 </span>getStructurals ::
+<span class="lineno">  319 </span>    MonadFail m =&gt;
+<span class="lineno">  320 </span>    NameGen m =&gt;
+<span class="lineno">  321 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  322 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  323 </span>    (Expression -&gt; m [Expression]) -&gt;
+<span class="lineno">  324 </span>    DomainX Expression -&gt;
+<span class="lineno">  325 </span>    m (Expression -&gt; m [Expression])
+<span class="lineno">  326 </span><span class="decl"><span class="istickedoff">getStructurals downX1 domain = rStructural (dispatch domain) (getStructurals downX1) downX1 domain</span></span>
+<span class="lineno">  327 </span>
 
 </pre>
 </body>

@@ -154,7 +154,7 @@ span.spaces    { background: white }
 <span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
 <span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC ( name</span></span>
 <span class="lineno">  137 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, domain@(DomainMSet _ attrs innerDomain)</span></span>
-<span class="lineno">  138 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract (AbsLitMSet constants)</span></span>
+<span class="lineno">  138 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">, viewConstantMSet -&gt; Just constants</span></span>
 <span class="lineno">  139 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">) = case attrs of</span></span>
 <span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">MSetAttr (SizeAttr_Size size) _ -&gt; do</span></span>
 <span class="lineno">  141 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">let indexDomain = mkDomainIntB 1 size</span></span>

@@ -63,7 +63,7 @@ span.spaces    { background: white }
 <span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
 <span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
 <span class="lineno">   46 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainSet Set_Occurrence _attrs innerDomain@(DomainInt t intRanges))</span>
-<span class="lineno">   47 </span><span class="spaces">              </span><span class="istickedoff">, ConstantAbstract (AbsLitSet constants)</span>
+<span class="lineno">   47 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantSet -&gt; Just constants</span>
 <span class="lineno">   48 </span><span class="spaces">              </span><span class="istickedoff">) = do</span>
 <span class="lineno">   49 </span><span class="spaces">                </span><span class="istickedoff">innerDomainVals &lt;- valuesInIntDomain intRanges</span>
 <span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff">return $ Just</span>

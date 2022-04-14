@@ -17,7 +17,7 @@ span.spaces    { background: white }
 <span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
 </pre>
 <pre>
-<span class="lineno">    1 </span>{-# LANGUAGE ViewPatterns #-}
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -fmax-pmcheck-iterations=50000000 #-} -- stupid cmdargs
 <span class="lineno">    2 </span>
 <span class="lineno">    3 </span>module Conjure.Process.ValidateConstantForDomain ( validateConstantForDomain ) where
 <span class="lineno">    4 </span>
@@ -45,11 +45,11 @@ span.spaces    { background: white }
 <span class="lineno">   26 </span>    Eq r =&gt;
 <span class="lineno">   27 </span>    Name -&gt; Constant -&gt; Domain r Constant -&gt; m ()
 <span class="lineno">   28 </span>
-<span class="lineno">   29 </span><span class="decl"><span class="istickedoff">validateConstantForDomain _ ConstantBool{} DomainBool{} = return ()</span>
+<span class="lineno">   29 </span><span class="decl"><span class="istickedoff">validateConstantForDomain _ (viewConstantBool -&gt; Just _) DomainBool{} = return ()</span>
 <span class="lineno">   30 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   31 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ _ (DomainInt _ []) = return ()              -- no restrictions</span>
 <span class="lineno">   32 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(ConstantInt cTag i) d@(DomainInt dTag rs) | <span class="tickonlytrue">cTag == dTag</span> =</span>
+<span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(viewConstantIntWithTag -&gt; Just (cTag, i)) d@(DomainInt dTag rs) | <span class="tickonlytrue">cTag == dTag</span> =</span>
 <span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">let</span>
 <span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">intInRange RangeOpen                                          = <span class="nottickedoff">True</span></span>
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeSingle (ConstantInt _ a))                    = i == a</span>
@@ -59,7 +59,7 @@ span.spaces    { background: white }
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">intInRange _                                                   = <span class="nottickedoff">False</span></span>
 <span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">in  unless (any intInRange rs) <span class="nottickedoff">(constantNotInDomain name c d)</span></span>
 <span class="lineno">   42 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   43 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ (ConstantInt _ i) (DomainUnnamed _ (ConstantInt _ a)) | <span class="tickonlytrue">i &gt;= 1 &amp;&amp; i &lt;= a</span> = return <span class="nottickedoff">()</span></span>
+<span class="lineno">   43 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ (viewConstantIntWithTag -&gt; Just (_, i)) (DomainUnnamed _ (ConstantInt _ a)) | <span class="tickonlytrue">i &gt;= 1 &amp;&amp; i &lt;= a</span> = return <span class="nottickedoff">()</span></span>
 <span class="lineno">   44 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   45 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ _ (DomainEnum _ Nothing _) = <span class="nottickedoff">return ()</span>    -- no restrictions</span>
 <span class="lineno">   46 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c d@(DomainEnum _ _ Nothing) =</span>
@@ -69,7 +69,7 @@ span.spaces    { background: white }
 <span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, pretty d</span></span>
 <span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   52 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantInt cTag _)</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantIntWithTag -&gt; Just (cTag, _))</span>
 <span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainEnum _ (Just ranges) (Just mp)) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ do</span>
 <span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff">let</span>
 <span class="lineno">   56 </span><span class="spaces">            </span><span class="istickedoff">-- lu :: MonadFail m =&gt; Name -&gt; m Constant</span>
@@ -87,11 +87,11 @@ span.spaces    { background: white }
 <span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">validateConstantForDomain <span class="nottickedoff">name</span> c (DomainInt cTag rs :: Domain r Constant)</span>
 <span class="lineno">   69 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   70 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitTuple cs))</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantTuple -&gt; Just cs)</span>
 <span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainTuple ds) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ zipWithM_ (validateConstantForDomain <span class="nottickedoff">name</span>) cs ds</span>
 <span class="lineno">   73 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   74 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitRecord (sortOn fst -&gt; cs)))</span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantRecord -&gt; Just cs)</span>
 <span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainRecord (sortOn fst -&gt; ds))</span>
 <span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">map fst cs == map fst ds</span></span>
 <span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff">= nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ zipWithM_ (validateConstantForDomain <span class="nottickedoff">name</span>) (map snd cs) (map snd ds)</span>
@@ -99,7 +99,7 @@ span.spaces    { background: white }
 <span class="lineno">   80 </span><span class="spaces">            </span><span class="istickedoff">= <span class="nottickedoff">constantNotInDomain name c d</span></span>
 <span class="lineno">   81 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   82 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitVariant _ n c'))</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantVariant -&gt; Just (_, n, c'))</span>
 <span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainVariant ds)</span>
 <span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">| Just d' &lt;- lookup n ds</span>
 <span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">= nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ validateConstantForDomain <span class="nottickedoff">name</span> c' d'</span>
@@ -107,7 +107,7 @@ span.spaces    { background: white }
 <span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">= <span class="nottickedoff">constantNotInDomain name c d</span></span>
 <span class="lineno">   89 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   90 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitMatrix cIndex vals))</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantMatrix -&gt; Just (cIndex, vals))</span>
 <span class="lineno">   92 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainMatrix dIndex dInner) = do</span>
 <span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $</span>
 <span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) vals</span>
@@ -121,7 +121,7 @@ span.spaces    { background: white }
 <span class="lineno">  102 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  103 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  104 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitSet vals))</span>
+<span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantSet -&gt; Just vals)</span>
 <span class="lineno">  106 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainSet _ (SetAttr sizeAttr) dInner) = do</span>
 <span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
 <span class="lineno">  108 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; True</span>
@@ -141,7 +141,7 @@ span.spaces    { background: white }
 <span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) vals</span>
 <span class="lineno">  123 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  124 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  125 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitMSet vals))</span>
+<span class="lineno">  125 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantMSet -&gt; Just vals)</span>
 <span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainMSet _ (MSetAttr sizeAttr occurAttr) dInner) = do</span>
 <span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
 <span class="lineno">  128 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; True</span>
@@ -175,18 +175,18 @@ span.spaces    { background: white }
 <span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff">nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) vals</span>
 <span class="lineno">  157 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitFunction vals))</span>
+<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantFunction -&gt; Just vals)</span>
 <span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainFunction _ _ dFrom dTo) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ do</span>
 <span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> (fst val) dFrom) vals</span>
 <span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> (snd val) dTo  ) vals</span>
 <span class="lineno">  163 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitSequence vals))</span>
+<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantSequence -&gt; Just vals)</span>
 <span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainSequence _ _ dInner) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $</span>
 <span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) vals</span>
 <span class="lineno">  168 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitRelation valss))</span>
+<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantRelation -&gt; Just valss)</span>
 <span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainRelation _ (RelationAttr sizeAttr (BinaryRelationAttrs binRelAttrs)) dInners) = do</span>
 <span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">let numValss = genericLength valss</span>
 <span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
@@ -235,11 +235,11 @@ span.spaces    { background: white }
 <span class="lineno">  216 </span><span class="spaces">            </span><span class="istickedoff">zipWithM_ (validateConstantForDomain <span class="nottickedoff">name</span>) vals dInners</span>
 <span class="lineno">  217 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  218 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
-<span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">c@(ConstantAbstract (AbsLitPartition valss))</span>
+<span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantPartition -&gt; Just valss)</span>
 <span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainPartition _ _ dInner) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $</span>
 <span class="lineno">  221 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) (concat valss)</span>
 <span class="lineno">  222 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  223 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(TypedConstant c' _) d = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ validateConstantForDomain <span class="nottickedoff">name</span> c' d</span>
+<span class="lineno">  223 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(TypedConstant c' _) d = <span class="nottickedoff">nested c d $ validateConstantForDomain name c' d</span></span>
 <span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  225 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c d = <span class="nottickedoff">constantNotInDomain name c d</span></span></span>
 <span class="lineno">  226 </span>

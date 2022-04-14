@@ -112,7 +112,7 @@ span.spaces    { background: white }
 <span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
 <span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
 <span class="lineno">   95 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainSet _ (SetAttr attrs) innerDomain)</span>
-<span class="lineno">   96 </span><span class="spaces">              </span><span class="istickedoff">, ConstantAbstract (AbsLitSet constants)</span>
+<span class="lineno">   96 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantSet -&gt; Just constants</span>
 <span class="lineno">   97 </span><span class="spaces">              </span><span class="istickedoff">) = do</span>
 <span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs <span class="nottickedoff">innerDomain</span></span>
 <span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">let indexDomain i = mkDomainIntB (fromInt i) maxSize</span>

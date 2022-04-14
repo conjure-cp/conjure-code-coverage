@@ -17,635 +17,634 @@ span.spaces    { background: white }
 <span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
 </pre>
 <pre>
-<span class="lineno">    1 </span>{-# LANGUAGE ViewPatterns #-}
-<span class="lineno">    2 </span>
-<span class="lineno">    3 </span>module Conjure.Process.FiniteGivens
-<span class="lineno">    4 </span>    ( finiteGivens
-<span class="lineno">    5 </span>    , finiteGivensParam
-<span class="lineno">    6 </span>    ) where
-<span class="lineno">    7 </span>
-<span class="lineno">    8 </span>import Conjure.Prelude
-<span class="lineno">    9 </span>import Conjure.Bug
-<span class="lineno">   10 </span>import Conjure.UserError
-<span class="lineno">   11 </span>import Conjure.Language.Definition
-<span class="lineno">   12 </span>import Conjure.Language.Constant
-<span class="lineno">   13 </span>import Conjure.Language.Domain
-<span class="lineno">   14 </span>import Conjure.Language.Pretty
-<span class="lineno">   15 </span>import Conjure.Language.Instantiate ( instantiateExpression, instantiateDomain )
-<span class="lineno">   16 </span>import Conjure.Language.ZeroVal ( zeroVal )
-<span class="lineno">   17 </span>import Conjure.Language.Type
-<span class="lineno">   18 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
+<span class="lineno">    1 </span>
+<span class="lineno">    2 </span>module Conjure.Process.FiniteGivens
+<span class="lineno">    3 </span>    ( finiteGivens
+<span class="lineno">    4 </span>    , finiteGivensParam
+<span class="lineno">    5 </span>    ) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>import Conjure.Prelude
+<span class="lineno">    8 </span>import Conjure.Bug
+<span class="lineno">    9 </span>import Conjure.UserError
+<span class="lineno">   10 </span>import Conjure.Language.Definition
+<span class="lineno">   11 </span>import Conjure.Language.Constant
+<span class="lineno">   12 </span>import Conjure.Language.Domain
+<span class="lineno">   13 </span>import Conjure.Language.Pretty
+<span class="lineno">   14 </span>import Conjure.Language.Instantiate ( instantiateExpression, instantiateDomain )
+<span class="lineno">   15 </span>import Conjure.Language.ZeroVal ( zeroVal )
+<span class="lineno">   16 </span>import Conjure.Language.Type
+<span class="lineno">   17 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
+<span class="lineno">   18 </span>
 <span class="lineno">   19 </span>
-<span class="lineno">   20 </span>
-<span class="lineno">   21 </span>-- | givens should have finite domains. except ints.
-<span class="lineno">   22 </span>--   this transformation introduces extra given ints to make them finite.
-<span class="lineno">   23 </span>--   the values for the extra givens will be computed during translate-solution
-<span class="lineno">   24 </span>finiteGivens ::
-<span class="lineno">   25 </span>    NameGen m =&gt;
-<span class="lineno">   26 </span>    MonadLog m =&gt;
-<span class="lineno">   27 </span>    MonadUserError m =&gt;
-<span class="lineno">   28 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   29 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   30 </span>    Model -&gt; m Model
-<span class="lineno">   31 </span><span class="decl"><span class="istickedoff">finiteGivens m = flip evalStateT <span class="nottickedoff">1</span> $ do</span>
-<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">statements &lt;- forM (mStatements m) $ \ st -&gt;</span>
-<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">case st of</span>
-<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">Declaration (FindOrGiven Given name domain) -&gt; do</span>
-<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">(domain', extras, _) &lt;- mkFinite domain</span>
-<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">return $ [ Declaration $ FindOrGiven Given e (DomainInt TagInt []) | e &lt;- extras ]</span>
-<span class="lineno">   37 </span><span class="spaces">                      </span><span class="istickedoff">++ [ Declaration $ FindOrGiven Given name domain'                   ]</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return [st]</span>
-<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">namegenst &lt;- exportNameGenState</span>
-<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat statements</span>
-<span class="lineno">   41 </span><span class="spaces">             </span><span class="istickedoff">, mInfo = (mInfo m) { miNameGenState = <span class="nottickedoff">namegenst</span></span>
-<span class="lineno">   42 </span><span class="spaces">                                 </span><span class="istickedoff">, miNbExtraGivens = maybe 0 (\ n -&gt; n - 1 ) (lookup &quot;fin&quot; namegenst)</span>
-<span class="lineno">   43 </span><span class="spaces">                                 </span><span class="istickedoff">}</span>
-<span class="lineno">   44 </span><span class="spaces">             </span><span class="istickedoff">}</span></span>
+<span class="lineno">   20 </span>-- | givens should have finite domains. except ints.
+<span class="lineno">   21 </span>--   this transformation introduces extra given ints to make them finite.
+<span class="lineno">   22 </span>--   the values for the extra givens will be computed during translate-solution
+<span class="lineno">   23 </span>finiteGivens ::
+<span class="lineno">   24 </span>    NameGen m =&gt;
+<span class="lineno">   25 </span>    MonadLog m =&gt;
+<span class="lineno">   26 </span>    MonadUserError m =&gt;
+<span class="lineno">   27 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   28 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   29 </span>    Model -&gt; m Model
+<span class="lineno">   30 </span><span class="decl"><span class="istickedoff">finiteGivens m = flip evalStateT <span class="nottickedoff">1</span> $ do</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">statements &lt;- forM (mStatements m) $ \ st -&gt;</span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff">case st of</span>
+<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">Declaration (FindOrGiven Given name domain) -&gt; do</span>
+<span class="lineno">   34 </span><span class="spaces">                </span><span class="istickedoff">(domain', extras, _) &lt;- mkFinite domain</span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">return $ [ Declaration $ FindOrGiven Given e (DomainInt TagInt []) | e &lt;- extras ]</span>
+<span class="lineno">   36 </span><span class="spaces">                      </span><span class="istickedoff">++ [ Declaration $ FindOrGiven Given name domain'                   ]</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return [st]</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">namegenst &lt;- exportNameGenState</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = concat statements</span>
+<span class="lineno">   40 </span><span class="spaces">             </span><span class="istickedoff">, mInfo = (mInfo m) { miNameGenState = <span class="nottickedoff">namegenst</span></span>
+<span class="lineno">   41 </span><span class="spaces">                                 </span><span class="istickedoff">, miNbExtraGivens = maybe 0 (\ n -&gt; n - 1 ) (lookup &quot;fin&quot; namegenst)</span>
+<span class="lineno">   42 </span><span class="spaces">                                 </span><span class="istickedoff">}</span>
+<span class="lineno">   43 </span><span class="spaces">             </span><span class="istickedoff">}</span></span>
+<span class="lineno">   44 </span>
 <span class="lineno">   45 </span>
-<span class="lineno">   46 </span>
-<span class="lineno">   47 </span>finiteGivensParam ::
-<span class="lineno">   48 </span>    NameGen m =&gt;
-<span class="lineno">   49 </span>    MonadLog m =&gt;
-<span class="lineno">   50 </span>    MonadUserError m =&gt;
-<span class="lineno">   51 </span>    EnumerateDomain m =&gt;
-<span class="lineno">   52 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">   53 </span>    Model -&gt;                                -- eprime
-<span class="lineno">   54 </span>    Model -&gt;                                -- essence-param
-<span class="lineno">   55 </span>    [(Name, Constant)] -&gt;                   -- some additional lettings
-<span class="lineno">   56 </span>    m (Model, [Name])                       -- essence-param
-<span class="lineno">   57 </span><span class="decl"><span class="istickedoff">finiteGivensParam eprimeModel essenceParam additionalLettings = flip evalStateT <span class="nottickedoff">1</span> $ do</span>
-<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">let essenceGivenNames = eprimeModel |&gt; mInfo |&gt; miGivens</span>
-<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">let essenceGivens     = eprimeModel |&gt; mInfo |&gt; miOriginalDomains</span>
-<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">let essenceLettings   = extractLettings essenceParam</span>
-<span class="lineno">   61 </span><span class="spaces">                         </span><span class="istickedoff">++ eprimeModel |&gt; mInfo |&gt; miLettings</span>
-<span class="lineno">   62 </span><span class="spaces">                         </span><span class="istickedoff">++ <span class="nottickedoff">[ (nm, Constant c) | (nm, c) &lt;- additionalLettings ]</span></span>
-<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">let nbExtraGivens     = eprimeModel |&gt; mInfo |&gt; miNbExtraGivens</span>
-<span class="lineno">   64 </span><span class="spaces">    </span><span class="istickedoff">let expectedExtras    = [ MachineName &quot;fin&quot; extraGiven []</span>
-<span class="lineno">   65 </span><span class="spaces">                            </span><span class="istickedoff">| extraGiven &lt;- [1..nbExtraGivens]</span>
-<span class="lineno">   66 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
-<span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">extras &lt;- fmap concat $ forM essenceGivenNames $ \ name -&gt; do</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam name&quot; &lt;+&gt; pretty name</span></span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">case (lookup name essenceGivens, lookup name essenceLettings) of</span>
-<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">bug $ &quot;Not found:&quot; &lt;+&gt; pretty name</span></span>
-<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">return []</span></span>
-<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff">(Just domain', Just expr) -&gt; do</span>
-<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam domain' &quot; &lt;+&gt; pretty domain'</span></span>
-<span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">domain  &lt;- failToUserError $ fmap Constant &lt;$&gt; instantiateDomain essenceLettings domain'</span>
-<span class="lineno">   75 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam domain  &quot; &lt;+&gt; pretty domain</span></span>
-<span class="lineno">   76 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam expr    &quot; &lt;+&gt; pretty expr</span></span>
-<span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff">constant &lt;- failToUserError $ instantiateExpression <span class="nottickedoff">essenceLettings</span> expr</span>
-<span class="lineno">   78 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam constant&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">   79 </span><span class="spaces">                </span><span class="istickedoff">(_, _, f) &lt;- mkFinite domain</span>
-<span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">outs &lt;- f constant</span>
-<span class="lineno">   81 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam outs    &quot; &lt;+&gt; vcat (map pretty outs)</span></span>
-<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">return outs</span>
-<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam extras  &quot; &lt;+&gt; vcat (map (pretty . show) extras)</span></span>
-<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">( essenceParam</span>
-<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">{ mStatements = [ Declaration (Letting name (Constant value))</span>
-<span class="lineno">   87 </span><span class="spaces">                            </span><span class="istickedoff">| name &lt;- expectedExtras</span>
-<span class="lineno">   88 </span><span class="spaces">                            </span><span class="istickedoff">-- we are storing the number of &quot;extra givens&quot; in the model info.</span>
-<span class="lineno">   89 </span><span class="spaces">                            </span><span class="istickedoff">-- also, defaulting their values to 0 if they do not come out of</span>
-<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff">-- the usual finiteGivens process.</span>
-<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff">-- the idea is: if they don't come out from that,</span>
-<span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff">-- they must be a part of an emply collection, hence 0.</span>
-<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">, let value = fromMaybe <span class="nottickedoff">0</span> (lookup name extras)</span>
-<span class="lineno">   94 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
-<span class="lineno">   95 </span><span class="spaces">                         </span><span class="istickedoff">++ mStatements essenceParam</span>
-<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff">}</span>
-<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff">, expectedExtras</span>
-<span class="lineno">   98 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
+<span class="lineno">   46 </span>finiteGivensParam ::
+<span class="lineno">   47 </span>    NameGen m =&gt;
+<span class="lineno">   48 </span>    MonadLog m =&gt;
+<span class="lineno">   49 </span>    MonadUserError m =&gt;
+<span class="lineno">   50 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   51 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   52 </span>    Model -&gt;                                -- eprime
+<span class="lineno">   53 </span>    Model -&gt;                                -- essence-param
+<span class="lineno">   54 </span>    [(Name, Constant)] -&gt;                   -- some additional lettings
+<span class="lineno">   55 </span>    m (Model, [Name])                       -- essence-param
+<span class="lineno">   56 </span><span class="decl"><span class="istickedoff">finiteGivensParam eprimeModel essenceParam additionalLettings = flip evalStateT <span class="nottickedoff">1</span> $ do</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">let essenceGivenNames = eprimeModel |&gt; mInfo |&gt; miGivens</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">let essenceGivens     = eprimeModel |&gt; mInfo |&gt; miOriginalDomains</span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">let essenceLettings   = extractLettings essenceParam</span>
+<span class="lineno">   60 </span><span class="spaces">                         </span><span class="istickedoff">++ eprimeModel |&gt; mInfo |&gt; miLettings</span>
+<span class="lineno">   61 </span><span class="spaces">                         </span><span class="istickedoff">++ <span class="nottickedoff">[ (nm, Constant c) | (nm, c) &lt;- additionalLettings ]</span></span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">let nbExtraGivens     = eprimeModel |&gt; mInfo |&gt; miNbExtraGivens</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">let expectedExtras    = [ MachineName &quot;fin&quot; extraGiven []</span>
+<span class="lineno">   64 </span><span class="spaces">                            </span><span class="istickedoff">| extraGiven &lt;- [1..nbExtraGivens]</span>
+<span class="lineno">   65 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">extras &lt;- fmap concat $ forM essenceGivenNames $ \ name -&gt; do</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam name&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">case (lookup name essenceGivens, lookup name essenceLettings) of</span>
+<span class="lineno">   69 </span><span class="spaces">            </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">bug $ &quot;Not found:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">   70 </span><span class="spaces">            </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">return []</span></span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">(Just domain', Just expr) -&gt; do</span>
+<span class="lineno">   72 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam domain' &quot; &lt;+&gt; pretty domain'</span></span>
+<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff">domain  &lt;- failToUserError $ fmap Constant &lt;$&gt; instantiateDomain essenceLettings domain'</span>
+<span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam domain  &quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">   75 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam expr    &quot; &lt;+&gt; pretty expr</span></span>
+<span class="lineno">   76 </span><span class="spaces">                </span><span class="istickedoff">constant &lt;- failToUserError $ instantiateExpression <span class="nottickedoff">essenceLettings</span> expr</span>
+<span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam constant&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">   78 </span><span class="spaces">                </span><span class="istickedoff">(_, _, f) &lt;- mkFinite domain</span>
+<span class="lineno">   79 </span><span class="spaces">                </span><span class="istickedoff">outs &lt;- f constant</span>
+<span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam outs    &quot; &lt;+&gt; vcat (map pretty outs)</span></span>
+<span class="lineno">   81 </span><span class="spaces">                </span><span class="istickedoff">return outs</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">logDebugVerbose $ <span class="nottickedoff">&quot;finiteGivensParam extras  &quot; &lt;+&gt; vcat (map (pretty . show) extras)</span></span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">( essenceParam</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">{ mStatements = [ Declaration (Letting name (Constant value))</span>
+<span class="lineno">   86 </span><span class="spaces">                            </span><span class="istickedoff">| name &lt;- expectedExtras</span>
+<span class="lineno">   87 </span><span class="spaces">                            </span><span class="istickedoff">-- we are storing the number of &quot;extra givens&quot; in the model info.</span>
+<span class="lineno">   88 </span><span class="spaces">                            </span><span class="istickedoff">-- also, defaulting their values to 0 if they do not come out of</span>
+<span class="lineno">   89 </span><span class="spaces">                            </span><span class="istickedoff">-- the usual finiteGivens process.</span>
+<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff">-- the idea is: if they don't come out from that,</span>
+<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff">-- they must be a part of an emply collection, hence 0.</span>
+<span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff">, let value = fromMaybe <span class="nottickedoff">0</span> (lookup name extras)</span>
+<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">   94 </span><span class="spaces">                         </span><span class="istickedoff">++ mStatements essenceParam</span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff">}</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">, expectedExtras</span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
+<span class="lineno">   98 </span>
 <span class="lineno">   99 </span>
-<span class="lineno">  100 </span>
-<span class="lineno">  101 </span>-- | given a domain, add it additional attributes to make it _smaller_
-<span class="lineno">  102 </span>--   for example, this means adding a size attribute at the outer-most level
-<span class="lineno">  103 </span>--   and adding a maxSize attribute at the inner levels.
-<span class="lineno">  104 </span>mkFinite ::
-<span class="lineno">  105 </span>    MonadState Int m =&gt;
-<span class="lineno">  106 </span>    NameGen m =&gt;
-<span class="lineno">  107 </span>    MonadLog m =&gt;
-<span class="lineno">  108 </span>    MonadUserError m =&gt;
-<span class="lineno">  109 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  110 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  111 </span>    Domain () Expression -&gt;
-<span class="lineno">  112 </span>    m ( Domain () Expression                    -- &quot;finite&quot; domain
-<span class="lineno">  113 </span>      , [Name]                                  -- extra givens
-<span class="lineno">  114 </span>      , Constant -&gt; m [(Name, Constant)]        -- value calculator for the extra givens
-<span class="lineno">  115 </span>      )                                         -- input is a list of values for the domain
-<span class="lineno">  116 </span><span class="decl"><span class="istickedoff">mkFinite d@DomainTuple{}     = mkFiniteOutermost d</span>
-<span class="lineno">  117 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainRecord{}    = mkFiniteOutermost d</span>
-<span class="lineno">  118 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainVariant{}   = mkFiniteOutermost d</span>
-<span class="lineno">  119 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMatrix{}    = mkFiniteOutermost d</span>
-<span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSet{}       = mkFiniteOutermost d</span>
-<span class="lineno">  121 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMSet{}      = mkFiniteOutermost d</span>
-<span class="lineno">  122 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSequence{}  = <span class="nottickedoff">mkFiniteOutermost d</span></span>
-<span class="lineno">  123 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainFunction{}  = mkFiniteOutermost d</span>
-<span class="lineno">  124 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainRelation{}  = mkFiniteOutermost d</span>
-<span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainPartition{} = mkFiniteOutermost d</span>
-<span class="lineno">  126 </span><span class="spaces"></span><span class="istickedoff">mkFinite d = return (d, [], const (return []))</span></span>
+<span class="lineno">  100 </span>-- | given a domain, add it additional attributes to make it _smaller_
+<span class="lineno">  101 </span>--   for example, this means adding a size attribute at the outer-most level
+<span class="lineno">  102 </span>--   and adding a maxSize attribute at the inner levels.
+<span class="lineno">  103 </span>mkFinite ::
+<span class="lineno">  104 </span>    MonadState Int m =&gt;
+<span class="lineno">  105 </span>    NameGen m =&gt;
+<span class="lineno">  106 </span>    MonadLog m =&gt;
+<span class="lineno">  107 </span>    MonadUserError m =&gt;
+<span class="lineno">  108 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  109 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  110 </span>    Domain () Expression -&gt;
+<span class="lineno">  111 </span>    m ( Domain () Expression                    -- &quot;finite&quot; domain
+<span class="lineno">  112 </span>      , [Name]                                  -- extra givens
+<span class="lineno">  113 </span>      , Constant -&gt; m [(Name, Constant)]        -- value calculator for the extra givens
+<span class="lineno">  114 </span>      )                                         -- input is a list of values for the domain
+<span class="lineno">  115 </span><span class="decl"><span class="istickedoff">mkFinite d@DomainTuple{}     = mkFiniteOutermost d</span>
+<span class="lineno">  116 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainRecord{}    = mkFiniteOutermost d</span>
+<span class="lineno">  117 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainVariant{}   = mkFiniteOutermost d</span>
+<span class="lineno">  118 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMatrix{}    = mkFiniteOutermost d</span>
+<span class="lineno">  119 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSet{}       = mkFiniteOutermost d</span>
+<span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainMSet{}      = mkFiniteOutermost d</span>
+<span class="lineno">  121 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainSequence{}  = <span class="nottickedoff">mkFiniteOutermost d</span></span>
+<span class="lineno">  122 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainFunction{}  = mkFiniteOutermost d</span>
+<span class="lineno">  123 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainRelation{}  = mkFiniteOutermost d</span>
+<span class="lineno">  124 </span><span class="spaces"></span><span class="istickedoff">mkFinite d@DomainPartition{} = mkFiniteOutermost d</span>
+<span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff">mkFinite d = return (d, [], const (return []))</span></span>
+<span class="lineno">  126 </span>
 <span class="lineno">  127 </span>
-<span class="lineno">  128 </span>
-<span class="lineno">  129 </span>mkFiniteOutermost ::
-<span class="lineno">  130 </span>    MonadState Int m =&gt;
-<span class="lineno">  131 </span>    NameGen m =&gt;
-<span class="lineno">  132 </span>    MonadLog m =&gt;
-<span class="lineno">  133 </span>    MonadUserError m =&gt;
-<span class="lineno">  134 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  135 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  136 </span>    Domain () Expression -&gt;
-<span class="lineno">  137 </span>    m ( Domain () Expression
-<span class="lineno">  138 </span>      , [Name]
-<span class="lineno">  139 </span>      , Constant -&gt; m [(Name, Constant)]
-<span class="lineno">  140 </span>      )
-<span class="lineno">  141 </span><span class="decl"><span class="istickedoff">mkFiniteOutermost (DomainTuple inners) = do</span>
-<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM mkFiniteInner inners</span>
-<span class="lineno">  143 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">( DomainTuple (map fst3 mids)</span>
-<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  146 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  147 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainTuple&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">xs &lt;- failToUserError $ viewConstantTuple constant</span>
-<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
-<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  153 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRecord (sortOn fst -&gt; inners)) = do</span>
-<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
-<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff">( DomainRecord (zip (map fst inners) (map fst3 mids))</span>
-<span class="lineno">  157 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  158 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainRecord&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">xs' &lt;- failToUserError $ viewConstantRecord constant</span>
-<span class="lineno">  161 </span><span class="spaces">                </span><span class="istickedoff">let</span>
-<span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff">xs :: [Constant]</span>
-<span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff">xs = map snd $ sortOn fst xs'</span>
-<span class="lineno">  164 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
-<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  168 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainVariant inners) = do</span>
-<span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
-<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff">( DomainVariant (zip (map fst inners) (map fst3 mids))</span>
-<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  174 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainVariant&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  175 </span><span class="spaces">                </span><span class="istickedoff">xs' &lt;- failToUserError $ viewConstantVariant constant</span>
-<span class="lineno">  176 </span><span class="spaces">                </span><span class="istickedoff">xs :: [Constant] &lt;- sequence</span>
-<span class="lineno">  177 </span><span class="spaces">                    </span><span class="istickedoff">[ case xs' of</span>
-<span class="lineno">  178 </span><span class="spaces">                        </span><span class="istickedoff">(_, nm', c') | nm == nm' -&gt; return c'</span>
-<span class="lineno">  179 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; failToUserError $ instantiateDomain <span class="nottickedoff">[]</span> d &gt;&gt;= zeroVal</span>
-<span class="lineno">  180 </span><span class="spaces">                    </span><span class="istickedoff">| (nm, d) &lt;- inners ]</span>
-<span class="lineno">  181 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
-<span class="lineno">  183 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  185 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMatrix index inner) = do</span>
-<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">( DomainMatrix index inner'</span>
-<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
-<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  191 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainMatrix&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">(_, matr) &lt;- failToUserError $ viewConstantMatrix constant</span>
-<span class="lineno">  193 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF matr</span>
-<span class="lineno">  194 </span><span class="spaces">                </span><span class="istickedoff">return innerValues</span>
-<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  196 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSet () attr@(SetAttr SizeAttr_Size{}) inner) = do</span>
-<span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  198 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  199 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () attr inner'</span>
-<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
-<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  202 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainSet&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  203 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantSet constant</span>
-<span class="lineno">  204 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">set</span></span>
-<span class="lineno">  205 </span><span class="spaces">                </span><span class="istickedoff">return <span class="nottickedoff">innerValues</span></span>
-<span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  207 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSet () _ inner) = do</span>
-<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  210 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () (SetAttr (SizeAttr_Size (fromName s))) inner'</span>
-<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
-<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainSet&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantSet constant</span>
-<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff">let setSize = genericLength set</span>
-<span class="lineno">  217 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF set</span>
-<span class="lineno">  218 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setSize)]</span>
-<span class="lineno">  219 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  220 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () attr@(MSetAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  222 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () attr inner'</span></span>
-<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  225 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  226 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  227 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span></span>
-<span class="lineno">  228 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
-<span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return innerValues</span></span>
-<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  231 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () (MSetAttr _ occurAttr) inner) = do</span>
-<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff">( DomainMSet () (MSetAttr (SizeAttr_Size (fromName s)) occurAttr) inner'</span>
-<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
-<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span>
-<span class="lineno">  240 </span><span class="spaces">                </span><span class="istickedoff">let setSize = genericLength set</span>
-<span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">set</span></span>
-<span class="lineno">  242 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setSize)]</span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  244 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSequence () attr@(SequenceAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  247 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () attr inner'</span></span>
-<span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  249 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  250 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainSequence&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  251 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantSequence constant</span></span>
-<span class="lineno">  252 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
-<span class="lineno">  253 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return innerValues</span></span>
-<span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSequence () (SequenceAttr _ jectivityAttr) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  259 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () (SequenceAttr (SizeAttr_Size (fromName s)) jectivityAttr) inner'</span></span>
-<span class="lineno">  260 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s:innerExtras</span></span>
-<span class="lineno">  261 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  262 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainSequence&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  263 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantSequence constant</span></span>
-<span class="lineno">  264 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let setSize = genericLength set</span></span>
-<span class="lineno">  265 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
-<span class="lineno">  266 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerValues ++ [(s, ConstantInt TagInt setSize)]</span></span>
-<span class="lineno">  267 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainFunction () attr@(FunctionAttr SizeAttr_Size{} _ _) innerFr innerTo) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
-<span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
-<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  272 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction () attr innerFr' innerTo'</span></span>
-<span class="lineno">  273 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerFrExtras ++ innerToExtras</span></span>
-<span class="lineno">  274 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  275 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainFunction&quot; &lt;+-&gt; pretty constant</span></span>
-<span class="lineno">  276 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">function &lt;- failToUserError $ viewConstantFunction constant</span></span>
-<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst function)</span></span>
-<span class="lineno">  278 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd function)</span></span>
-<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues</span></span>
-<span class="lineno">  280 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainFunction () (FunctionAttr _ partialityAttr jectivityAttr) innerFr innerTo) = do</span>
-<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span>
-<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span>
-<span class="lineno">  285 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">( DomainFunction ()</span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">(FunctionAttr (SizeAttr_Size (fromName s)) partialityAttr jectivityAttr)</span>
-<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff">innerFr' innerTo'</span>
-<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">, s : innerFrExtras ++ innerToExtras</span>
-<span class="lineno">  290 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  291 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainFunction&quot; &lt;+-&gt; pretty constant</span></span>
-<span class="lineno">  292 </span><span class="spaces">                </span><span class="istickedoff">function &lt;- failToUserError $ viewConstantFunction constant</span>
-<span class="lineno">  293 </span><span class="spaces">                </span><span class="istickedoff">let functionSize = genericLength function</span>
-<span class="lineno">  294 </span><span class="spaces">                </span><span class="istickedoff">innerFrValues &lt;- innerFrF (map fst function)</span>
-<span class="lineno">  295 </span><span class="spaces">                </span><span class="istickedoff">innerToValues &lt;- innerToF (map snd function)</span>
-<span class="lineno">  296 </span><span class="spaces">                </span><span class="istickedoff">return $ innerFrValues ++ innerToValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> functionSize)]</span>
-<span class="lineno">  297 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  298 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRelation () attr@(RelationAttr SizeAttr_Size{} _) inners) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
-<span class="lineno">  300 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation () attr inners'</span></span>
-<span class="lineno">  302 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, concat innersExtras</span></span>
-<span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  304 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainRelation&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  305 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relation &lt;- failToUserError $ viewConstantRelation constant</span></span>
-<span class="lineno">  306 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose relation)</span></span>
-<span class="lineno">  307 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return (concat innersValues)</span></span>
-<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  309 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRelation () (RelationAttr _ binRelAttr) inners) = do</span>
-<span class="lineno">  310 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  311 </span><span class="spaces">    </span><span class="istickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span>
-<span class="lineno">  312 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  313 </span><span class="spaces">        </span><span class="istickedoff">( DomainRelation ()</span>
-<span class="lineno">  314 </span><span class="spaces">                </span><span class="istickedoff">(RelationAttr (SizeAttr_Size (fromName s)) binRelAttr)</span>
-<span class="lineno">  315 </span><span class="spaces">                </span><span class="istickedoff">inners'</span>
-<span class="lineno">  316 </span><span class="spaces">        </span><span class="istickedoff">, s : concat innersExtras</span>
-<span class="lineno">  317 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  318 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainRelation&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  319 </span><span class="spaces">                </span><span class="istickedoff">relation &lt;- failToUserError $ viewConstantRelation constant</span>
-<span class="lineno">  320 </span><span class="spaces">                </span><span class="istickedoff">let relationSize = genericLength relation</span>
-<span class="lineno">  321 </span><span class="spaces">                </span><span class="istickedoff">innersValues &lt;- zipWithM ($) innersF (transpose relation)</span>
-<span class="lineno">  322 </span><span class="spaces">                </span><span class="istickedoff">return $ concat innersValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> relationSize)]</span>
-<span class="lineno">  323 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  324 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainPartition () attr@(PartitionAttr SizeAttr_Size{} SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  325 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  326 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  327 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition () attr inner'</span></span>
-<span class="lineno">  328 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  329 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
-<span class="lineno">  330 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainPartition&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  331 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ viewConstantPartition constant</span></span>
-<span class="lineno">  332 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- mapM innerF parts</span></span>
-<span class="lineno">  333 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return (concat innerValues)</span></span>
-<span class="lineno">  334 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  335 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainPartition () (PartitionAttr _ _ isRegularAttr) inner) = do</span>
-<span class="lineno">  336 </span><span class="spaces">    </span><span class="istickedoff">numPartsFin  &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  337 </span><span class="spaces">    </span><span class="istickedoff">partsSizeFin &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  338 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  339 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  340 </span><span class="spaces">        </span><span class="istickedoff">( DomainPartition ()</span>
-<span class="lineno">  341 </span><span class="spaces">            </span><span class="istickedoff">(PartitionAttr (SizeAttr_Size (fromName numPartsFin))</span>
-<span class="lineno">  342 </span><span class="spaces">                           </span><span class="istickedoff">(SizeAttr_MaxSize (fromName partsSizeFin))</span>
-<span class="lineno">  343 </span><span class="spaces">                           </span><span class="istickedoff">isRegularAttr)</span>
-<span class="lineno">  344 </span><span class="spaces">            </span><span class="istickedoff">inner'</span>
-<span class="lineno">  345 </span><span class="spaces">        </span><span class="istickedoff">, numPartsFin:partsSizeFin:innerExtras</span>
-<span class="lineno">  346 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
-<span class="lineno">  347 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainPartition&quot; &lt;+&gt; pretty constant</span></span>
-<span class="lineno">  348 </span><span class="spaces">                </span><span class="istickedoff">parts &lt;- failToUserError $ viewConstantPartition constant</span>
-<span class="lineno">  349 </span><span class="spaces">                </span><span class="istickedoff">let numPartsVal = genericLength parts</span>
-<span class="lineno">  350 </span><span class="spaces">                </span><span class="istickedoff">let partsSizeVal = maximum0 $ map genericLength parts</span>
-<span class="lineno">  351 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- mapM innerF parts</span>
-<span class="lineno">  352 </span><span class="spaces">                </span><span class="istickedoff">return $ concat innerValues ++ [ (numPartsFin, ConstantInt <span class="nottickedoff">TagInt</span> numPartsVal)</span>
-<span class="lineno">  353 </span><span class="spaces">                                               </span><span class="istickedoff">, (partsSizeFin, ConstantInt <span class="nottickedoff">TagInt</span> partsSizeVal)</span>
-<span class="lineno">  354 </span><span class="spaces">                                               </span><span class="istickedoff">]</span>
-<span class="lineno">  355 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  356 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost d = <span class="nottickedoff">return (d, [], const (return []))</span></span></span>
+<span class="lineno">  128 </span>mkFiniteOutermost ::
+<span class="lineno">  129 </span>    MonadState Int m =&gt;
+<span class="lineno">  130 </span>    NameGen m =&gt;
+<span class="lineno">  131 </span>    MonadLog m =&gt;
+<span class="lineno">  132 </span>    MonadUserError m =&gt;
+<span class="lineno">  133 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  134 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  135 </span>    Domain () Expression -&gt;
+<span class="lineno">  136 </span>    m ( Domain () Expression
+<span class="lineno">  137 </span>      , [Name]
+<span class="lineno">  138 </span>      , Constant -&gt; m [(Name, Constant)]
+<span class="lineno">  139 </span>      )
+<span class="lineno">  140 </span><span class="decl"><span class="istickedoff">mkFiniteOutermost (DomainTuple inners) = do</span>
+<span class="lineno">  141 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM mkFiniteInner inners</span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">( DomainTuple (map fst3 mids)</span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainTuple&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  147 </span><span class="spaces">                </span><span class="istickedoff">xs &lt;- failToUserError $ viewConstantTuple constant</span>
+<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
+<span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  152 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRecord (sortOn fst -&gt; inners)) = do</span>
+<span class="lineno">  153 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
+<span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  155 </span><span class="spaces">        </span><span class="istickedoff">( DomainRecord (zip (map fst inners) (map fst3 mids))</span>
+<span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  157 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  158 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainRecord&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff">xs' &lt;- failToUserError $ viewConstantRecord constant</span>
+<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">let</span>
+<span class="lineno">  161 </span><span class="spaces">                    </span><span class="istickedoff">xs :: [Constant]</span>
+<span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff">xs = map snd $ sortOn fst xs'</span>
+<span class="lineno">  163 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  164 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
+<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  167 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainVariant inners) = do</span>
+<span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
+<span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">( DomainVariant (zip (map fst inners) (map fst3 mids))</span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  173 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainVariant&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  174 </span><span class="spaces">                </span><span class="istickedoff">xs' &lt;- failToUserError $ viewConstantVariant constant</span>
+<span class="lineno">  175 </span><span class="spaces">                </span><span class="istickedoff">xs :: [Constant] &lt;- sequence</span>
+<span class="lineno">  176 </span><span class="spaces">                    </span><span class="istickedoff">[ case xs' of</span>
+<span class="lineno">  177 </span><span class="spaces">                        </span><span class="istickedoff">(_, nm', c') | nm == nm' -&gt; return c'</span>
+<span class="lineno">  178 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; failToUserError $ instantiateDomain <span class="nottickedoff">[]</span> d &gt;&gt;= zeroVal</span>
+<span class="lineno">  179 </span><span class="spaces">                    </span><span class="istickedoff">| (nm, d) &lt;- inners ]</span>
+<span class="lineno">  180 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  181 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF [x] | (innerF, x) &lt;- zip innerFs xs ]</span>
+<span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  184 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMatrix index inner) = do</span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">( DomainMatrix index inner'</span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  190 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainMatrix&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  191 </span><span class="spaces">                </span><span class="istickedoff">(_, matr) &lt;- failToUserError $ viewConstantMatrix constant</span>
+<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF matr</span>
+<span class="lineno">  193 </span><span class="spaces">                </span><span class="istickedoff">return innerValues</span>
+<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  195 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSet () attr@(SetAttr SizeAttr_Size{}) inner) = do</span>
+<span class="lineno">  196 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  198 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () attr inner'</span>
+<span class="lineno">  199 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  201 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainSet&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  202 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantSet constant</span>
+<span class="lineno">  203 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">set</span></span>
+<span class="lineno">  204 </span><span class="spaces">                </span><span class="istickedoff">return <span class="nottickedoff">innerValues</span></span>
+<span class="lineno">  205 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  206 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSet () _ inner) = do</span>
+<span class="lineno">  207 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () (SetAttr (SizeAttr_Size (fromName s))) inner'</span>
+<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  213 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainSet&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantSet constant</span>
+<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff">let setSize = genericLength set</span>
+<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF set</span>
+<span class="lineno">  217 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setSize)]</span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  219 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () attr@(MSetAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () attr inner'</span></span>
+<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  225 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  226 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span></span>
+<span class="lineno">  227 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
+<span class="lineno">  228 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return innerValues</span></span>
+<span class="lineno">  229 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  230 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainMSet () (MSetAttr _ occurAttr) inner) = do</span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff">( DomainMSet () (MSetAttr (SizeAttr_Size (fromName s)) occurAttr) inner'</span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
+<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  237 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainMSet&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  238 </span><span class="spaces">                </span><span class="istickedoff">set &lt;- failToUserError $ viewConstantMSet constant</span>
+<span class="lineno">  239 </span><span class="spaces">                </span><span class="istickedoff">let setSize = genericLength set</span>
+<span class="lineno">  240 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">set</span></span>
+<span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setSize)]</span>
+<span class="lineno">  242 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSequence () attr@(SequenceAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  244 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  246 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () attr inner'</span></span>
+<span class="lineno">  247 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  249 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainSequence&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  250 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantSequence constant</span></span>
+<span class="lineno">  251 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
+<span class="lineno">  252 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return innerValues</span></span>
+<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainSequence () (SequenceAttr _ jectivityAttr) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  255 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  258 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () (SequenceAttr (SizeAttr_Size (fromName s)) jectivityAttr) inner'</span></span>
+<span class="lineno">  259 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s:innerExtras</span></span>
+<span class="lineno">  260 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  261 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainSequence&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  262 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">set &lt;- failToUserError $ viewConstantSequence constant</span></span>
+<span class="lineno">  263 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let setSize = genericLength set</span></span>
+<span class="lineno">  264 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF set</span></span>
+<span class="lineno">  265 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerValues ++ [(s, ConstantInt TagInt setSize)]</span></span>
+<span class="lineno">  266 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  267 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainFunction () attr@(FunctionAttr SizeAttr_Size{} _ _) innerFr innerTo) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
+<span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  271 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction () attr innerFr' innerTo'</span></span>
+<span class="lineno">  272 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerFrExtras ++ innerToExtras</span></span>
+<span class="lineno">  273 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  274 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainFunction&quot; &lt;+-&gt; pretty constant</span></span>
+<span class="lineno">  275 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">function &lt;- failToUserError $ viewConstantFunction constant</span></span>
+<span class="lineno">  276 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst function)</span></span>
+<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd function)</span></span>
+<span class="lineno">  278 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues</span></span>
+<span class="lineno">  279 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  280 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainFunction () (FunctionAttr _ partialityAttr jectivityAttr) innerFr innerTo) = do</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">( DomainFunction ()</span>
+<span class="lineno">  286 </span><span class="spaces">                </span><span class="istickedoff">(FunctionAttr (SizeAttr_Size (fromName s)) partialityAttr jectivityAttr)</span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">innerFr' innerTo'</span>
+<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff">, s : innerFrExtras ++ innerToExtras</span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  290 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainFunction&quot; &lt;+-&gt; pretty constant</span></span>
+<span class="lineno">  291 </span><span class="spaces">                </span><span class="istickedoff">function &lt;- failToUserError $ viewConstantFunction constant</span>
+<span class="lineno">  292 </span><span class="spaces">                </span><span class="istickedoff">let functionSize = genericLength function</span>
+<span class="lineno">  293 </span><span class="spaces">                </span><span class="istickedoff">innerFrValues &lt;- innerFrF (map fst function)</span>
+<span class="lineno">  294 </span><span class="spaces">                </span><span class="istickedoff">innerToValues &lt;- innerToF (map snd function)</span>
+<span class="lineno">  295 </span><span class="spaces">                </span><span class="istickedoff">return $ innerFrValues ++ innerToValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> functionSize)]</span>
+<span class="lineno">  296 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  297 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRelation () attr@(RelationAttr SizeAttr_Size{} _) inners) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  298 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
+<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation () attr inners'</span></span>
+<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, concat innersExtras</span></span>
+<span class="lineno">  302 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainRelation&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  304 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relation &lt;- failToUserError $ viewConstantRelation constant</span></span>
+<span class="lineno">  305 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose relation)</span></span>
+<span class="lineno">  306 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return (concat innersValues)</span></span>
+<span class="lineno">  307 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  308 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainRelation () (RelationAttr _ binRelAttr) inners) = do</span>
+<span class="lineno">  309 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  310 </span><span class="spaces">    </span><span class="istickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span>
+<span class="lineno">  311 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">( DomainRelation ()</span>
+<span class="lineno">  313 </span><span class="spaces">                </span><span class="istickedoff">(RelationAttr (SizeAttr_Size (fromName s)) binRelAttr)</span>
+<span class="lineno">  314 </span><span class="spaces">                </span><span class="istickedoff">inners'</span>
+<span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">, s : concat innersExtras</span>
+<span class="lineno">  316 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  317 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainRelation&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  318 </span><span class="spaces">                </span><span class="istickedoff">relation &lt;- failToUserError $ viewConstantRelation constant</span>
+<span class="lineno">  319 </span><span class="spaces">                </span><span class="istickedoff">let relationSize = genericLength relation</span>
+<span class="lineno">  320 </span><span class="spaces">                </span><span class="istickedoff">innersValues &lt;- zipWithM ($) innersF (transpose relation)</span>
+<span class="lineno">  321 </span><span class="spaces">                </span><span class="istickedoff">return $ concat innersValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> relationSize)]</span>
+<span class="lineno">  322 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  323 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainPartition () attr@(PartitionAttr SizeAttr_Size{} SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  324 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  325 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  326 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition () attr inner'</span></span>
+<span class="lineno">  327 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  328 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constant -&gt; do</span></span>
+<span class="lineno">  329 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteOutermost DomainPartition&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  330 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ viewConstantPartition constant</span></span>
+<span class="lineno">  331 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- mapM innerF parts</span></span>
+<span class="lineno">  332 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return (concat innerValues)</span></span>
+<span class="lineno">  333 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  334 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost (DomainPartition () (PartitionAttr _ _ isRegularAttr) inner) = do</span>
+<span class="lineno">  335 </span><span class="spaces">    </span><span class="istickedoff">numPartsFin  &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  336 </span><span class="spaces">    </span><span class="istickedoff">partsSizeFin &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  337 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  338 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  339 </span><span class="spaces">        </span><span class="istickedoff">( DomainPartition ()</span>
+<span class="lineno">  340 </span><span class="spaces">            </span><span class="istickedoff">(PartitionAttr (SizeAttr_Size (fromName numPartsFin))</span>
+<span class="lineno">  341 </span><span class="spaces">                           </span><span class="istickedoff">(SizeAttr_MaxSize (fromName partsSizeFin))</span>
+<span class="lineno">  342 </span><span class="spaces">                           </span><span class="istickedoff">isRegularAttr)</span>
+<span class="lineno">  343 </span><span class="spaces">            </span><span class="istickedoff">inner'</span>
+<span class="lineno">  344 </span><span class="spaces">        </span><span class="istickedoff">, numPartsFin:partsSizeFin:innerExtras</span>
+<span class="lineno">  345 </span><span class="spaces">        </span><span class="istickedoff">, \ constant -&gt; do</span>
+<span class="lineno">  346 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteOutermost DomainPartition&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  347 </span><span class="spaces">                </span><span class="istickedoff">parts &lt;- failToUserError $ viewConstantPartition constant</span>
+<span class="lineno">  348 </span><span class="spaces">                </span><span class="istickedoff">let numPartsVal = genericLength parts</span>
+<span class="lineno">  349 </span><span class="spaces">                </span><span class="istickedoff">let partsSizeVal = maximum0 $ map genericLength parts</span>
+<span class="lineno">  350 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- mapM innerF parts</span>
+<span class="lineno">  351 </span><span class="spaces">                </span><span class="istickedoff">return $ concat innerValues ++ [ (numPartsFin, ConstantInt <span class="nottickedoff">TagInt</span> numPartsVal)</span>
+<span class="lineno">  352 </span><span class="spaces">                                               </span><span class="istickedoff">, (partsSizeFin, ConstantInt <span class="nottickedoff">TagInt</span> partsSizeVal)</span>
+<span class="lineno">  353 </span><span class="spaces">                                               </span><span class="istickedoff">]</span>
+<span class="lineno">  354 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  355 </span><span class="spaces"></span><span class="istickedoff">mkFiniteOutermost d = <span class="nottickedoff">return (d, [], const (return []))</span></span></span>
+<span class="lineno">  356 </span>
 <span class="lineno">  357 </span>
-<span class="lineno">  358 </span>
-<span class="lineno">  359 </span>mkFiniteInner ::
-<span class="lineno">  360 </span>    MonadState Int m =&gt;
-<span class="lineno">  361 </span>    NameGen m =&gt;
-<span class="lineno">  362 </span>    MonadLog m =&gt;
-<span class="lineno">  363 </span>    MonadUserError m =&gt;
-<span class="lineno">  364 </span>    EnumerateDomain m =&gt;
-<span class="lineno">  365 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno">  366 </span>    Domain () Expression -&gt;
-<span class="lineno">  367 </span>    m ( Domain () Expression
-<span class="lineno">  368 </span>      , [Name]
-<span class="lineno">  369 </span>      , [Constant] -&gt; m [(Name, Constant)]
-<span class="lineno">  370 </span>      )
-<span class="lineno">  371 </span><span class="decl"><span class="istickedoff">mkFiniteInner (DomainInt t []) = do</span>
-<span class="lineno">  372 </span><span class="spaces">    </span><span class="istickedoff">fr &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  373 </span><span class="spaces">    </span><span class="istickedoff">to &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  374 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">( DomainInt t [RangeBounded (fromName fr) (fromName to)]</span>
-<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff">, [fr, to]</span>
-<span class="lineno">  377 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  378 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainInt 1&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
-<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span>
-<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff">return [ (fr, ConstantInt <span class="nottickedoff">t</span> (minimum0 ints))</span>
-<span class="lineno">  381 </span><span class="spaces">                       </span><span class="istickedoff">, (to, ConstantInt <span class="nottickedoff">t</span> (maximum0 ints))</span>
-<span class="lineno">  382 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
-<span class="lineno">  383 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  384 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainInt t [RangeLowerBounded low]) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  385 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">new &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  386 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  387 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainInt t [RangeBounded low (fromName new)]</span></span>
-<span class="lineno">  388 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, [new]</span></span>
-<span class="lineno">  389 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  390 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainInt 2&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
-<span class="lineno">  391 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span></span>
-<span class="lineno">  392 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [ (new, ConstantInt t (maximum0 ints)) ]</span></span>
-<span class="lineno">  393 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  394 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainInt t [RangeUpperBounded upp]) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  395 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">new &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  396 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  397 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainInt t [RangeBounded (fromName new) upp]</span></span>
-<span class="lineno">  398 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, [new]</span></span>
-<span class="lineno">  399 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  400 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainInt 3&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
-<span class="lineno">  401 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span></span>
-<span class="lineno">  402 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [ (new, ConstantInt t (minimum0 ints)) ]</span></span>
-<span class="lineno">  403 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  404 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainTuple inners) = do</span>
-<span class="lineno">  405 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM mkFiniteInner inners</span>
-<span class="lineno">  406 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  407 </span><span class="spaces">        </span><span class="istickedoff">( DomainTuple (map fst3 mids)</span>
-<span class="lineno">  408 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  409 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  410 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainTuple&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  411 </span><span class="spaces">                </span><span class="istickedoff">xss &lt;- failToUserError $ mapM viewConstantTuple constants</span>
-<span class="lineno">  412 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  413 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
-<span class="lineno">  414 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  415 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  416 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRecord (sortOn fst -&gt; inners)) = do</span>
-<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
-<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  419 </span><span class="spaces">        </span><span class="istickedoff">( DomainRecord (zip (map fst inners) (map fst3 mids))</span>
-<span class="lineno">  420 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  421 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  422 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainRecord&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  423 </span><span class="spaces">                </span><span class="istickedoff">xss' :: [[(Name, Constant)]] &lt;- failToUserError $ mapM viewConstantRecord constants</span>
-<span class="lineno">  424 </span><span class="spaces">                </span><span class="istickedoff">let</span>
-<span class="lineno">  425 </span><span class="spaces">                    </span><span class="istickedoff">xss :: [[Constant]]</span>
-<span class="lineno">  426 </span><span class="spaces">                    </span><span class="istickedoff">xss = map (map snd . sortOn fst) xss'</span>
-<span class="lineno">  427 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  428 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
-<span class="lineno">  429 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  430 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  431 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainVariant inners) = do</span>
-<span class="lineno">  432 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
-<span class="lineno">  433 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  434 </span><span class="spaces">        </span><span class="istickedoff">( DomainVariant (zip (map fst inners) (map fst3 mids))</span>
-<span class="lineno">  435 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
-<span class="lineno">  436 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  437 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainVariant&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  438 </span><span class="spaces">                </span><span class="istickedoff">xss' &lt;- failToUserError $ mapM viewConstantVariant constants</span>
-<span class="lineno">  439 </span><span class="spaces">                </span><span class="istickedoff">xss :: [[Constant]]</span>
-<span class="lineno">  440 </span><span class="spaces">                    </span><span class="istickedoff">&lt;- sequence</span>
-<span class="lineno">  441 </span><span class="spaces">                            </span><span class="istickedoff">[ sequence</span>
-<span class="lineno">  442 </span><span class="spaces">                                </span><span class="istickedoff">[ case xs' of</span>
-<span class="lineno">  443 </span><span class="spaces">                                    </span><span class="istickedoff">(_, nm', c') | nm == nm' -&gt; return c'</span>
-<span class="lineno">  444 </span><span class="spaces">                                    </span><span class="istickedoff">_ -&gt; failToUserError $ instantiateDomain <span class="nottickedoff">[]</span> d &gt;&gt;= zeroVal</span>
-<span class="lineno">  445 </span><span class="spaces">                                </span><span class="istickedoff">| (nm, d) &lt;- inners ]</span>
-<span class="lineno">  446 </span><span class="spaces">                            </span><span class="istickedoff">| xs' &lt;- xss' ]</span>
-<span class="lineno">  447 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
-<span class="lineno">  448 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
-<span class="lineno">  449 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
-<span class="lineno">  450 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  451 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMatrix index inner) = do</span>
-<span class="lineno">  452 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  453 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  454 </span><span class="spaces">        </span><span class="istickedoff">( DomainMatrix index inner'</span>
-<span class="lineno">  455 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
-<span class="lineno">  456 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  457 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainMatrix&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  458 </span><span class="spaces">                </span><span class="istickedoff">xss &lt;- failToUserError $ mapM <span class="nottickedoff">viewConstantMatrix</span> constants</span>
-<span class="lineno">  459 </span><span class="spaces">                </span><span class="istickedoff">innerF <span class="nottickedoff">(concatMap snd xss)</span></span>
-<span class="lineno">  460 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  461 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSet () attr@(SetAttr SizeAttr_Size{}) inner) = do</span>
-<span class="lineno">  462 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  463 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  464 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () attr inner'</span>
-<span class="lineno">  465 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
-<span class="lineno">  466 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  467 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  468 </span><span class="spaces">                </span><span class="istickedoff">sets &lt;- failToUserError $ mapM <span class="nottickedoff">viewConstantSet</span> constants</span>
-<span class="lineno">  469 </span><span class="spaces">                </span><span class="istickedoff">innerF <span class="nottickedoff">(concat sets)</span></span>
-<span class="lineno">  470 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  471 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSet () _ inner) = do</span>
-<span class="lineno">  472 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  473 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  474 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  475 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () (SetAttr (SizeAttr_MaxSize (fromName s))) inner'</span>
-<span class="lineno">  476 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
-<span class="lineno">  477 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  478 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  479 </span><span class="spaces">                </span><span class="istickedoff">sets &lt;- failToUserError $ mapM viewConstantSet constants</span>
-<span class="lineno">  480 </span><span class="spaces">                </span><span class="istickedoff">let setMaxSize = maximum0 $ map genericLength sets</span>
-<span class="lineno">  481 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF (concat sets)</span>
-<span class="lineno">  482 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setMaxSize)]</span>
-<span class="lineno">  483 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  484 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMSet () attr@(MSetAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  485 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  486 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  487 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () attr inner'</span></span>
-<span class="lineno">  488 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  489 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  490 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainMSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  491 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">sets &lt;- failToUserError $ mapM viewConstantMSet constants</span></span>
-<span class="lineno">  492 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerF (concat sets)</span></span>
-<span class="lineno">  493 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  494 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMSet () (MSetAttr _ occurAttr) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  495 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  496 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  497 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  498 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () (MSetAttr (SizeAttr_MaxSize (fromName s)) occurAttr) inner'</span></span>
-<span class="lineno">  499 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s:innerExtras</span></span>
-<span class="lineno">  500 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  501 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainMSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  502 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">sets &lt;- failToUserError $ mapM viewConstantMSet constants</span></span>
-<span class="lineno">  503 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let setMaxSize = maximum0 $ map genericLength sets</span></span>
-<span class="lineno">  504 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF (concat sets)</span></span>
-<span class="lineno">  505 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerValues ++ [(s, ConstantInt TagInt setMaxSize)]</span></span>
-<span class="lineno">  506 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  507 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSequence () attr@(SequenceAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  508 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  509 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  510 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () attr inner'</span></span>
-<span class="lineno">  511 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  512 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  513 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainSequence&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  514 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">seqs &lt;- failToUserError $ mapM viewConstantSequence constants</span></span>
-<span class="lineno">  515 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerF (concat seqs)</span></span>
-<span class="lineno">  516 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  517 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSequence () (SequenceAttr _ jectivityAttr) inner) = do</span>
-<span class="lineno">  518 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
-<span class="lineno">  519 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
-<span class="lineno">  520 </span><span class="spaces">    </span><span class="istickedoff">return</span>
-<span class="lineno">  521 </span><span class="spaces">        </span><span class="istickedoff">( DomainSequence () (SequenceAttr (SizeAttr_MaxSize (fromName s)) jectivityAttr) inner'</span>
-<span class="lineno">  522 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
-<span class="lineno">  523 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
-<span class="lineno">  524 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSequence&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  525 </span><span class="spaces">                </span><span class="istickedoff">seqs &lt;- failToUserError $ mapM viewConstantSequence constants</span>
-<span class="lineno">  526 </span><span class="spaces">                </span><span class="istickedoff">let seqMaxSize = maximum0 $ map genericLength seqs</span>
-<span class="lineno">  527 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">(concat seqs)</span></span>
-<span class="lineno">  528 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> seqMaxSize)]</span>
-<span class="lineno">  529 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  530 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainFunction () attr@(FunctionAttr SizeAttr_Size{} _ _) innerFr innerTo) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  531 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
-<span class="lineno">  532 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
-<span class="lineno">  533 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  534 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction () attr innerFr' innerTo'</span></span>
-<span class="lineno">  535 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerFrExtras ++ innerToExtras</span></span>
-<span class="lineno">  536 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  537 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainFunction&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  538 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">functions &lt;- failToUserError $ mapM viewConstantFunction constants</span></span>
-<span class="lineno">  539 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst (concat functions))</span></span>
-<span class="lineno">  540 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd (concat functions))</span></span>
-<span class="lineno">  541 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues</span></span>
-<span class="lineno">  542 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  543 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainFunction () (FunctionAttr _ partialityAttr jectivityAttr) innerFr innerTo) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  544 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  545 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
-<span class="lineno">  546 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
-<span class="lineno">  547 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  548 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction ()</span></span>
-<span class="lineno">  549 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr (SizeAttr_MaxSize (fromName s)) partialityAttr jectivityAttr)</span></span>
-<span class="lineno">  550 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFr' innerTo'</span></span>
-<span class="lineno">  551 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s : innerFrExtras ++ innerToExtras</span></span>
-<span class="lineno">  552 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  553 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainFunction&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  554 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">functions &lt;- failToUserError $ mapM viewConstantFunction constants</span></span>
-<span class="lineno">  555 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let functionMaxSize = maximum0 $ map genericLength functions</span></span>
-<span class="lineno">  556 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst (concat functions))</span></span>
-<span class="lineno">  557 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd (concat functions))</span></span>
-<span class="lineno">  558 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues ++ [(s, ConstantInt TagInt functionMaxSize)]</span></span>
-<span class="lineno">  559 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  560 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRelation () attr@(RelationAttr SizeAttr_Size{} _) inners) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  561 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
-<span class="lineno">  562 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation () attr inners'</span></span>
-<span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, concat innersExtras</span></span>
-<span class="lineno">  565 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  566 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainRelation&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  567 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relations &lt;- failToUserError $ mapM viewConstantRelation constants</span></span>
-<span class="lineno">  568 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose $ concat relations)</span></span>
-<span class="lineno">  569 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues</span></span>
-<span class="lineno">  570 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  571 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRelation () (RelationAttr _ binRelAttr) inners) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  572 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  573 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
-<span class="lineno">  574 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  575 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation ()</span></span>
-<span class="lineno">  576 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(RelationAttr (SizeAttr_MaxSize (fromName s)) binRelAttr)</span></span>
-<span class="lineno">  577 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inners'</span></span>
-<span class="lineno">  578 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s : concat innersExtras</span></span>
-<span class="lineno">  579 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  580 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainRelation&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  581 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relations &lt;- failToUserError $ mapM viewConstantRelation constants</span></span>
-<span class="lineno">  582 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let relationMaxSize = maximum0 $ map genericLength relations</span></span>
-<span class="lineno">  583 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose $ concat relations)</span></span>
-<span class="lineno">  584 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues ++ [(s, ConstantInt TagInt relationMaxSize)]</span></span>
-<span class="lineno">  585 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  586 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainPartition () attr@(PartitionAttr SizeAttr_Size{} SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  587 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  588 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  589 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition () attr inner'</span></span>
-<span class="lineno">  590 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
-<span class="lineno">  591 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  592 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainPartition&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  593 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ mapM viewConstantPartition constants</span></span>
-<span class="lineno">  594 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- mapM innerF (concat parts)</span></span>
-<span class="lineno">  595 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues</span></span>
-<span class="lineno">  596 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  597 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainPartition () (PartitionAttr _ _ isRegularAttr) inner) = <span class="nottickedoff">do</span></span>
-<span class="lineno">  598 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">numPartsFin  &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  599 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">partsSizeFin &lt;- nextName &quot;fin&quot;</span></span>
-<span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
-<span class="lineno">  601 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  602 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition ()</span></span>
-<span class="lineno">  603 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(PartitionAttr (SizeAttr_MaxSize (fromName numPartsFin))</span></span>
-<span class="lineno">  604 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">(SizeAttr_MaxSize (fromName partsSizeFin))</span></span>
-<span class="lineno">  605 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">isRegularAttr)</span></span>
-<span class="lineno">  606 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">inner'</span></span>
-<span class="lineno">  607 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, numPartsFin:partsSizeFin:innerExtras</span></span>
-<span class="lineno">  608 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
-<span class="lineno">  609 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainPartition&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
-<span class="lineno">  610 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ mapM viewConstantPartition constants</span></span>
-<span class="lineno">  611 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let numPartsVal = maximum0 $ map genericLength parts</span></span>
-<span class="lineno">  612 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let partsSizeVal = maximum0 $ map genericLength parts</span></span>
-<span class="lineno">  613 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- mapM innerF (concat parts)</span></span>
-<span class="lineno">  614 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innerValues ++ [ (numPartsFin, ConstantInt TagInt numPartsVal)</span></span>
-<span class="lineno">  615 </span><span class="spaces">                                               </span><span class="istickedoff"><span class="nottickedoff">, (partsSizeFin, ConstantInt TagInt partsSizeVal)</span></span>
-<span class="lineno">  616 </span><span class="spaces">                                               </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  617 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  618 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner d = return (d, [], const (return []))</span></span>
+<span class="lineno">  358 </span>mkFiniteInner ::
+<span class="lineno">  359 </span>    MonadState Int m =&gt;
+<span class="lineno">  360 </span>    NameGen m =&gt;
+<span class="lineno">  361 </span>    MonadLog m =&gt;
+<span class="lineno">  362 </span>    MonadUserError m =&gt;
+<span class="lineno">  363 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  364 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  365 </span>    Domain () Expression -&gt;
+<span class="lineno">  366 </span>    m ( Domain () Expression
+<span class="lineno">  367 </span>      , [Name]
+<span class="lineno">  368 </span>      , [Constant] -&gt; m [(Name, Constant)]
+<span class="lineno">  369 </span>      )
+<span class="lineno">  370 </span><span class="decl"><span class="istickedoff">mkFiniteInner (DomainInt t []) = do</span>
+<span class="lineno">  371 </span><span class="spaces">    </span><span class="istickedoff">fr &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  372 </span><span class="spaces">    </span><span class="istickedoff">to &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  373 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  374 </span><span class="spaces">        </span><span class="istickedoff">( DomainInt t [RangeBounded (fromName fr) (fromName to)]</span>
+<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">, [fr, to]</span>
+<span class="lineno">  376 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  377 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainInt 1&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
+<span class="lineno">  378 </span><span class="spaces">                </span><span class="istickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span>
+<span class="lineno">  379 </span><span class="spaces">                </span><span class="istickedoff">return [ (fr, ConstantInt <span class="nottickedoff">t</span> (minimum0 ints))</span>
+<span class="lineno">  380 </span><span class="spaces">                       </span><span class="istickedoff">, (to, ConstantInt <span class="nottickedoff">t</span> (maximum0 ints))</span>
+<span class="lineno">  381 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">  382 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  383 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainInt t [RangeLowerBounded low]) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  384 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">new &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  385 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  386 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainInt t [RangeBounded low (fromName new)]</span></span>
+<span class="lineno">  387 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, [new]</span></span>
+<span class="lineno">  388 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  389 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainInt 2&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
+<span class="lineno">  390 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span></span>
+<span class="lineno">  391 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [ (new, ConstantInt t (maximum0 ints)) ]</span></span>
+<span class="lineno">  392 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  393 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainInt t [RangeUpperBounded upp]) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">new &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  396 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainInt t [RangeBounded (fromName new) upp]</span></span>
+<span class="lineno">  397 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, [new]</span></span>
+<span class="lineno">  398 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  399 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainInt 3&quot; &lt;+-&gt; fsep (map pretty constants)</span></span>
+<span class="lineno">  400 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ints &lt;- failToUserError $ mapM viewConstantInt constants</span></span>
+<span class="lineno">  401 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [ (new, ConstantInt t (minimum0 ints)) ]</span></span>
+<span class="lineno">  402 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  403 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainTuple inners) = do</span>
+<span class="lineno">  404 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM mkFiniteInner inners</span>
+<span class="lineno">  405 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  406 </span><span class="spaces">        </span><span class="istickedoff">( DomainTuple (map fst3 mids)</span>
+<span class="lineno">  407 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  408 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  409 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainTuple&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  410 </span><span class="spaces">                </span><span class="istickedoff">xss &lt;- failToUserError $ mapM viewConstantTuple constants</span>
+<span class="lineno">  411 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  412 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
+<span class="lineno">  413 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  414 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  415 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRecord (sortOn fst -&gt; inners)) = do</span>
+<span class="lineno">  416 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
+<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  418 </span><span class="spaces">        </span><span class="istickedoff">( DomainRecord (zip (map fst inners) (map fst3 mids))</span>
+<span class="lineno">  419 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  420 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  421 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainRecord&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  422 </span><span class="spaces">                </span><span class="istickedoff">xss' :: [[(Name, Constant)]] &lt;- failToUserError $ mapM viewConstantRecord constants</span>
+<span class="lineno">  423 </span><span class="spaces">                </span><span class="istickedoff">let</span>
+<span class="lineno">  424 </span><span class="spaces">                    </span><span class="istickedoff">xss :: [[Constant]]</span>
+<span class="lineno">  425 </span><span class="spaces">                    </span><span class="istickedoff">xss = map (map snd . sortOn fst) xss'</span>
+<span class="lineno">  426 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  427 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
+<span class="lineno">  428 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  429 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  430 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainVariant inners) = do</span>
+<span class="lineno">  431 </span><span class="spaces">    </span><span class="istickedoff">mids &lt;- mapM (mkFiniteInner . snd) inners</span>
+<span class="lineno">  432 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  433 </span><span class="spaces">        </span><span class="istickedoff">( DomainVariant (zip (map fst inners) (map fst3 mids))</span>
+<span class="lineno">  434 </span><span class="spaces">        </span><span class="istickedoff">, concatMap snd3 mids</span>
+<span class="lineno">  435 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  436 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainVariant&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  437 </span><span class="spaces">                </span><span class="istickedoff">xss' &lt;- failToUserError $ mapM viewConstantVariant constants</span>
+<span class="lineno">  438 </span><span class="spaces">                </span><span class="istickedoff">xss :: [[Constant]]</span>
+<span class="lineno">  439 </span><span class="spaces">                    </span><span class="istickedoff">&lt;- sequence</span>
+<span class="lineno">  440 </span><span class="spaces">                            </span><span class="istickedoff">[ sequence</span>
+<span class="lineno">  441 </span><span class="spaces">                                </span><span class="istickedoff">[ case xs' of</span>
+<span class="lineno">  442 </span><span class="spaces">                                    </span><span class="istickedoff">(_, nm', c') | nm == nm' -&gt; return c'</span>
+<span class="lineno">  443 </span><span class="spaces">                                    </span><span class="istickedoff">_ -&gt; failToUserError $ instantiateDomain <span class="nottickedoff">[]</span> d &gt;&gt;= zeroVal</span>
+<span class="lineno">  444 </span><span class="spaces">                                </span><span class="istickedoff">| (nm, d) &lt;- inners ]</span>
+<span class="lineno">  445 </span><span class="spaces">                            </span><span class="istickedoff">| xs' &lt;- xss' ]</span>
+<span class="lineno">  446 </span><span class="spaces">                </span><span class="istickedoff">let innerFs = map thd3 mids</span>
+<span class="lineno">  447 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- sequence [ innerF xs | (innerF, xs) &lt;- zip innerFs (transpose xss) ]</span>
+<span class="lineno">  448 </span><span class="spaces">                </span><span class="istickedoff">return (concat innerValues)</span>
+<span class="lineno">  449 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  450 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMatrix index inner) = do</span>
+<span class="lineno">  451 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  452 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  453 </span><span class="spaces">        </span><span class="istickedoff">( DomainMatrix index inner'</span>
+<span class="lineno">  454 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
+<span class="lineno">  455 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  456 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainMatrix&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  457 </span><span class="spaces">                </span><span class="istickedoff">xss &lt;- failToUserError $ mapM <span class="nottickedoff">viewConstantMatrix</span> constants</span>
+<span class="lineno">  458 </span><span class="spaces">                </span><span class="istickedoff">innerF <span class="nottickedoff">(concatMap snd xss)</span></span>
+<span class="lineno">  459 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  460 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSet () attr@(SetAttr SizeAttr_Size{}) inner) = do</span>
+<span class="lineno">  461 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  462 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  463 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () attr inner'</span>
+<span class="lineno">  464 </span><span class="spaces">        </span><span class="istickedoff">, innerExtras</span>
+<span class="lineno">  465 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  466 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  467 </span><span class="spaces">                </span><span class="istickedoff">sets &lt;- failToUserError $ mapM <span class="nottickedoff">viewConstantSet</span> constants</span>
+<span class="lineno">  468 </span><span class="spaces">                </span><span class="istickedoff">innerF <span class="nottickedoff">(concat sets)</span></span>
+<span class="lineno">  469 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  470 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSet () _ inner) = do</span>
+<span class="lineno">  471 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  472 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  473 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  474 </span><span class="spaces">        </span><span class="istickedoff">( DomainSet () (SetAttr (SizeAttr_MaxSize (fromName s))) inner'</span>
+<span class="lineno">  475 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
+<span class="lineno">  476 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  477 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  478 </span><span class="spaces">                </span><span class="istickedoff">sets &lt;- failToUserError $ mapM viewConstantSet constants</span>
+<span class="lineno">  479 </span><span class="spaces">                </span><span class="istickedoff">let setMaxSize = maximum0 $ map genericLength sets</span>
+<span class="lineno">  480 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF (concat sets)</span>
+<span class="lineno">  481 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> setMaxSize)]</span>
+<span class="lineno">  482 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  483 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMSet () attr@(MSetAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  484 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  485 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  486 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () attr inner'</span></span>
+<span class="lineno">  487 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  488 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  489 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainMSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  490 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">sets &lt;- failToUserError $ mapM viewConstantMSet constants</span></span>
+<span class="lineno">  491 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerF (concat sets)</span></span>
+<span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  493 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainMSet () (MSetAttr _ occurAttr) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  494 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  495 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  496 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  497 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainMSet () (MSetAttr (SizeAttr_MaxSize (fromName s)) occurAttr) inner'</span></span>
+<span class="lineno">  498 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s:innerExtras</span></span>
+<span class="lineno">  499 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  500 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainMSet&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  501 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">sets &lt;- failToUserError $ mapM viewConstantMSet constants</span></span>
+<span class="lineno">  502 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let setMaxSize = maximum0 $ map genericLength sets</span></span>
+<span class="lineno">  503 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- innerF (concat sets)</span></span>
+<span class="lineno">  504 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerValues ++ [(s, ConstantInt TagInt setMaxSize)]</span></span>
+<span class="lineno">  505 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  506 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSequence () attr@(SequenceAttr SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  507 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  508 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  509 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainSequence () attr inner'</span></span>
+<span class="lineno">  510 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  511 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  512 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainSequence&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  513 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">seqs &lt;- failToUserError $ mapM viewConstantSequence constants</span></span>
+<span class="lineno">  514 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerF (concat seqs)</span></span>
+<span class="lineno">  515 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  516 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainSequence () (SequenceAttr _ jectivityAttr) inner) = do</span>
+<span class="lineno">  517 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- nextName &quot;fin&quot;</span>
+<span class="lineno">  518 </span><span class="spaces">    </span><span class="istickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span>
+<span class="lineno">  519 </span><span class="spaces">    </span><span class="istickedoff">return</span>
+<span class="lineno">  520 </span><span class="spaces">        </span><span class="istickedoff">( DomainSequence () (SequenceAttr (SizeAttr_MaxSize (fromName s)) jectivityAttr) inner'</span>
+<span class="lineno">  521 </span><span class="spaces">        </span><span class="istickedoff">, s:innerExtras</span>
+<span class="lineno">  522 </span><span class="spaces">        </span><span class="istickedoff">, \ constants -&gt; do</span>
+<span class="lineno">  523 </span><span class="spaces">                </span><span class="istickedoff">logDebug $ <span class="nottickedoff">&quot;mkFiniteInner DomainSequence&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  524 </span><span class="spaces">                </span><span class="istickedoff">seqs &lt;- failToUserError $ mapM viewConstantSequence constants</span>
+<span class="lineno">  525 </span><span class="spaces">                </span><span class="istickedoff">let seqMaxSize = maximum0 $ map genericLength seqs</span>
+<span class="lineno">  526 </span><span class="spaces">                </span><span class="istickedoff">innerValues &lt;- innerF <span class="nottickedoff">(concat seqs)</span></span>
+<span class="lineno">  527 </span><span class="spaces">                </span><span class="istickedoff">return $ innerValues ++ [(s, ConstantInt <span class="nottickedoff">TagInt</span> seqMaxSize)]</span>
+<span class="lineno">  528 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  529 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainFunction () attr@(FunctionAttr SizeAttr_Size{} _ _) innerFr innerTo) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  530 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
+<span class="lineno">  531 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
+<span class="lineno">  532 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  533 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction () attr innerFr' innerTo'</span></span>
+<span class="lineno">  534 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerFrExtras ++ innerToExtras</span></span>
+<span class="lineno">  535 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  536 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainFunction&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  537 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">functions &lt;- failToUserError $ mapM viewConstantFunction constants</span></span>
+<span class="lineno">  538 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst (concat functions))</span></span>
+<span class="lineno">  539 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd (concat functions))</span></span>
+<span class="lineno">  540 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues</span></span>
+<span class="lineno">  541 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  542 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainFunction () (FunctionAttr _ partialityAttr jectivityAttr) innerFr innerTo) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  543 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  544 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerFr', innerFrExtras, innerFrF) &lt;- mkFiniteInner innerFr</span></span>
+<span class="lineno">  545 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(innerTo', innerToExtras, innerToF) &lt;- mkFiniteInner innerTo</span></span>
+<span class="lineno">  546 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  547 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainFunction ()</span></span>
+<span class="lineno">  548 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr (SizeAttr_MaxSize (fromName s)) partialityAttr jectivityAttr)</span></span>
+<span class="lineno">  549 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFr' innerTo'</span></span>
+<span class="lineno">  550 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s : innerFrExtras ++ innerToExtras</span></span>
+<span class="lineno">  551 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  552 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainFunction&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  553 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">functions &lt;- failToUserError $ mapM viewConstantFunction constants</span></span>
+<span class="lineno">  554 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let functionMaxSize = maximum0 $ map genericLength functions</span></span>
+<span class="lineno">  555 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerFrValues &lt;- innerFrF (map fst (concat functions))</span></span>
+<span class="lineno">  556 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerToValues &lt;- innerToF (map snd (concat functions))</span></span>
+<span class="lineno">  557 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ innerFrValues ++ innerToValues ++ [(s, ConstantInt TagInt functionMaxSize)]</span></span>
+<span class="lineno">  558 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  559 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRelation () attr@(RelationAttr SizeAttr_Size{} _) inners) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  560 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
+<span class="lineno">  561 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation () attr inners'</span></span>
+<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, concat innersExtras</span></span>
+<span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  565 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainRelation&quot; &lt;+-&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  566 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relations &lt;- failToUserError $ mapM viewConstantRelation constants</span></span>
+<span class="lineno">  567 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose $ concat relations)</span></span>
+<span class="lineno">  568 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues</span></span>
+<span class="lineno">  569 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  570 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainRelation () (RelationAttr _ binRelAttr) inners) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  571 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">s &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  572 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inners', innersExtras, innersF) &lt;- unzip3 &lt;$&gt; mapM mkFiniteInner inners</span></span>
+<span class="lineno">  573 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  574 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainRelation ()</span></span>
+<span class="lineno">  575 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(RelationAttr (SizeAttr_MaxSize (fromName s)) binRelAttr)</span></span>
+<span class="lineno">  576 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inners'</span></span>
+<span class="lineno">  577 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, s : concat innersExtras</span></span>
+<span class="lineno">  578 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  579 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainRelation&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  580 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">relations &lt;- failToUserError $ mapM viewConstantRelation constants</span></span>
+<span class="lineno">  581 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let relationMaxSize = maximum0 $ map genericLength relations</span></span>
+<span class="lineno">  582 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- zipWithM ($) innersF (transpose $ concat relations)</span></span>
+<span class="lineno">  583 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues ++ [(s, ConstantInt TagInt relationMaxSize)]</span></span>
+<span class="lineno">  584 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  585 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainPartition () attr@(PartitionAttr SizeAttr_Size{} SizeAttr_Size{} _) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  586 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  587 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  588 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition () attr inner'</span></span>
+<span class="lineno">  589 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, innerExtras</span></span>
+<span class="lineno">  590 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  591 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainPartition&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  592 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ mapM viewConstantPartition constants</span></span>
+<span class="lineno">  593 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innersValues &lt;- mapM innerF (concat parts)</span></span>
+<span class="lineno">  594 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innersValues</span></span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  596 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner (DomainPartition () (PartitionAttr _ _ isRegularAttr) inner) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  597 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">numPartsFin  &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  598 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">partsSizeFin &lt;- nextName &quot;fin&quot;</span></span>
+<span class="lineno">  599 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">(inner', innerExtras, innerF) &lt;- mkFiniteInner inner</span></span>
+<span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  601 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( DomainPartition ()</span></span>
+<span class="lineno">  602 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(PartitionAttr (SizeAttr_MaxSize (fromName numPartsFin))</span></span>
+<span class="lineno">  603 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">(SizeAttr_MaxSize (fromName partsSizeFin))</span></span>
+<span class="lineno">  604 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">isRegularAttr)</span></span>
+<span class="lineno">  605 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">inner'</span></span>
+<span class="lineno">  606 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, numPartsFin:partsSizeFin:innerExtras</span></span>
+<span class="lineno">  607 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ constants -&gt; do</span></span>
+<span class="lineno">  608 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">logDebug $ &quot;mkFiniteInner DomainPartition&quot; &lt;+&gt; vcat (map pretty constants)</span></span>
+<span class="lineno">  609 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- failToUserError $ mapM viewConstantPartition constants</span></span>
+<span class="lineno">  610 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let numPartsVal = maximum0 $ map genericLength parts</span></span>
+<span class="lineno">  611 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let partsSizeVal = maximum0 $ map genericLength parts</span></span>
+<span class="lineno">  612 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerValues &lt;- mapM innerF (concat parts)</span></span>
+<span class="lineno">  613 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ concat innerValues ++ [ (numPartsFin, ConstantInt TagInt numPartsVal)</span></span>
+<span class="lineno">  614 </span><span class="spaces">                                               </span><span class="istickedoff"><span class="nottickedoff">, (partsSizeFin, ConstantInt TagInt partsSizeVal)</span></span>
+<span class="lineno">  615 </span><span class="spaces">                                               </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  616 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  617 </span><span class="spaces"></span><span class="istickedoff">mkFiniteInner d = return (d, [], const (return []))</span></span>
+<span class="lineno">  618 </span>
 <span class="lineno">  619 </span>
-<span class="lineno">  620 </span>
-<span class="lineno">  621 </span>-- specialised the type for minimum0 and maximum0, to avoid possible bugs
-<span class="lineno">  622 </span>-- this function is always intended to be used with Integers
-<span class="lineno">  623 </span>minimum0 :: [Integer] -&gt; Integer
-<span class="lineno">  624 </span><span class="decl"><span class="istickedoff">minimum0 [] = <span class="nottickedoff">0</span></span>
-<span class="lineno">  625 </span><span class="spaces"></span><span class="istickedoff">minimum0 xs = minimum xs</span></span>
-<span class="lineno">  626 </span>
-<span class="lineno">  627 </span>maximum0 :: [Integer] -&gt; Integer
-<span class="lineno">  628 </span><span class="decl"><span class="istickedoff">maximum0 [] = <span class="nottickedoff">0</span></span>
-<span class="lineno">  629 </span><span class="spaces"></span><span class="istickedoff">maximum0 xs = maximum xs</span></span>
+<span class="lineno">  620 </span>-- specialised the type for minimum0 and maximum0, to avoid possible bugs
+<span class="lineno">  621 </span>-- this function is always intended to be used with Integers
+<span class="lineno">  622 </span>minimum0 :: [Integer] -&gt; Integer
+<span class="lineno">  623 </span><span class="decl"><span class="istickedoff">minimum0 [] = <span class="nottickedoff">0</span></span>
+<span class="lineno">  624 </span><span class="spaces"></span><span class="istickedoff">minimum0 xs = minimum xs</span></span>
+<span class="lineno">  625 </span>
+<span class="lineno">  626 </span>maximum0 :: [Integer] -&gt; Integer
+<span class="lineno">  627 </span><span class="decl"><span class="istickedoff">maximum0 [] = <span class="nottickedoff">0</span></span>
+<span class="lineno">  628 </span><span class="spaces"></span><span class="istickedoff">maximum0 xs = maximum xs</span></span>
 
 </pre>
 </body>

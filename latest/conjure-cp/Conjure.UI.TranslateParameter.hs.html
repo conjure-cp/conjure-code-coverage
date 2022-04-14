@@ -184,7 +184,7 @@ span.spaces    { background: white }
 <span class="lineno">  165 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case d of</span></span>
 <span class="lineno">  166 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">DomainFunction _ _ (DomainTuple [DomainInt{}, DomainInt{}]) _ -&gt;</span></span>
 <span class="lineno">  167 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">case c of</span></span>
-<span class="lineno">  168 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitFunction rows) -&gt;</span></span>
+<span class="lineno">  168 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(viewConstantFunction -&gt; Just rows) -&gt;</span></span>
 <span class="lineno">  169 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ case row of</span></span>
 <span class="lineno">  170 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">(ConstantAbstract (AbsLitTuple [a, b]), _) -&gt; [a,b]</span></span>
 <span class="lineno">  171 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; []</span></span>
@@ -192,7 +192,7 @@ span.spaces    { background: white }
 <span class="lineno">  173 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; []</span></span>
 <span class="lineno">  174 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">DomainRelation _ _ ([DomainInt{}, DomainInt{}, _]) -&gt;</span></span>
 <span class="lineno">  175 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">case c of</span></span>
-<span class="lineno">  176 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRelation rows) -&gt;</span></span>
+<span class="lineno">  176 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(viewConstantRelation -&gt; Just rows) -&gt;</span></span>
 <span class="lineno">  177 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ case row of</span></span>
 <span class="lineno">  178 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[a, b, _] -&gt; [a,b]</span></span>
 <span class="lineno">  179 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; []</span></span>

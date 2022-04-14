@@ -85,7 +85,7 @@ span.spaces    { background: white }
 <span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
 <span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
 <span class="lineno">   68 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainSet Set_Explicit (SetAttr (SizeAttr_Size size)) innerDomain)</span>
-<span class="lineno">   69 </span><span class="spaces">              </span><span class="istickedoff">, ConstantAbstract (AbsLitSet constants)</span>
+<span class="lineno">   69 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantSet -&gt; Just constants</span>
 <span class="lineno">   70 </span><span class="spaces">              </span><span class="istickedoff">) =</span>
 <span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">let outIndexDomain = mkDomainIntB 1 size</span>
 <span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff">in  return $ Just</span>

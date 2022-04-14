@@ -18,12 +18,12 @@ span.spaces    { background: white }
 </pre>
 <pre>
 <span class="lineno">    1 </span>{-# LANGUAGE KindSignatures #-}
-<span class="lineno">    2 </span>{-# LANGUAGE ViewPatterns #-}
-<span class="lineno">    3 </span>
-<span class="lineno">    4 </span>module Conjure.Language.Lenses where
-<span class="lineno">    5 </span>
-<span class="lineno">    6 </span>import Conjure.Prelude
-<span class="lineno">    7 </span>import Conjure.Language.Definition
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Lenses where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Conjure.Language.Definition
+<span class="lineno">    7 </span>import Conjure.Language.Constant
 <span class="lineno">    8 </span>import Conjure.Language.Domain
 <span class="lineno">    9 </span>import Conjure.Language.Type
 <span class="lineno">   10 </span>import Conjure.Language.TypeOf
@@ -1333,10 +1333,10 @@ span.spaces    { background: white }
 <span class="lineno"> 1314 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1315 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1316 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1317 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitSet xs))) = return (map Constant xs)</span>
+<span class="lineno"> 1317 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantSet -&gt; Just xs)) = return (map Constant xs)</span>
 <span class="lineno"> 1318 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitSet xs)) = return xs</span>
 <span class="lineno"> 1319 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
-<span class="lineno"> 1320 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1320 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
 <span class="lineno"> 1321 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.setLiteral:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno"> 1322 </span>
 <span class="lineno"> 1323 </span>
@@ -1357,7 +1357,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1338 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1339 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1340 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1341 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitMSet xs))) = <span class="nottickedoff">return (map Constant xs)</span></span>
+<span class="lineno"> 1341 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantMSet -&gt; Just xs)) = <span class="nottickedoff">return (map Constant xs)</span></span>
 <span class="lineno"> 1342 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitMSet xs)) = return xs</span>
 <span class="lineno"> 1343 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1344 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
@@ -1381,7 +1381,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1362 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1363 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1364 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1365 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitFunction xs))) = return [ (Constant a, Constant b) | (a,b) &lt;- xs ]</span>
+<span class="lineno"> 1365 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantFunction -&gt; Just xs)) = return [ (Constant a, Constant b) | (a,b) &lt;- xs ]</span>
 <span class="lineno"> 1366 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitFunction xs)) = return xs</span>
 <span class="lineno"> 1367 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1368 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
@@ -1405,7 +1405,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1386 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1387 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1388 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1389 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitSequence xs))) = return (map Constant xs)</span>
+<span class="lineno"> 1389 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantSequence -&gt; Just xs)) = return (map Constant xs)</span>
 <span class="lineno"> 1390 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitSequence xs)) = return xs</span>
 <span class="lineno"> 1391 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1392 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
@@ -1429,7 +1429,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1410 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1411 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1412 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1413 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitRelation xs))) = return (map (map Constant) xs)</span>
+<span class="lineno"> 1413 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantRelation -&gt; Just xs)) = return (map (map Constant) xs)</span>
 <span class="lineno"> 1414 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitRelation xs)) = <span class="nottickedoff">return xs</span></span>
 <span class="lineno"> 1415 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1416 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
@@ -1453,7 +1453,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1434 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (ty, xs)</span></span>
 <span class="lineno"> 1435 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1436 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitPartition xs))) = <span class="nottickedoff">return (map (map Constant) xs)</span></span>
+<span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantPartition -&gt; Just xs)) = <span class="nottickedoff">return (map (map Constant) xs)</span></span>
 <span class="lineno"> 1438 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitPartition xs)) = <span class="nottickedoff">return xs</span></span>
 <span class="lineno"> 1439 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1440 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>

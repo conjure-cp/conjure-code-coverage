@@ -149,7 +149,7 @@ span.spaces    { background: white }
 <span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
 <span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
 <span class="lineno">  132 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainMSet _ attrs innerDomain)</span>
-<span class="lineno">  133 </span><span class="spaces">              </span><span class="istickedoff">, ConstantAbstract (AbsLitMSet constants')</span>
+<span class="lineno">  133 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantMSet -&gt; Just constants'</span>
 <span class="lineno">  134 </span><span class="spaces">              </span><span class="istickedoff">) = do</span>
 <span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs <span class="nottickedoff">innerDomain</span></span>
 <span class="lineno">  136 </span><span class="spaces">            </span><span class="istickedoff">let indexDomain = mkDomainIntB 1 maxSize</span>
