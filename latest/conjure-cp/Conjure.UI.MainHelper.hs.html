@@ -237,7 +237,7 @@ span.spaces    { background: white }
 <span class="lineno">  218 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">if null errors</span></span>
 <span class="lineno">  219 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">then do</span></span>
 <span class="lineno">  220 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">let essenceOutFileContents = render lineWidth $ vcat iraceStmts</span></span>
-<span class="lineno">  221 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">liftIO $ writeFile (essence ++ &quot;.irace&quot;) (essenceOutFileContents ++ &quot;\n&quot;)</span></span>
+<span class="lineno">  221 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">liftIO $ writeFile iracefilepath (essenceOutFileContents ++ &quot;\n&quot;)</span></span>
 <span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">else</span></span>
 <span class="lineno">  223 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">userErr errors</span></span>
 <span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else</span></span>
