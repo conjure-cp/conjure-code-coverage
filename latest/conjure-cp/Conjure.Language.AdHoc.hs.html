@@ -79,7 +79,7 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span><span class="spaces">            </span><span class="nottickedoff">nestedPretty (MZNArray _ ys) = prettyList id &quot;,&quot; ys</span>
 <span class="lineno">   61 </span><span class="spaces">            </span><span class="nottickedoff">nestedPretty y = pretty y</span>
 <span class="lineno">   62 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno">   63 </span><span class="spaces">            </span><span class="nottickedoff">fillNothingIndices (MZNArray Nothing ys) = MZNArray (Just $ &quot;1..&quot; ++ show (length xs)) (map fillNothingIndices ys)</span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="nottickedoff">fillNothingIndices (MZNArray Nothing ys) = MZNArray (Just $ &quot;1..&quot; ++ show (length ys)) (map fillNothingIndices ys)</span>
 <span class="lineno">   64 </span><span class="spaces">            </span><span class="nottickedoff">fillNothingIndices (MZNArray (Just index2) ys) = MZNArray (Just index2) (map fillNothingIndices ys)</span>
 <span class="lineno">   65 </span><span class="spaces">            </span><span class="nottickedoff">fillNothingIndices m@MZNBool{} = m</span>
 <span class="lineno">   66 </span><span class="spaces">            </span><span class="nottickedoff">fillNothingIndices m@MZNInt{} = m</span>
