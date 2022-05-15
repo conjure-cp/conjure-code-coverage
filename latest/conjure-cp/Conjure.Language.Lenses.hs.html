@@ -1187,7 +1187,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1168 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; return (<span class="nottickedoff">inject . MkOpToSet      . OpToSet False</span> , x)</span>
 <span class="lineno"> 1169 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (<span class="nottickedoff">inject . MkOpToMSet     . OpToMSet</span>      , x)</span>
 <span class="lineno"> 1170 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; return (<span class="nottickedoff">inject . MkOpToRelation . OpToRelation</span>  , x)</span>
-<span class="lineno"> 1171 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpParts      (OpParts      x)) -&gt; return (<span class="nottickedoff">inject . MkOpParts      . OpParts</span>       , x)</span>
+<span class="lineno"> 1171 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpParts      (OpParts      x)) -&gt; return (inject . MkOpParts      . OpParts       , x)</span>
 <span class="lineno"> 1172 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (id                                      , p)</span>
 <span class="lineno"> 1173 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 1174 </span>
@@ -1291,29 +1291,29 @@ span.spaces    { background: white }
 <span class="lineno"> 1272 </span>    =&gt; Maybe Int                                    -- how many levels to go down. all the way if Nothing.
 <span class="lineno"> 1273 </span>    -&gt; (Expression -&gt; m Expression)
 <span class="lineno"> 1274 </span>    -&gt;  Expression -&gt; m Expression
-<span class="lineno"> 1275 </span><span class="decl"><span class="nottickedoff">onMatrixLiteral mlvl f = case mlvl of</span>
-<span class="lineno"> 1276 </span><span class="spaces">                            </span><span class="nottickedoff">Nothing  -&gt; followAliases go</span>
-<span class="lineno"> 1277 </span><span class="spaces">                            </span><span class="nottickedoff">Just lvl -&gt; followAliases (goL lvl)</span>
-<span class="lineno"> 1278 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno"> 1279 </span><span class="spaces">        </span><span class="nottickedoff">go (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span>
-<span class="lineno"> 1280 </span><span class="spaces">            </span><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (go . Constant) xs</span>
-<span class="lineno"> 1281 </span><span class="spaces">        </span><span class="nottickedoff">go (AbstractLiteral (AbsLitMatrix index xs)) =</span>
-<span class="lineno"> 1282 </span><span class="spaces">            </span><span class="nottickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM go xs</span>
-<span class="lineno"> 1283 </span><span class="spaces">        </span><span class="nottickedoff">go (Typed x _) = go x</span>
-<span class="lineno"> 1284 </span><span class="spaces">        </span><span class="nottickedoff">go (Constant (TypedConstant x _)) = go (Constant x)</span>
-<span class="lineno"> 1285 </span><span class="spaces">        </span><span class="nottickedoff">go p = f p</span>
-<span class="lineno"> 1286 </span><span class="spaces"></span><span class="nottickedoff"></span>
-<span class="lineno"> 1287 </span><span class="spaces">        </span><span class="nottickedoff">goL 0 p = f p</span>
-<span class="lineno"> 1288 </span><span class="spaces">        </span><span class="nottickedoff">goL lvl (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span>
-<span class="lineno"> 1289 </span><span class="spaces">            </span><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (goL (lvl-1) . Constant) xs</span>
-<span class="lineno"> 1290 </span><span class="spaces">        </span><span class="nottickedoff">goL lvl (AbstractLiteral (AbsLitMatrix index xs)) =</span>
-<span class="lineno"> 1291 </span><span class="spaces">            </span><span class="nottickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM (goL (lvl-1)) xs</span>
-<span class="lineno"> 1292 </span><span class="spaces">        </span><span class="nottickedoff">goL lvl (Typed x _) = goL lvl x</span>
-<span class="lineno"> 1293 </span><span class="spaces">        </span><span class="nottickedoff">goL lvl (Constant (TypedConstant x _)) = goL lvl (Constant x)</span>
-<span class="lineno"> 1294 </span><span class="spaces">        </span><span class="nottickedoff">goL lvl p = do</span>
-<span class="lineno"> 1295 </span><span class="spaces">            </span><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno"> 1296 </span><span class="spaces">            </span><span class="nottickedoff">body &lt;- goL (lvl-1) i</span>
-<span class="lineno"> 1297 </span><span class="spaces">            </span><span class="nottickedoff">return $ Comprehension body [Generator (GenInExpr iPat p)]</span></span>
+<span class="lineno"> 1275 </span><span class="decl"><span class="istickedoff">onMatrixLiteral mlvl f = case mlvl of</span>
+<span class="lineno"> 1276 </span><span class="spaces">                            </span><span class="istickedoff">Nothing  -&gt; followAliases go</span>
+<span class="lineno"> 1277 </span><span class="spaces">                            </span><span class="istickedoff">Just lvl -&gt; <span class="nottickedoff">followAliases (goL lvl)</span></span>
+<span class="lineno"> 1278 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1279 </span><span class="spaces">        </span><span class="istickedoff">go (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span>
+<span class="lineno"> 1280 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (go . Constant) xs</span></span>
+<span class="lineno"> 1281 </span><span class="spaces">        </span><span class="istickedoff">go (AbstractLiteral (AbsLitMatrix index xs)) =</span>
+<span class="lineno"> 1282 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM go xs</span>
+<span class="lineno"> 1283 </span><span class="spaces">        </span><span class="istickedoff">go (Typed x _) = <span class="nottickedoff">go x</span></span>
+<span class="lineno"> 1284 </span><span class="spaces">        </span><span class="istickedoff">go (Constant (TypedConstant x _)) = <span class="nottickedoff">go (Constant x)</span></span>
+<span class="lineno"> 1285 </span><span class="spaces">        </span><span class="istickedoff">go p = f p</span>
+<span class="lineno"> 1286 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1287 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL 0 p = f p</span></span>
+<span class="lineno"> 1288 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span></span>
+<span class="lineno"> 1289 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (goL (lvl-1) . Constant) xs</span></span>
+<span class="lineno"> 1290 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (AbstractLiteral (AbsLitMatrix index xs)) =</span></span>
+<span class="lineno"> 1291 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM (goL (lvl-1)) xs</span></span>
+<span class="lineno"> 1292 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Typed x _) = goL lvl x</span></span>
+<span class="lineno"> 1293 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Constant (TypedConstant x _)) = goL lvl (Constant x)</span></span>
+<span class="lineno"> 1294 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl p = do</span></span>
+<span class="lineno"> 1295 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 1296 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">body &lt;- goL (lvl-1) i</span></span>
+<span class="lineno"> 1297 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension body [Generator (GenInExpr iPat p)]</span></span></span>
 <span class="lineno"> 1298 </span>
 <span class="lineno"> 1299 </span>
 <span class="lineno"> 1300 </span>setLiteral
@@ -1450,10 +1450,10 @@ span.spaces    { background: white }
 <span class="lineno"> 1431 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno"> 1432 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
 <span class="lineno"> 1433 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
-<span class="lineno"> 1434 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (ty, xs)</span></span>
+<span class="lineno"> 1434 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
 <span class="lineno"> 1435 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno"> 1436 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantPartition -&gt; Just xs)) = <span class="nottickedoff">return (map (map Constant) xs)</span></span>
+<span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantPartition -&gt; Just xs)) = return (map (map Constant) xs)</span>
 <span class="lineno"> 1438 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitPartition xs)) = <span class="nottickedoff">return xs</span></span>
 <span class="lineno"> 1439 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
 <span class="lineno"> 1440 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>

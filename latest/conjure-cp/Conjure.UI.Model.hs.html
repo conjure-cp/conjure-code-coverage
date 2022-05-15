@@ -2242,29 +2242,29 @@ span.spaces    { background: white }
 <span class="lineno"> 2223 </span>
 <span class="lineno"> 2224 </span>
 <span class="lineno"> 2225 </span>rule_Decompose_AllDiff :: Rule
-<span class="lineno"> 2226 </span><span class="decl"><span class="istickedoff">rule_Decompose_AllDiff = <span class="nottickedoff">&quot;decompose-allDiff&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2226 </span><span class="decl"><span class="istickedoff">rule_Decompose_AllDiff = &quot;decompose-allDiff&quot; `namedRule` theRule where</span>
 <span class="lineno"> 2227 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| allDiff(&amp;m) |] = do</span>
 <span class="lineno"> 2228 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf m</span>
 <span class="lineno"> 2229 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno"> 2230 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; <span class="nottickedoff">na &quot;allDiff can stay&quot;</span></span>
+<span class="lineno"> 2230 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; na &quot;allDiff can stay&quot;</span>
 <span class="lineno"> 2231 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ (TypeInt _) -&gt; na &quot;allDiff can stay&quot;</span>
-<span class="lineno"> 2232 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ _        -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno"> 2232 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ _        -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno"> 2233 </span><span class="spaces">            </span><span class="istickedoff">_                     -&gt; na &quot;allDiff on something other than a matrix.&quot;</span>
-<span class="lineno"> 2234 </span><span class="spaces">        </span><span class="istickedoff">index:_ &lt;- <span class="nottickedoff">indexDomainsOf m</span></span>
-<span class="lineno"> 2235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2236 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Decomposing allDiff. Type:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno"> 2237 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno"> 2238 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2239 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
-<span class="lineno"> 2240 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2241 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[essence|</span></span>
-<span class="lineno"> 2242 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">and([ &amp;m[&amp;i] != &amp;m[&amp;j]</span></span>
-<span class="lineno"> 2243 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| &amp;iPat : &amp;index</span></span>
-<span class="lineno"> 2244 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;jPat : &amp;index</span></span>
-<span class="lineno"> 2245 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &amp;i &lt; &amp;j</span></span>
-<span class="lineno"> 2246 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
-<span class="lineno"> 2247 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
-<span class="lineno"> 2248 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno"> 2234 </span><span class="spaces">        </span><span class="istickedoff">index:_ &lt;- indexDomainsOf m</span>
+<span class="lineno"> 2235 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno"> 2236 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Decomposing allDiff. Type:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno"> 2237 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno"> 2238 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno"> 2239 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno"> 2240 </span><span class="spaces">                </span><span class="istickedoff">return</span>
+<span class="lineno"> 2241 </span><span class="spaces">                    </span><span class="istickedoff">[essence|</span>
+<span class="lineno"> 2242 </span><span class="spaces">                        </span><span class="istickedoff">and([ &amp;m[&amp;i] != &amp;m[&amp;j]</span>
+<span class="lineno"> 2243 </span><span class="spaces">                            </span><span class="istickedoff">| &amp;iPat : &amp;index</span>
+<span class="lineno"> 2244 </span><span class="spaces">                            </span><span class="istickedoff">, &amp;jPat : &amp;index</span>
+<span class="lineno"> 2245 </span><span class="spaces">                            </span><span class="istickedoff">, &amp;i &lt; &amp;j</span>
+<span class="lineno"> 2246 </span><span class="spaces">                            </span><span class="istickedoff">])</span>
+<span class="lineno"> 2247 </span><span class="spaces">                    </span><span class="istickedoff">|]</span>
+<span class="lineno"> 2248 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno"> 2249 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Decompose_AllDiff&quot;</span></span>
 <span class="lineno"> 2250 </span>
 <span class="lineno"> 2251 </span>

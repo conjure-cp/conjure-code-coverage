@@ -113,20 +113,20 @@ span.spaces    { background: white }
 <span class="lineno">   94 </span>    , Op x :&lt; x
 <span class="lineno">   95 </span>    , Pretty x
 <span class="lineno">   96 </span>    ) =&gt; DomainUnion (SizeAttr x) where
-<span class="lineno">   97 </span>    <span class="decl"><span class="istickedoff">domainUnion SizeAttr_None s = <span class="nottickedoff">return s</span></span>
+<span class="lineno">   97 </span>    <span class="decl"><span class="istickedoff">domainUnion SizeAttr_None s = return s</span>
 <span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">domainUnion s SizeAttr_None = <span class="nottickedoff">return s</span></span>
 <span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">domainUnion a b = return $ SizeAttr_MinMaxSize</span>
-<span class="lineno">  100 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make opMin (fromList [minA, minB]))</span></span>
-<span class="lineno">  101 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">(make opMax (fromList [maxA, maxB]))</span></span>
+<span class="lineno">  100 </span><span class="spaces">                        </span><span class="istickedoff">(make opMin (fromList [minA, minB]))</span>
+<span class="lineno">  101 </span><span class="spaces">                        </span><span class="istickedoff">(make opMax (fromList [maxA, maxB]))</span>
 <span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff">where</span>
-<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">(minA, maxA) = <span class="nottickedoff">getMinMax a</span></span>
-<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">(minB, maxB) = <span class="nottickedoff">getMinMax b</span></span>
-<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">getMinMax p = case p of</span></span>
-<span class="lineno">  106 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None -&gt; bug &quot;Monoid SizeAttr&quot;</span></span>
-<span class="lineno">  107 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size x -&gt; (x,x)</span></span>
-<span class="lineno">  108 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize x -&gt; (x,x)</span></span>
-<span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize x -&gt; (x,x)</span></span>
-<span class="lineno">  110 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize x y -&gt; (x,y)</span></span></span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">(minA, maxA) = getMinMax a</span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">(minB, maxB) = getMinMax b</span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff">getMinMax p = case p of</span>
+<span class="lineno">  106 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; <span class="nottickedoff">bug &quot;Monoid SizeAttr&quot;</span></span>
+<span class="lineno">  107 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_Size x -&gt; <span class="nottickedoff">(x,x)</span></span>
+<span class="lineno">  108 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize x -&gt; <span class="nottickedoff">(x,x)</span></span>
+<span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize x -&gt; (x,x)</span>
+<span class="lineno">  110 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinMaxSize x y -&gt; <span class="nottickedoff">(x,y)</span></span></span>
 <span class="lineno">  111 </span>
 <span class="lineno">  112 </span>
 <span class="lineno">  113 </span>instance
@@ -206,7 +206,7 @@ span.spaces    { background: white }
 <span class="lineno">  187 </span>    , Pretty x
 <span class="lineno">  188 </span>    ) =&gt; DomainUnion (PartitionAttr x) where
 <span class="lineno">  189 </span>    <span class="decl"><span class="istickedoff">domainUnion (PartitionAttr a1 a2 a3) (PartitionAttr b1 b2 b3) =</span>
-<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">PartitionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 b2 &lt;*&gt; pure <span class="nottickedoff">(a3 || b3)</span></span></span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">PartitionAttr &lt;$&gt; domainUnion a1 b1 &lt;*&gt; domainUnion a2 b2 &lt;*&gt; pure (a3 || b3)</span></span>
 <span class="lineno">  191 </span>
 
 </pre>

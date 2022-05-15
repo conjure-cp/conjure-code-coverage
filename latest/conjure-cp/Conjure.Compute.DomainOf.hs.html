@@ -350,8 +350,8 @@ span.spaces    { background: white }
 <span class="lineno">  331 </span><span class="spaces">        </span><span class="istickedoff">where <span class="nottickedoff">attr = PartitionAttr (SizeAttr_Size 0) (SizeAttr_Size 0) False</span></span>
 <span class="lineno">  332 </span><span class="spaces">    </span><span class="istickedoff">domainOf (AbsLitPartition   xss) = DomainPartition def attr &lt;$&gt; (domainUnions =&lt;&lt; mapM domainOf (concat xss))</span>
 <span class="lineno">  333 </span><span class="spaces">        </span><span class="istickedoff">where attr = PartitionAttr (SizeAttr_MaxSize (fromInt $ genericLength xss))</span>
-<span class="lineno">  334 </span><span class="spaces">                                   </span><span class="istickedoff">(SizeAttr_MaxSize <span class="nottickedoff">(fromInt $ maximum [genericLength xs | xs &lt;- xss])</span>)</span>
-<span class="lineno">  335 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">False</span></span></span>
+<span class="lineno">  334 </span><span class="spaces">                                   </span><span class="istickedoff">(SizeAttr_MaxSize (fromInt $ maximum [genericLength xs | xs &lt;- xss]))</span>
+<span class="lineno">  335 </span><span class="spaces">                                   </span><span class="istickedoff">False</span></span>
 <span class="lineno">  336 </span>
 <span class="lineno">  337 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (AbsLitMatrix ind inn) = (ind :) &lt;$&gt; (mapM domainUnions =&lt;&lt; mapM indexDomainsOf inn)</span>
 <span class="lineno">  338 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf _ = return []</span></span>

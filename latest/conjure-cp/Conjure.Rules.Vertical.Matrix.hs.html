@@ -147,7 +147,7 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span>--           ][j]
 <span class="lineno">  129 </span>
 <span class="lineno">  130 </span>rule_ModifierAroundIndexedMatrixLiteral :: Rule
-<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">rule_ModifierAroundIndexedMatrixLiteral = <span class="nottickedoff">&quot;modifier-around-indexed-matrix-literal&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">rule_ModifierAroundIndexedMatrixLiteral = &quot;modifier-around-indexed-matrix-literal&quot; `namedRule` theRule where</span>
 <span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">(mkM, p2)         &lt;- match opModifier p</span>
 <span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">(matrix, indices) &lt;- match opMatrixIndexing p2</span>
@@ -155,18 +155,18 @@ span.spaces    { background: white }
 <span class="lineno">  136 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">Just{}  -&gt; na &quot;rule_ModifierAroundIndexedMatrixLiteral, no modifier&quot;</span>
 <span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">let</span>
-<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">fullyMatrixLiteral 0 _ = <span class="nottickedoff">return True</span></span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">fullyMatrixLiteral 0 _ = return True</span>
 <span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff">fullyMatrixLiteral n m =</span>
 <span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">case match matrixLiteral m of</span>
 <span class="lineno">  142 </span><span class="spaces">                    </span><span class="istickedoff">Nothing            -&gt; return False</span>
-<span class="lineno">  143 </span><span class="spaces">                    </span><span class="istickedoff">Just (_, _, elems) -&gt; <span class="nottickedoff">and &lt;$&gt; mapM (fullyMatrixLiteral (n-1)) elems</span></span>
+<span class="lineno">  143 </span><span class="spaces">                    </span><span class="istickedoff">Just (_, _, elems) -&gt; and &lt;$&gt; mapM (fullyMatrixLiteral (n-1)) elems</span>
 <span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">True &lt;- fullyMatrixLiteral (length indices) matrix</span>
-<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Pushing a modifier inwards, through a matrix literal&quot;</span></span>
-<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
-<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">matrix' &lt;- onMatrixLiteral Nothing (return . mkM) matrix</span></span>
-<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ make opMatrixIndexing matrix' indices</span></span>
-<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Pushing a modifier inwards, through a matrix literal&quot;</span></span>
+<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">matrix' &lt;- onMatrixLiteral Nothing (return . mkM) matrix</span>
+<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">return $ make opMatrixIndexing matrix' indices</span>
+<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno">  151 </span>
 <span class="lineno">  152 </span>
 <span class="lineno">  153 </span>rule_Comprehension_LiteralIndexed :: Rule
