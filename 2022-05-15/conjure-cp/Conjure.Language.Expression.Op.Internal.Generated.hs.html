@@ -732,7 +732,7 @@ span.spaces    { background: white }
 <span class="lineno">  713 </span>         , OpUnion x :&lt; x
 <span class="lineno">  714 </span>         , OpXor x :&lt; x) =&gt; SimplifyOp Op x where
 <span class="lineno">  715 </span>    <span class="decl"><span class="istickedoff">simplifyOp (MkOpActive x) = simplifyOp <span class="nottickedoff">x</span></span>
-<span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiff x) = simplifyOp <span class="nottickedoff">x</span></span>
+<span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiff x) = simplifyOp x</span>
 <span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAllDiffExcept x) = simplifyOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  718 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpAnd x) = simplifyOp x</span>
 <span class="lineno">  719 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp (MkOpApart x) = simplifyOp <span class="nottickedoff">x</span></span>
