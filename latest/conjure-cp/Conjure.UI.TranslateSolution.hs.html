@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span>import Conjure.Representations ( up )
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>-- text
-<span class="lineno">   17 </span>import Data.Text as T ( pack )
+<span class="lineno">   17 </span>import qualified Data.Text as T ( pack, stripPrefix )
 <span class="lineno">   18 </span>
 <span class="lineno">   19 </span>-- unordered-containers
 <span class="lineno">   20 </span>import qualified Data.HashMap.Strict as M
@@ -51,7 +51,7 @@ span.spaces    { background: white }
 <span class="lineno">   32 </span>    Model -&gt;      -- eprime solution
 <span class="lineno">   33 </span>    m Model       -- essence solution
 <span class="lineno">   34 </span>
-<span class="lineno">   35 </span><span class="decl"><span class="istickedoff">translateSolution eprimeModel essenceParam' eprimeSolution = do</span>
+<span class="lineno">   35 </span><span class="decl"><span class="istickedoff">translateSolution (undoUnderscores -&gt; eprimeModel) (undoUnderscores -&gt; essenceParam') (undoUnderscores -&gt; eprimeSolution) = do</span>
 <span class="lineno">   36 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">eprimeParam &lt;- translateParameter False eprimeModel essenceParam'</span>
 <span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">(_, essenceParam) &lt;- removeEnumsFromParam eprimeModel essenceParam'</span>
@@ -146,6 +146,23 @@ span.spaces    { background: white }
 <span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;&quot;</span></span>
 <span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, pretty $ def { mStatements = outStmts }</span></span>
 <span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  130 </span>
+<span class="lineno">  131 </span>undoUnderscores :: Model -&gt; Model
+<span class="lineno">  132 </span><span class="decl"><span class="istickedoff">undoUnderscores model =</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">-- SR doesn't support identifiers that start with _</span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">-- we replaced them with UNDERSCORE__ in prologue</span>
+<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">-- undo that here</span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">onName :: Name -&gt; Name</span>
+<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">onName (Name t) =</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">case T.stripPrefix &quot;UNDERSCORE__&quot; t of</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; Name t</span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">Just t' -&gt; Name (mappend &quot;_&quot; t')</span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">onName n = n</span>
+<span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  144 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">transformBi onName model</span></span>
+<span class="lineno">  146 </span>
 
 </pre>
 </body>
