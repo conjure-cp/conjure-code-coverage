@@ -1,0 +1,198 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Representations.Set.ExplicitVarSizeWithDummy ( setExplicitVarSizeWithDummy ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>-- conjure
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Bug
+<span class="lineno">    8 </span>import Conjure.Language
+<span class="lineno">    9 </span>import Conjure.Language.DomainSizeOf
+<span class="lineno">   10 </span>import Conjure.Language.Expression.DomainSizeOf ()
+<span class="lineno">   11 </span>import Conjure.Representations.Internal
+<span class="lineno">   12 </span>import Conjure.Representations.Common
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>setExplicitVarSizeWithDummy :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">setExplicitVarSizeWithDummy = Representation chck downD structuralCons downC up symmetryOrdering</span>
+<span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   19 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   20 </span><span class="spaces">        </span><span class="istickedoff">chck :: TypeOf_ReprCheck m</span>
+<span class="lineno">   21 </span><span class="spaces">        </span><span class="istickedoff">chck _ (DomainSet _ (SetAttr SizeAttr_Size{}) _) = return []</span>
+<span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff">chck f (DomainSet _ attrs innerDomain@DomainInt{}) =</span>
+<span class="lineno">   23 </span><span class="spaces">            </span><span class="istickedoff">map (DomainSet Set_ExplicitVarSizeWithDummy attrs) &lt;$&gt; f innerDomain</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">chck _ _ = return []</span>
+<span class="lineno">   25 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">outName :: Domain HasRepresentation x -&gt; Name -&gt; Name</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">outName = mkOutName Nothing</span>
+<span class="lineno">   28 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize attrs innerDomain = case attrs of</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MaxSize x -&gt; return x</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize _ x -&gt; return x</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; reTag TagInt &lt;$&gt; domainSizeOf innerDomain</span>
+<span class="lineno">   33 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain :: Pretty r =&gt; Domain r Expression -&gt; Domain r Expression</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain (DomainInt t [RangeBounded lb ub]) =</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">DomainInt t [RangeBounded lb [essence| &amp;ub + 1 |]]</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain dom@(DomainInt t ranges) =</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">let dummyElem = calcDummyElem dom</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">in  DomainInt t (ranges ++ [RangeSingle dummyElem])</span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">calcDummyDomain dom = <span class="nottickedoff">bug (&quot;ExplicitVarSizeWithDummy.calcDummyDomain&quot; &lt;+&gt; pretty dom)</span></span>
+<span class="lineno">   41 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElem :: Pretty r =&gt; Domain r Expression -&gt; Expression</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElem dom =</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">let theMax = bugFail <span class="nottickedoff">&quot;calcDummyElem: maxOfDomain&quot;</span> (maxOfDomain dom)</span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">in  [essence| &amp;theMax + 1 |]</span>
+<span class="lineno">   46 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElemC :: Pretty r =&gt; Domain r Constant -&gt; Constant</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElemC (DomainInt _ []) = <span class="nottickedoff">bug &quot;ExplicitVarSizeWithDummy.calcDummyElemC []&quot;</span></span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElemC (DomainInt t rs) = ConstantInt <span class="nottickedoff">t</span> $</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="istickedoff">1 + maximum [ i</span>
+<span class="lineno">   51 </span><span class="spaces">                        </span><span class="istickedoff">| r &lt;- rs</span>
+<span class="lineno">   52 </span><span class="spaces">                        </span><span class="istickedoff">, i &lt;- case r of</span>
+<span class="lineno">   53 </span><span class="spaces">                            </span><span class="istickedoff">RangeSingle (ConstantInt _ x) -&gt; <span class="nottickedoff">[x]</span></span>
+<span class="lineno">   54 </span><span class="spaces">                            </span><span class="istickedoff">RangeBounded (ConstantInt _ x) (ConstantInt _ y) -&gt; [x..y]</span>
+<span class="lineno">   55 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug (&quot;ExplicitVarSizeWithDummy.calcDummyElemC&quot; &lt;+&gt; pretty r)</span></span>
+<span class="lineno">   56 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">calcDummyElemC d = <span class="nottickedoff">bug (&quot;ExplicitVarSizeWithDummy.calcDummyElemC&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno">   58 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">downD (name, domain@(DomainSet Set_ExplicitVarSizeWithDummy (SetAttr attrs) innerDomain@DomainInt{})) = do</span>
+<span class="lineno">   61 </span><span class="spaces">            </span><span class="istickedoff">let domainWithDummy = calcDummyDomain innerDomain</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs innerDomain</span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff">return $ Just</span>
+<span class="lineno">   64 </span><span class="spaces">                </span><span class="istickedoff">[ ( outName domain name</span>
+<span class="lineno">   65 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix</span>
+<span class="lineno">   66 </span><span class="spaces">                      </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 maxSize])</span>
+<span class="lineno">   67 </span><span class="spaces">                      </span><span class="istickedoff">domainWithDummy</span>
+<span class="lineno">   68 </span><span class="spaces">                  </span><span class="istickedoff">) ]</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">downD _ = <span class="nottickedoff">na &quot;{downD} ExplicitVarSizeWithDummy&quot;</span></span>
+<span class="lineno">   70 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">structuralCons :: TypeOf_Structural m</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">structuralCons f downX1 (DomainSet Set_ExplicitVarSizeWithDummy (SetAttr attrs) innerDomain) = do</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs innerDomain</span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff">let</span>
+<span class="lineno">   75 </span><span class="spaces">                </span><span class="istickedoff">dummyElem = calcDummyElem innerDomain</span>
+<span class="lineno">   76 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff">ordering m = do</span>
+<span class="lineno">   78 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   79 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
+<span class="lineno">   80 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">   81 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxSize-1) .</span>
+<span class="lineno">   82 </span><span class="spaces">                                </span><span class="istickedoff">(&amp;m[&amp;i] .&lt; &amp;m[&amp;i+1]) \/ (&amp;m[&amp;i] = &amp;dummyElem)</span>
+<span class="lineno">   83 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
+<span class="lineno">   84 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   85 </span><span class="spaces">                </span><span class="istickedoff">dummyToTheRight m = do</span>
+<span class="lineno">   86 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   87 </span><span class="spaces">                    </span><span class="istickedoff">return $ return -- for list</span>
+<span class="lineno">   88 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">   89 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : int(1..&amp;maxSize-1) .</span>
+<span class="lineno">   90 </span><span class="spaces">                                </span><span class="istickedoff">(&amp;m[&amp;i] = &amp;dummyElem) -&gt; (&amp;m[&amp;i+1] = &amp;dummyElem)</span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
+<span class="lineno">   92 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   93 </span><span class="spaces">                </span><span class="istickedoff">cardinality m = do</span>
+<span class="lineno">   94 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   95 </span><span class="spaces">                    </span><span class="istickedoff">return [essence| sum &amp;iPat : int(1..&amp;maxSize) . toInt(&amp;m[&amp;i] != &amp;dummyElem) |]</span>
+<span class="lineno">   96 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   97 </span><span class="spaces">                </span><span class="istickedoff">innerStructuralCons m = do</span>
+<span class="lineno">   98 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain <span class="nottickedoff">[essenceDomain| int(1..&amp;maxSize) |]</span></span>
+<span class="lineno">   99 </span><span class="spaces">                    </span><span class="istickedoff">let <span class="nottickedoff">activeZone b = [essence| forAll &amp;iPat : int(1..&amp;maxSize) . &amp;m[&amp;i] != &amp;dummyElem -&gt; &amp;b |]</span></span>
+<span class="lineno">  100 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  101 </span><span class="spaces">                    </span><span class="istickedoff">-- preparing structural constraints for the inner guys</span>
+<span class="lineno">  102 </span><span class="spaces">                    </span><span class="istickedoff">innerStructuralConsGen &lt;- f innerDomain</span>
+<span class="lineno">  103 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  104 </span><span class="spaces">                    </span><span class="istickedoff">let <span class="nottickedoff">inLoop = [essence| &amp;m[&amp;i] |]</span></span>
+<span class="lineno">  105 </span><span class="spaces">                    </span><span class="istickedoff">outs &lt;- innerStructuralConsGen <span class="nottickedoff">inLoop</span></span>
+<span class="lineno">  106 </span><span class="spaces">                    </span><span class="istickedoff">return (map <span class="nottickedoff">activeZone</span> outs)</span>
+<span class="lineno">  107 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  108 </span><span class="spaces">            </span><span class="istickedoff">return $ \ ref -&gt; do</span>
+<span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff">refs &lt;- downX1 ref</span>
+<span class="lineno">  110 </span><span class="spaces">                </span><span class="istickedoff">case refs of</span>
+<span class="lineno">  111 </span><span class="spaces">                    </span><span class="istickedoff">[m] -&gt;</span>
+<span class="lineno">  112 </span><span class="spaces">                        </span><span class="istickedoff">concat &lt;$&gt; sequence</span>
+<span class="lineno">  113 </span><span class="spaces">                            </span><span class="istickedoff">[ ordering m</span>
+<span class="lineno">  114 </span><span class="spaces">                            </span><span class="istickedoff">, dummyToTheRight m</span>
+<span class="lineno">  115 </span><span class="spaces">                            </span><span class="istickedoff">, mkSizeCons attrs &lt;$&gt; cardinality m</span>
+<span class="lineno">  116 </span><span class="spaces">                            </span><span class="istickedoff">, innerStructuralCons <span class="nottickedoff">m</span></span>
+<span class="lineno">  117 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  118 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;{structuralCons} ExplicitVarSizeWithDummy&quot;</span></span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ _ _ = <span class="nottickedoff">na &quot;{structuralCons} ExplicitVarSizeWithDummy&quot;</span></span>
+<span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
+<span class="lineno">  123 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainSet Set_ExplicitVarSizeWithDummy (SetAttr attrs) innerDomain)</span>
+<span class="lineno">  124 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantSet -&gt; Just constants</span>
+<span class="lineno">  125 </span><span class="spaces">              </span><span class="istickedoff">) = do</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">maxSize &lt;- getMaxSize attrs <span class="nottickedoff">innerDomain</span></span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">let indexDomain i = mkDomainIntB (fromInt i) maxSize</span>
+<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">maxSizeInt &lt;-</span>
+<span class="lineno">  129 </span><span class="spaces">                </span><span class="istickedoff">case maxSize of</span>
+<span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff">ConstantInt _ x -&gt; return x</span>
+<span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  132 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer for the maxSize attribute.&quot;</span></span>
+<span class="lineno">  133 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty maxSize</span></span>
+<span class="lineno">  134 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  135 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  136 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">let dummyElem = calcDummyElemC innerDomain</span>
+<span class="lineno">  138 </span><span class="spaces">            </span><span class="istickedoff">let dummies = replicate (fromInteger (maxSizeInt - genericLength constants)) dummyElem</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">return $ Just</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">[ ( outName domain name</span>
+<span class="lineno">  141 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix (indexDomain 1) innerDomain</span>
+<span class="lineno">  142 </span><span class="spaces">                  </span><span class="istickedoff">, ConstantAbstract $ AbsLitMatrix (indexDomain 1) (constants ++ dummies)</span>
+<span class="lineno">  143 </span><span class="spaces">                  </span><span class="istickedoff">)</span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">downC _ = <span class="nottickedoff">na &quot;{downC} ExplicitVarSizeWithDummy&quot;</span></span>
+<span class="lineno">  146 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainSet Set_ExplicitVarSizeWithDummy _ innerDomain)) = do</span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">let dummyElem = calcDummyElemC innerDomain</span>
+<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Set ExplicitVarSizeWithDummy up)&quot;</span></span>
+<span class="lineno">  153 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  155 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  156 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
+<span class="lineno">  157 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">  158 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt;</span>
+<span class="lineno">  159 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constant of</span>
+<span class="lineno">  160 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt;</span>
+<span class="lineno">  161 </span><span class="spaces">                            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitSet [ v | v &lt;- vals, v /= dummyElem ]))</span>
+<span class="lineno">  162 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  163 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  164 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  165 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  166 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  167 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} ExplicitVarSizeWithDummy&quot;</span></span>
+<span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
+<span class="lineno">  172 </span><span class="spaces">            </span><span class="istickedoff">[inner] &lt;- downX1 inp</span>
+<span class="lineno">  173 </span><span class="spaces">            </span><span class="istickedoff">Just [(_, innerDomain)] &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
+<span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff">innerSO <span class="nottickedoff">downX1</span> inner innerDomain</span></span>
+<span class="lineno">  175 </span>
+
+</pre>
+</body>
+</html>
