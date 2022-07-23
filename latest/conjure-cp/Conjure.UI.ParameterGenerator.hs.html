@@ -884,71 +884,85 @@ span.spaces    { background: white }
 <span class="lineno">  865 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x | x == maxInt = return maxInt</span>
 <span class="lineno">  866 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = minOfIntDomain dom</span>
 <span class="lineno">  867 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ (Just (Alias x))) = lowerBoundOfIntExpr x</span>
-<span class="lineno">  868 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMinus (OpMinus a b))) = do</span>
-<span class="lineno">  869 </span><span class="spaces">    </span><span class="nottickedoff">aLower &lt;- lowerBoundOfIntExpr a</span>
-<span class="lineno">  870 </span><span class="spaces">    </span><span class="nottickedoff">bUpper &lt;- upperBoundOfIntExpr b</span>
-<span class="lineno">  871 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMinus aLower bUpper</span>
-<span class="lineno">  872 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  873 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  874 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
-<span class="lineno">  875 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
-<span class="lineno">  876 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  877 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  878 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
-<span class="lineno">  879 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  880 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  881 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
-<span class="lineno">  882 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  883 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
-<span class="lineno">  884 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
-<span class="lineno">  885 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
-<span class="lineno">  886 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- upperBoundOfIntExpr x</span>
-<span class="lineno">  887 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
-<span class="lineno">  888 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
-<span class="lineno">  889 </span>
-<span class="lineno">  890 </span>
-<span class="lineno">  891 </span>maxOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
-<span class="lineno">  892 </span><span class="decl"><span class="nottickedoff">maxOfIntDomain (DomainInt _ rs) = do</span>
-<span class="lineno">  893 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM maxOfIntRange rs</span>
-<span class="lineno">  894 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
-<span class="lineno">  895 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return maxInt</span>
-<span class="lineno">  896 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
-<span class="lineno">  897 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMax $ fromList xs</span>
-<span class="lineno">  898 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; pretty d</span></span>
-<span class="lineno">  899 </span>
-<span class="lineno">  900 </span>maxOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
-<span class="lineno">  901 </span><span class="decl"><span class="nottickedoff">maxOfIntRange (RangeSingle ub) = return ub</span>
-<span class="lineno">  902 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeUpperBounded ub) = return ub</span>
-<span class="lineno">  903 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeBounded _ ub) = return ub</span>
-<span class="lineno">  904 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange _ = return maxInt</span></span>
-<span class="lineno">  905 </span>
-<span class="lineno">  906 </span>upperBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
-<span class="lineno">  907 </span><span class="decl"><span class="nottickedoff">upperBoundOfIntExpr x@Constant{} = return x</span>
-<span class="lineno">  908 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == minInt = return minInt</span>
-<span class="lineno">  909 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == maxInt = return maxInt</span>
-<span class="lineno">  910 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = maxOfIntDomain dom</span>
-<span class="lineno">  911 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (Alias x))) = upperBoundOfIntExpr x</span>
-<span class="lineno">  912 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMinus (OpMinus a b))) = do</span>
-<span class="lineno">  913 </span><span class="spaces">    </span><span class="nottickedoff">aUpper &lt;- upperBoundOfIntExpr a</span>
-<span class="lineno">  914 </span><span class="spaces">    </span><span class="nottickedoff">bLower &lt;- lowerBoundOfIntExpr b</span>
-<span class="lineno">  915 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMinus aUpper bLower</span>
-<span class="lineno">  916 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  917 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  918 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
-<span class="lineno">  919 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
-<span class="lineno">  920 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  921 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  922 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
-<span class="lineno">  923 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  924 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  925 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
-<span class="lineno">  926 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
-<span class="lineno">  927 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
-<span class="lineno">  928 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
-<span class="lineno">  929 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
-<span class="lineno">  930 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- lowerBoundOfIntExpr x</span>
-<span class="lineno">  931 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
-<span class="lineno">  932 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
+<span class="lineno">  868 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Reference _ _) = return minInt</span>
+<span class="lineno">  869 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMinus (OpMinus a b))) = do</span>
+<span class="lineno">  870 </span><span class="spaces">    </span><span class="nottickedoff">aLower &lt;- lowerBoundOfIntExpr a</span>
+<span class="lineno">  871 </span><span class="spaces">    </span><span class="nottickedoff">bUpper &lt;- upperBoundOfIntExpr b</span>
+<span class="lineno">  872 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMinus aLower bUpper</span>
+<span class="lineno">  873 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  874 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  875 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
+<span class="lineno">  876 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
+<span class="lineno">  877 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  878 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  879 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
+<span class="lineno">  880 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  881 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  882 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
+<span class="lineno">  883 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMin (OpMin (Comprehension body gocs)))) = do</span>
+<span class="lineno">  884 </span><span class="spaces">    </span><span class="nottickedoff">body' &lt;- lowerBoundOfIntExpr body</span>
+<span class="lineno">  885 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ Comprehension body' gocs</span>
+<span class="lineno">  886 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  887 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM lowerBoundOfIntExpr xs</span>
+<span class="lineno">  888 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ fromList bounds</span>
+<span class="lineno">  889 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpMax (OpMax (Comprehension body gocs)))) = do</span>
+<span class="lineno">  890 </span><span class="spaces">    </span><span class="nottickedoff">body' &lt;- lowerBoundOfIntExpr body</span>
+<span class="lineno">  891 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMin $ Comprehension body' gocs</span>
+<span class="lineno">  892 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
+<span class="lineno">  893 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- upperBoundOfIntExpr x</span>
+<span class="lineno">  894 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
+<span class="lineno">  895 </span><span class="spaces"></span><span class="nottickedoff">lowerBoundOfIntExpr x = userErr1 $ &quot;Cannot compute lower bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
+<span class="lineno">  896 </span>
+<span class="lineno">  897 </span>
+<span class="lineno">  898 </span>maxOfIntDomain :: MonadUserError m =&gt; Domain () Expression -&gt; m Expression
+<span class="lineno">  899 </span><span class="decl"><span class="nottickedoff">maxOfIntDomain (DomainInt _ rs) = do</span>
+<span class="lineno">  900 </span><span class="spaces">    </span><span class="nottickedoff">xs &lt;- sortNub &lt;$&gt; mapM maxOfIntRange rs</span>
+<span class="lineno">  901 </span><span class="spaces">    </span><span class="nottickedoff">case xs of</span>
+<span class="lineno">  902 </span><span class="spaces">        </span><span class="nottickedoff">[]  -&gt; return maxInt</span>
+<span class="lineno">  903 </span><span class="spaces">        </span><span class="nottickedoff">[x] -&gt; return x</span>
+<span class="lineno">  904 </span><span class="spaces">        </span><span class="nottickedoff">_   -&gt; return $ make opMax $ fromList xs</span>
+<span class="lineno">  905 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntDomain d = userErr1 $ &quot;Expected integer domain, but got:&quot; &lt;++&gt; pretty d</span></span>
+<span class="lineno">  906 </span>
+<span class="lineno">  907 </span>maxOfIntRange :: Monad m =&gt; Range Expression -&gt; m Expression
+<span class="lineno">  908 </span><span class="decl"><span class="nottickedoff">maxOfIntRange (RangeSingle ub) = return ub</span>
+<span class="lineno">  909 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeUpperBounded ub) = return ub</span>
+<span class="lineno">  910 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange (RangeBounded _ ub) = return ub</span>
+<span class="lineno">  911 </span><span class="spaces"></span><span class="nottickedoff">maxOfIntRange _ = return maxInt</span></span>
+<span class="lineno">  912 </span>
+<span class="lineno">  913 </span>upperBoundOfIntExpr :: MonadUserError m =&gt; Expression -&gt; m Expression
+<span class="lineno">  914 </span><span class="decl"><span class="nottickedoff">upperBoundOfIntExpr x@Constant{} = return x</span>
+<span class="lineno">  915 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == minInt = return minInt</span>
+<span class="lineno">  916 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x | x == maxInt = return maxInt</span>
+<span class="lineno">  917 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (DeclNoRepr Given _ dom _))) = maxOfIntDomain dom</span>
+<span class="lineno">  918 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ (Just (Alias x))) = upperBoundOfIntExpr x</span>
+<span class="lineno">  919 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Reference _ _) = return maxInt</span>
+<span class="lineno">  920 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMinus (OpMinus a b))) = do</span>
+<span class="lineno">  921 </span><span class="spaces">    </span><span class="nottickedoff">aUpper &lt;- upperBoundOfIntExpr a</span>
+<span class="lineno">  922 </span><span class="spaces">    </span><span class="nottickedoff">bLower &lt;- lowerBoundOfIntExpr b</span>
+<span class="lineno">  923 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMinus aUpper bLower</span>
+<span class="lineno">  924 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpSum (OpSum x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  925 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  926 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opSum $ fromList bounds</span>
+<span class="lineno">  927 </span><span class="spaces"></span><span class="nottickedoff">-- TODO: check for negatives</span>
+<span class="lineno">  928 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpProduct (OpProduct x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  929 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  930 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opProduct $ fromList bounds</span>
+<span class="lineno">  931 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMin (OpMin x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  932 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  933 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
+<span class="lineno">  934 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMin (OpMin (Comprehension body gocs)))) = do</span>
+<span class="lineno">  935 </span><span class="spaces">    </span><span class="nottickedoff">body' &lt;- lowerBoundOfIntExpr body</span>
+<span class="lineno">  936 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ Comprehension body' gocs</span>
+<span class="lineno">  937 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMax (OpMax x))) | Just xs &lt;- listOut x = do</span>
+<span class="lineno">  938 </span><span class="spaces">    </span><span class="nottickedoff">bounds &lt;- mapM upperBoundOfIntExpr xs</span>
+<span class="lineno">  939 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ fromList bounds</span>
+<span class="lineno">  940 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpMax (OpMax (Comprehension body gocs)))) = do</span>
+<span class="lineno">  941 </span><span class="spaces">    </span><span class="nottickedoff">body' &lt;- lowerBoundOfIntExpr body</span>
+<span class="lineno">  942 </span><span class="spaces">    </span><span class="nottickedoff">return $ make opMax $ Comprehension body' gocs</span>
+<span class="lineno">  943 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr (Op (MkOpNegate (OpNegate x))) = do</span>
+<span class="lineno">  944 </span><span class="spaces">    </span><span class="nottickedoff">bound &lt;- lowerBoundOfIntExpr x</span>
+<span class="lineno">  945 </span><span class="spaces">    </span><span class="nottickedoff">return (make opNegate bound)</span>
+<span class="lineno">  946 </span><span class="spaces"></span><span class="nottickedoff">upperBoundOfIntExpr x = userErr1 $ &quot;Cannot compute upper bound of integer expression:&quot; &lt;++&gt; vcat [pretty x, pretty (show x)]</span></span>
 
 </pre>
 </body>
