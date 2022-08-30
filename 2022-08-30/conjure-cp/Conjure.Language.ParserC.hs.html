@@ -157,14 +157,14 @@ span.spaces    { background: white }
 <span class="lineno">  138 </span><span class="spaces">            </span><span class="istickedoff">lexeme L_int</span>
 <span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">x &lt;- parens parseExpr</span>
 <span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff">case (let ?typeCheckerMode = StronglyTyped in typeOf x) of</span>
-<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">Just (TypeInt TagInt) -&gt; return $ DomainInt TagInt [RangeSingle x]</span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">Just (TypeInt TagInt) -&gt; return $ DomainInt <span class="nottickedoff">TagInt</span> [RangeSingle x]</span>
 <span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">return $ DomainIntE x</span></span>
 <span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">pInt = do</span>
 <span class="lineno">  145 </span><span class="spaces">            </span><span class="istickedoff">lexeme L_int</span>
 <span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">mxs &lt;- optional $ parens $ commaSeparated0 $ parseRange parseExpr</span>
 <span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">let xs = fromMaybe <span class="nottickedoff">[]</span> mxs</span>
-<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">return $ DomainInt TagInt xs</span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">return $ DomainInt <span class="nottickedoff">TagInt</span> xs</span>
 <span class="lineno">  149 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pReference = do</span></span>
 <span class="lineno">  151 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">r  &lt;- identifierText</span></span>
