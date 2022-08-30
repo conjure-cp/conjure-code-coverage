@@ -846,214 +846,215 @@ span.spaces    { background: white }
 <span class="lineno">  827 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  828 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainIntE x) = &quot;int&quot; &lt;&gt; prParens (pretty x)</span>
 <span class="lineno">  829 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  830 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt (TagEnum nm) _) = pretty nm</span>
-<span class="lineno">  831 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt (TagUnnamed nm) _) = <span class="nottickedoff">pretty nm</span></span>
-<span class="lineno">  832 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  833 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ []) = &quot;int&quot;</span>
-<span class="lineno">  834 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ ranges) = &quot;int&quot; &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
-<span class="lineno">  835 </span><span class="spaces">        </span><span class="istickedoff"></span>
-<span class="lineno">  836 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name (Just ranges) _) = pretty name &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
-<span class="lineno">  837 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name _             _) = pretty name</span>
-<span class="lineno">  838 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  839 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainUnnamed name _) = <span class="nottickedoff">pretty name</span></span>
-<span class="lineno">  840 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  841 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainTuple inners)</span>
-<span class="lineno">  842 </span><span class="spaces">        </span><span class="istickedoff">= (if length inners &lt; 2 then &quot;tuple&quot; else prEmpty)</span>
-<span class="lineno">  843 </span><span class="spaces">        </span><span class="istickedoff">&lt;+&gt; prettyList prParens &quot;,&quot; inners</span>
-<span class="lineno">  844 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  845 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
-<span class="lineno">  846 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
-<span class="lineno">  847 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  848 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainVariant xs) = <span class="nottickedoff">&quot;variant&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span></span>
-<span class="lineno">  849 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span></span>
-<span class="lineno">  850 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  851 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMatrix index innerNested)</span>
-<span class="lineno">  852 </span><span class="spaces">        </span><span class="istickedoff">= &quot;matrix indexed by&quot; &lt;+&gt; prettyList prBrackets &quot;,&quot; indices</span>
-<span class="lineno">  853 </span><span class="spaces">                              </span><span class="istickedoff">&lt;+&gt; &quot;of&quot; &lt;+&gt; pretty inner</span>
-<span class="lineno">  854 </span><span class="spaces">        </span><span class="istickedoff">where</span>
-<span class="lineno">  855 </span><span class="spaces">            </span><span class="istickedoff">(indices,inner) = first (index:) $ collect innerNested</span>
-<span class="lineno">  856 </span><span class="spaces">            </span><span class="istickedoff">collect (DomainMatrix i j) = first (i:) $ collect j</span>
-<span class="lineno">  857 </span><span class="spaces">            </span><span class="istickedoff">collect x = ([],x)</span>
-<span class="lineno">  858 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  859 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSet r attrs inner) =</span>
-<span class="lineno">  860 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;set&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
-<span class="lineno">  861 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  862 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMSet r attrs inner) =</span>
-<span class="lineno">  863 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;mset&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
-<span class="lineno">  864 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  865 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainFunction r attrs innerFrom innerTo) =</span>
-<span class="lineno">  866 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;function&quot; &lt;+&gt; prettyAttrs r attrs) 4 $</span>
-<span class="lineno">  867 </span><span class="spaces">            </span><span class="istickedoff">hang (pretty innerFrom) 4 $</span>
-<span class="lineno">  868 </span><span class="spaces">                </span><span class="istickedoff">&quot;--&gt;&quot; &lt;+&gt; pretty innerTo</span>
-<span class="lineno">  869 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  870 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSequence r attrs inner) =</span>
-<span class="lineno">  871 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;sequence&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
-<span class="lineno">  872 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  873 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRelation r attrs inners)</span>
-<span class="lineno">  874 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;relation&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (prettyList prParens &quot; *&quot; inners)</span>
-<span class="lineno">  875 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  876 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainPartition r attrs inner)</span>
-<span class="lineno">  877 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;partition&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;from&quot;) 4 (pretty inner)</span>
-<span class="lineno">  878 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  879 </span><span class="spaces">    </span><span class="istickedoff">pretty d@DomainOp{} = <span class="nottickedoff">pretty (show d)</span></span>
-<span class="lineno">  880 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  881 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainReference x _) = pretty x</span>
-<span class="lineno">  882 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  883 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMetaVar x) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty x</span></span></span>
-<span class="lineno">  884 </span>
+<span class="lineno">  830 </span><span class="spaces">    </span><span class="istickedoff">-- print them like integers even when they are tagged</span>
+<span class="lineno">  831 </span><span class="spaces">    </span><span class="istickedoff">-- pretty (DomainInt (TagEnum nm) _) = pretty nm</span>
+<span class="lineno">  832 </span><span class="spaces">    </span><span class="istickedoff">-- pretty (DomainInt (TagUnnamed nm) _) = pretty nm</span>
+<span class="lineno">  833 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  834 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ []) = &quot;int&quot;</span>
+<span class="lineno">  835 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ ranges) = &quot;int&quot; &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
+<span class="lineno">  836 </span><span class="spaces">        </span><span class="istickedoff"></span>
+<span class="lineno">  837 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name (Just ranges) _) = pretty name &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
+<span class="lineno">  838 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name _             _) = pretty name</span>
+<span class="lineno">  839 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  840 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainUnnamed name _) = <span class="nottickedoff">pretty name</span></span>
+<span class="lineno">  841 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  842 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainTuple inners)</span>
+<span class="lineno">  843 </span><span class="spaces">        </span><span class="istickedoff">= (if length inners &lt; 2 then &quot;tuple&quot; else prEmpty)</span>
+<span class="lineno">  844 </span><span class="spaces">        </span><span class="istickedoff">&lt;+&gt; prettyList prParens &quot;,&quot; inners</span>
+<span class="lineno">  845 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  846 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
+<span class="lineno">  847 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
+<span class="lineno">  848 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  849 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainVariant xs) = <span class="nottickedoff">&quot;variant&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span></span>
+<span class="lineno">  850 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span></span>
+<span class="lineno">  851 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  852 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMatrix index innerNested)</span>
+<span class="lineno">  853 </span><span class="spaces">        </span><span class="istickedoff">= &quot;matrix indexed by&quot; &lt;+&gt; prettyList prBrackets &quot;,&quot; indices</span>
+<span class="lineno">  854 </span><span class="spaces">                              </span><span class="istickedoff">&lt;+&gt; &quot;of&quot; &lt;+&gt; pretty inner</span>
+<span class="lineno">  855 </span><span class="spaces">        </span><span class="istickedoff">where</span>
+<span class="lineno">  856 </span><span class="spaces">            </span><span class="istickedoff">(indices,inner) = first (index:) $ collect innerNested</span>
+<span class="lineno">  857 </span><span class="spaces">            </span><span class="istickedoff">collect (DomainMatrix i j) = first (i:) $ collect j</span>
+<span class="lineno">  858 </span><span class="spaces">            </span><span class="istickedoff">collect x = ([],x)</span>
+<span class="lineno">  859 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  860 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSet r attrs inner) =</span>
+<span class="lineno">  861 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;set&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  862 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  863 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMSet r attrs inner) =</span>
+<span class="lineno">  864 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;mset&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  865 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  866 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainFunction r attrs innerFrom innerTo) =</span>
+<span class="lineno">  867 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;function&quot; &lt;+&gt; prettyAttrs r attrs) 4 $</span>
+<span class="lineno">  868 </span><span class="spaces">            </span><span class="istickedoff">hang (pretty innerFrom) 4 $</span>
+<span class="lineno">  869 </span><span class="spaces">                </span><span class="istickedoff">&quot;--&gt;&quot; &lt;+&gt; pretty innerTo</span>
+<span class="lineno">  870 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  871 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSequence r attrs inner) =</span>
+<span class="lineno">  872 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;sequence&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  873 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  874 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRelation r attrs inners)</span>
+<span class="lineno">  875 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;relation&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (prettyList prParens &quot; *&quot; inners)</span>
+<span class="lineno">  876 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  877 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainPartition r attrs inner)</span>
+<span class="lineno">  878 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;partition&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;from&quot;) 4 (pretty inner)</span>
+<span class="lineno">  879 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  880 </span><span class="spaces">    </span><span class="istickedoff">pretty d@DomainOp{} = <span class="nottickedoff">pretty (show d)</span></span>
+<span class="lineno">  881 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  882 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainReference x _) = pretty x</span>
+<span class="lineno">  883 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  884 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMetaVar x) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty x</span></span></span>
 <span class="lineno">  885 </span>
-<span class="lineno">  886 </span>prettyAttrs :: (Pretty a, Pretty b) =&gt; a -&gt; b -&gt; Doc
-<span class="lineno">  887 </span><span class="decl"><span class="istickedoff">prettyAttrs a bs =</span>
-<span class="lineno">  888 </span><span class="spaces">    </span><span class="istickedoff">let prettya = pretty a</span>
-<span class="lineno">  889 </span><span class="spaces">    </span><span class="istickedoff">in  if <span class="tickonlytrue">prettya == &quot;()&quot;</span></span>
-<span class="lineno">  890 </span><span class="spaces">            </span><span class="istickedoff">then pretty bs</span>
-<span class="lineno">  891 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">prBraces prettya &lt;+&gt; pretty bs</span></span></span>
-<span class="lineno">  892 </span>
-<span class="lineno">  893 </span>instance Pretty a =&gt; Pretty (DomainAttributes a) where
-<span class="lineno">  894 </span>    <span class="decl"><span class="nottickedoff">pretty (DomainAttributes []) = prEmpty</span>
-<span class="lineno">  895 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DomainAttributes attrs) = prettyList prParens &quot;,&quot; attrs</span></span>
-<span class="lineno">  896 </span>
-<span class="lineno">  897 </span>instance Pretty a =&gt; Pretty (DomainAttribute a) where
-<span class="lineno">  898 </span>    <span class="decl"><span class="nottickedoff">pretty (DAName name) = pretty name</span>
-<span class="lineno">  899 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DANameValue name value) = pretty name &lt;+&gt; pretty value</span>
-<span class="lineno">  900 </span><span class="spaces">    </span><span class="nottickedoff">pretty DADotDot = &quot;..&quot;</span></span>
-<span class="lineno">  901 </span>
-<span class="lineno">  902 </span>instance Pretty a =&gt; Pretty (Range a) where
-<span class="lineno">  903 </span>    <span class="decl"><span class="istickedoff">pretty RangeOpen = <span class="nottickedoff">&quot;..&quot;</span></span>
-<span class="lineno">  904 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeSingle x) = pretty x</span>
-<span class="lineno">  905 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeLowerBounded x) = pretty x &lt;&gt; &quot;..&quot;</span>
-<span class="lineno">  906 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeUpperBounded x) = <span class="nottickedoff">&quot;..&quot; &lt;&gt; pretty x</span></span>
-<span class="lineno">  907 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) | show (pretty x) == show (pretty y) = pretty x</span>
-<span class="lineno">  908 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) = pretty x &lt;&gt; &quot;..&quot; &lt;&gt; pretty y</span></span>
-<span class="lineno">  909 </span>
-<span class="lineno">  910 </span>instance Pretty HasRepresentation where
-<span class="lineno">  911 </span>    <span class="decl"><span class="nottickedoff">pretty NoRepresentation = &quot;∅&quot;</span>
-<span class="lineno">  912 </span><span class="spaces">    </span><span class="nottickedoff">pretty r = pretty (representationToFullText r)</span></span>
-<span class="lineno">  913 </span>
-<span class="lineno">  914 </span>textToRepresentation :: Text -&gt; [HasRepresentation] -&gt; Maybe HasRepresentation
-<span class="lineno">  915 </span><span class="decl"><span class="nottickedoff">textToRepresentation t []             | t == &quot;Occurrence&quot;                 = return Set_Occurrence</span>
-<span class="lineno">  916 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Explicit&quot;                   = return Set_Explicit</span>
-<span class="lineno">  917 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithFlags&quot;   = return Set_ExplicitVarSizeWithFlags</span>
-<span class="lineno">  918 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithMarker&quot;  = return Set_ExplicitVarSizeWithMarker</span>
-<span class="lineno">  919 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithDummy&quot;   = return Set_ExplicitVarSizeWithDummy</span>
-<span class="lineno">  920 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;MOccurrence&quot;                = return MSet_Occurrence</span>
-<span class="lineno">  921 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithFlags&quot;          = return MSet_ExplicitWithFlags</span>
-<span class="lineno">  922 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithRepetition&quot;     = return MSet_ExplicitWithRepetition</span>
-<span class="lineno">  923 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1D&quot;                 = return Function_1D</span>
-<span class="lineno">  924 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1DPartial&quot;          = return Function_1DPartial</span>
-<span class="lineno">  925 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionND&quot;                 = return Function_ND</span>
-<span class="lineno">  926 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartial&quot;          = return Function_NDPartial</span>
-<span class="lineno">  927 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartialDummy&quot;     = return Function_NDPartialDummy</span>
-<span class="lineno">  928 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;FunctionAsRelation&quot;         = return (Function_AsRelation repr)</span>
-<span class="lineno">  929 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitBounded&quot;            = return Sequence_ExplicitBounded</span>
-<span class="lineno">  930 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;RelationAsMatrix&quot;           = return Relation_AsMatrix</span>
-<span class="lineno">  931 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;RelationAsSet&quot;              = return (Relation_AsSet repr)</span>
-<span class="lineno">  932 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr1, repr2] | t == &quot;PartitionAsSet&quot;             = return (Partition_AsSet repr1 repr2)</span>
-<span class="lineno">  933 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;PartitionOccurrence&quot;        = return Partition_Occurrence</span>
-<span class="lineno">  934 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation _ _ = Nothing</span></span>
-<span class="lineno">  935 </span>
-<span class="lineno">  936 </span>representationToShortText :: HasRepresentation -&gt; Text
-<span class="lineno">  937 </span><span class="decl"><span class="istickedoff">representationToShortText Set_Occurrence                 = &quot;Occurrence&quot;</span>
-<span class="lineno">  938 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_Explicit                   = &quot;Explicit&quot;</span>
-<span class="lineno">  939 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithFlags   = &quot;ExplicitVarSizeWithFlags&quot;</span>
-<span class="lineno">  940 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithMarker  = &quot;ExplicitVarSizeWithMarker&quot;</span>
-<span class="lineno">  941 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithDummy   = &quot;ExplicitVarSizeWithDummy&quot;</span>
-<span class="lineno">  942 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_Occurrence                = &quot;MOccurrence&quot;</span>
-<span class="lineno">  943 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithFlags         = &quot;ExplicitWithFlags&quot;</span>
-<span class="lineno">  944 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithRepetition    = &quot;ExplicitWithRepetition&quot;</span>
-<span class="lineno">  945 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1D                    = &quot;Function1D&quot;</span>
-<span class="lineno">  946 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1DPartial             = &quot;Function1DPartial&quot;</span>
-<span class="lineno">  947 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_ND                    = &quot;FunctionND&quot;</span>
-<span class="lineno">  948 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartial             = &quot;FunctionNDPartial&quot;</span>
-<span class="lineno">  949 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartialDummy        = &quot;FunctionNDPartialDummy&quot;</span>
-<span class="lineno">  950 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_AsRelation{}          = &quot;FunctionAsRelation&quot;</span>
-<span class="lineno">  951 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Sequence_ExplicitBounded       = &quot;ExplicitBounded&quot;</span>
-<span class="lineno">  952 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsMatrix              = &quot;RelationAsMatrix&quot;</span>
-<span class="lineno">  953 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsSet{}               = &quot;RelationAsSet&quot;</span>
-<span class="lineno">  954 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_AsSet{}              = &quot;PartitionAsSet&quot;</span>
-<span class="lineno">  955 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_Occurrence           = &quot;PartitionOccurrence&quot;</span>
-<span class="lineno">  956 </span><span class="spaces"></span><span class="istickedoff">representationToShortText r = <span class="nottickedoff">bug (&quot;representationToShortText:&quot; &lt;+&gt; pretty (show r))</span></span></span>
-<span class="lineno">  957 </span>
-<span class="lineno">  958 </span>representationToFullText :: HasRepresentation -&gt; Text
-<span class="lineno">  959 </span><span class="decl"><span class="nottickedoff">representationToFullText (Function_AsRelation repr)     = mconcat [ &quot;FunctionAsRelation&quot;</span>
-<span class="lineno">  960 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
-<span class="lineno">  961 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
-<span class="lineno">  962 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
-<span class="lineno">  963 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  964 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Relation_AsSet repr)          = mconcat [ &quot;RelationAsSet&quot;</span>
-<span class="lineno">  965 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
-<span class="lineno">  966 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
-<span class="lineno">  967 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
-<span class="lineno">  968 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  969 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Partition_AsSet repr1 repr2)  = mconcat [ &quot;PartitionAsSet&quot;</span>
-<span class="lineno">  970 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
-<span class="lineno">  971 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr1</span>
-<span class="lineno">  972 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;,&quot;</span>
-<span class="lineno">  973 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr2</span>
-<span class="lineno">  974 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
-<span class="lineno">  975 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
-<span class="lineno">  976 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText r = representationToShortText r</span></span>
-<span class="lineno">  977 </span>
+<span class="lineno">  886 </span>
+<span class="lineno">  887 </span>prettyAttrs :: (Pretty a, Pretty b) =&gt; a -&gt; b -&gt; Doc
+<span class="lineno">  888 </span><span class="decl"><span class="istickedoff">prettyAttrs a bs =</span>
+<span class="lineno">  889 </span><span class="spaces">    </span><span class="istickedoff">let prettya = pretty a</span>
+<span class="lineno">  890 </span><span class="spaces">    </span><span class="istickedoff">in  if <span class="tickonlytrue">prettya == &quot;()&quot;</span></span>
+<span class="lineno">  891 </span><span class="spaces">            </span><span class="istickedoff">then pretty bs</span>
+<span class="lineno">  892 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">prBraces prettya &lt;+&gt; pretty bs</span></span></span>
+<span class="lineno">  893 </span>
+<span class="lineno">  894 </span>instance Pretty a =&gt; Pretty (DomainAttributes a) where
+<span class="lineno">  895 </span>    <span class="decl"><span class="nottickedoff">pretty (DomainAttributes []) = prEmpty</span>
+<span class="lineno">  896 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DomainAttributes attrs) = prettyList prParens &quot;,&quot; attrs</span></span>
+<span class="lineno">  897 </span>
+<span class="lineno">  898 </span>instance Pretty a =&gt; Pretty (DomainAttribute a) where
+<span class="lineno">  899 </span>    <span class="decl"><span class="nottickedoff">pretty (DAName name) = pretty name</span>
+<span class="lineno">  900 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DANameValue name value) = pretty name &lt;+&gt; pretty value</span>
+<span class="lineno">  901 </span><span class="spaces">    </span><span class="nottickedoff">pretty DADotDot = &quot;..&quot;</span></span>
+<span class="lineno">  902 </span>
+<span class="lineno">  903 </span>instance Pretty a =&gt; Pretty (Range a) where
+<span class="lineno">  904 </span>    <span class="decl"><span class="istickedoff">pretty RangeOpen = <span class="nottickedoff">&quot;..&quot;</span></span>
+<span class="lineno">  905 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeSingle x) = pretty x</span>
+<span class="lineno">  906 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeLowerBounded x) = pretty x &lt;&gt; &quot;..&quot;</span>
+<span class="lineno">  907 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeUpperBounded x) = <span class="nottickedoff">&quot;..&quot; &lt;&gt; pretty x</span></span>
+<span class="lineno">  908 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) | show (pretty x) == show (pretty y) = pretty x</span>
+<span class="lineno">  909 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) = pretty x &lt;&gt; &quot;..&quot; &lt;&gt; pretty y</span></span>
+<span class="lineno">  910 </span>
+<span class="lineno">  911 </span>instance Pretty HasRepresentation where
+<span class="lineno">  912 </span>    <span class="decl"><span class="nottickedoff">pretty NoRepresentation = &quot;∅&quot;</span>
+<span class="lineno">  913 </span><span class="spaces">    </span><span class="nottickedoff">pretty r = pretty (representationToFullText r)</span></span>
+<span class="lineno">  914 </span>
+<span class="lineno">  915 </span>textToRepresentation :: Text -&gt; [HasRepresentation] -&gt; Maybe HasRepresentation
+<span class="lineno">  916 </span><span class="decl"><span class="nottickedoff">textToRepresentation t []             | t == &quot;Occurrence&quot;                 = return Set_Occurrence</span>
+<span class="lineno">  917 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Explicit&quot;                   = return Set_Explicit</span>
+<span class="lineno">  918 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithFlags&quot;   = return Set_ExplicitVarSizeWithFlags</span>
+<span class="lineno">  919 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithMarker&quot;  = return Set_ExplicitVarSizeWithMarker</span>
+<span class="lineno">  920 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithDummy&quot;   = return Set_ExplicitVarSizeWithDummy</span>
+<span class="lineno">  921 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;MOccurrence&quot;                = return MSet_Occurrence</span>
+<span class="lineno">  922 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithFlags&quot;          = return MSet_ExplicitWithFlags</span>
+<span class="lineno">  923 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithRepetition&quot;     = return MSet_ExplicitWithRepetition</span>
+<span class="lineno">  924 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1D&quot;                 = return Function_1D</span>
+<span class="lineno">  925 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1DPartial&quot;          = return Function_1DPartial</span>
+<span class="lineno">  926 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionND&quot;                 = return Function_ND</span>
+<span class="lineno">  927 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartial&quot;          = return Function_NDPartial</span>
+<span class="lineno">  928 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartialDummy&quot;     = return Function_NDPartialDummy</span>
+<span class="lineno">  929 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;FunctionAsRelation&quot;         = return (Function_AsRelation repr)</span>
+<span class="lineno">  930 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitBounded&quot;            = return Sequence_ExplicitBounded</span>
+<span class="lineno">  931 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;RelationAsMatrix&quot;           = return Relation_AsMatrix</span>
+<span class="lineno">  932 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;RelationAsSet&quot;              = return (Relation_AsSet repr)</span>
+<span class="lineno">  933 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr1, repr2] | t == &quot;PartitionAsSet&quot;             = return (Partition_AsSet repr1 repr2)</span>
+<span class="lineno">  934 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;PartitionOccurrence&quot;        = return Partition_Occurrence</span>
+<span class="lineno">  935 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation _ _ = Nothing</span></span>
+<span class="lineno">  936 </span>
+<span class="lineno">  937 </span>representationToShortText :: HasRepresentation -&gt; Text
+<span class="lineno">  938 </span><span class="decl"><span class="istickedoff">representationToShortText Set_Occurrence                 = &quot;Occurrence&quot;</span>
+<span class="lineno">  939 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_Explicit                   = &quot;Explicit&quot;</span>
+<span class="lineno">  940 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithFlags   = &quot;ExplicitVarSizeWithFlags&quot;</span>
+<span class="lineno">  941 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithMarker  = &quot;ExplicitVarSizeWithMarker&quot;</span>
+<span class="lineno">  942 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithDummy   = &quot;ExplicitVarSizeWithDummy&quot;</span>
+<span class="lineno">  943 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_Occurrence                = &quot;MOccurrence&quot;</span>
+<span class="lineno">  944 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithFlags         = &quot;ExplicitWithFlags&quot;</span>
+<span class="lineno">  945 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithRepetition    = &quot;ExplicitWithRepetition&quot;</span>
+<span class="lineno">  946 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1D                    = &quot;Function1D&quot;</span>
+<span class="lineno">  947 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1DPartial             = &quot;Function1DPartial&quot;</span>
+<span class="lineno">  948 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_ND                    = &quot;FunctionND&quot;</span>
+<span class="lineno">  949 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartial             = &quot;FunctionNDPartial&quot;</span>
+<span class="lineno">  950 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartialDummy        = &quot;FunctionNDPartialDummy&quot;</span>
+<span class="lineno">  951 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_AsRelation{}          = &quot;FunctionAsRelation&quot;</span>
+<span class="lineno">  952 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Sequence_ExplicitBounded       = &quot;ExplicitBounded&quot;</span>
+<span class="lineno">  953 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsMatrix              = &quot;RelationAsMatrix&quot;</span>
+<span class="lineno">  954 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsSet{}               = &quot;RelationAsSet&quot;</span>
+<span class="lineno">  955 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_AsSet{}              = &quot;PartitionAsSet&quot;</span>
+<span class="lineno">  956 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_Occurrence           = &quot;PartitionOccurrence&quot;</span>
+<span class="lineno">  957 </span><span class="spaces"></span><span class="istickedoff">representationToShortText r = <span class="nottickedoff">bug (&quot;representationToShortText:&quot; &lt;+&gt; pretty (show r))</span></span></span>
+<span class="lineno">  958 </span>
+<span class="lineno">  959 </span>representationToFullText :: HasRepresentation -&gt; Text
+<span class="lineno">  960 </span><span class="decl"><span class="nottickedoff">representationToFullText (Function_AsRelation repr)     = mconcat [ &quot;FunctionAsRelation&quot;</span>
+<span class="lineno">  961 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno">  962 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
+<span class="lineno">  963 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno">  964 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  965 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Relation_AsSet repr)          = mconcat [ &quot;RelationAsSet&quot;</span>
+<span class="lineno">  966 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno">  967 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
+<span class="lineno">  968 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno">  969 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  970 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Partition_AsSet repr1 repr2)  = mconcat [ &quot;PartitionAsSet&quot;</span>
+<span class="lineno">  971 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno">  972 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr1</span>
+<span class="lineno">  973 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;,&quot;</span>
+<span class="lineno">  974 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr2</span>
+<span class="lineno">  975 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno">  976 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno">  977 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText r = representationToShortText r</span></span>
 <span class="lineno">  978 </span>
-<span class="lineno">  979 </span>normaliseDomain :: (Ord c, ExpressionLike c) =&gt; (c -&gt; c) -&gt; Domain r c -&gt; Domain r c
-<span class="lineno">  980 </span><span class="decl"><span class="istickedoff">normaliseDomain _norm DomainBool                  = DomainBool</span>
-<span class="lineno">  981 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainInt t rs           ) = DomainInt t $ sort $ map (normaliseRange norm) (expandRanges rs)</span>
-<span class="lineno">  982 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n Nothing   mp) = <span class="nottickedoff">DomainEnum n Nothing mp</span></span>
-<span class="lineno">  983 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n (Just rs) mp) = DomainEnum <span class="nottickedoff">n</span> (Just $ sort rs) mp</span>
-<span class="lineno">  984 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainUnnamed n x        ) = DomainUnnamed <span class="nottickedoff">n</span> (norm x)</span>
-<span class="lineno">  985 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRecord           doms     ) = DomainRecord  [ (n, normaliseDomain norm d)</span>
-<span class="lineno">  986 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
-<span class="lineno">  987 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainVariant          doms     ) = DomainVariant [ (n, normaliseDomain norm d)</span>
-<span class="lineno">  988 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
-<span class="lineno">  989 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainTuple            doms     ) = DomainTuple $ map (normaliseDomain norm) doms</span>
-<span class="lineno">  990 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMatrix           dom1 dom2) = DomainMatrix      (normaliseDomain norm dom1)</span>
-<span class="lineno">  991 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
-<span class="lineno">  992 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSet       r attr dom      ) = DomainSet       r (fmap norm attr)</span>
-<span class="lineno">  993 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
-<span class="lineno">  994 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMSet      r attr dom      ) = DomainMSet      r (fmap norm attr)</span>
-<span class="lineno">  995 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
-<span class="lineno">  996 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainFunction  r attr dom1 dom2) = DomainFunction  r (fmap norm attr)</span>
-<span class="lineno">  997 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom1)</span>
-<span class="lineno">  998 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
-<span class="lineno">  999 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSequence  r attr dom      ) = DomainSequence  r (fmap norm attr)</span>
-<span class="lineno"> 1000 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
-<span class="lineno"> 1001 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRelation  r attr doms     ) = DomainRelation  r (fmap norm attr)</span>
-<span class="lineno"> 1002 </span><span class="spaces">                                                                             </span><span class="istickedoff">(map (normaliseDomain norm) doms)</span>
-<span class="lineno"> 1003 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainPartition r attr dom      ) = DomainPartition r (fmap norm attr)</span>
-<span class="lineno"> 1004 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
-<span class="lineno"> 1005 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm d = d</span></span>
-<span class="lineno"> 1006 </span>
-<span class="lineno"> 1007 </span>normaliseRange :: (c -&gt; c) -&gt; Range c -&gt; Range c
-<span class="lineno"> 1008 </span><span class="decl"><span class="istickedoff">normaliseRange _norm RangeOpen             = <span class="nottickedoff">RangeOpen</span></span>
-<span class="lineno"> 1009 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeSingle x)       = RangeBounded (norm x) (norm x)</span>
-<span class="lineno"> 1010 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeLowerBounded x) = RangeLowerBounded (norm x)</span>
-<span class="lineno"> 1011 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeUpperBounded x) = <span class="nottickedoff">RangeUpperBounded (norm x)</span></span>
-<span class="lineno"> 1012 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeBounded x y)    = RangeBounded (norm x) (norm y)</span></span>
-<span class="lineno"> 1013 </span>
-<span class="lineno"> 1014 </span>innerDomainOf :: (MonadFail m, Show x) =&gt; Domain () x -&gt; m (Domain () x)
-<span class="lineno"> 1015 </span><span class="decl"><span class="istickedoff">innerDomainOf (DomainMatrix _ t) = return t</span>
-<span class="lineno"> 1016 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainSet _ _ t) = return t</span>
-<span class="lineno"> 1017 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainMSet _ _ t) = return t</span>
-<span class="lineno"> 1018 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainFunction _ _ a b) = return (DomainTuple [a,b])</span>
-<span class="lineno"> 1019 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainRelation _ _ ts) = return (DomainTuple ts)</span>
-<span class="lineno"> 1020 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainPartition _ _ t) = <span class="nottickedoff">return (DomainSet () def t)</span></span>
-<span class="lineno"> 1021 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf t = fail (&quot;innerDomainOf:&quot; &lt;+&gt; pretty (show t))</span></span>
-<span class="lineno"> 1022 </span>
-<span class="lineno"> 1023 </span>singletonDomainInt :: (Eq x, CanBeAnAlias x) =&gt; Domain r x -&gt; Maybe x
-<span class="lineno"> 1024 </span><span class="decl"><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeSingle a]) = Just a</span>
-<span class="lineno"> 1025 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeBounded a b]) =</span>
-<span class="lineno"> 1026 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno"> 1027 </span><span class="spaces">        </span><span class="istickedoff">followAlias (isAlias -&gt; Just x) = followAlias x</span>
-<span class="lineno"> 1028 </span><span class="spaces">        </span><span class="istickedoff">followAlias x = x</span>
-<span class="lineno"> 1029 </span><span class="spaces">    </span><span class="istickedoff">in</span>
-<span class="lineno"> 1030 </span><span class="spaces">        </span><span class="istickedoff">if followAlias a == followAlias b</span>
-<span class="lineno"> 1031 </span><span class="spaces">            </span><span class="istickedoff">then Just a</span>
-<span class="lineno"> 1032 </span><span class="spaces">            </span><span class="istickedoff">else Nothing</span>
-<span class="lineno"> 1033 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt _ = Nothing</span></span>
-<span class="lineno"> 1034 </span>
-<span class="lineno"> 1035 </span>matrixNumDimsD :: Domain r x -&gt; Int
-<span class="lineno"> 1036 </span><span class="decl"><span class="nottickedoff">matrixNumDimsD (DomainMatrix _ t) = 1 + matrixNumDimsD t</span>
-<span class="lineno"> 1037 </span><span class="spaces"></span><span class="nottickedoff">matrixNumDimsD _ = 0</span></span>
+<span class="lineno">  979 </span>
+<span class="lineno">  980 </span>normaliseDomain :: (Ord c, ExpressionLike c) =&gt; (c -&gt; c) -&gt; Domain r c -&gt; Domain r c
+<span class="lineno">  981 </span><span class="decl"><span class="istickedoff">normaliseDomain _norm DomainBool                  = DomainBool</span>
+<span class="lineno">  982 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainInt t rs           ) = DomainInt t $ sort $ map (normaliseRange norm) (expandRanges rs)</span>
+<span class="lineno">  983 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n Nothing   mp) = <span class="nottickedoff">DomainEnum n Nothing mp</span></span>
+<span class="lineno">  984 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n (Just rs) mp) = DomainEnum <span class="nottickedoff">n</span> (Just $ sort rs) mp</span>
+<span class="lineno">  985 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainUnnamed n x        ) = DomainUnnamed <span class="nottickedoff">n</span> (norm x)</span>
+<span class="lineno">  986 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRecord           doms     ) = DomainRecord  [ (n, normaliseDomain norm d)</span>
+<span class="lineno">  987 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
+<span class="lineno">  988 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainVariant          doms     ) = DomainVariant [ (n, normaliseDomain norm d)</span>
+<span class="lineno">  989 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
+<span class="lineno">  990 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainTuple            doms     ) = DomainTuple $ map (normaliseDomain norm) doms</span>
+<span class="lineno">  991 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMatrix           dom1 dom2) = DomainMatrix      (normaliseDomain norm dom1)</span>
+<span class="lineno">  992 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
+<span class="lineno">  993 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSet       r attr dom      ) = DomainSet       r (fmap norm attr)</span>
+<span class="lineno">  994 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno">  995 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMSet      r attr dom      ) = DomainMSet      r (fmap norm attr)</span>
+<span class="lineno">  996 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno">  997 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainFunction  r attr dom1 dom2) = DomainFunction  r (fmap norm attr)</span>
+<span class="lineno">  998 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom1)</span>
+<span class="lineno">  999 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
+<span class="lineno"> 1000 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSequence  r attr dom      ) = DomainSequence  r (fmap norm attr)</span>
+<span class="lineno"> 1001 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1002 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRelation  r attr doms     ) = DomainRelation  r (fmap norm attr)</span>
+<span class="lineno"> 1003 </span><span class="spaces">                                                                             </span><span class="istickedoff">(map (normaliseDomain norm) doms)</span>
+<span class="lineno"> 1004 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainPartition r attr dom      ) = DomainPartition r (fmap norm attr)</span>
+<span class="lineno"> 1005 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1006 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm d = d</span></span>
+<span class="lineno"> 1007 </span>
+<span class="lineno"> 1008 </span>normaliseRange :: (c -&gt; c) -&gt; Range c -&gt; Range c
+<span class="lineno"> 1009 </span><span class="decl"><span class="istickedoff">normaliseRange _norm RangeOpen             = <span class="nottickedoff">RangeOpen</span></span>
+<span class="lineno"> 1010 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeSingle x)       = RangeBounded (norm x) (norm x)</span>
+<span class="lineno"> 1011 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeLowerBounded x) = RangeLowerBounded (norm x)</span>
+<span class="lineno"> 1012 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeUpperBounded x) = <span class="nottickedoff">RangeUpperBounded (norm x)</span></span>
+<span class="lineno"> 1013 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeBounded x y)    = RangeBounded (norm x) (norm y)</span></span>
+<span class="lineno"> 1014 </span>
+<span class="lineno"> 1015 </span>innerDomainOf :: (MonadFail m, Show x) =&gt; Domain () x -&gt; m (Domain () x)
+<span class="lineno"> 1016 </span><span class="decl"><span class="istickedoff">innerDomainOf (DomainMatrix _ t) = return t</span>
+<span class="lineno"> 1017 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainSet _ _ t) = return t</span>
+<span class="lineno"> 1018 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainMSet _ _ t) = return t</span>
+<span class="lineno"> 1019 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainFunction _ _ a b) = return (DomainTuple [a,b])</span>
+<span class="lineno"> 1020 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainRelation _ _ ts) = return (DomainTuple ts)</span>
+<span class="lineno"> 1021 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainPartition _ _ t) = <span class="nottickedoff">return (DomainSet () def t)</span></span>
+<span class="lineno"> 1022 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf t = fail (&quot;innerDomainOf:&quot; &lt;+&gt; pretty (show t))</span></span>
+<span class="lineno"> 1023 </span>
+<span class="lineno"> 1024 </span>singletonDomainInt :: (Eq x, CanBeAnAlias x) =&gt; Domain r x -&gt; Maybe x
+<span class="lineno"> 1025 </span><span class="decl"><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeSingle a]) = Just a</span>
+<span class="lineno"> 1026 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeBounded a b]) =</span>
+<span class="lineno"> 1027 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno"> 1028 </span><span class="spaces">        </span><span class="istickedoff">followAlias (isAlias -&gt; Just x) = followAlias x</span>
+<span class="lineno"> 1029 </span><span class="spaces">        </span><span class="istickedoff">followAlias x = x</span>
+<span class="lineno"> 1030 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno"> 1031 </span><span class="spaces">        </span><span class="istickedoff">if followAlias a == followAlias b</span>
+<span class="lineno"> 1032 </span><span class="spaces">            </span><span class="istickedoff">then Just a</span>
+<span class="lineno"> 1033 </span><span class="spaces">            </span><span class="istickedoff">else Nothing</span>
+<span class="lineno"> 1034 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt _ = Nothing</span></span>
+<span class="lineno"> 1035 </span>
+<span class="lineno"> 1036 </span>matrixNumDimsD :: Domain r x -&gt; Int
+<span class="lineno"> 1037 </span><span class="decl"><span class="nottickedoff">matrixNumDimsD (DomainMatrix _ t) = 1 + matrixNumDimsD t</span>
+<span class="lineno"> 1038 </span><span class="spaces"></span><span class="nottickedoff">matrixNumDimsD _ = 0</span></span>
 
 </pre>
 </body>
