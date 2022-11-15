@@ -42,7 +42,7 @@ span.spaces    { background: white }
 <span class="lineno">   23 </span>--      (indicating the total number of parts)
 <span class="lineno">   24 </span>--   only use part numbers from 1.._NumParts, never use the others
 <span class="lineno">   25 </span>--      part(i) is used -&gt; part(i-1) is used, forAll i:int(3..maxNumParts)
-<span class="lineno">   26 </span>partitionOccurrence :: forall m . (MonadFail m, NameGen m, EnumerateDomain m) =&gt; Representation m
+<span class="lineno">   26 </span>partitionOccurrence :: forall m . (MonadFailDoc m, NameGen m, EnumerateDomain m) =&gt; Representation m
 <span class="lineno">   27 </span><span class="decl"><span class="istickedoff">partitionOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up symmetryOrdering</span>
 <span class="lineno">   28 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -303,7 +303,7 @@ span.spaces    { background: white }
 <span class="lineno">  284 </span><span class="spaces">                            </span><span class="istickedoff">| bucket &lt;- [1..numPartsValue]</span>
 <span class="lineno">  285 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
 <span class="lineno">  286 </span><span class="spaces">                        </span><span class="istickedoff">)</span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">(Just val, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">(Just val, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  288 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Partition Occurrence up)&quot;</span></span>
 <span class="lineno">  289 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expecting an integer literal for:&quot; &lt;+&gt; pretty (nameNumParts domain name)</span></span>
 <span class="lineno">  290 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty val</span></span>
@@ -311,7 +311,7 @@ span.spaces    { background: white }
 <span class="lineno">  292 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  293 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  294 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  295 </span><span class="spaces">                </span><span class="istickedoff">(_, Just val) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  295 </span><span class="spaces">                </span><span class="istickedoff">(_, Just val) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  296 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Partition Occurrence up)&quot;</span></span>
 <span class="lineno">  297 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (nameWhichPart domain name)</span></span>
 <span class="lineno">  298 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty val</span></span>
@@ -319,7 +319,7 @@ span.spaces    { background: white }
 <span class="lineno">  300 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  301 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  302 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  304 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Partition Occurrence up)&quot;</span></span>
 <span class="lineno">  305 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameNumParts domain name)</span></span>
 <span class="lineno">  306 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

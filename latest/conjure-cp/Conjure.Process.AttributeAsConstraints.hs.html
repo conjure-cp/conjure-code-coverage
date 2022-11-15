@@ -35,7 +35,7 @@ span.spaces    { background: white }
 <span class="lineno">   16 </span>
 <span class="lineno">   17 </span>-- | From the top level constraints, find the AACs and lift them to the domains of the declarations.
 <span class="lineno">   18 </span>--   Complain for any remaining AACs.
-<span class="lineno">   19 </span>attributeAsConstraints :: MonadFail m =&gt; Model -&gt; m Model
+<span class="lineno">   19 </span>attributeAsConstraints :: MonadFailDoc m =&gt; Model -&gt; m Model
 <span class="lineno">   20 </span><span class="decl"><span class="istickedoff">attributeAsConstraints m = do</span>
 <span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">let statements0 = mStatements m</span>
 <span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">statements1 &lt;- transformBiM attributeAsConstraints_OnLocals statements0</span>
@@ -43,13 +43,13 @@ span.spaces    { background: white }
 <span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">return m { mStatements = statements2 }</span></span>
 <span class="lineno">   25 </span>
 <span class="lineno">   26 </span>
-<span class="lineno">   27 </span>attributeAsConstraints_OnLocals :: MonadFail m =&gt; Expression -&gt; m Expression
+<span class="lineno">   27 </span>attributeAsConstraints_OnLocals :: MonadFailDoc m =&gt; Expression -&gt; m Expression
 <span class="lineno">   28 </span><span class="decl"><span class="istickedoff">attributeAsConstraints_OnLocals (WithLocals h (AuxiliaryVars locals)) =</span>
 <span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">WithLocals h . AuxiliaryVars &lt;$&gt; attributeAsConstraints_OnStmts locals</span>
 <span class="lineno">   30 </span><span class="spaces"></span><span class="istickedoff">attributeAsConstraints_OnLocals x = return x</span></span>
 <span class="lineno">   31 </span>
 <span class="lineno">   32 </span>
-<span class="lineno">   33 </span>attributeAsConstraints_OnStmts :: MonadFail m =&gt; [Statement] -&gt; m [Statement]
+<span class="lineno">   33 </span>attributeAsConstraints_OnStmts :: MonadFailDoc m =&gt; [Statement] -&gt; m [Statement]
 <span class="lineno">   34 </span><span class="decl"><span class="istickedoff">attributeAsConstraints_OnStmts statements0 = do</span>
 <span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">-- collecting top level attribute-as-constraints</span>
@@ -82,7 +82,7 @@ span.spaces    { background: white }
 <span class="lineno">   63 </span>
 <span class="lineno">   64 </span>
 <span class="lineno">   65 </span>mkAttributeToConstraint
-<span class="lineno">   66 </span>    :: (NameGen m, MonadFail m, Pretty r, Eq r)
+<span class="lineno">   66 </span>    :: (NameGen m, MonadFailDoc m, Pretty r, Eq r)
 <span class="lineno">   67 </span>    =&gt; Domain r Expression                          -- the input domain
 <span class="lineno">   68 </span>    -&gt; AttrName                                     -- the name of the attribute
 <span class="lineno">   69 </span>    -&gt; Maybe Expression                             -- the value for the attribute
@@ -95,7 +95,7 @@ span.spaces    { background: white }
 <span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">return cons</span></span>
 <span class="lineno">   77 </span>
 <span class="lineno">   78 </span>attributeToConstraint
-<span class="lineno">   79 </span>    :: (NameGen m, MonadFail m, Pretty r, Eq r)
+<span class="lineno">   79 </span>    :: (NameGen m, MonadFailDoc m, Pretty r, Eq r)
 <span class="lineno">   80 </span>    =&gt; Domain r Expression                          -- the input domain
 <span class="lineno">   81 </span>    -&gt; AttrName                                     -- the name of the attribute
 <span class="lineno">   82 </span>    -&gt; Maybe Expression                             -- the value for the attribute
@@ -106,7 +106,7 @@ span.spaces    { background: white }
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;minSize&quot; (Just val) = <span class="nottickedoff">return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
 <span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">generator &quot;maxSize&quot; (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span>
 <span class="lineno">   89 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
-<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">   92 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   93 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -121,7 +121,7 @@ span.spaces    { background: white }
 <span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
 <span class="lineno">  103 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;iPat in &amp;x . freq(&amp;x,&amp;i) &lt;= &amp;val |]</span></span>
 <span class="lineno">  104 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
-<span class="lineno">  105 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  106 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  108 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -143,7 +143,7 @@ span.spaces    { background: white }
 <span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">b &lt;- generator &quot;injective&quot;  Nothing &gt;&gt;= \ gen -&gt; gen x</span></span>
 <span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| &amp;a /\ &amp;b |]</span></span>
 <span class="lineno">  126 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
-<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  130 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -207,7 +207,7 @@ span.spaces    { background: white }
 <span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">c &lt;- generator &quot;transitive&quot;    Nothing &gt;&gt;= \ gen -&gt; gen rel</span>
 <span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">return [essence|<span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"><span class="nottickedoff"><span class="istickedoff"> &amp;a /\ &amp;b /\ &amp;c |]</span></span></span></span></span></span></span></span></span>
 <span class="lineno">  190 </span><span class="spaces">    </span><span class="istickedoff">generator attr _ =</span>
-<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  192 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  193 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  194 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -216,7 +216,7 @@ span.spaces    { background: white }
 <span class="lineno">  197 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;minSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &gt;= &amp;val |]</span></span>
 <span class="lineno">  198 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator &quot;maxSize&quot;  (Just val) = return $ \ x -&gt; return [essence| |&amp;x| &lt;= &amp;val |]</span></span>
 <span class="lineno">  199 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
-<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  201 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  203 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -241,13 +241,13 @@ span.spaces    { background: white }
 <span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
 <span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| forAll &amp;iPat, &amp;jPat in parts(&amp;x) . |&amp;i| = |&amp;j| |]</span></span>
 <span class="lineno">  224 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
-<span class="lineno">  225 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  225 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  226 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  227 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  228 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  229 </span><span class="spaces"></span><span class="istickedoff">attributeToConstraint domain = <span class="nottickedoff">generator</span> where</span>
 <span class="lineno">  230 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">generator attr _ =</span></span>
-<span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute:&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  232 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  233 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
 

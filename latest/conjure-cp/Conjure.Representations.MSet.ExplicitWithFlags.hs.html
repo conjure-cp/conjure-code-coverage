@@ -31,7 +31,7 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>import Conjure.Representations.Common
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
-<span class="lineno">   15 </span>msetExplicitWithFlags :: forall m . (MonadFail m, NameGen m, EnumerateDomain m) =&gt; Representation m
+<span class="lineno">   15 </span>msetExplicitWithFlags :: forall m . (MonadFailDoc m, NameGen m, EnumerateDomain m) =&gt; Representation m
 <span class="lineno">   16 </span><span class="decl"><span class="istickedoff">msetExplicitWithFlags = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -50,7 +50,7 @@ span.spaces    { background: white }
 <span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return x</span>
 <span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MaxOccur x) -&gt; do y &lt;- domainSizeOf innerDomain ; return (x * y)</span>
 <span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinMaxOccur _ x) -&gt; do y &lt;- domainSizeOf innerDomain ; return (x * y)</span>
-<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc (&quot;getMaxSize, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
 <span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">getMinOccur attrs = case attrs of</span>
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr _ (OccurAttr_MinOccur x) -&gt; Just x</span>
@@ -63,7 +63,7 @@ span.spaces    { background: white }
 <span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_Size x) _ -&gt; return x</span>
 <span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_MaxSize x) _ -&gt; return x</span>
 <span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">MSetAttr (SizeAttr_MinMaxSize _ x) _ -&gt; return x</span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;getMaxOccur, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc (&quot;getMaxOccur, mset not supported. attributes:&quot; &lt;+&gt; pretty attrs)</span></span>
 <span class="lineno">   48 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
 <span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">downD (name, domain@(DomainMSet _ attrs innerDomain)) = do</span>
@@ -159,7 +159,7 @@ span.spaces    { background: white }
 <span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff">maxSizeInt &lt;-</span>
 <span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">case maxSize of</span>
 <span class="lineno">  142 </span><span class="spaces">                    </span><span class="istickedoff">ConstantInt _ x -&gt; return x</span>
-<span class="lineno">  143 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  143 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  144 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer for the maxSize attribute.&quot;</span></span>
 <span class="lineno">  145 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty maxSize</span></span>
 <span class="lineno">  146 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -196,26 +196,26 @@ span.spaces    { background: white }
 <span class="lineno">  177 </span><span class="spaces">                                                    </span><span class="istickedoff">[ replicate (fromInteger i) v</span>
 <span class="lineno">  178 </span><span class="spaces">                                                    </span><span class="istickedoff">| (ConstantInt TagInt i,v) &lt;- zip flags vals</span>
 <span class="lineno">  179 </span><span class="spaces">                                                    </span><span class="istickedoff">] )</span>
-<span class="lineno">  180 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  180 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  181 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  182 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
 <span class="lineno">  183 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  184 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  185 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  186 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  186 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  187 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (nameFlag domain name)</span></span>
 <span class="lineno">  188 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty flagMatrix</span></span>
 <span class="lineno">  189 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  190 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  191 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  193 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in MSet ExplicitVarSizeWithFlags up 1)&quot;</span></span>
 <span class="lineno">  194 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameFlag domain name)</span></span>
 <span class="lineno">  195 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  196 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  197 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  198 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  199 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  199 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  200 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in MSet ExplicitVarSizeWithFlags up 2)&quot;</span></span>
 <span class="lineno">  201 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

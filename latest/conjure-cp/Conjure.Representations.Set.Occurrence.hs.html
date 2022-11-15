@@ -28,7 +28,7 @@ span.spaces    { background: white }
 <span class="lineno">    9 </span>import Conjure.Representations.Common
 <span class="lineno">   10 </span>
 <span class="lineno">   11 </span>
-<span class="lineno">   12 </span>setOccurrence :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   12 </span>setOccurrence :: forall m . (MonadFailDoc m, NameGen m) =&gt; Representation m
 <span class="lineno">   13 </span><span class="decl"><span class="istickedoff">setOccurrence = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   14 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   15 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -90,13 +90,13 @@ span.spaces    { background: white }
 <span class="lineno">   71 </span><span class="spaces">                                            </span><span class="istickedoff">| (v,b) &lt;- zip innerDomainVals vals</span>
 <span class="lineno">   72 </span><span class="spaces">                                            </span><span class="istickedoff">, viewConstantBool b == Just True</span>
 <span class="lineno">   73 </span><span class="spaces">                                            </span><span class="istickedoff">] )</span>
-<span class="lineno">   74 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">   74 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">   75 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">   76 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
 <span class="lineno">   77 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">   78 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">   79 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">   81 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Set Occurrence up)&quot;</span></span>
 <span class="lineno">   82 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

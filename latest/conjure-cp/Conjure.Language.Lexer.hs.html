@@ -507,7 +507,7 @@ span.spaces    { background: white }
 <span class="lineno">  488 </span><span class="spaces">    </span><span class="istickedoff">, ( L_transform, &quot;transform&quot;)</span>
 <span class="lineno">  489 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
 <span class="lineno">  490 </span>
-<span class="lineno">  491 </span>runLexer :: MonadFail m =&gt; T.Text -&gt; m [LexemePos]
+<span class="lineno">  491 </span>runLexer :: MonadFailDoc m =&gt; T.Text -&gt; m [LexemePos]
 <span class="lineno">  492 </span><span class="decl"><span class="istickedoff">runLexer text = do</span>
 <span class="lineno">  493 </span><span class="spaces">    </span><span class="istickedoff">ls &lt;- go text</span>
 <span class="lineno">  494 </span><span class="spaces">    </span><span class="istickedoff">let lsPaired = calcPos (initialPos &quot;&quot;) ls</span>
@@ -524,7 +524,7 @@ span.spaces    { background: white }
 <span class="lineno">  505 </span><span class="spaces">            </span><span class="istickedoff">if T.null t</span>
 <span class="lineno">  506 </span><span class="spaces">                </span><span class="istickedoff">then return []</span>
 <span class="lineno">  507 </span><span class="spaces">                </span><span class="istickedoff">else case results of</span>
-<span class="lineno">  508 </span><span class="spaces">                        </span><span class="istickedoff">[] -&gt; fail (&quot;Lexing error:&quot; Pr.&lt;+&gt; Pr.text (T.unpack t))</span>
+<span class="lineno">  508 </span><span class="spaces">                        </span><span class="istickedoff">[] -&gt; failDoc (&quot;Lexing error:&quot; Pr.&lt;+&gt; Pr.text (T.unpack t))</span>
 <span class="lineno">  509 </span><span class="spaces">                        </span><span class="istickedoff">((rest,lexeme):_) -&gt; (lexeme:) &lt;$&gt; go rest</span>
 <span class="lineno">  510 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  511 </span><span class="spaces">        </span><span class="istickedoff">-- attach source positions to lexemes</span>

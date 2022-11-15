@@ -56,12 +56,12 @@ span.spaces    { background: white }
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">-- ESSENCE' is accepted, just for convenience</span>
 <span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">unless (l `elem` [&quot;Essence&quot;, &quot;ESSENCE&quot;, &quot;ESSENCE'&quot;]) $ <span class="nottickedoff">do</span></span>
 <span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">setPosition pos1</span></span>
-<span class="lineno">   40 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">fail $ &quot;language name has to be Essence, but given:&quot; &lt;+&gt; pretty l</span></span>
+<span class="lineno">   40 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">failDoc $ &quot;language name has to be Essence, but given:&quot; &lt;+&gt; pretty l</span></span>
 <span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">pos2 &lt;- getPosition</span>
 <span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">is &lt;- sepBy1 integer dot</span>
 <span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff">unless (is &gt;= [1]) $ <span class="nottickedoff">do</span></span>
 <span class="lineno">   44 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">setPosition pos2</span></span>
-<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">fail $ &quot;language version expected to be at least 1.0, but given:&quot; &lt;+&gt;</span></span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">failDoc $ &quot;language version expected to be at least 1.0, but given:&quot; &lt;+&gt;</span></span>
 <span class="lineno">   46 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">pretty (intercalate &quot;.&quot; (map show is))</span></span>
 <span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">return (LanguageVersion (Name l) (map fromInteger is))</span>
 <span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">l  &lt;- optional pLanguage</span>
@@ -251,7 +251,7 @@ span.spaces    { background: white }
 <span class="lineno">  232 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let RelationAttr _ (BinaryRelationAttrs binAttrs) = x</span></span>
 <span class="lineno">  233 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">when (length ys /= 2 &amp;&amp; not (S.null binAttrs)) $ do</span></span>
 <span class="lineno">  234 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">setPosition pos</span></span>
-<span class="lineno">  235 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">fail $ &quot;Only binary relations can have these attributes:&quot; &lt;+&gt;</span></span>
+<span class="lineno">  235 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">failDoc $ &quot;Only binary relations can have these attributes:&quot; &lt;+&gt;</span></span>
 <span class="lineno">  236 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">prettyList id &quot;,&quot; (S.toList binAttrs)</span></span>
 <span class="lineno">  237 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ DomainRelation NoRepresentation x ys</span></span>
 <span class="lineno">  238 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -286,7 +286,7 @@ span.spaces    { background: white }
 <span class="lineno">  267 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; b, DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
 <span class="lineno">  268 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  269 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  270 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span></span>
+<span class="lineno">  270 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span></span>
 <span class="lineno">  271 </span>
 <span class="lineno">  272 </span>parseMSetAttr :: Parser (MSetAttr Expression)
 <span class="lineno">  273 </span><span class="decl"><span class="nottickedoff">parseMSetAttr = do</span>
@@ -304,7 +304,7 @@ span.spaces    { background: white }
 <span class="lineno">  285 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; b, DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
 <span class="lineno">  286 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  287 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  288 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  288 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  289 </span><span class="spaces">    </span><span class="nottickedoff">occur &lt;- case filterAttrName [&quot;minOccur&quot;, &quot;maxOccur&quot;] attrs of</span>
 <span class="lineno">  290 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return OccurAttr_None</span>
 <span class="lineno">  291 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minOccur&quot; a] -&gt; return (OccurAttr_MinOccur a)</span>
@@ -312,7 +312,7 @@ span.spaces    { background: white }
 <span class="lineno">  293 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxOccur&quot; b, DANameValue &quot;minOccur&quot; a] -&gt; return (OccurAttr_MinMaxOccur a b)</span>
 <span class="lineno">  294 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  295 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  296 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  296 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  297 </span><span class="spaces">    </span><span class="nottickedoff">return (MSetAttr size occur)</span></span>
 <span class="lineno">  298 </span>
 <span class="lineno">  299 </span>parseFunctionAttr :: Parser (FunctionAttr Expression)
@@ -332,7 +332,7 @@ span.spaces    { background: white }
 <span class="lineno">  313 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
 <span class="lineno">  314 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  315 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  316 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  316 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  317 </span><span class="spaces">    </span><span class="nottickedoff">let partiality = if DAName &quot;total&quot; `elem` attrs</span>
 <span class="lineno">  318 </span><span class="spaces">                        </span><span class="nottickedoff">then PartialityAttr_Total</span>
 <span class="lineno">  319 </span><span class="spaces">                        </span><span class="nottickedoff">else PartialityAttr_Partial</span>
@@ -344,7 +344,7 @@ span.spaces    { background: white }
 <span class="lineno">  325 </span><span class="spaces">        </span><span class="nottickedoff">[DAName &quot;injective&quot;, DAName &quot;surjective&quot;] -&gt; return JectivityAttr_Bijective</span>
 <span class="lineno">  326 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  327 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  328 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  328 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  329 </span><span class="spaces">    </span><span class="nottickedoff">return (FunctionAttr size partiality jectivity)</span></span>
 <span class="lineno">  330 </span>
 <span class="lineno">  331 </span>parseSequenceAttr :: Parser (SequenceAttr Expression)
@@ -363,7 +363,7 @@ span.spaces    { background: white }
 <span class="lineno">  344 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
 <span class="lineno">  345 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  346 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  347 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  347 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  348 </span><span class="spaces">    </span><span class="nottickedoff">jectivity  &lt;- case filterJectivity attrs of</span>
 <span class="lineno">  349 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return JectivityAttr_None</span>
 <span class="lineno">  350 </span><span class="spaces">        </span><span class="nottickedoff">[DAName &quot;bijective&quot; ] -&gt; return JectivityAttr_Bijective</span>
@@ -372,369 +372,349 @@ span.spaces    { background: white }
 <span class="lineno">  353 </span><span class="spaces">        </span><span class="nottickedoff">[DAName &quot;injective&quot;, DAName &quot;surjective&quot;] -&gt; return JectivityAttr_Bijective</span>
 <span class="lineno">  354 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
 <span class="lineno">  355 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  356 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  356 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
 <span class="lineno">  357 </span><span class="spaces">    </span><span class="nottickedoff">return (SequenceAttr size jectivity)</span></span>
 <span class="lineno">  358 </span>
 <span class="lineno">  359 </span>parseRelationAttr :: Parser (RelationAttr Expression)
 <span class="lineno">  360 </span><span class="decl"><span class="nottickedoff">parseRelationAttr = do</span>
 <span class="lineno">  361 </span><span class="spaces">    </span><span class="nottickedoff">pos &lt;- getPosition</span>
 <span class="lineno">  362 </span><span class="spaces">    </span><span class="nottickedoff">DomainAttributes attrs &lt;- parseAttributes</span>
-<span class="lineno">  363 </span><span class="spaces">    </span><span class="nottickedoff">checkExtraAttributes pos &quot;relation&quot; attrs</span>
-<span class="lineno">  364 </span><span class="spaces">        </span><span class="nottickedoff">[ &quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;</span>
-<span class="lineno">  365 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;reflexive&quot;, &quot;irreflexive&quot;, &quot;coreflexive&quot;</span>
-<span class="lineno">  366 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;symmetric&quot;, &quot;antiSymmetric&quot;, &quot;aSymmetric&quot;</span>
-<span class="lineno">  367 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;transitive&quot;, &quot;total&quot;, &quot;connex&quot;, &quot;Euclidean&quot;</span>
-<span class="lineno">  368 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;serial&quot;, &quot;equivalence&quot;, &quot;partialOrder&quot;</span>
-<span class="lineno">  369 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  370 </span><span class="spaces">    </span><span class="nottickedoff">size &lt;- case filterSizey attrs of</span>
-<span class="lineno">  371 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
-<span class="lineno">  372 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;size&quot;    a] -&gt; return (SizeAttr_Size a)</span>
-<span class="lineno">  373 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
-<span class="lineno">  374 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
-<span class="lineno">  375 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; b, DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
-<span class="lineno">  376 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
-<span class="lineno">  377 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  378 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
-<span class="lineno">  379 </span><span class="spaces">    </span><span class="nottickedoff">let readBinRel' (DAName (Name a)) = readBinRel (fromString (textToString a))</span>
-<span class="lineno">  380 </span><span class="spaces">        </span><span class="nottickedoff">readBinRel' a = do</span>
-<span class="lineno">  381 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  382 </span><span class="spaces">            </span><span class="nottickedoff">fail $ &quot;Not a binary relation attribute:&quot; &lt;+&gt; pretty a</span>
-<span class="lineno">  383 </span><span class="spaces">    </span><span class="nottickedoff">binRels &lt;- mapM readBinRel' (filterBinRel attrs)</span>
-<span class="lineno">  384 </span><span class="spaces">    </span><span class="nottickedoff">return (RelationAttr size (BinaryRelationAttrs (S.fromList binRels)))</span></span>
-<span class="lineno">  385 </span>
-<span class="lineno">  386 </span>parsePartitionAttr :: Parser (PartitionAttr Expression)
-<span class="lineno">  387 </span><span class="decl"><span class="nottickedoff">parsePartitionAttr = do</span>
-<span class="lineno">  388 </span><span class="spaces">    </span><span class="nottickedoff">pos &lt;- getPosition</span>
-<span class="lineno">  389 </span><span class="spaces">    </span><span class="nottickedoff">DomainAttributes attrs &lt;- parseAttributes</span>
-<span class="lineno">  390 </span><span class="spaces">    </span><span class="nottickedoff">checkExtraAttributes pos &quot;partition&quot; attrs</span>
-<span class="lineno">  391 </span><span class="spaces">        </span><span class="nottickedoff">[ &quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;</span>
-<span class="lineno">  392 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;regular&quot;</span>
-<span class="lineno">  393 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;numParts&quot;, &quot;minNumParts&quot;, &quot;maxNumParts&quot;</span>
-<span class="lineno">  394 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;partSize&quot;, &quot;minPartSize&quot;, &quot;maxPartSize&quot;</span>
-<span class="lineno">  395 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  396 </span><span class="spaces">    </span><span class="nottickedoff">unless (null $ filterAttrName [&quot;complete&quot;] attrs) $ do</span>
-<span class="lineno">  397 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  398 </span><span class="spaces">        </span><span class="nottickedoff">fail $ vcat [ &quot;Partitions do not support the 'complete' attribute.&quot;</span>
-<span class="lineno">  399 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;They are complete by default.&quot;</span>
-<span class="lineno">  400 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  401 </span><span class="spaces">    </span><span class="nottickedoff">unless (null $ filterSizey attrs) $ do</span>
-<span class="lineno">  402 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  403 </span><span class="spaces">        </span><span class="nottickedoff">fail $ vcat [ &quot;Partitions do not support these attributes:&quot; &lt;+&gt; prettyList id &quot;,&quot; (filterSizey attrs)</span>
-<span class="lineno">  404 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;This is because partitions are complete by default.&quot;</span>
-<span class="lineno">  405 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  406 </span><span class="spaces">    </span><span class="nottickedoff">partsNum         &lt;- case filterAttrName [&quot;numParts&quot;, &quot;minNumParts&quot;, &quot;maxNumParts&quot;] attrs of</span>
-<span class="lineno">  407 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
-<span class="lineno">  408 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;numParts&quot;    a] -&gt; return (SizeAttr_Size a)</span>
-<span class="lineno">  409 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minNumParts&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
-<span class="lineno">  410 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxNumParts&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
-<span class="lineno">  411 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxNumParts&quot; b, DANameValue &quot;minNumParts&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
-<span class="lineno">  412 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
-<span class="lineno">  413 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  414 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
-<span class="lineno">  415 </span><span class="spaces">    </span><span class="nottickedoff">partsSize        &lt;- case filterAttrName [&quot;partSize&quot;, &quot;minPartSize&quot;, &quot;maxPartSize&quot;] attrs of</span>
-<span class="lineno">  416 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
-<span class="lineno">  417 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;partSize&quot;    a] -&gt; return (SizeAttr_Size a)</span>
-<span class="lineno">  418 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minPartSize&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
-<span class="lineno">  419 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxPartSize&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
-<span class="lineno">  420 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxPartSize&quot; b, DANameValue &quot;minPartSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
-<span class="lineno">  421 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
-<span class="lineno">  422 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  423 </span><span class="spaces">            </span><span class="nottickedoff">fail (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
-<span class="lineno">  424 </span><span class="spaces">    </span><span class="nottickedoff">let isRegular  = DAName &quot;regular&quot;  `elem` attrs</span>
-<span class="lineno">  425 </span><span class="spaces">    </span><span class="nottickedoff">return PartitionAttr {..}</span></span>
-<span class="lineno">  426 </span>
-<span class="lineno">  427 </span>
-<span class="lineno">  428 </span>checkExtraAttributes :: SourcePos -&gt; Doc -&gt; [DomainAttribute a] -&gt; [Name] -&gt; Parser ()
-<span class="lineno">  429 </span><span class="decl"><span class="nottickedoff">checkExtraAttributes pos ty attrs supported = do</span>
-<span class="lineno">  430 </span><span class="spaces">    </span><span class="nottickedoff">let extras = mapMaybe f attrs</span>
-<span class="lineno">  431 </span><span class="spaces">    </span><span class="nottickedoff">unless (null extras) $ do</span>
-<span class="lineno">  432 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
-<span class="lineno">  433 </span><span class="spaces">        </span><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attributes for&quot; &lt;+&gt; ty &lt;&gt; &quot;:&quot; &lt;+&gt; prettyList id &quot;,&quot; extras</span>
-<span class="lineno">  434 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;Only these are supported:&quot; &lt;+&gt; prettyList id &quot;,&quot; supported</span>
-<span class="lineno">  435 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
-<span class="lineno">  436 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  437 </span><span class="spaces">        </span><span class="nottickedoff">f (DANameValue nm _) | nm `notElem` supported = Just nm</span>
-<span class="lineno">  438 </span><span class="spaces">        </span><span class="nottickedoff">f (DAName      nm  ) | nm `notElem` supported = Just nm</span>
-<span class="lineno">  439 </span><span class="spaces">        </span><span class="nottickedoff">f _ = Nothing</span></span>
-<span class="lineno">  440 </span>
-<span class="lineno">  441 </span>filterAttrName :: Ord a =&gt; [Name] -&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
-<span class="lineno">  442 </span><span class="decl"><span class="nottickedoff">filterAttrName keep = sort . filter f</span>
-<span class="lineno">  443 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  444 </span><span class="spaces">        </span><span class="nottickedoff">f (DANameValue nm _) | nm `elem` keep = True</span>
-<span class="lineno">  445 </span><span class="spaces">        </span><span class="nottickedoff">f (DAName      nm  ) | nm `elem` keep = True</span>
-<span class="lineno">  446 </span><span class="spaces">        </span><span class="nottickedoff">f _ = False</span></span>
+<span class="lineno">  363 </span><span class="spaces">    </span><span class="nottickedoff">checkExtraAttributes pos &quot;relation&quot; attrs (map (Name . stringToText) ([&quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;] ++ binRelNames))</span>
+<span class="lineno">  364 </span><span class="spaces">    </span><span class="nottickedoff">size &lt;- case filterSizey attrs of</span>
+<span class="lineno">  365 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
+<span class="lineno">  366 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;size&quot;    a] -&gt; return (SizeAttr_Size a)</span>
+<span class="lineno">  367 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
+<span class="lineno">  369 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxSize&quot; b, DANameValue &quot;minSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
+<span class="lineno">  370 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
+<span class="lineno">  371 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  372 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  373 </span><span class="spaces">    </span><span class="nottickedoff">let readBinRel' (DAName (Name a)) = readBinRel (fromString (textToString a))</span>
+<span class="lineno">  374 </span><span class="spaces">        </span><span class="nottickedoff">readBinRel' a = do</span>
+<span class="lineno">  375 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  376 </span><span class="spaces">            </span><span class="nottickedoff">failDoc $ &quot;Not a binary relation attribute:&quot; &lt;+&gt; pretty a</span>
+<span class="lineno">  377 </span><span class="spaces">    </span><span class="nottickedoff">binRels &lt;- mapM readBinRel' (filterBinRel attrs)</span>
+<span class="lineno">  378 </span><span class="spaces">    </span><span class="nottickedoff">return (RelationAttr size (BinaryRelationAttrs (S.fromList binRels)))</span></span>
+<span class="lineno">  379 </span>
+<span class="lineno">  380 </span>parsePartitionAttr :: Parser (PartitionAttr Expression)
+<span class="lineno">  381 </span><span class="decl"><span class="nottickedoff">parsePartitionAttr = do</span>
+<span class="lineno">  382 </span><span class="spaces">    </span><span class="nottickedoff">pos &lt;- getPosition</span>
+<span class="lineno">  383 </span><span class="spaces">    </span><span class="nottickedoff">DomainAttributes attrs &lt;- parseAttributes</span>
+<span class="lineno">  384 </span><span class="spaces">    </span><span class="nottickedoff">checkExtraAttributes pos &quot;partition&quot; attrs</span>
+<span class="lineno">  385 </span><span class="spaces">        </span><span class="nottickedoff">[ &quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;</span>
+<span class="lineno">  386 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;regular&quot;</span>
+<span class="lineno">  387 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;numParts&quot;, &quot;minNumParts&quot;, &quot;maxNumParts&quot;</span>
+<span class="lineno">  388 </span><span class="spaces">        </span><span class="nottickedoff">, &quot;partSize&quot;, &quot;minPartSize&quot;, &quot;maxPartSize&quot;</span>
+<span class="lineno">  389 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  390 </span><span class="spaces">    </span><span class="nottickedoff">unless (null $ filterAttrName [&quot;complete&quot;] attrs) $ do</span>
+<span class="lineno">  391 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  392 </span><span class="spaces">        </span><span class="nottickedoff">failDoc $ vcat [ &quot;Partitions do not support the 'complete' attribute.&quot;</span>
+<span class="lineno">  393 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;They are complete by default.&quot;</span>
+<span class="lineno">  394 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="nottickedoff">unless (null $ filterSizey attrs) $ do</span>
+<span class="lineno">  396 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  397 </span><span class="spaces">        </span><span class="nottickedoff">failDoc $ vcat [ &quot;Partitions do not support these attributes:&quot; &lt;+&gt; prettyList id &quot;,&quot; (filterSizey attrs)</span>
+<span class="lineno">  398 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;This is because partitions are complete by default.&quot;</span>
+<span class="lineno">  399 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  400 </span><span class="spaces">    </span><span class="nottickedoff">partsNum         &lt;- case filterAttrName [&quot;numParts&quot;, &quot;minNumParts&quot;, &quot;maxNumParts&quot;] attrs of</span>
+<span class="lineno">  401 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
+<span class="lineno">  402 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;numParts&quot;    a] -&gt; return (SizeAttr_Size a)</span>
+<span class="lineno">  403 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minNumParts&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
+<span class="lineno">  404 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxNumParts&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
+<span class="lineno">  405 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxNumParts&quot; b, DANameValue &quot;minNumParts&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
+<span class="lineno">  406 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
+<span class="lineno">  407 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  408 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  409 </span><span class="spaces">    </span><span class="nottickedoff">partsSize        &lt;- case filterAttrName [&quot;partSize&quot;, &quot;minPartSize&quot;, &quot;maxPartSize&quot;] attrs of</span>
+<span class="lineno">  410 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; return SizeAttr_None</span>
+<span class="lineno">  411 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;partSize&quot;    a] -&gt; return (SizeAttr_Size a)</span>
+<span class="lineno">  412 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;minPartSize&quot; a] -&gt; return (SizeAttr_MinSize a)</span>
+<span class="lineno">  413 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxPartSize&quot; a] -&gt; return (SizeAttr_MaxSize a)</span>
+<span class="lineno">  414 </span><span class="spaces">        </span><span class="nottickedoff">[DANameValue &quot;maxPartSize&quot; b, DANameValue &quot;minPartSize&quot; a] -&gt; return (SizeAttr_MinMaxSize a b)</span>
+<span class="lineno">  415 </span><span class="spaces">        </span><span class="nottickedoff">as -&gt; do</span>
+<span class="lineno">  416 </span><span class="spaces">            </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  417 </span><span class="spaces">            </span><span class="nottickedoff">failDoc (&quot;incompatible attributes:&quot; &lt;+&gt; stringToDoc (show as))</span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="nottickedoff">let isRegular  = DAName &quot;regular&quot;  `elem` attrs</span>
+<span class="lineno">  419 </span><span class="spaces">    </span><span class="nottickedoff">return PartitionAttr {..}</span></span>
+<span class="lineno">  420 </span>
+<span class="lineno">  421 </span>
+<span class="lineno">  422 </span>checkExtraAttributes :: SourcePos -&gt; Doc -&gt; [DomainAttribute a] -&gt; [Name] -&gt; Parser ()
+<span class="lineno">  423 </span><span class="decl"><span class="nottickedoff">checkExtraAttributes pos ty attrs supported = do</span>
+<span class="lineno">  424 </span><span class="spaces">    </span><span class="nottickedoff">let extras = mapMaybe f attrs</span>
+<span class="lineno">  425 </span><span class="spaces">    </span><span class="nottickedoff">unless (null extras) $ do</span>
+<span class="lineno">  426 </span><span class="spaces">        </span><span class="nottickedoff">setPosition pos</span>
+<span class="lineno">  427 </span><span class="spaces">        </span><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attributes for&quot; &lt;+&gt; ty &lt;&gt; &quot;:&quot; &lt;+&gt; prettyList id &quot;,&quot; extras</span>
+<span class="lineno">  428 </span><span class="spaces">                    </span><span class="nottickedoff">, &quot;Only these are supported:&quot; &lt;+&gt; prettyList id &quot;,&quot; supported</span>
+<span class="lineno">  429 </span><span class="spaces">                    </span><span class="nottickedoff">]</span>
+<span class="lineno">  430 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  431 </span><span class="spaces">        </span><span class="nottickedoff">f (DANameValue nm _) | nm `notElem` supported = Just nm</span>
+<span class="lineno">  432 </span><span class="spaces">        </span><span class="nottickedoff">f (DAName      nm  ) | nm `notElem` supported = Just nm</span>
+<span class="lineno">  433 </span><span class="spaces">        </span><span class="nottickedoff">f _ = Nothing</span></span>
+<span class="lineno">  434 </span>
+<span class="lineno">  435 </span>filterAttrName :: Ord a =&gt; [Name] -&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
+<span class="lineno">  436 </span><span class="decl"><span class="nottickedoff">filterAttrName keep = sort . filter f</span>
+<span class="lineno">  437 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  438 </span><span class="spaces">        </span><span class="nottickedoff">f (DANameValue nm _) | nm `elem` keep = True</span>
+<span class="lineno">  439 </span><span class="spaces">        </span><span class="nottickedoff">f (DAName      nm  ) | nm `elem` keep = True</span>
+<span class="lineno">  440 </span><span class="spaces">        </span><span class="nottickedoff">f _ = False</span></span>
+<span class="lineno">  441 </span>
+<span class="lineno">  442 </span>filterSizey :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
+<span class="lineno">  443 </span><span class="decl"><span class="nottickedoff">filterSizey = filterAttrName [&quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;]</span></span>
+<span class="lineno">  444 </span>
+<span class="lineno">  445 </span>filterJectivity :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
+<span class="lineno">  446 </span><span class="decl"><span class="nottickedoff">filterJectivity = filterAttrName [&quot;injective&quot;, &quot;surjective&quot;, &quot;bijective&quot;]</span></span>
 <span class="lineno">  447 </span>
-<span class="lineno">  448 </span>filterSizey :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
-<span class="lineno">  449 </span><span class="decl"><span class="nottickedoff">filterSizey = filterAttrName [&quot;size&quot;, &quot;minSize&quot;, &quot;maxSize&quot;]</span></span>
+<span class="lineno">  448 </span>filterBinRel :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
+<span class="lineno">  449 </span><span class="decl"><span class="nottickedoff">filterBinRel = filterAttrName (map (Name . stringToText) binRelNames)</span></span>
 <span class="lineno">  450 </span>
-<span class="lineno">  451 </span>filterJectivity :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
-<span class="lineno">  452 </span><span class="decl"><span class="nottickedoff">filterJectivity = filterAttrName [&quot;injective&quot;, &quot;surjective&quot;, &quot;bijective&quot;]</span></span>
-<span class="lineno">  453 </span>
-<span class="lineno">  454 </span>filterBinRel :: Ord a =&gt; [DomainAttribute a] -&gt; [DomainAttribute a]
-<span class="lineno">  455 </span><span class="decl"><span class="nottickedoff">filterBinRel = filterAttrName</span>
-<span class="lineno">  456 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;reflexive&quot;</span>
-<span class="lineno">  457 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;irreflexive&quot;</span>
-<span class="lineno">  458 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;coreflexive&quot;</span>
-<span class="lineno">  459 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;symmetric&quot;</span>
-<span class="lineno">  460 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;antiSymmetric&quot;</span>
-<span class="lineno">  461 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;aSymmetric&quot;</span>
-<span class="lineno">  462 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;transitive&quot;</span>
-<span class="lineno">  463 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;total&quot;</span>
-<span class="lineno">  464 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;connex&quot;</span>
-<span class="lineno">  465 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Euclidean&quot;</span>
-<span class="lineno">  466 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;serial&quot;</span>
-<span class="lineno">  467 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;equivalence&quot;</span>
-<span class="lineno">  468 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;partialOrder&quot;</span>
-<span class="lineno">  469 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  470 </span>
-<span class="lineno">  471 </span>parseMetaVariable :: Parser String
-<span class="lineno">  472 </span><span class="decl"><span class="nottickedoff">parseMetaVariable = do</span>
-<span class="lineno">  473 </span><span class="spaces">    </span><span class="nottickedoff">let isMeta LMetaVar{} = True</span>
-<span class="lineno">  474 </span><span class="spaces">        </span><span class="nottickedoff">isMeta _          = False</span>
-<span class="lineno">  475 </span><span class="spaces">    </span><span class="nottickedoff">LMetaVar iden &lt;- satisfyT isMeta</span>
-<span class="lineno">  476 </span><span class="spaces">    </span><span class="nottickedoff">return (T.unpack iden)</span></span>
-<span class="lineno">  477 </span>
-<span class="lineno">  478 </span>parseExpr :: Parser Expression
-<span class="lineno">  479 </span>-- parseExpr | trace &quot;parseExpr&quot; True = parseAtomicExpr &lt;?&gt; &quot;expression&quot;
-<span class="lineno">  480 </span><span class="decl"><span class="istickedoff">parseExpr = parseAtomicExpr &lt;?&gt; <span class="nottickedoff">&quot;expression&quot;</span></span></span>
+<span class="lineno">  451 </span>parseMetaVariable :: Parser String
+<span class="lineno">  452 </span><span class="decl"><span class="nottickedoff">parseMetaVariable = do</span>
+<span class="lineno">  453 </span><span class="spaces">    </span><span class="nottickedoff">let isMeta LMetaVar{} = True</span>
+<span class="lineno">  454 </span><span class="spaces">        </span><span class="nottickedoff">isMeta _          = False</span>
+<span class="lineno">  455 </span><span class="spaces">    </span><span class="nottickedoff">LMetaVar iden &lt;- satisfyT isMeta</span>
+<span class="lineno">  456 </span><span class="spaces">    </span><span class="nottickedoff">return (T.unpack iden)</span></span>
+<span class="lineno">  457 </span>
+<span class="lineno">  458 </span>parseExpr :: Parser Expression
+<span class="lineno">  459 </span>-- parseExpr | trace &quot;parseExpr&quot; True = parseAtomicExpr &lt;?&gt; &quot;expression&quot;
+<span class="lineno">  460 </span><span class="decl"><span class="istickedoff">parseExpr = parseAtomicExpr &lt;?&gt; <span class="nottickedoff">&quot;expression&quot;</span></span></span>
+<span class="lineno">  461 </span>
+<span class="lineno">  462 </span>parseAtomicExpr :: Parser Expression
+<span class="lineno">  463 </span>-- parseAtomicExpr | trace &quot;parseAtomicExpr&quot; True = parseAtomicExprNoPrePost &lt;?&gt; &quot;expression&quot;
+<span class="lineno">  464 </span><span class="decl"><span class="istickedoff">parseAtomicExpr = parseAtomicExprNoPrePost &lt;?&gt; <span class="nottickedoff">&quot;expression&quot;</span></span></span>
+<span class="lineno">  465 </span>
+<span class="lineno">  466 </span>parseAtomicExprNoPrePost :: Parser Expression
+<span class="lineno">  467 </span>-- parseAtomicExprNoPrePost | trace &quot;parseAtomicExprNoPrePost&quot; True = msum [try parseLiteral, parseTyped]
+<span class="lineno">  468 </span><span class="decl"><span class="istickedoff">parseAtomicExprNoPrePost = msum [try parseLiteral, <span class="nottickedoff">parseReference</span>, <span class="nottickedoff">parseTyped</span>]</span></span>
+<span class="lineno">  469 </span>
+<span class="lineno">  470 </span>parseTyped :: Parser Expression
+<span class="lineno">  471 </span>-- parseTyped | trace &quot;parseTyped&quot; True = parens $ do
+<span class="lineno">  472 </span><span class="decl"><span class="nottickedoff">parseTyped = parens $ do</span>
+<span class="lineno">  473 </span><span class="spaces">    </span><span class="nottickedoff">x  &lt;- parseExpr</span>
+<span class="lineno">  474 </span><span class="spaces">    </span><span class="nottickedoff">lexeme L_Colon</span>
+<span class="lineno">  475 </span><span class="spaces">    </span><span class="nottickedoff">d  &lt;- betweenTicks parseDomain</span>
+<span class="lineno">  476 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- let ?typeCheckerMode = StronglyTyped in typeOfDomain d</span>
+<span class="lineno">  477 </span><span class="spaces">    </span><span class="nottickedoff">return (Typed x ty)</span></span>
+<span class="lineno">  478 </span>
+<span class="lineno">  479 </span>parseName :: Parser Name
+<span class="lineno">  480 </span><span class="decl"><span class="istickedoff">parseName = Name &lt;$&gt; identifierText</span></span>
 <span class="lineno">  481 </span>
-<span class="lineno">  482 </span>parseAtomicExpr :: Parser Expression
-<span class="lineno">  483 </span>-- parseAtomicExpr | trace &quot;parseAtomicExpr&quot; True = parseAtomicExprNoPrePost &lt;?&gt; &quot;expression&quot;
-<span class="lineno">  484 </span><span class="decl"><span class="istickedoff">parseAtomicExpr = parseAtomicExprNoPrePost &lt;?&gt; <span class="nottickedoff">&quot;expression&quot;</span></span></span>
-<span class="lineno">  485 </span>
-<span class="lineno">  486 </span>parseAtomicExprNoPrePost :: Parser Expression
-<span class="lineno">  487 </span>-- parseAtomicExprNoPrePost | trace &quot;parseAtomicExprNoPrePost&quot; True = msum [try parseLiteral, parseTyped]
-<span class="lineno">  488 </span><span class="decl"><span class="istickedoff">parseAtomicExprNoPrePost = msum [try parseLiteral, <span class="nottickedoff">parseReference</span>, <span class="nottickedoff">parseTyped</span>]</span></span>
-<span class="lineno">  489 </span>
-<span class="lineno">  490 </span>parseTyped :: Parser Expression
-<span class="lineno">  491 </span>-- parseTyped | trace &quot;parseTyped&quot; True = parens $ do
-<span class="lineno">  492 </span><span class="decl"><span class="nottickedoff">parseTyped = parens $ do</span>
-<span class="lineno">  493 </span><span class="spaces">    </span><span class="nottickedoff">x  &lt;- parseExpr</span>
-<span class="lineno">  494 </span><span class="spaces">    </span><span class="nottickedoff">lexeme L_Colon</span>
-<span class="lineno">  495 </span><span class="spaces">    </span><span class="nottickedoff">d  &lt;- betweenTicks parseDomain</span>
-<span class="lineno">  496 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- let ?typeCheckerMode = StronglyTyped in typeOfDomain d</span>
-<span class="lineno">  497 </span><span class="spaces">    </span><span class="nottickedoff">return (Typed x ty)</span></span>
-<span class="lineno">  498 </span>
-<span class="lineno">  499 </span>parseName :: Parser Name
-<span class="lineno">  500 </span><span class="decl"><span class="istickedoff">parseName = Name &lt;$&gt; identifierText</span></span>
-<span class="lineno">  501 </span>
-<span class="lineno">  502 </span>parseReference :: Parser Expression
-<span class="lineno">  503 </span><span class="decl"><span class="nottickedoff">parseReference = Reference &lt;$&gt; parseName &lt;*&gt; pure Nothing</span></span>
-<span class="lineno">  504 </span>
-<span class="lineno">  505 </span>parseLiteral :: Parser Expression
-<span class="lineno">  506 </span><span class="decl"><span class="istickedoff">parseLiteral = label <span class="nottickedoff">&quot;value&quot;</span> (do p &lt;- pCore ; p)</span>
-<span class="lineno">  507 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  508 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  509 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  510 </span><span class="spaces">        </span><span class="istickedoff">-- convert x to a constant if possible</span>
-<span class="lineno">  511 </span><span class="spaces">        </span><span class="istickedoff">-- might save us from evaluating it again and again later</span>
-<span class="lineno">  512 </span><span class="spaces">        </span><span class="istickedoff">mkAbstractLiteral x =</span>
-<span class="lineno">  513 </span><span class="spaces">            </span><span class="istickedoff">case e2c (AbstractLiteral x) of</span>
-<span class="lineno">  514 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; AbstractLiteral x</span>
-<span class="lineno">  515 </span><span class="spaces">                </span><span class="istickedoff">Just c  -&gt; Constant c</span>
-<span class="lineno">  516 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  517 </span><span class="spaces">        </span><span class="istickedoff">pCore :: Parser (Parser Expression)</span>
-<span class="lineno">  518 </span><span class="spaces">        </span><span class="istickedoff">pCore = satisfyL $ \case</span>
-<span class="lineno">  519 </span><span class="spaces">                </span><span class="istickedoff">L_false       -&gt; Just $ return $ Constant $ ConstantBool False</span>
-<span class="lineno">  520 </span><span class="spaces">                </span><span class="istickedoff">L_true        -&gt; Just $ return $ Constant $ ConstantBool True</span>
-<span class="lineno">  521 </span><span class="spaces">                </span><span class="istickedoff">LIntLiteral i -&gt; Just $ return $ Constant $ ConstantInt TagInt (fromInteger i)</span>
-<span class="lineno">  522 </span><span class="spaces">                </span><span class="istickedoff">L_OpenBracket -&gt; Just pMatrix</span>
-<span class="lineno">  523 </span><span class="spaces">                </span><span class="istickedoff">L_tuple       -&gt; <span class="nottickedoff">Just pTupleWith</span></span>
-<span class="lineno">  524 </span><span class="spaces">                </span><span class="istickedoff">L_OpenParen   -&gt; <span class="nottickedoff">Just pTupleWithout</span></span>
-<span class="lineno">  525 </span><span class="spaces">                </span><span class="istickedoff">L_record      -&gt; <span class="nottickedoff">Just pRecord</span></span>
-<span class="lineno">  526 </span><span class="spaces">                </span><span class="istickedoff">L_variant     -&gt; <span class="nottickedoff">Just pVariant</span></span>
-<span class="lineno">  527 </span><span class="spaces">                </span><span class="istickedoff">L_OpenCurly   -&gt; <span class="nottickedoff">Just pSet</span></span>
-<span class="lineno">  528 </span><span class="spaces">                </span><span class="istickedoff">L_mset        -&gt; <span class="nottickedoff">Just pMSet</span></span>
-<span class="lineno">  529 </span><span class="spaces">                </span><span class="istickedoff">L_function    -&gt; <span class="nottickedoff">Just pFunction</span></span>
-<span class="lineno">  530 </span><span class="spaces">                </span><span class="istickedoff">L_sequence    -&gt; <span class="nottickedoff">Just pSequence</span></span>
-<span class="lineno">  531 </span><span class="spaces">                </span><span class="istickedoff">L_relation    -&gt; <span class="nottickedoff">Just pRelation</span></span>
-<span class="lineno">  532 </span><span class="spaces">                </span><span class="istickedoff">L_partition   -&gt; <span class="nottickedoff">Just pPartition</span></span>
-<span class="lineno">  533 </span><span class="spaces">                </span><span class="istickedoff">L_Minus       -&gt; Just $ do</span>
-<span class="lineno">  534 </span><span class="spaces">                    </span><span class="istickedoff">p &lt;- pCore</span>
-<span class="lineno">  535 </span><span class="spaces">                    </span><span class="istickedoff">res &lt;- p</span>
-<span class="lineno">  536 </span><span class="spaces">                    </span><span class="istickedoff">return (negate res)</span>
-<span class="lineno">  537 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  482 </span>parseReference :: Parser Expression
+<span class="lineno">  483 </span><span class="decl"><span class="nottickedoff">parseReference = Reference &lt;$&gt; parseName &lt;*&gt; pure Nothing</span></span>
+<span class="lineno">  484 </span>
+<span class="lineno">  485 </span>parseLiteral :: Parser Expression
+<span class="lineno">  486 </span><span class="decl"><span class="istickedoff">parseLiteral = label <span class="nottickedoff">&quot;value&quot;</span> (do p &lt;- pCore ; p)</span>
+<span class="lineno">  487 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  488 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  489 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  490 </span><span class="spaces">        </span><span class="istickedoff">-- convert x to a constant if possible</span>
+<span class="lineno">  491 </span><span class="spaces">        </span><span class="istickedoff">-- might save us from evaluating it again and again later</span>
+<span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff">mkAbstractLiteral x =</span>
+<span class="lineno">  493 </span><span class="spaces">            </span><span class="istickedoff">case e2c (AbstractLiteral x) of</span>
+<span class="lineno">  494 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; AbstractLiteral x</span>
+<span class="lineno">  495 </span><span class="spaces">                </span><span class="istickedoff">Just c  -&gt; Constant c</span>
+<span class="lineno">  496 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  497 </span><span class="spaces">        </span><span class="istickedoff">pCore :: Parser (Parser Expression)</span>
+<span class="lineno">  498 </span><span class="spaces">        </span><span class="istickedoff">pCore = satisfyL $ \case</span>
+<span class="lineno">  499 </span><span class="spaces">                </span><span class="istickedoff">L_false       -&gt; Just $ return $ Constant $ ConstantBool False</span>
+<span class="lineno">  500 </span><span class="spaces">                </span><span class="istickedoff">L_true        -&gt; Just $ return $ Constant $ ConstantBool True</span>
+<span class="lineno">  501 </span><span class="spaces">                </span><span class="istickedoff">LIntLiteral i -&gt; Just $ return $ Constant $ ConstantInt TagInt (fromInteger i)</span>
+<span class="lineno">  502 </span><span class="spaces">                </span><span class="istickedoff">L_OpenBracket -&gt; Just pMatrix</span>
+<span class="lineno">  503 </span><span class="spaces">                </span><span class="istickedoff">L_tuple       -&gt; <span class="nottickedoff">Just pTupleWith</span></span>
+<span class="lineno">  504 </span><span class="spaces">                </span><span class="istickedoff">L_OpenParen   -&gt; <span class="nottickedoff">Just pTupleWithout</span></span>
+<span class="lineno">  505 </span><span class="spaces">                </span><span class="istickedoff">L_record      -&gt; <span class="nottickedoff">Just pRecord</span></span>
+<span class="lineno">  506 </span><span class="spaces">                </span><span class="istickedoff">L_variant     -&gt; <span class="nottickedoff">Just pVariant</span></span>
+<span class="lineno">  507 </span><span class="spaces">                </span><span class="istickedoff">L_OpenCurly   -&gt; <span class="nottickedoff">Just pSet</span></span>
+<span class="lineno">  508 </span><span class="spaces">                </span><span class="istickedoff">L_mset        -&gt; <span class="nottickedoff">Just pMSet</span></span>
+<span class="lineno">  509 </span><span class="spaces">                </span><span class="istickedoff">L_function    -&gt; <span class="nottickedoff">Just pFunction</span></span>
+<span class="lineno">  510 </span><span class="spaces">                </span><span class="istickedoff">L_sequence    -&gt; <span class="nottickedoff">Just pSequence</span></span>
+<span class="lineno">  511 </span><span class="spaces">                </span><span class="istickedoff">L_relation    -&gt; <span class="nottickedoff">Just pRelation</span></span>
+<span class="lineno">  512 </span><span class="spaces">                </span><span class="istickedoff">L_partition   -&gt; <span class="nottickedoff">Just pPartition</span></span>
+<span class="lineno">  513 </span><span class="spaces">                </span><span class="istickedoff">L_Minus       -&gt; Just $ do</span>
+<span class="lineno">  514 </span><span class="spaces">                    </span><span class="istickedoff">p &lt;- pCore</span>
+<span class="lineno">  515 </span><span class="spaces">                    </span><span class="istickedoff">res &lt;- p</span>
+<span class="lineno">  516 </span><span class="spaces">                    </span><span class="istickedoff">return (negate res)</span>
+<span class="lineno">  517 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  518 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  519 </span><span class="spaces">        </span><span class="istickedoff">pMatrix = mkAbstractLiteral &lt;$&gt; do</span>
+<span class="lineno">  520 </span><span class="spaces">            </span><span class="istickedoff">-- lexeme L_OpenBracket</span>
+<span class="lineno">  521 </span><span class="spaces">            </span><span class="istickedoff">xs &lt;- commaSeparated0 parseExpr</span>
+<span class="lineno">  522 </span><span class="spaces">            </span><span class="istickedoff">msum</span>
+<span class="lineno">  523 </span><span class="spaces">                </span><span class="istickedoff">[ do</span>
+<span class="lineno">  524 </span><span class="spaces">                    </span><span class="istickedoff">let r = mkDomainIntB 1 (fromInt (genericLength xs))</span>
+<span class="lineno">  525 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_CloseBracket</span>
+<span class="lineno">  526 </span><span class="spaces">                    </span><span class="istickedoff">return (AbsLitMatrix r xs)</span>
+<span class="lineno">  527 </span><span class="spaces">                </span><span class="istickedoff">, do</span>
+<span class="lineno">  528 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_SemiColon</span>
+<span class="lineno">  529 </span><span class="spaces">                    </span><span class="istickedoff">r &lt;- parseDomain</span>
+<span class="lineno">  530 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_CloseBracket</span>
+<span class="lineno">  531 </span><span class="spaces">                    </span><span class="istickedoff">return (AbsLitMatrix r xs)</span>
+<span class="lineno">  532 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  533 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  534 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pTupleWith = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  535 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_tuple</span></span>
+<span class="lineno">  536 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens $ commaSeparated0 parseExpr</span></span>
+<span class="lineno">  537 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitTuple xs)</span></span>
 <span class="lineno">  538 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  539 </span><span class="spaces">        </span><span class="istickedoff">pMatrix = mkAbstractLiteral &lt;$&gt; do</span>
-<span class="lineno">  540 </span><span class="spaces">            </span><span class="istickedoff">-- lexeme L_OpenBracket</span>
-<span class="lineno">  541 </span><span class="spaces">            </span><span class="istickedoff">xs &lt;- commaSeparated0 parseExpr</span>
-<span class="lineno">  542 </span><span class="spaces">            </span><span class="istickedoff">msum</span>
-<span class="lineno">  543 </span><span class="spaces">                </span><span class="istickedoff">[ do</span>
-<span class="lineno">  544 </span><span class="spaces">                    </span><span class="istickedoff">let r = mkDomainIntB 1 (fromInt (genericLength xs))</span>
-<span class="lineno">  545 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_CloseBracket</span>
-<span class="lineno">  546 </span><span class="spaces">                    </span><span class="istickedoff">return (AbsLitMatrix r xs)</span>
-<span class="lineno">  547 </span><span class="spaces">                </span><span class="istickedoff">, do</span>
-<span class="lineno">  548 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_SemiColon</span>
-<span class="lineno">  549 </span><span class="spaces">                    </span><span class="istickedoff">r &lt;- parseDomain</span>
-<span class="lineno">  550 </span><span class="spaces">                    </span><span class="istickedoff">lexeme L_CloseBracket</span>
-<span class="lineno">  551 </span><span class="spaces">                    </span><span class="istickedoff">return (AbsLitMatrix r xs)</span>
-<span class="lineno">  552 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  539 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pTupleWithout = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  540 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- xs &lt;- parens $ countSepAtLeast 2 parseExpr comma</span></span>
+<span class="lineno">  541 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- countSepAtLeast 2 parseExpr comma</span></span>
+<span class="lineno">  542 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lexeme L_CloseParen</span></span>
+<span class="lineno">  543 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitTuple xs)</span></span>
+<span class="lineno">  544 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  545 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pRecord = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  546 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_record</span></span>
+<span class="lineno">  547 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let one = do n &lt;- parseName</span></span>
+<span class="lineno">  548 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">lexeme L_Eq</span></span>
+<span class="lineno">  549 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">x &lt;- parseExpr</span></span>
+<span class="lineno">  550 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">return (n,x)</span></span>
+<span class="lineno">  551 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- braces $ commaSeparated0 one</span></span>
+<span class="lineno">  552 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbsLitRecord xs</span></span>
 <span class="lineno">  553 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  554 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pTupleWith = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  555 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_tuple</span></span>
-<span class="lineno">  556 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens $ commaSeparated0 parseExpr</span></span>
-<span class="lineno">  557 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitTuple xs)</span></span>
-<span class="lineno">  558 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  559 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pTupleWithout = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  560 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- xs &lt;- parens $ countSepAtLeast 2 parseExpr comma</span></span>
-<span class="lineno">  561 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- countSepAtLeast 2 parseExpr comma</span></span>
-<span class="lineno">  562 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lexeme L_CloseParen</span></span>
-<span class="lineno">  563 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitTuple xs)</span></span>
-<span class="lineno">  564 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  565 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pRecord = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  566 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_record</span></span>
-<span class="lineno">  567 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let one = do n &lt;- parseName</span></span>
-<span class="lineno">  568 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">lexeme L_Eq</span></span>
-<span class="lineno">  569 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">x &lt;- parseExpr</span></span>
-<span class="lineno">  570 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">return (n,x)</span></span>
-<span class="lineno">  571 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- braces $ commaSeparated0 one</span></span>
-<span class="lineno">  572 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbsLitRecord xs</span></span>
+<span class="lineno">  554 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pVariant = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  555 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_variant</span></span>
+<span class="lineno">  556 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let one = do n &lt;- parseName</span></span>
+<span class="lineno">  557 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">lexeme L_Eq</span></span>
+<span class="lineno">  558 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">x &lt;- parseExpr</span></span>
+<span class="lineno">  559 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">return (n,x)</span></span>
+<span class="lineno">  560 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(n,x) &lt;- braces one</span></span>
+<span class="lineno">  561 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbsLitVariant Nothing n x</span></span>
+<span class="lineno">  562 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pSet = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  564 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- xs &lt;- braces (commaSeparated0 parseExpr)</span></span>
+<span class="lineno">  565 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- commaSeparated0 parseExpr</span></span>
+<span class="lineno">  566 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lexeme L_CloseCurly</span></span>
+<span class="lineno">  567 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitSet xs)</span></span>
+<span class="lineno">  568 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  569 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pMSet = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  570 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_mset</span></span>
+<span class="lineno">  571 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 parseExpr)</span></span>
+<span class="lineno">  572 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitMSet xs)</span></span>
 <span class="lineno">  573 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  574 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pVariant = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  575 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_variant</span></span>
-<span class="lineno">  576 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let one = do n &lt;- parseName</span></span>
-<span class="lineno">  577 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">lexeme L_Eq</span></span>
-<span class="lineno">  578 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">x &lt;- parseExpr</span></span>
-<span class="lineno">  579 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">return (n,x)</span></span>
-<span class="lineno">  580 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(n,x) &lt;- braces one</span></span>
-<span class="lineno">  581 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ AbsLitVariant Nothing n x</span></span>
-<span class="lineno">  582 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  583 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pSet = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  584 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- xs &lt;- braces (commaSeparated0 parseExpr)</span></span>
-<span class="lineno">  585 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- commaSeparated0 parseExpr</span></span>
-<span class="lineno">  586 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lexeme L_CloseCurly</span></span>
-<span class="lineno">  587 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitSet xs)</span></span>
-<span class="lineno">  588 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  589 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pMSet = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  590 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_mset</span></span>
-<span class="lineno">  591 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 parseExpr)</span></span>
-<span class="lineno">  592 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitMSet xs)</span></span>
-<span class="lineno">  593 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  594 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pFunction = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  595 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_function</span></span>
-<span class="lineno">  596 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 inner)</span></span>
-<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitFunction xs)</span></span>
-<span class="lineno">  598 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">where</span></span>
-<span class="lineno">  599 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inner = arrowedPair parseExpr</span></span>
-<span class="lineno">  600 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  601 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pSequence = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  602 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_sequence</span></span>
-<span class="lineno">  603 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 parseExpr)</span></span>
-<span class="lineno">  604 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitSequence xs)</span></span>
-<span class="lineno">  605 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  606 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pRelation = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  607 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_relation</span></span>
-<span class="lineno">  608 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 (pTupleWith &lt;|&gt; pTupleWithout))</span></span>
-<span class="lineno">  609 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xsFiltered &lt;- forM xs $ \case</span></span>
-<span class="lineno">  610 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Constant (ConstantAbstract (AbsLitTuple is)) -&gt; return (map Constant is)</span></span>
-<span class="lineno">  611 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple is) -&gt; return is</span></span>
-<span class="lineno">  612 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">x -&gt; fail (&quot;Cannot parse as part of relation literal:&quot; &lt;+&gt; vcat [pretty x, pretty (show x)])</span></span>
-<span class="lineno">  613 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitRelation xsFiltered)</span></span>
-<span class="lineno">  614 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  615 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pPartition = mkAbstractLiteral &lt;$&gt; do</span></span>
-<span class="lineno">  616 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_partition</span></span>
-<span class="lineno">  617 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 inner)</span></span>
-<span class="lineno">  618 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitPartition xs)</span></span>
-<span class="lineno">  619 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">where</span></span>
-<span class="lineno">  620 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inner = braces (commaSeparated0 parseExpr)</span></span></span>
-<span class="lineno">  621 </span>
+<span class="lineno">  574 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pFunction = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  575 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_function</span></span>
+<span class="lineno">  576 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 inner)</span></span>
+<span class="lineno">  577 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitFunction xs)</span></span>
+<span class="lineno">  578 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">where</span></span>
+<span class="lineno">  579 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inner = arrowedPair parseExpr</span></span>
+<span class="lineno">  580 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  581 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pSequence = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  582 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_sequence</span></span>
+<span class="lineno">  583 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 parseExpr)</span></span>
+<span class="lineno">  584 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitSequence xs)</span></span>
+<span class="lineno">  585 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  586 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pRelation = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  587 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_relation</span></span>
+<span class="lineno">  588 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 (pTupleWith &lt;|&gt; pTupleWithout))</span></span>
+<span class="lineno">  589 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xsFiltered &lt;- forM xs $ \case</span></span>
+<span class="lineno">  590 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Constant (ConstantAbstract (AbsLitTuple is)) -&gt; return (map Constant is)</span></span>
+<span class="lineno">  591 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple is) -&gt; return is</span></span>
+<span class="lineno">  592 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">x -&gt; failDoc (&quot;Cannot parse as part of relation literal:&quot; &lt;+&gt; vcat [pretty x, pretty (show x)])</span></span>
+<span class="lineno">  593 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitRelation xsFiltered)</span></span>
+<span class="lineno">  594 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">pPartition = mkAbstractLiteral &lt;$&gt; do</span></span>
+<span class="lineno">  596 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lexeme L_partition</span></span>
+<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- parens (commaSeparated0 inner)</span></span>
+<span class="lineno">  598 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (AbsLitPartition xs)</span></span>
+<span class="lineno">  599 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">where</span></span>
+<span class="lineno">  600 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">inner = braces (commaSeparated0 parseExpr)</span></span></span>
+<span class="lineno">  601 </span>
+<span class="lineno">  602 </span>
+<span class="lineno">  603 </span>identifierText :: Parser T.Text
+<span class="lineno">  604 </span><span class="decl"><span class="istickedoff">identifierText = do</span>
+<span class="lineno">  605 </span><span class="spaces">    </span><span class="istickedoff">LIdentifier i &lt;- satisfyT isIdentifier</span>
+<span class="lineno">  606 </span><span class="spaces">    </span><span class="istickedoff">return i</span>
+<span class="lineno">  607 </span><span class="spaces">    </span><span class="istickedoff">where isIdentifier LIdentifier {} = True</span>
+<span class="lineno">  608 </span><span class="spaces">          </span><span class="istickedoff">isIdentifier _ = <span class="nottickedoff">False</span></span></span>
+<span class="lineno">  609 </span>
+<span class="lineno">  610 </span>satisfyT :: (Lexeme -&gt; Bool) -&gt; Parser Lexeme
+<span class="lineno">  611 </span><span class="decl"><span class="istickedoff">satisfyT predicate = token nextPos testTok</span>
+<span class="lineno">  612 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  613 </span><span class="spaces">        </span><span class="istickedoff">testTok :: LexemePos -&gt; Either [Message] Lexeme</span>
+<span class="lineno">  614 </span><span class="spaces">        </span><span class="istickedoff">testTok (LexemePos tok _ _) =</span>
+<span class="lineno">  615 </span><span class="spaces">            </span><span class="istickedoff">-- trace (&quot;satisfyT: &quot; ++ show pos ++ &quot;\t&quot; ++ show tok) $</span>
+<span class="lineno">  616 </span><span class="spaces">            </span><span class="istickedoff">if predicate tok</span>
+<span class="lineno">  617 </span><span class="spaces">                </span><span class="istickedoff">then Right tok</span>
+<span class="lineno">  618 </span><span class="spaces">                </span><span class="istickedoff">else Left [Unexpected (showToken tok)]</span>
+<span class="lineno">  619 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  620 </span><span class="spaces">        </span><span class="istickedoff">nextPos :: Int -&gt; SourcePos -&gt; LexemePos -&gt; SourcePos</span>
+<span class="lineno">  621 </span><span class="spaces">        </span><span class="istickedoff">nextPos _ _ (LexemePos _ _ pos) = pos</span></span>
 <span class="lineno">  622 </span>
-<span class="lineno">  623 </span>identifierText :: Parser T.Text
-<span class="lineno">  624 </span><span class="decl"><span class="istickedoff">identifierText = do</span>
-<span class="lineno">  625 </span><span class="spaces">    </span><span class="istickedoff">LIdentifier i &lt;- satisfyT isIdentifier</span>
-<span class="lineno">  626 </span><span class="spaces">    </span><span class="istickedoff">return i</span>
-<span class="lineno">  627 </span><span class="spaces">    </span><span class="istickedoff">where isIdentifier LIdentifier {} = True</span>
-<span class="lineno">  628 </span><span class="spaces">          </span><span class="istickedoff">isIdentifier _ = <span class="nottickedoff">False</span></span></span>
-<span class="lineno">  629 </span>
-<span class="lineno">  630 </span>satisfyT :: (Lexeme -&gt; Bool) -&gt; Parser Lexeme
-<span class="lineno">  631 </span><span class="decl"><span class="istickedoff">satisfyT predicate = token nextPos testTok</span>
-<span class="lineno">  632 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  633 </span><span class="spaces">        </span><span class="istickedoff">testTok :: LexemePos -&gt; Either [Message] Lexeme</span>
-<span class="lineno">  634 </span><span class="spaces">        </span><span class="istickedoff">testTok (LexemePos tok _ _) =</span>
-<span class="lineno">  635 </span><span class="spaces">            </span><span class="istickedoff">-- trace (&quot;satisfyT: &quot; ++ show pos ++ &quot;\t&quot; ++ show tok) $</span>
-<span class="lineno">  636 </span><span class="spaces">            </span><span class="istickedoff">if predicate tok</span>
-<span class="lineno">  637 </span><span class="spaces">                </span><span class="istickedoff">then Right tok</span>
-<span class="lineno">  638 </span><span class="spaces">                </span><span class="istickedoff">else Left [Unexpected (showToken tok)]</span>
-<span class="lineno">  639 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  640 </span><span class="spaces">        </span><span class="istickedoff">nextPos :: Int -&gt; SourcePos -&gt; LexemePos -&gt; SourcePos</span>
-<span class="lineno">  641 </span><span class="spaces">        </span><span class="istickedoff">nextPos _ _ (LexemePos _ _ pos) = pos</span></span>
+<span class="lineno">  623 </span>satisfyL :: forall a . (Lexeme -&gt; Maybe a) -&gt; Parser a
+<span class="lineno">  624 </span><span class="decl"><span class="istickedoff">satisfyL predicate = token nextPos testTok</span>
+<span class="lineno">  625 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  626 </span><span class="spaces">        </span><span class="istickedoff">testTok :: LexemePos -&gt; Either [Message] a</span>
+<span class="lineno">  627 </span><span class="spaces">        </span><span class="istickedoff">testTok (LexemePos tok _ _) =</span>
+<span class="lineno">  628 </span><span class="spaces">            </span><span class="istickedoff">-- trace (&quot;satisfyL: &quot; ++ show pos ++ &quot;\t&quot; ++ show tok) $</span>
+<span class="lineno">  629 </span><span class="spaces">            </span><span class="istickedoff">case predicate tok of</span>
+<span class="lineno">  630 </span><span class="spaces">                </span><span class="istickedoff">Nothing  -&gt; <span class="nottickedoff">Left [Unexpected (showToken tok)]</span></span>
+<span class="lineno">  631 </span><span class="spaces">                </span><span class="istickedoff">Just res -&gt; Right res</span>
+<span class="lineno">  632 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  633 </span><span class="spaces">        </span><span class="istickedoff">nextPos :: Int -&gt; SourcePos -&gt; LexemePos -&gt; SourcePos</span>
+<span class="lineno">  634 </span><span class="spaces">        </span><span class="istickedoff">nextPos _ _ (LexemePos _ _ pos) = pos</span></span>
+<span class="lineno">  635 </span>
+<span class="lineno">  636 </span>integer :: Parser Integer
+<span class="lineno">  637 </span><span class="decl"><span class="istickedoff">integer = do</span>
+<span class="lineno">  638 </span><span class="spaces">    </span><span class="istickedoff">LIntLiteral i &lt;- satisfyT isInt</span>
+<span class="lineno">  639 </span><span class="spaces">    </span><span class="istickedoff">return i</span>
+<span class="lineno">  640 </span><span class="spaces">    </span><span class="istickedoff">where isInt LIntLiteral {} = True</span>
+<span class="lineno">  641 </span><span class="spaces">          </span><span class="istickedoff">isInt _ = <span class="nottickedoff">False</span></span></span>
 <span class="lineno">  642 </span>
-<span class="lineno">  643 </span>satisfyL :: forall a . (Lexeme -&gt; Maybe a) -&gt; Parser a
-<span class="lineno">  644 </span><span class="decl"><span class="istickedoff">satisfyL predicate = token nextPos testTok</span>
-<span class="lineno">  645 </span><span class="spaces">    </span><span class="istickedoff">where</span>
-<span class="lineno">  646 </span><span class="spaces">        </span><span class="istickedoff">testTok :: LexemePos -&gt; Either [Message] a</span>
-<span class="lineno">  647 </span><span class="spaces">        </span><span class="istickedoff">testTok (LexemePos tok _ _) =</span>
-<span class="lineno">  648 </span><span class="spaces">            </span><span class="istickedoff">-- trace (&quot;satisfyL: &quot; ++ show pos ++ &quot;\t&quot; ++ show tok) $</span>
-<span class="lineno">  649 </span><span class="spaces">            </span><span class="istickedoff">case predicate tok of</span>
-<span class="lineno">  650 </span><span class="spaces">                </span><span class="istickedoff">Nothing  -&gt; <span class="nottickedoff">Left [Unexpected (showToken tok)]</span></span>
-<span class="lineno">  651 </span><span class="spaces">                </span><span class="istickedoff">Just res -&gt; Right res</span>
-<span class="lineno">  652 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  653 </span><span class="spaces">        </span><span class="istickedoff">nextPos :: Int -&gt; SourcePos -&gt; LexemePos -&gt; SourcePos</span>
-<span class="lineno">  654 </span><span class="spaces">        </span><span class="istickedoff">nextPos _ _ (LexemePos _ _ pos) = pos</span></span>
-<span class="lineno">  655 </span>
-<span class="lineno">  656 </span>integer :: Parser Integer
-<span class="lineno">  657 </span><span class="decl"><span class="istickedoff">integer = do</span>
-<span class="lineno">  658 </span><span class="spaces">    </span><span class="istickedoff">LIntLiteral i &lt;- satisfyT isInt</span>
-<span class="lineno">  659 </span><span class="spaces">    </span><span class="istickedoff">return i</span>
-<span class="lineno">  660 </span><span class="spaces">    </span><span class="istickedoff">where isInt LIntLiteral {} = True</span>
-<span class="lineno">  661 </span><span class="spaces">          </span><span class="istickedoff">isInt _ = <span class="nottickedoff">False</span></span></span>
-<span class="lineno">  662 </span>
-<span class="lineno">  663 </span>-- parse a comma separated list of things. can be 0 things.
-<span class="lineno">  664 </span>commaSeparated0 :: Parser a -&gt; Parser [a]
-<span class="lineno">  665 </span><span class="decl"><span class="istickedoff">commaSeparated0 p = sepEndBy p comma</span></span>
+<span class="lineno">  643 </span>-- parse a comma separated list of things. can be 0 things.
+<span class="lineno">  644 </span>commaSeparated0 :: Parser a -&gt; Parser [a]
+<span class="lineno">  645 </span><span class="decl"><span class="istickedoff">commaSeparated0 p = sepEndBy p comma</span></span>
+<span class="lineno">  646 </span>
+<span class="lineno">  647 </span>-- parse a comma separated list of things. has to be at least 1 thing.
+<span class="lineno">  648 </span>commaSeparated :: Parser a -&gt; Parser [a]
+<span class="lineno">  649 </span><span class="decl"><span class="nottickedoff">commaSeparated p = sepEndBy1 p comma</span></span>
+<span class="lineno">  650 </span>
+<span class="lineno">  651 </span>comma :: Parser ()
+<span class="lineno">  652 </span><span class="decl"><span class="istickedoff">comma = lexeme L_Comma &lt;?&gt; <span class="nottickedoff">&quot;comma&quot;</span></span></span>
+<span class="lineno">  653 </span>
+<span class="lineno">  654 </span>dot :: Parser ()
+<span class="lineno">  655 </span><span class="decl"><span class="istickedoff">dot = lexeme L_Dot &lt;?&gt; <span class="nottickedoff">&quot;dot&quot;</span></span></span>
+<span class="lineno">  656 </span>
+<span class="lineno">  657 </span>dotdot :: Parser ()
+<span class="lineno">  658 </span><span class="decl"><span class="istickedoff">dotdot = (dot &gt;&gt; dot) &lt;?&gt; <span class="nottickedoff">&quot;..&quot;</span></span></span>
+<span class="lineno">  659 </span>
+<span class="lineno">  660 </span>
+<span class="lineno">  661 </span>-- parses a specified number of elements separated by the given separator
+<span class="lineno">  662 </span>countSep :: Int -&gt; Parser a -&gt; Parser sep -&gt; Parser [a]
+<span class="lineno">  663 </span><span class="decl"><span class="nottickedoff">countSep 1 p _ = (:[]) &lt;$&gt; p</span>
+<span class="lineno">  664 </span><span class="spaces"></span><span class="nottickedoff">countSep i p separator | i &gt; 1 = (:) &lt;$&gt; (p &lt;* separator) &lt;*&gt; countSep (i-1) p separator</span>
+<span class="lineno">  665 </span><span class="spaces"></span><span class="nottickedoff">countSep _ _ _ = return []</span></span>
 <span class="lineno">  666 </span>
-<span class="lineno">  667 </span>-- parse a comma separated list of things. has to be at least 1 thing.
-<span class="lineno">  668 </span>commaSeparated :: Parser a -&gt; Parser [a]
-<span class="lineno">  669 </span><span class="decl"><span class="nottickedoff">commaSeparated p = sepEndBy1 p comma</span></span>
+<span class="lineno">  667 </span>-- parses at least a given number of elements separated by the given separator
+<span class="lineno">  668 </span>countSepAtLeast :: Int -&gt; Parser a -&gt; Parser sep -&gt; Parser [a]
+<span class="lineno">  669 </span><span class="decl"><span class="nottickedoff">countSepAtLeast i p separator = (++) &lt;$&gt; countSep i p separator &lt;*&gt; many (separator *&gt; p)</span></span>
 <span class="lineno">  670 </span>
-<span class="lineno">  671 </span>comma :: Parser ()
-<span class="lineno">  672 </span><span class="decl"><span class="istickedoff">comma = lexeme L_Comma &lt;?&gt; <span class="nottickedoff">&quot;comma&quot;</span></span></span>
+<span class="lineno">  671 </span>betweenTicks :: Parser a -&gt; Parser a
+<span class="lineno">  672 </span><span class="decl"><span class="nottickedoff">betweenTicks = between (lexeme L_BackTick) (lexeme L_BackTick)</span></span>
 <span class="lineno">  673 </span>
-<span class="lineno">  674 </span>dot :: Parser ()
-<span class="lineno">  675 </span><span class="decl"><span class="istickedoff">dot = lexeme L_Dot &lt;?&gt; <span class="nottickedoff">&quot;dot&quot;</span></span></span>
+<span class="lineno">  674 </span>parens :: Parser a -&gt; Parser a
+<span class="lineno">  675 </span><span class="decl"><span class="istickedoff">parens = between (lexeme L_OpenParen) (lexeme L_CloseParen)</span></span>
 <span class="lineno">  676 </span>
-<span class="lineno">  677 </span>dotdot :: Parser ()
-<span class="lineno">  678 </span><span class="decl"><span class="istickedoff">dotdot = (dot &gt;&gt; dot) &lt;?&gt; <span class="nottickedoff">&quot;..&quot;</span></span></span>
+<span class="lineno">  677 </span>braces :: Parser a -&gt; Parser a
+<span class="lineno">  678 </span><span class="decl"><span class="nottickedoff">braces = between (lexeme L_OpenCurly) (lexeme L_CloseCurly)</span></span>
 <span class="lineno">  679 </span>
-<span class="lineno">  680 </span>
-<span class="lineno">  681 </span>-- parses a specified number of elements separated by the given separator
-<span class="lineno">  682 </span>countSep :: Int -&gt; Parser a -&gt; Parser sep -&gt; Parser [a]
-<span class="lineno">  683 </span><span class="decl"><span class="nottickedoff">countSep 1 p _ = (:[]) &lt;$&gt; p</span>
-<span class="lineno">  684 </span><span class="spaces"></span><span class="nottickedoff">countSep i p separator | i &gt; 1 = (:) &lt;$&gt; (p &lt;* separator) &lt;*&gt; countSep (i-1) p separator</span>
-<span class="lineno">  685 </span><span class="spaces"></span><span class="nottickedoff">countSep _ _ _ = return []</span></span>
+<span class="lineno">  680 </span>brackets :: Parser a -&gt; Parser a
+<span class="lineno">  681 </span><span class="decl"><span class="nottickedoff">brackets = between (lexeme L_OpenBracket) (lexeme L_CloseBracket)</span></span>
+<span class="lineno">  682 </span>
+<span class="lineno">  683 </span>lexeme :: Lexeme -&gt; Parser ()
+<span class="lineno">  684 </span>-- lexeme l = trace (&quot;lexeme: &quot; ++ show l) (void (satisfyT (l==)) &lt;?&gt; show (lexemeFace l))
+<span class="lineno">  685 </span><span class="decl"><span class="istickedoff">lexeme l = void (satisfyT (l==)) &lt;?&gt; show (lexemeFace l)</span></span>
 <span class="lineno">  686 </span>
-<span class="lineno">  687 </span>-- parses at least a given number of elements separated by the given separator
-<span class="lineno">  688 </span>countSepAtLeast :: Int -&gt; Parser a -&gt; Parser sep -&gt; Parser [a]
-<span class="lineno">  689 </span><span class="decl"><span class="nottickedoff">countSepAtLeast i p separator = (++) &lt;$&gt; countSep i p separator &lt;*&gt; many (separator *&gt; p)</span></span>
-<span class="lineno">  690 </span>
-<span class="lineno">  691 </span>betweenTicks :: Parser a -&gt; Parser a
-<span class="lineno">  692 </span><span class="decl"><span class="nottickedoff">betweenTicks = between (lexeme L_BackTick) (lexeme L_BackTick)</span></span>
+<span class="lineno">  687 </span>arrowedPair :: Parser a -&gt; Parser (a,a)
+<span class="lineno">  688 </span><span class="decl"><span class="nottickedoff">arrowedPair p = do</span>
+<span class="lineno">  689 </span><span class="spaces">    </span><span class="nottickedoff">i &lt;- p</span>
+<span class="lineno">  690 </span><span class="spaces">    </span><span class="nottickedoff">lexeme L_LongArrow</span>
+<span class="lineno">  691 </span><span class="spaces">    </span><span class="nottickedoff">j &lt;- p</span>
+<span class="lineno">  692 </span><span class="spaces">    </span><span class="nottickedoff">return (i,j)</span></span>
 <span class="lineno">  693 </span>
-<span class="lineno">  694 </span>parens :: Parser a -&gt; Parser a
-<span class="lineno">  695 </span><span class="decl"><span class="istickedoff">parens = between (lexeme L_OpenParen) (lexeme L_CloseParen)</span></span>
-<span class="lineno">  696 </span>
-<span class="lineno">  697 </span>braces :: Parser a -&gt; Parser a
-<span class="lineno">  698 </span><span class="decl"><span class="nottickedoff">braces = between (lexeme L_OpenCurly) (lexeme L_CloseCurly)</span></span>
-<span class="lineno">  699 </span>
-<span class="lineno">  700 </span>brackets :: Parser a -&gt; Parser a
-<span class="lineno">  701 </span><span class="decl"><span class="nottickedoff">brackets = between (lexeme L_OpenBracket) (lexeme L_CloseBracket)</span></span>
-<span class="lineno">  702 </span>
-<span class="lineno">  703 </span>lexeme :: Lexeme -&gt; Parser ()
-<span class="lineno">  704 </span>-- lexeme l = trace (&quot;lexeme: &quot; ++ show l) (void (satisfyT (l==)) &lt;?&gt; show (lexemeFace l))
-<span class="lineno">  705 </span><span class="decl"><span class="istickedoff">lexeme l = void (satisfyT (l==)) &lt;?&gt; show (lexemeFace l)</span></span>
-<span class="lineno">  706 </span>
-<span class="lineno">  707 </span>arrowedPair :: Parser a -&gt; Parser (a,a)
-<span class="lineno">  708 </span><span class="decl"><span class="nottickedoff">arrowedPair p = do</span>
-<span class="lineno">  709 </span><span class="spaces">    </span><span class="nottickedoff">i &lt;- p</span>
-<span class="lineno">  710 </span><span class="spaces">    </span><span class="nottickedoff">lexeme L_LongArrow</span>
-<span class="lineno">  711 </span><span class="spaces">    </span><span class="nottickedoff">j &lt;- p</span>
-<span class="lineno">  712 </span><span class="spaces">    </span><span class="nottickedoff">return (i,j)</span></span>
-<span class="lineno">  713 </span>
-<span class="lineno">  714 </span>inCompleteFile :: Parser a -&gt; Parser a
-<span class="lineno">  715 </span><span class="decl"><span class="istickedoff">inCompleteFile parser = do</span>
-<span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">result &lt;- parser</span>
-<span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">eof</span>
-<span class="lineno">  718 </span><span class="spaces">    </span><span class="istickedoff">return result</span></span>
+<span class="lineno">  694 </span>inCompleteFile :: Parser a -&gt; Parser a
+<span class="lineno">  695 </span><span class="decl"><span class="istickedoff">inCompleteFile parser = do</span>
+<span class="lineno">  696 </span><span class="spaces">    </span><span class="istickedoff">result &lt;- parser</span>
+<span class="lineno">  697 </span><span class="spaces">    </span><span class="istickedoff">eof</span>
+<span class="lineno">  698 </span><span class="spaces">    </span><span class="istickedoff">return result</span></span>
 
 </pre>
 </body>

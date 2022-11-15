@@ -69,7 +69,7 @@ span.spaces    { background: white }
 <span class="lineno">   50 </span>
 <span class="lineno">   51 </span>
 <span class="lineno">   52 </span>addAttributesToDomain
-<span class="lineno">   53 </span>    :: ( MonadFail m
+<span class="lineno">   53 </span>    :: ( MonadFailDoc m
 <span class="lineno">   54 </span>       , Pretty r
 <span class="lineno">   55 </span>       )
 <span class="lineno">   56 </span>    =&gt; Domain r Expression
@@ -82,7 +82,7 @@ span.spaces    { background: white }
 <span class="lineno">   63 </span>
 <span class="lineno">   64 </span>
 <span class="lineno">   65 </span>addAttributeToDomain
-<span class="lineno">   66 </span>    :: ( MonadFail m
+<span class="lineno">   66 </span>    :: ( MonadFailDoc m
 <span class="lineno">   67 </span>       , Pretty r
 <span class="lineno">   68 </span>       )
 <span class="lineno">   69 </span>    =&gt; Domain r Expression                          -- the input domain
@@ -109,10 +109,10 @@ span.spaces    { background: white }
 <span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_size -&gt;</span></span>
 <span class="lineno">   91 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">   92 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s -&gt; return domain</span></span>
-<span class="lineno">   93 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; fail $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">   93 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; failDoc $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">   94 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_                          -&gt; return $ DomainSet r (SetAttr (SizeAttr_Size val)) inner</span></span>
 <span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minSize -&gt; do</span></span>
-<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">   98 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">   99 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -123,7 +123,7 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize minS maxS -&gt; return $ DomainSet r (SetAttr (SizeAttr_MinMaxSize (mkMax minS val) maxS)) inner</span></span>
 <span class="lineno">  105 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None{}               -&gt; return $ DomainSet r (SetAttr (SizeAttr_MinSize val)) inner</span></span>
 <span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxSize -&gt; do</span></span>
-<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  108 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  109 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  110 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -134,11 +134,11 @@ span.spaces    { background: white }
 <span class="lineno">  115 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinMaxSize minS maxS -&gt; return $ DomainSet r (SetAttr (SizeAttr_MinMaxSize minS (mkMin maxS val))) inner</span></span>
 <span class="lineno">  116 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_None{}               -&gt; return $ DomainSet r (SetAttr (SizeAttr_MaxSize val)) inner</span></span>
 <span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  119 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  120 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater attr Nothing =</span></span>
-<span class="lineno">  122 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  122 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  123 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  124 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -147,10 +147,10 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_size -&gt;</span></span>
 <span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s -&gt; return domain</span></span>
-<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; fail $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; failDoc $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  132 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_                          -&gt; return $ DomainMSet r (MSetAttr (SizeAttr_Size val) occurAttr) inner</span></span>
 <span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minSize -&gt; do</span></span>
-<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  137 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -173,7 +173,7 @@ span.spaces    { background: white }
 <span class="lineno">  154 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">(MSetAttr (SizeAttr_MinSize val)                      occurAttr)</span></span>
 <span class="lineno">  155 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  156 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxSize -&gt; do</span></span>
-<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  158 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -224,11 +224,11 @@ span.spaces    { background: white }
 <span class="lineno">  205 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">(MSetAttr sizeAttr (OccurAttr_MaxOccur val))</span></span>
 <span class="lineno">  206 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  209 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  210 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater attr Nothing =</span></span>
-<span class="lineno">  212 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  212 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  213 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  214 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  215 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -238,12 +238,12 @@ span.spaces    { background: white }
 <span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">updater attr (Just val) = <span class="nottickedoff">case attr of</span></span>
 <span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_size -&gt;</span></span>
 <span class="lineno">  221 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
-<span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; fail $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; failDoc $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; return $ DomainFunction r</span></span>
 <span class="lineno">  224 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr (SizeAttr_Size val) partialityAttr jectivityAttr)</span></span>
 <span class="lineno">  225 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inF inT</span></span>
 <span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minSize -&gt; do</span></span>
-<span class="lineno">  227 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  227 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  228 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  230 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize{}    -&gt; fails</span></span>
@@ -255,7 +255,7 @@ span.spaces    { background: white }
 <span class="lineno">  236 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr (SizeAttr_MinMaxSize val maxS) partialityAttr jectivityAttr)</span></span>
 <span class="lineno">  237 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inF inT</span></span>
 <span class="lineno">  238 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxSize -&gt; do</span></span>
-<span class="lineno">  239 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  239 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  240 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  241 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  242 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize{}    -&gt; fails</span></span>
@@ -267,7 +267,7 @@ span.spaces    { background: white }
 <span class="lineno">  248 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr (SizeAttr_MinMaxSize minS val) partialityAttr jectivityAttr)</span></span>
 <span class="lineno">  249 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inF inT</span></span>
 <span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  252 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  253 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">updater &quot;total&quot; Nothing = return $ DomainFunction r</span>
@@ -305,7 +305,7 @@ span.spaces    { background: white }
 <span class="lineno">  286 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr sizeAttr partialityAttr JectivityAttr_Bijective)</span></span>
 <span class="lineno">  287 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inF inT</span></span>
 <span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">updater attr _ =</span>
-<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  290 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  291 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  292 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -315,12 +315,12 @@ span.spaces    { background: white }
 <span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater attr (Just val) = case attr of</span></span>
 <span class="lineno">  297 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_size -&gt;</span></span>
 <span class="lineno">  298 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
-<span class="lineno">  299 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; fail $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  299 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; failDoc $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  300 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; return $ DomainSequence r</span></span>
 <span class="lineno">  301 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(SequenceAttr (SizeAttr_Size val) jectivityAttr)</span></span>
 <span class="lineno">  302 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minSize -&gt; do</span></span>
-<span class="lineno">  304 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  304 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  305 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  306 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  307 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize{}    -&gt; fails</span></span>
@@ -332,7 +332,7 @@ span.spaces    { background: white }
 <span class="lineno">  313 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(SequenceAttr (SizeAttr_MinMaxSize val maxS) jectivityAttr)</span></span>
 <span class="lineno">  314 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxSize -&gt; do</span></span>
-<span class="lineno">  316 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  316 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  317 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  318 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  319 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize{}    -&gt; fails</span></span>
@@ -344,7 +344,7 @@ span.spaces    { background: white }
 <span class="lineno">  325 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(SequenceAttr (SizeAttr_MinMaxSize minS val) jectivityAttr)</span></span>
 <span class="lineno">  326 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  327 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  328 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  328 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  329 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  330 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  331 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater &quot;injective&quot; Nothing = return $</span></span>
@@ -379,7 +379,7 @@ span.spaces    { background: white }
 <span class="lineno">  360 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(SequenceAttr sizeAttr JectivityAttr_Bijective)</span></span>
 <span class="lineno">  361 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  362 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater attr _ =</span></span>
-<span class="lineno">  363 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  363 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  364 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  365 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  366 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -396,10 +396,10 @@ span.spaces    { background: white }
 <span class="lineno">  377 </span><span class="spaces">    </span><span class="istickedoff">updater attr (Just val) = <span class="nottickedoff">case attr of</span></span>
 <span class="lineno">  378 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_size -&gt;</span></span>
 <span class="lineno">  379 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
-<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; fail $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  380 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; failDoc $ &quot;Cannot add a size attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  381 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; return $ DomainRelation r (RelationAttr (SizeAttr_Size val) binRelAttr) inners</span></span>
 <span class="lineno">  382 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minSize -&gt; do</span></span>
-<span class="lineno">  383 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  383 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  384 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  385 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  386 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MinSize{}    -&gt; fails</span></span>
@@ -411,7 +411,7 @@ span.spaces    { background: white }
 <span class="lineno">  392 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(RelationAttr (SizeAttr_MinMaxSize val maxS) binRelAttr)</span></span>
 <span class="lineno">  393 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inners</span></span>
 <span class="lineno">  394 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxSize -&gt; do</span></span>
-<span class="lineno">  395 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  395 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  396 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case sizeAttr of</span></span>
 <span class="lineno">  397 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}       -&gt; fails</span></span>
 <span class="lineno">  398 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_MaxSize{}    -&gt; fails</span></span>
@@ -423,19 +423,19 @@ span.spaces    { background: white }
 <span class="lineno">  404 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">(RelationAttr (SizeAttr_MinMaxSize minS val) binRelAttr)</span></span>
 <span class="lineno">  405 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">inners</span></span>
 <span class="lineno">  406 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  407 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  407 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  408 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  409 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  410 </span><span class="spaces">    </span><span class="istickedoff">updater attr Nothing | <span class="tickonlytrue">attr `elem` supportedBinRel</span> = case readBinRel attr of</span>
 <span class="lineno">  411 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt;</span>
-<span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  412 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  413 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  414 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  415 </span><span class="spaces">        </span><span class="istickedoff">Just a  -&gt; return $ DomainRelation r</span>
 <span class="lineno">  416 </span><span class="spaces">                                </span><span class="istickedoff">(RelationAttr sizeAttr (binRelAttr `mappend` BinaryRelationAttrs (S.singleton a)))</span>
 <span class="lineno">  417 </span><span class="spaces">                                </span><span class="istickedoff">inners</span>
 <span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">updater attr _ =</span>
-<span class="lineno">  419 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  419 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  420 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  421 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  422 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -445,10 +445,10 @@ span.spaces    { background: white }
 <span class="lineno">  426 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_numParts -&gt;</span></span>
 <span class="lineno">  427 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsNum partitionAttr of</span></span>
 <span class="lineno">  428 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s -&gt; return domain</span></span>
-<span class="lineno">  429 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; fail $ &quot;Cannot add a numParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  429 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}            -&gt; failDoc $ &quot;Cannot add a numParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_                          -&gt; return $ DomainPartition r (partitionAttr { partsNum = SizeAttr_Size val }) inner</span></span>
 <span class="lineno">  431 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minNumParts -&gt; do</span></span>
-<span class="lineno">  432 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minNumParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  432 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minNumParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  433 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsNum partitionAttr of</span></span>
 <span class="lineno">  434 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  435 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -471,7 +471,7 @@ span.spaces    { background: white }
 <span class="lineno">  452 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">partitionAttr { partsNum = SizeAttr_MinSize val }</span></span>
 <span class="lineno">  453 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  454 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxNumParts -&gt; do</span></span>
-<span class="lineno">  455 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxNumParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  455 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxNumParts attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  456 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsNum partitionAttr of</span></span>
 <span class="lineno">  457 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  458 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -497,10 +497,10 @@ span.spaces    { background: white }
 <span class="lineno">  478 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_partSize -&gt;</span></span>
 <span class="lineno">  479 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsSize partitionAttr of</span></span>
 <span class="lineno">  480 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s -&gt; return domain</span></span>
-<span class="lineno">  481 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; fail $ &quot;Cannot add a partSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  481 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{} -&gt; failDoc $ &quot;Cannot add a partSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  482 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_               -&gt; return $ DomainPartition r (partitionAttr { partsSize = SizeAttr_Size val }) inner</span></span>
 <span class="lineno">  483 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_minPartSize -&gt; do</span></span>
-<span class="lineno">  484 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a minPartSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  484 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a minPartSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsSize partitionAttr of</span></span>
 <span class="lineno">  486 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  487 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -523,7 +523,7 @@ span.spaces    { background: white }
 <span class="lineno">  504 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">(partitionAttr { partsSize = SizeAttr_MinSize val })</span></span>
 <span class="lineno">  505 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  506 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AttrName_maxPartSize -&gt; do</span></span>
-<span class="lineno">  507 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = fail $ &quot;Cannot add a maxPartSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
+<span class="lineno">  507 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let fails = failDoc $ &quot;Cannot add a maxPartSize attribute to this domain:&quot; &lt;++&gt; pretty domain</span></span>
 <span class="lineno">  508 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case partsSize partitionAttr of</span></span>
 <span class="lineno">  509 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size s | val == s    -&gt; return domain</span></span>
 <span class="lineno">  510 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">SizeAttr_Size{}               -&gt; fails</span></span>
@@ -547,13 +547,13 @@ span.spaces    { background: white }
 <span class="lineno">  528 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">inner</span></span>
 <span class="lineno">  529 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno">  530 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt;</span></span>
-<span class="lineno">  531 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  531 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Unsupported attribute&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  532 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  533 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  534 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater AttrName_regular Nothing =</span></span>
 <span class="lineno">  535 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ DomainPartition r (partitionAttr { isRegular  = True }) inner</span></span>
 <span class="lineno">  536 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">updater attr Nothing =</span></span>
-<span class="lineno">  537 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">fail $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
+<span class="lineno">  537 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat [ &quot;Missing attribute value for&quot; &lt;+&gt; pretty attr</span></span>
 <span class="lineno">  538 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;For the domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  539 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
 <span class="lineno">  540 </span>

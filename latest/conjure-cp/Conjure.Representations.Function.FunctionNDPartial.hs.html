@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>functionNDPartial :: forall m .
-<span class="lineno">   17 </span>    MonadFail m =&gt;
+<span class="lineno">   17 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   18 </span>    NameGen m =&gt;
 <span class="lineno">   19 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   20 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -198,7 +198,7 @@ span.spaces    { background: white }
 <span class="lineno">  179 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">unrollD is j = foldr DomainMatrix j is</span></span>
 <span class="lineno">  180 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno">  181 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
-<span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">unrollC :: MonadFail m</span></span>
+<span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">unrollC :: MonadFailDoc m</span></span>
 <span class="lineno">  183 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">=&gt; [Domain () Constant]</span></span>
 <span class="lineno">  184 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">-&gt; [Constant]               -- indices</span></span>
 <span class="lineno">  185 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">-&gt; m (Constant, Constant)</span></span>
@@ -221,7 +221,7 @@ span.spaces    { background: white }
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return ( ConstantAbstract $ AbsLitMatrix i matrixFlags</span></span>
 <span class="lineno">  203 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitMatrix i matrixVals</span></span>
 <span class="lineno">  204 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  205 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">unrollC is prevIndices = fail $ vcat [ &quot;FunctionNDPartial.up.unrollC&quot;</span></span>
+<span class="lineno">  205 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">unrollC is prevIndices = failDoc $ vcat [ &quot;FunctionNDPartial.up.unrollC&quot;</span></span>
 <span class="lineno">  206 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;    is         :&quot; &lt;+&gt; vcat (map pretty is)</span></span>
 <span class="lineno">  207 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;    prevIndices:&quot; &lt;+&gt; pretty (show prevIndices)</span></span>
 <span class="lineno">  208 </span><span class="spaces">                                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
@@ -250,15 +250,15 @@ span.spaces    { background: white }
 <span class="lineno">  231 </span><span class="spaces">            </span><span class="istickedoff">case (lookup (nameFlags domain name) ctxt, lookup (nameValues domain name) ctxt) of</span>
 <span class="lineno">  232 </span><span class="spaces">                </span><span class="istickedoff">(Just flagMatrix, Just valuesMatrix) -&gt; do</span>
 <span class="lineno">  233 </span><span class="spaces">                    </span><span class="istickedoff">let</span>
-<span class="lineno">  234 </span><span class="spaces">                        </span><span class="istickedoff">allIndices :: (MonadFail m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span>
+<span class="lineno">  234 </span><span class="spaces">                        </span><span class="istickedoff">allIndices :: (MonadFailDoc m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span>
 <span class="lineno">  235 </span><span class="spaces">                        </span><span class="istickedoff">allIndices = fmap sequence . mapM domainValues</span>
 <span class="lineno">  236 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  237 </span><span class="spaces">                        </span><span class="istickedoff">index :: MonadFail m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span>
+<span class="lineno">  237 </span><span class="spaces">                        </span><span class="istickedoff">index :: MonadFailDoc m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span>
 <span class="lineno">  238 </span><span class="spaces">                        </span><span class="istickedoff">index m [] = return m</span>
 <span class="lineno">  239 </span><span class="spaces">                        </span><span class="istickedoff">index (ConstantAbstract (AbsLitMatrix indexDomain vals)) (i:is) = do</span>
 <span class="lineno">  240 </span><span class="spaces">                            </span><span class="istickedoff">froms &lt;- domainValues indexDomain</span>
 <span class="lineno">  241 </span><span class="spaces">                            </span><span class="istickedoff">case lookup i (zip froms vals) of</span>
-<span class="lineno">  242 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail &quot;Value not found. FunctionNDPartial.up.index&quot;</span></span>
+<span class="lineno">  242 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc &quot;Value not found. FunctionNDPartial.up.index&quot;</span></span>
 <span class="lineno">  243 </span><span class="spaces">                                </span><span class="istickedoff">Just v  -&gt; index v is</span>
 <span class="lineno">  244 </span><span class="spaces">                        </span><span class="istickedoff">index m is = <span class="nottickedoff">bug (&quot;FunctionNDPartial.up.index&quot; &lt;+&gt; pretty m &lt;+&gt; pretty (show is))</span></span>
 <span class="lineno">  245 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -269,7 +269,7 @@ span.spaces    { background: white }
 <span class="lineno">  250 </span><span class="spaces">                        </span><span class="istickedoff">case viewConstantBool flag of</span>
 <span class="lineno">  251 </span><span class="spaces">                            </span><span class="istickedoff">Just False -&gt; return Nothing</span>
 <span class="lineno">  252 </span><span class="spaces">                            </span><span class="istickedoff">Just True  -&gt; return (Just (mk these, value))</span>
-<span class="lineno">  253 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  253 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  254 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a boolean literal, but got:&quot; &lt;++&gt; pretty flag</span></span>
 <span class="lineno">  255 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;                           , and    :&quot; &lt;+&gt; pretty value</span></span>
 <span class="lineno">  256 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -279,14 +279,14 @@ span.spaces    { background: white }
 <span class="lineno">  260 </span><span class="spaces">                           </span><span class="istickedoff">, ConstantAbstract $ AbsLitFunction $ catMaybes vals</span>
 <span class="lineno">  261 </span><span class="spaces">                           </span><span class="istickedoff">)</span>
 <span class="lineno">  262 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  263 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  263 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  264 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in FunctionNDPartial up 1)&quot;</span></span>
 <span class="lineno">  265 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameFlags domain name)</span></span>
 <span class="lineno">  266 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  267 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  268 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  269 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  270 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  270 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  271 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in FunctionNDPartial up 2)&quot;</span></span>
 <span class="lineno">  272 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  273 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -300,7 +300,7 @@ span.spaces    { background: white }
 <span class="lineno">  281 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[flags, values] &lt;- downX1 inp</span></span>
 <span class="lineno">  282 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [_, (_, DomainMatrix innerDomainFr innerDomainTo)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
 <span class="lineno">  283 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">  284 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  284 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno">  285 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- setting up the quantification</span></span>
 <span class="lineno">  286 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let kRange = case innerDomainFr of</span></span>
 <span class="lineno">  287 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">DomainTuple ts  -&gt; map fromInt [1 .. genericLength ts]</span></span>
@@ -313,7 +313,7 @@ span.spaces    { background: white }
 <span class="lineno">  294 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">valuesIndexed = make opMatrixIndexing values toIndex</span></span>
 <span class="lineno">  295 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno">  296 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">soValues &lt;- innerSO downX1 valuesIndexed innerDomainTo</span></span>
-<span class="lineno">  297 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  297 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno">  298 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ </span></span>
 <span class="lineno">  299 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Comprehension</span></span>
 <span class="lineno">  300 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[essence| ( -&amp;flagsIndexed</span></span>
@@ -321,7 +321,6 @@ span.spaces    { background: white }
 <span class="lineno">  302 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  303 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
 <span class="lineno">  304 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[Generator (GenDomainNoRepr iPat (forgetRepr innerDomainFr))]</span></span></span>
-<span class="lineno">  305 </span>
 
 </pre>
 </body>

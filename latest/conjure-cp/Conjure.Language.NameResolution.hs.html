@@ -72,7 +72,7 @@ span.spaces    { background: white }
 <span class="lineno">   53 </span>-- this is for when a name will shadow an already existing name that is outside of this expression
 <span class="lineno">   54 </span>-- we rename the new names to avoid name shadowing
 <span class="lineno">   55 </span>shadowing ::
-<span class="lineno">   56 </span>    MonadFail m =&gt;
+<span class="lineno">   56 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   57 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">   58 </span>    NameGen m =&gt;
 <span class="lineno">   59 </span>    Expression -&gt; m Expression
@@ -94,7 +94,7 @@ span.spaces    { background: white }
 <span class="lineno">   75 </span>
 <span class="lineno">   76 </span>
 <span class="lineno">   77 </span>resolveNamesX ::
-<span class="lineno">   78 </span>    MonadFail m =&gt;
+<span class="lineno">   78 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   79 </span>    MonadUserError m =&gt;
 <span class="lineno">   80 </span>    NameGen m =&gt;
 <span class="lineno">   81 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -113,13 +113,13 @@ span.spaces    { background: white }
 <span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">f ty = ty</span></span>
 <span class="lineno">   95 </span>
 <span class="lineno">   96 </span>
-<span class="lineno">   97 </span>check :: MonadFail m =&gt; Expression -&gt; m ()
-<span class="lineno">   98 </span><span class="decl"><span class="istickedoff">check (Reference nm Nothing) = <span class="nottickedoff">fail (&quot;Undefined:&quot; &lt;+&gt; pretty nm)</span></span>
+<span class="lineno">   97 </span>check :: MonadFailDoc m =&gt; Expression -&gt; m ()
+<span class="lineno">   98 </span><span class="decl"><span class="istickedoff">check (Reference nm Nothing) = <span class="nottickedoff">failDoc (&quot;Undefined:&quot; &lt;+&gt; pretty nm)</span></span>
 <span class="lineno">   99 </span><span class="spaces"></span><span class="istickedoff">check _ = return <span class="nottickedoff">()</span></span></span>
 <span class="lineno">  100 </span>
 <span class="lineno">  101 </span>
 <span class="lineno">  102 </span>resolveStatement ::
-<span class="lineno">  103 </span>    MonadFail m =&gt;
+<span class="lineno">  103 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  104 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">  105 </span>    MonadUserError m =&gt;
 <span class="lineno">  106 </span>    NameGen m =&gt;
@@ -162,7 +162,7 @@ span.spaces    { background: white }
 <span class="lineno">  143 </span>
 <span class="lineno">  144 </span>
 <span class="lineno">  145 </span>resolveSearchOrder ::
-<span class="lineno">  146 </span>    MonadFail m =&gt;
+<span class="lineno">  146 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  147 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">  148 </span>    MonadUserError m =&gt;
 <span class="lineno">  149 </span>    NameGen m =&gt;
@@ -182,7 +182,7 @@ span.spaces    { background: white }
 <span class="lineno">  163 </span>
 <span class="lineno">  164 </span>
 <span class="lineno">  165 </span>resolveX ::
-<span class="lineno">  166 </span>    MonadFail m =&gt;
+<span class="lineno">  166 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  167 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">  168 </span>    MonadUserError m =&gt;
 <span class="lineno">  169 </span>    NameGen m =&gt;
@@ -269,7 +269,7 @@ span.spaces    { background: white }
 <span class="lineno">  250 </span>
 <span class="lineno">  251 </span>
 <span class="lineno">  252 </span>resolveD ::
-<span class="lineno">  253 </span>    MonadFail m =&gt;
+<span class="lineno">  253 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  254 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">  255 </span>    MonadUserError m =&gt;
 <span class="lineno">  256 </span>    NameGen m =&gt;
@@ -327,7 +327,7 @@ span.spaces    { background: white }
 <span class="lineno">  308 </span>
 <span class="lineno">  309 </span>
 <span class="lineno">  310 </span>resolveAbsLit ::
-<span class="lineno">  311 </span>    MonadFail m =&gt;
+<span class="lineno">  311 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  312 </span>    MonadState [(Name, ReferenceTo)] m =&gt;
 <span class="lineno">  313 </span>    MonadUserError m =&gt;
 <span class="lineno">  314 </span>    NameGen m =&gt;
@@ -341,7 +341,7 @@ span.spaces    { background: white }
 <span class="lineno">  322 </span><span class="spaces">        </span><span class="istickedoff">isTheVariant _ = Nothing</span>
 <span class="lineno">  323 </span><span class="spaces">    </span><span class="istickedoff">case mapMaybe (isTheVariant . snd) mval of</span>
 <span class="lineno">  324 </span><span class="spaces">        </span><span class="istickedoff">(DomainVariant dom:_) -&gt; return (AbsLitVariant (Just dom) n x')</span>
-<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">return (AbsLitVariant Nothing n x')</span></span>
+<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return (AbsLitVariant Nothing n x')</span>
 <span class="lineno">  326 </span><span class="spaces"></span><span class="istickedoff">resolveAbsLit lit = (descendBiM resolveX &gt;=&gt; descendBiM resolveD') lit</span>
 <span class="lineno">  327 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  328 </span><span class="spaces">        </span><span class="istickedoff">resolveD' d = resolveD (d :: Domain () Expression)</span></span>

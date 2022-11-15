@@ -47,7 +47,7 @@ span.spaces    { background: white }
 <span class="lineno">   28 </span>-- | The argument is a model before nameResolution.
 <span class="lineno">   29 </span>--   Only intended to work on problem specifications.
 <span class="lineno">   30 </span>removeEnumsFromModel ::
-<span class="lineno">   31 </span>    MonadFail m =&gt;
+<span class="lineno">   31 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   32 </span>    MonadLog m =&gt;
 <span class="lineno">   33 </span>    MonadUserError m =&gt;
 <span class="lineno">   34 </span>    Model -&gt; m Model
@@ -86,12 +86,12 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces">                                </span><span class="istickedoff">[] -&gt; modify ( ( [(ename, outDomain)]</span>
 <span class="lineno">   68 </span><span class="spaces">                                             </span><span class="istickedoff">, zip names (zip (cycle [ename]) allNats)</span>
 <span class="lineno">   69 </span><span class="spaces">                                             </span><span class="istickedoff">) `mappend` )</span>
-<span class="lineno">   70 </span><span class="spaces">                                </span><span class="istickedoff">repeated -&gt; <span class="nottickedoff">userErr1 $ vcat</span></span>
-<span class="lineno">   71 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Some members of this enum domain (&quot; &lt;&gt; pretty ename &lt;&gt; &quot;) seem to be defined&quot;</span></span>
-<span class="lineno">   72 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;as part of other enum domains.&quot;</span></span>
-<span class="lineno">   73 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Repeated:&quot; &lt;+&gt; prettyList id &quot;,&quot; repeated</span></span>
-<span class="lineno">   74 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;While working on domain:&quot; &lt;+&gt; pretty st</span></span>
-<span class="lineno">   75 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   70 </span><span class="spaces">                                </span><span class="istickedoff">repeated -&gt; userErr1 $ vcat</span>
+<span class="lineno">   71 </span><span class="spaces">                                    </span><span class="istickedoff">[ &quot;Some members of this enum domain (&quot; &lt;&gt; pretty ename &lt;&gt; &quot;) seem to be defined&quot;</span>
+<span class="lineno">   72 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;as part of other enum domains.&quot;</span>
+<span class="lineno">   73 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;Repeated:&quot; &lt;+&gt; prettyList id &quot;,&quot; repeated</span>
+<span class="lineno">   74 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;While working on domain:&quot; &lt;+&gt; pretty st</span>
+<span class="lineno">   75 </span><span class="spaces">                                    </span><span class="istickedoff">]</span>
 <span class="lineno">   76 </span><span class="spaces">                            </span><span class="istickedoff">return (Declaration (Letting ename (Domain outDomain)))</span>
 <span class="lineno">   77 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; return st</span>
 <span class="lineno">   78 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -104,7 +104,7 @@ span.spaces    { background: white }
 <span class="lineno">   85 </span><span class="spaces">                    </span><span class="istickedoff">= return (fromIntWithTag i (TagEnum ename))</span>
 <span class="lineno">   86 </span><span class="spaces">                </span><span class="istickedoff">onX p = return p</span>
 <span class="lineno">   87 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   88 </span><span class="spaces">                </span><span class="istickedoff">onD :: MonadFail m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
+<span class="lineno">   88 </span><span class="spaces">                </span><span class="istickedoff">onD :: MonadFailDoc m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
 <span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainEnum nm@(Name nmText) (Just ranges) _)</span>
 <span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">| Just _ &lt;- lookup nm enumDomainNames</span>
 <span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff">= DomainInt (TagEnum nmText) &lt;$&gt; mapM (mapM (nameToX nameToIntMapping)) ranges</span>
@@ -167,7 +167,7 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span>
 <span class="lineno">  149 </span>
 <span class="lineno">  150 </span>removeEnumsFromParam
-<span class="lineno">  151 </span>    :: (MonadFail m, MonadUserError m)
+<span class="lineno">  151 </span>    :: (MonadFailDoc m, MonadUserError m)
 <span class="lineno">  152 </span>    =&gt; Model -&gt; Model -&gt; m (Model, Model)
 <span class="lineno">  153 </span><span class="decl"><span class="istickedoff">removeEnumsFromParam model param = do</span>
 <span class="lineno">  154 </span><span class="spaces">    </span><span class="istickedoff">let allStatements = map (<span class="nottickedoff">False</span>,) (map Declaration (miEnumLettings (mInfo model)))</span>
@@ -204,7 +204,7 @@ span.spaces    { background: white }
 <span class="lineno">  185 </span><span class="spaces">            </span><span class="istickedoff">= return (fromIntWithTag i (TagEnum ename))</span>
 <span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">onX p = return p</span>
 <span class="lineno">  187 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">onD :: MonadFail m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">onD :: MonadFailDoc m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
 <span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">onD (DomainEnum nm@(Name nmText) (Just ranges) _)</span>
 <span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff">| Just _ &lt;- M.lookup nm enumDomainNames</span>
 <span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff">= DomainInt <span class="nottickedoff">(TagEnum nmText)</span> &lt;$&gt; mapM (mapM (nameToX nameToIntMapping)) ranges</span>
@@ -308,9 +308,9 @@ span.spaces    { background: white }
 <span class="lineno">  289 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">])</span></span></span>
 <span class="lineno">  290 </span>
 <span class="lineno">  291 </span>-- first Name is the value, the second Name is the name of the enum domain
-<span class="lineno">  292 </span>nameToX :: MonadFail m =&gt; M.HashMap Name (Name, Integer) -&gt; Expression -&gt; m Expression
+<span class="lineno">  292 </span>nameToX :: MonadFailDoc m =&gt; M.HashMap Name (Name, Integer) -&gt; Expression -&gt; m Expression
 <span class="lineno">  293 </span><span class="decl"><span class="istickedoff">nameToX nameToIntMapping (Reference nm _) = case M.lookup nm nameToIntMapping of</span>
-<span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; fail (pretty nm &lt;+&gt; &quot;is used in a domain, but it isn't a member of the enum domain.&quot;)</span>
+<span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; failDoc (pretty nm &lt;+&gt; &quot;is used in a domain, but it isn't a member of the enum domain.&quot;)</span>
 <span class="lineno">  295 </span><span class="spaces">    </span><span class="istickedoff">Just (Name ename, i)  -&gt; return (fromIntWithTag i (TagEnum ename))</span>
 <span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">Just (ename, i) -&gt; <span class="nottickedoff">bug $ &quot;nameToX, nm:&quot; &lt;+&gt; vcat [pretty (show ename), pretty i]</span></span>
 <span class="lineno">  297 </span><span class="spaces"></span><span class="istickedoff">nameToX _ x = <span class="nottickedoff">return x</span></span></span>

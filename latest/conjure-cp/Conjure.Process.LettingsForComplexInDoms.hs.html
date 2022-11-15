@@ -35,7 +35,7 @@ span.spaces    { background: white }
 <span class="lineno">   16 </span>--   however, this transformation (as part of `Conjure.UI.Model.prologue`) cleans this up by introducing
 <span class="lineno">   17 </span>--   extra letting statements.
 <span class="lineno">   18 </span>lettingsForComplexInDoms ::
-<span class="lineno">   19 </span>    MonadFail m =&gt;
+<span class="lineno">   19 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   20 </span>    NameGen m =&gt;
 <span class="lineno">   21 </span>    Model -&gt; m Model
 <span class="lineno">   22 </span><span class="decl"><span class="istickedoff">lettingsForComplexInDoms m = do</span>
@@ -61,7 +61,7 @@ span.spaces    { background: white }
 <span class="lineno">   42 </span>
 <span class="lineno">   43 </span>
 <span class="lineno">   44 </span>-- | inline letting domains for declarations, before saving the original domain in the logs
-<span class="lineno">   45 </span>inlineLettingDomainsForDecls :: MonadFail m =&gt; Model -&gt; m Model
+<span class="lineno">   45 </span>inlineLettingDomainsForDecls :: MonadFailDoc m =&gt; Model -&gt; m Model
 <span class="lineno">   46 </span><span class="decl"><span class="istickedoff">inlineLettingDomainsForDecls m = do</span>
 <span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">let</span>
 <span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">f (DomainReference name Nothing) = do</span>
@@ -70,7 +70,7 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span><span class="spaces">                </span><span class="istickedoff">Just d -&gt; transformM f d</span>
 <span class="lineno">   52 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; if <span class="tickonlytrue">name `elem` unnameds</span></span>
 <span class="lineno">   53 </span><span class="spaces">                        </span><span class="istickedoff">then return (DomainReference name Nothing)</span>
-<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff">else <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">   54 </span><span class="spaces">                        </span><span class="istickedoff">else <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">   55 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
 <span class="lineno">   56 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
 <span class="lineno">   57 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>

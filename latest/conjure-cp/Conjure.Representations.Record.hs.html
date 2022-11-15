@@ -30,7 +30,7 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>import Conjure.Representations.Internal
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>
-<span class="lineno">   14 </span>record :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   14 </span>record :: forall m . (MonadFailDoc m, NameGen m) =&gt; Representation m
 <span class="lineno">   15 </span><span class="decl"><span class="istickedoff">record = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   17 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -84,7 +84,7 @@ span.spaces    { background: white }
 <span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">let names = map (mkName name . fst) ds</span>
 <span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff">vals &lt;- forM names $ \ n -&gt;</span>
 <span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">case lookup n ctxt of</span>
-<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Record up)&quot;</span></span>
 <span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty n</span></span>
 <span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

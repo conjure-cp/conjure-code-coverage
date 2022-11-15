@@ -41,7 +41,7 @@ span.spaces    { background: white }
 <span class="lineno">   22 </span>
 <span class="lineno">   23 </span>
 <span class="lineno">   24 </span>typeCheckModel_StandAlone ::
-<span class="lineno">   25 </span>    MonadFail m =&gt;
+<span class="lineno">   25 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   26 </span>    MonadUserError m =&gt;
 <span class="lineno">   27 </span>    MonadLog m =&gt;
 <span class="lineno">   28 </span>    NameGen m =&gt;
@@ -202,7 +202,7 @@ span.spaces    { background: white }
 <span class="lineno">  183 </span><span class="spaces">    </span><span class="istickedoff">-- now that everything knows its type, we can recover</span>
 <span class="lineno">  184 </span><span class="spaces">    </span><span class="istickedoff">-- DomainInt [RangeSingle x] from DomainIntE x, if x has type int</span>
 <span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">domainIntERecover :: forall m . Monad m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
+<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">domainIntERecover :: forall m . MonadFailDoc m =&gt; Domain () Expression -&gt; m (Domain () Expression)</span>
 <span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">domainIntERecover d@(DomainIntE x) = do</span>
 <span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- runExceptT $ typeOf x</span>
 <span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff">return $ case ty of</span>

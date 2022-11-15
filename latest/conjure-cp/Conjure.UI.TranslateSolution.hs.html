@@ -40,7 +40,7 @@ span.spaces    { background: white }
 <span class="lineno">   21 </span>
 <span class="lineno">   22 </span>
 <span class="lineno">   23 </span>translateSolution ::
-<span class="lineno">   24 </span>    MonadFail m =&gt;
+<span class="lineno">   24 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   25 </span>    MonadLog m =&gt;
 <span class="lineno">   26 </span>    NameGen m =&gt;
 <span class="lineno">   27 </span>    EnumerateDomain m =&gt;
@@ -120,7 +120,7 @@ span.spaces    { background: white }
 <span class="lineno">  101 </span><span class="spaces">                          </span><span class="istickedoff">| i &lt;- [1 .. size]</span>
 <span class="lineno">  102 </span><span class="spaces">                          </span><span class="istickedoff">]</span>
 <span class="lineno">  103 </span><span class="spaces">                </span><span class="istickedoff">in  Declaration (LettingDomainDefnEnum n nms)</span>
-<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat [ &quot;Expecting an integer value for&quot; &lt;+&gt; pretty n</span></span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;Expecting an integer value for&quot; &lt;+&gt; pretty n</span></span>
 <span class="lineno">  105 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty s</span></span>
 <span class="lineno">  106 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  107 </span><span class="spaces"></span><span class="istickedoff"></span>

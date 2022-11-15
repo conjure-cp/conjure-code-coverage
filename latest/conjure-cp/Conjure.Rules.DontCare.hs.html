@@ -130,7 +130,7 @@ span.spaces    { background: white }
 <span class="lineno">  111 </span>
 <span class="lineno">  112 </span>
 <span class="lineno">  113 </span>handleDontCares ::
-<span class="lineno">  114 </span>    MonadFail m =&gt;
+<span class="lineno">  114 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  115 </span>    NameGen m =&gt;
 <span class="lineno">  116 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  117 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -180,7 +180,7 @@ span.spaces    { background: white }
 <span class="lineno">  161 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; bug (&quot;dontCare on domain, expecting matrix, but got:&quot; &lt;+&gt; pretty domX)</span>
 <span class="lineno">  162 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; do</span>
 <span class="lineno">  163 </span><span class="spaces">                    </span><span class="nottickedoff">case representationOf x of</span>
-<span class="lineno">  164 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; fail &quot;doesn't seem to have a representation, during handleDontCares&quot;</span>
+<span class="lineno">  164 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; failDoc &quot;doesn't seem to have a representation, during handleDontCares&quot;</span>
 <span class="lineno">  165 </span><span class="spaces">                        </span><span class="nottickedoff">Just _  -&gt; do</span>
 <span class="lineno">  166 </span><span class="spaces">                            </span><span class="nottickedoff">xs  &lt;- downX1 x</span>
 <span class="lineno">  167 </span><span class="spaces">                            </span><span class="nottickedoff">xs' &lt;- mapM (handleDontCares . make opDontCare) xs</span>

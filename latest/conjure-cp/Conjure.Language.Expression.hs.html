@@ -78,7 +78,7 @@ span.spaces    { background: white }
 <span class="lineno">   59 </span>
 <span class="lineno">   60 </span>instance Serialize Statement
 <span class="lineno">   61 </span>instance Hashable  Statement
-<span class="lineno">   62 </span>instance ToJSON    Statement where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   62 </span>instance ToJSON    Statement where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   63 </span>instance FromJSON  Statement where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   64 </span>
 <span class="lineno">   65 </span>instance SimpleJSON Statement where
@@ -134,12 +134,12 @@ span.spaces    { background: white }
 <span class="lineno">  115 </span>
 <span class="lineno">  116 </span>instance Serialize SearchOrder
 <span class="lineno">  117 </span>instance Hashable  SearchOrder
-<span class="lineno">  118 </span>instance ToJSON    SearchOrder where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  118 </span>instance ToJSON    SearchOrder where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">  119 </span>instance FromJSON  SearchOrder where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  120 </span>
 <span class="lineno">  121 </span>instance Pretty SearchOrder where
 <span class="lineno">  122 </span>    <span class="decl"><span class="istickedoff">pretty (BranchingOn x) = pretty x</span>
-<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">pretty (Cut x) = <span class="nottickedoff">pretty x</span></span></span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">pretty (Cut x) = pretty x</span></span>
 <span class="lineno">  124 </span>
 <span class="lineno">  125 </span>
 <span class="lineno">  126 </span>------------------------------------------------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ span.spaces    { background: white }
 <span class="lineno">  132 </span>
 <span class="lineno">  133 </span>instance Serialize Objective
 <span class="lineno">  134 </span>instance Hashable  Objective
-<span class="lineno">  135 </span>instance ToJSON    Objective where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  135 </span>instance ToJSON    Objective where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">  136 </span>instance FromJSON  Objective where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>instance Pretty Objective where
@@ -300,7 +300,7 @@ span.spaces    { background: white }
 <span class="lineno">  281 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;letting&quot; &lt;+&gt; pretty name &lt;+&gt; &quot;be new type enum&quot;) 8</span>
 <span class="lineno">  282 </span><span class="spaces">             </span><span class="istickedoff">(prettyList prBraces &quot;,&quot; values)</span>
 <span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">pretty (LettingDomainDefnUnnamed name size) =</span>
-<span class="lineno">  284 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">hang (&quot;letting&quot; &lt;+&gt; pretty name &lt;+&gt; &quot;be new type of size&quot;) 8 (pretty size)</span></span></span>
+<span class="lineno">  284 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;letting&quot; &lt;+&gt; pretty name &lt;+&gt; &quot;be new type of size&quot;) 8 (pretty size)</span></span>
 <span class="lineno">  285 </span>
 <span class="lineno">  286 </span>instance VarSymBreakingDescription Declaration where
 <span class="lineno">  287 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (FindOrGiven forg name domain) = JSON.Object $ M.fromList</span>
@@ -470,8 +470,8 @@ span.spaces    { background: white }
 <span class="lineno">  451 </span>instance TypeOf Expression where
 <span class="lineno">  452 </span>    <span class="decl"><span class="istickedoff">typeOf (Constant x) = typeOf x</span>
 <span class="lineno">  453 </span><span class="spaces">    </span><span class="istickedoff">typeOf (AbstractLiteral x) = typeOf x</span>
-<span class="lineno">  454 </span><span class="spaces">    </span><span class="istickedoff">typeOf (Domain x) = fail (&quot;Expected an expression, but got a domain:&quot; &lt;++&gt; <span class="nottickedoff">pretty x</span>)</span>
-<span class="lineno">  455 </span><span class="spaces">    </span><span class="istickedoff">typeOf (Reference nm Nothing) = fail <span class="nottickedoff">(&quot;Type error, identifier not bound:&quot; &lt;+&gt; pretty nm)</span></span>
+<span class="lineno">  454 </span><span class="spaces">    </span><span class="istickedoff">typeOf (Domain x) = failDoc (&quot;Expected an expression, but got a domain:&quot; &lt;++&gt; pretty x)</span>
+<span class="lineno">  455 </span><span class="spaces">    </span><span class="istickedoff">typeOf (Reference nm Nothing) = failDoc <span class="nottickedoff">(&quot;Type error, identifier not bound:&quot; &lt;+&gt; pretty nm)</span></span>
 <span class="lineno">  456 </span><span class="spaces">    </span><span class="istickedoff">typeOf (Reference nm (Just refTo)) =</span>
 <span class="lineno">  457 </span><span class="spaces">        </span><span class="istickedoff">case refTo of</span>
 <span class="lineno">  458 </span><span class="spaces">            </span><span class="istickedoff">Alias x -&gt; typeOf x</span>
@@ -492,7 +492,7 @@ span.spaces    { background: white }
 <span class="lineno">  473 </span><span class="spaces">                        </span><span class="istickedoff">GenDomainHasRepr pat domain -&gt; <span class="nottickedoff">typeOfDomain domain &gt;&gt;= lu (Single pat)</span></span>
 <span class="lineno">  474 </span><span class="spaces">                        </span><span class="istickedoff">GenInExpr        pat expr   -&gt;</span>
 <span class="lineno">  475 </span><span class="spaces">                            </span><span class="istickedoff">case project expr of</span>
-<span class="lineno">  476 </span><span class="spaces">                                </span><span class="istickedoff">Just (d :: Domain () Expression) -&gt; fail $ vcat</span>
+<span class="lineno">  476 </span><span class="spaces">                                </span><span class="istickedoff">Just (d :: Domain () Expression) -&gt; failDoc $ vcat</span>
 <span class="lineno">  477 </span><span class="spaces">                                    </span><span class="istickedoff">[ &quot;Expected an expression, but got a domain:&quot; &lt;++&gt; pretty d</span>
 <span class="lineno">  478 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;In the generator of a comprehension or a quantified expression&quot;</span>
 <span class="lineno">  479 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;Consider using&quot; &lt;+&gt; pretty pat &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty expr</span>
@@ -501,7 +501,7 @@ span.spaces    { background: white }
 <span class="lineno">  482 </span><span class="spaces">                                    </span><span class="istickedoff">tyExpr &lt;- typeOf expr</span>
 <span class="lineno">  483 </span><span class="spaces">                                    </span><span class="istickedoff">case innerTypeOf tyExpr of</span>
 <span class="lineno">  484 </span><span class="spaces">                                        </span><span class="istickedoff">Just tyExprInner -&gt; lu pat tyExprInner</span>
-<span class="lineno">  485 </span><span class="spaces">                                        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  485 </span><span class="spaces">                                        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  486 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Type error in the generator of a comprehension or a quantified expression&quot;</span></span>
 <span class="lineno">  487 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Consider using&quot; &lt;+&gt; pretty pat &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty expr</span></span>
 <span class="lineno">  488 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
@@ -512,7 +512,7 @@ span.spaces    { background: white }
 <span class="lineno">  493 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(WithLocals h (DefinednessConstraints cs)) = do</span>
 <span class="lineno">  494 </span><span class="spaces">        </span><span class="istickedoff">forM_ cs $ \ c -&gt; do</span>
 <span class="lineno">  495 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- typeOf c</span>
-<span class="lineno">  496 </span><span class="spaces">            </span><span class="istickedoff">unless (typeUnify TypeBool ty) $ <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  496 </span><span class="spaces">            </span><span class="istickedoff">unless (typeUnify TypeBool ty) $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  497 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Local constraint is not boolean.&quot;</span></span>
 <span class="lineno">  498 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Condition:&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  499 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;In:&quot; &lt;+&gt; pretty p</span></span>
@@ -526,11 +526,11 @@ span.spaces    { background: white }
 <span class="lineno">  507 </span><span class="spaces">                    </span><span class="istickedoff">ty &lt;- typeOf x</span>
 <span class="lineno">  508 </span><span class="spaces">                    </span><span class="istickedoff">case ty of</span>
 <span class="lineno">  509 </span><span class="spaces">                        </span><span class="istickedoff">TypeBool{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  510 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  510 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  511 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Inside a bubble, in a 'such that' statement:&quot; &lt;++&gt; pretty x</span></span>
 <span class="lineno">  512 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected type `bool`, but got:&quot; &lt;++&gt; pretty ty</span></span>
 <span class="lineno">  513 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  514 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  514 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  515 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Unexpected statement inside a bubble.&quot;</span></span>
 <span class="lineno">  516 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected type `find` or `such that`, but got:&quot; &lt;++&gt; pretty stmt</span></span>
 <span class="lineno">  517 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;The complete expression:&quot; &lt;+&gt; pretty p</span></span>
@@ -541,7 +541,7 @@ span.spaces    { background: white }
 <span class="lineno">  522 </span><span class="spaces">            </span><span class="istickedoff">Generator{} -&gt; return <span class="nottickedoff">()</span>                    -- TODO: do this properly</span>
 <span class="lineno">  523 </span><span class="spaces">            </span><span class="istickedoff">Condition c -&gt; do</span>
 <span class="lineno">  524 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf c</span>
-<span class="lineno">  525 </span><span class="spaces">                </span><span class="istickedoff">unless (typeUnify TypeBool ty) $ <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  525 </span><span class="spaces">                </span><span class="istickedoff">unless (typeUnify TypeBool ty) $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  526 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Condition is not boolean.&quot;</span></span>
 <span class="lineno">  527 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Condition:&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  528 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;In:&quot; &lt;+&gt; pretty p</span></span>
@@ -559,27 +559,27 @@ span.spaces    { background: white }
 <span class="lineno">  540 </span><span class="spaces">        </span><span class="istickedoff">case iType of</span>
 <span class="lineno">  541 </span><span class="spaces">            </span><span class="istickedoff">TypeBool{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  542 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  543 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;representationOf, OpIndexing, not a bool or int index&quot;</span></span>
+<span class="lineno">  543 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc &quot;representationOf, OpIndexing, not a bool or int index&quot;</span></span>
 <span class="lineno">  544 </span><span class="spaces">        </span><span class="istickedoff">mTree &lt;- representationTreeOf m</span>
 <span class="lineno">  545 </span><span class="spaces">        </span><span class="istickedoff">case mTree of</span>
 <span class="lineno">  546 </span><span class="spaces">            </span><span class="istickedoff">Tree _ [r] -&gt; return r</span>
-<span class="lineno">  547 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; fail &quot;domainOf, OpIndexing, not a matrix&quot;</span>
-<span class="lineno">  548 </span><span class="spaces">    </span><span class="istickedoff">representationTreeOf _ = fail &quot;doesn't seem to have a representation&quot;</span></span>
+<span class="lineno">  547 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; failDoc &quot;domainOf, OpIndexing, not a matrix&quot;</span>
+<span class="lineno">  548 </span><span class="spaces">    </span><span class="istickedoff">representationTreeOf _ = failDoc &quot;doesn't seem to have a representation&quot;</span></span>
 <span class="lineno">  549 </span>
 <span class="lineno">  550 </span>instance Domain () Expression :&lt; Expression where
 <span class="lineno">  551 </span>    <span class="decl"><span class="nottickedoff">inject = Domain</span></span>
 <span class="lineno">  552 </span>    <span class="decl"><span class="istickedoff">project (Domain x) = return x</span>
 <span class="lineno">  553 </span><span class="spaces">    </span><span class="istickedoff">project (Reference _ (Just (Alias x))) = project x</span>
-<span class="lineno">  554 </span><span class="spaces">    </span><span class="istickedoff">project x = fail <span class="nottickedoff">(&quot;projecting Domain out of Expression:&quot; &lt;+&gt; pretty x)</span></span></span>
+<span class="lineno">  554 </span><span class="spaces">    </span><span class="istickedoff">project x = failDoc <span class="nottickedoff">(&quot;projecting Domain out of Expression:&quot; &lt;+&gt; pretty x)</span></span></span>
 <span class="lineno">  555 </span>
 <span class="lineno">  556 </span>instance Op Expression :&lt; Expression where
 <span class="lineno">  557 </span>    <span class="decl"><span class="istickedoff">inject = Op</span></span>
 <span class="lineno">  558 </span>    <span class="decl"><span class="istickedoff">project (Op x) = return x</span>
-<span class="lineno">  559 </span><span class="spaces">    </span><span class="istickedoff">project x = fail (&quot;projecting Op out of Expression:&quot; &lt;+&gt; pretty x)</span></span>
+<span class="lineno">  559 </span><span class="spaces">    </span><span class="istickedoff">project x = failDoc (&quot;projecting Op out of Expression:&quot; &lt;+&gt; pretty x)</span></span>
 <span class="lineno">  560 </span>
 <span class="lineno">  561 </span>instance Op Constant :&lt; Constant where
 <span class="lineno">  562 </span>    <span class="decl"><span class="nottickedoff">inject x = bug (&quot;injecting Op into a Constant:&quot; &lt;+&gt; pretty x)</span></span>
-<span class="lineno">  563 </span>    <span class="decl"><span class="nottickedoff">project x = fail (&quot;projecting Op out of a Constant:&quot; &lt;+&gt; pretty x)</span></span>
+<span class="lineno">  563 </span>    <span class="decl"><span class="nottickedoff">project x = failDoc (&quot;projecting Op out of a Constant:&quot; &lt;+&gt; pretty x)</span></span>
 <span class="lineno">  564 </span>
 <span class="lineno">  565 </span>instance CanBeAnAlias Expression where
 <span class="lineno">  566 </span>    <span class="decl"><span class="istickedoff">isAlias (Reference _ (Just (Alias x))) = Just x</span>
@@ -589,25 +589,25 @@ span.spaces    { background: white }
 <span class="lineno">  570 </span>    <span class="decl"><span class="istickedoff">fromName nm = Reference nm Nothing</span></span>
 <span class="lineno">  571 </span>    <span class="decl"><span class="istickedoff">nameOut (Reference nm _) = return nm</span>
 <span class="lineno">  572 </span><span class="spaces">    </span><span class="istickedoff">nameOut (Constant (ConstantField nm _)) = return nm</span>
-<span class="lineno">  573 </span><span class="spaces">    </span><span class="istickedoff">nameOut p = <span class="nottickedoff">fail (&quot;This expression isn't a 'name':&quot; &lt;+&gt; pretty p)</span></span></span>
+<span class="lineno">  573 </span><span class="spaces">    </span><span class="istickedoff">nameOut p = <span class="nottickedoff">failDoc (&quot;This expression isn't a 'name':&quot; &lt;+&gt; pretty p)</span></span></span>
 <span class="lineno">  574 </span>
 <span class="lineno">  575 </span>instance ExpressionLike Expression where
 <span class="lineno">  576 </span>    <span class="decl"><span class="istickedoff">fromInt = Constant . fromInt</span></span>
 <span class="lineno">  577 </span>    <span class="decl"><span class="istickedoff">fromIntWithTag i t = Constant $ fromIntWithTag i t</span></span>
 <span class="lineno">  578 </span>    <span class="decl"><span class="istickedoff">intOut doc (Constant c) = intOut <span class="nottickedoff">(&quot;intOut{Expression}&quot; &lt;+&gt; doc)</span> c</span>
-<span class="lineno">  579 </span><span class="spaces">    </span><span class="istickedoff">intOut doc x = fail $ vcat [ &quot;Expecting a constant, but got:&quot; &lt;++&gt; <span class="nottickedoff">pretty x</span></span>
+<span class="lineno">  579 </span><span class="spaces">    </span><span class="istickedoff">intOut doc x = failDoc $ vcat [ &quot;Expecting a constant, but got:&quot; &lt;++&gt; <span class="nottickedoff">pretty x</span></span>
 <span class="lineno">  580 </span><span class="spaces">                               </span><span class="istickedoff">, &quot;Called from:&quot; &lt;+&gt; doc</span>
 <span class="lineno">  581 </span><span class="spaces">                               </span><span class="istickedoff">]</span></span>
 <span class="lineno">  582 </span>
 <span class="lineno">  583 </span>    <span class="decl"><span class="istickedoff">fromBool = Constant . fromBool</span></span>
 <span class="lineno">  584 </span>    <span class="decl"><span class="nottickedoff">boolOut (Constant c) = boolOut c</span>
-<span class="lineno">  585 </span><span class="spaces">    </span><span class="nottickedoff">boolOut x = fail (&quot;Expecting a constant, but got:&quot; &lt;++&gt; pretty x)</span></span>
+<span class="lineno">  585 </span><span class="spaces">    </span><span class="nottickedoff">boolOut x = failDoc (&quot;Expecting a constant, but got:&quot; &lt;++&gt; pretty x)</span></span>
 <span class="lineno">  586 </span>
 <span class="lineno">  587 </span>    -- fromList [x] = x -- TODO: what would break if I do this?
 <span class="lineno">  588 </span>    <span class="decl"><span class="istickedoff">fromList xs = AbstractLiteral $ AbsLitMatrix (mkDomainIntB 1 (fromInt $ genericLength xs)) xs</span></span>
 <span class="lineno">  589 </span>    <span class="decl"><span class="istickedoff">listOut (AbstractLiteral (AbsLitMatrix _ xs)) = return xs</span>
 <span class="lineno">  590 </span><span class="spaces">    </span><span class="istickedoff">listOut (Constant (ConstantAbstract (AbsLitMatrix _ xs))) = return (map <span class="nottickedoff">Constant</span> xs)</span>
-<span class="lineno">  591 </span><span class="spaces">    </span><span class="istickedoff">listOut c = fail <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
+<span class="lineno">  591 </span><span class="spaces">    </span><span class="istickedoff">listOut c = failDoc <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  592 </span>
 <span class="lineno">  593 </span>instance Num Expression where
 <span class="lineno">  594 </span>    <span class="decl"><span class="nottickedoff">x + y = Op $ MkOpSum     $ OpSum     $ fromList [x,y]</span></span>
@@ -661,11 +661,11 @@ span.spaces    { background: white }
 <span class="lineno">  642 </span>--   is refusing to believe that it is one.
 <span class="lineno">  643 </span>--   Remind it where it comes from!
 <span class="lineno">  644 </span>--   (Srsly: Can be useful after parsing a solution file, for example.)
-<span class="lineno">  645 </span>e2c :: MonadFail m =&gt; Expression -&gt; m Constant
+<span class="lineno">  645 </span>e2c :: MonadFailDoc m =&gt; Expression -&gt; m Constant
 <span class="lineno">  646 </span><span class="decl"><span class="istickedoff">e2c (Constant c) = return c</span>
 <span class="lineno">  647 </span><span class="spaces"></span><span class="istickedoff">e2c (AbstractLiteral c) = ConstantAbstract &lt;$&gt; mapM e2c c</span>
 <span class="lineno">  648 </span><span class="spaces"></span><span class="istickedoff">e2c (Op (MkOpNegate (OpNegate (Constant (ConstantInt t x))))) = return $ ConstantInt t $ negate x</span>
-<span class="lineno">  649 </span><span class="spaces"></span><span class="istickedoff">e2c x = fail <span class="nottickedoff">(&quot;e2c, not a constant:&quot; &lt;+&gt; pretty x)</span></span></span>
+<span class="lineno">  649 </span><span class="spaces"></span><span class="istickedoff">e2c x = failDoc <span class="nottickedoff">(&quot;e2c, not a constant:&quot; &lt;+&gt; pretty x)</span></span></span>
 <span class="lineno">  650 </span>
 <span class="lineno">  651 </span>-- | generate a fresh name for a quantified variable.
 <span class="lineno">  652 </span>--   fst: the pattern to be used inside a generator
@@ -774,7 +774,7 @@ span.spaces    { background: white }
 <span class="lineno">  755 </span>instance FromJSON  ReferenceTo where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  756 </span>
 <span class="lineno">  757 </span>instance Pretty ReferenceTo where
-<span class="lineno">  758 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = <span class="nottickedoff">&quot;Alias&quot; &lt;+&gt; prParens (pretty x)</span></span>
+<span class="lineno">  758 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = &quot;Alias&quot; &lt;+&gt; prParens (pretty x)</span>
 <span class="lineno">  759 </span><span class="spaces">    </span><span class="istickedoff">pretty (InComprehension gen) = &quot;InComprehension&quot; &lt;+&gt; prParens (pretty gen)</span>
 <span class="lineno">  760 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclNoRepr  forg nm dom _) = &quot;DeclNoRepr&quot; &lt;+&gt; prParens (pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom)</span>
 <span class="lineno">  761 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclHasRepr forg nm dom  ) = <span class="nottickedoff">&quot;DeclHasRepr&quot; &lt;+&gt; prParens (pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom)</span></span>
@@ -867,7 +867,7 @@ span.spaces    { background: white }
 <span class="lineno">  848 </span>instance Pretty GeneratorOrCondition where
 <span class="lineno">  849 </span>    <span class="decl"><span class="istickedoff">pretty (Generator x) = pretty x</span>
 <span class="lineno">  850 </span><span class="spaces">    </span><span class="istickedoff">pretty (Condition x) = pretty x</span>
-<span class="lineno">  851 </span><span class="spaces">    </span><span class="istickedoff">pretty (ComprehensionLetting n x) = <span class="nottickedoff">&quot;letting&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty x</span></span></span>
+<span class="lineno">  851 </span><span class="spaces">    </span><span class="istickedoff">pretty (ComprehensionLetting n x) = &quot;letting&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty x</span></span>
 <span class="lineno">  852 </span>
 <span class="lineno">  853 </span>instance VarSymBreakingDescription GeneratorOrCondition where
 <span class="lineno">  854 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (Generator x) = JSON.Object $ M.fromList</span>
@@ -947,7 +947,7 @@ span.spaces    { background: white }
 <span class="lineno">  928 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX _ = False</span></span>
 <span class="lineno">  929 </span>
 <span class="lineno">  930 </span>
-<span class="lineno">  931 </span>isDomainExpr :: MonadFail m =&gt; Expression -&gt; m ()
+<span class="lineno">  931 </span>isDomainExpr :: MonadFailDoc m =&gt; Expression -&gt; m ()
 <span class="lineno">  932 </span><span class="decl"><span class="istickedoff">isDomainExpr Domain{} = <span class="nottickedoff">return ()</span></span>
 <span class="lineno">  933 </span><span class="spaces"></span><span class="istickedoff">isDomainExpr x = na (&quot;Not a domain expression: &quot; &lt;+&gt; pretty x)</span></span>
 

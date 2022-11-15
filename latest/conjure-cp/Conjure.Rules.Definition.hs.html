@@ -176,10 +176,10 @@ span.spaces    { background: white }
 <span class="lineno">  157 </span>    { <span class="istickedoff"><span class="decl"><span class="istickedoff">rName</span></span></span>  :: Doc
 <span class="lineno">  158 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rApply</span></span></span>
 <span class="lineno">  159 </span>        :: forall n m a .
-<span class="lineno">  160 </span>            ( MonadFail n, MonadUserError n, MonadLog n
+<span class="lineno">  160 </span>            ( MonadFailDoc n, MonadUserError n, MonadLog n
 <span class="lineno">  161 </span>            , NameGen n, EnumerateDomain n, MonadReader (Zipper a Expression) n
 <span class="lineno">  162 </span>                -- a fail in {n} means that the rule isn't applicable
-<span class="lineno">  163 </span>            , MonadFail m, MonadUserError m, MonadLog m
+<span class="lineno">  163 </span>            , MonadFailDoc m, MonadUserError m, MonadLog m
 <span class="lineno">  164 </span>            , NameGen m, EnumerateDomain m
 <span class="lineno">  165 </span>                -- a fail in {m} means a bug
 <span class="lineno">  166 </span>            , ?typeCheckerMode :: TypeCheckerMode
@@ -192,9 +192,9 @@ span.spaces    { background: white }
 <span class="lineno">  173 </span>namedRule
 <span class="lineno">  174 </span>    :: Doc
 <span class="lineno">  175 </span>    -&gt; (forall n m a .
-<span class="lineno">  176 </span>            ( MonadFail n, MonadUserError n, MonadLog n
+<span class="lineno">  176 </span>            ( MonadFailDoc n, MonadUserError n, MonadLog n
 <span class="lineno">  177 </span>            , NameGen n, EnumerateDomain n, MonadReader (Zipper a Expression) n
-<span class="lineno">  178 </span>            , MonadFail m, MonadUserError m, MonadLog m
+<span class="lineno">  178 </span>            ,  MonadFailDoc m, MonadUserError m, MonadLog m
 <span class="lineno">  179 </span>            , NameGen m, EnumerateDomain m
 <span class="lineno">  180 </span>            , ?typeCheckerMode :: TypeCheckerMode
 <span class="lineno">  181 </span>            ) =&gt; Expression -&gt; n (Doc, m Expression))
@@ -209,9 +209,9 @@ span.spaces    { background: white }
 <span class="lineno">  190 </span>namedRuleZ
 <span class="lineno">  191 </span>    :: Doc
 <span class="lineno">  192 </span>    -&gt; (forall n m a .
-<span class="lineno">  193 </span>            ( MonadFail n, MonadUserError n, MonadLog n
+<span class="lineno">  193 </span>            ( MonadFailDoc  n, MonadUserError n, MonadLog n
 <span class="lineno">  194 </span>            , NameGen n, EnumerateDomain n, MonadReader (Zipper a Expression) n
-<span class="lineno">  195 </span>            , MonadFail m, MonadUserError m, MonadLog m
+<span class="lineno">  195 </span>            , MonadFailDoc m, MonadUserError m, MonadLog m
 <span class="lineno">  196 </span>            , NameGen m, EnumerateDomain m
 <span class="lineno">  197 </span>            , ?typeCheckerMode :: TypeCheckerMode
 <span class="lineno">  198 </span>            ) =&gt; Zipper a Expression -&gt; Expression -&gt; n (Doc, m Expression))
@@ -230,7 +230,7 @@ span.spaces    { background: white }
 <span class="lineno">  211 </span>
 <span class="lineno">  212 </span>
 <span class="lineno">  213 </span>matchFirst
-<span class="lineno">  214 </span>    :: MonadFail m
+<span class="lineno">  214 </span>    :: MonadFailDoc m
 <span class="lineno">  215 </span>    =&gt; [a]                  -- list of things to try matching on
 <span class="lineno">  216 </span>    -&gt; (a -&gt; Maybe b)       -- the matcher
 <span class="lineno">  217 </span>    -&gt; m ( [a]              -- befores

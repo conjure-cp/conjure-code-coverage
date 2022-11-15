@@ -31,7 +31,7 @@ span.spaces    { background: white }
 <span class="lineno">   12 </span>import Conjure.Representations.Common
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
-<span class="lineno">   15 </span>setExplicitVarSizeWithDummy :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   15 </span>setExplicitVarSizeWithDummy :: forall m . (MonadFailDoc m, NameGen m) =&gt; Representation m
 <span class="lineno">   16 </span><span class="decl"><span class="istickedoff">setExplicitVarSizeWithDummy = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   17 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -147,7 +147,7 @@ span.spaces    { background: white }
 <span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">maxSizeInt &lt;-</span>
 <span class="lineno">  129 </span><span class="spaces">                </span><span class="istickedoff">case maxSize of</span>
 <span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff">ConstantInt _ x -&gt; return x</span>
-<span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  132 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer for the maxSize attribute.&quot;</span></span>
 <span class="lineno">  133 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty maxSize</span></span>
 <span class="lineno">  134 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -167,7 +167,7 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainSet Set_ExplicitVarSizeWithDummy _ innerDomain)) = do</span>
 <span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">let dummyElem = calcDummyElemC innerDomain</span>
 <span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
-<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Set ExplicitVarSizeWithDummy up)&quot;</span></span>
 <span class="lineno">  153 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  154 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -178,7 +178,7 @@ span.spaces    { background: white }
 <span class="lineno">  159 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constant of</span>
 <span class="lineno">  160 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt;</span>
 <span class="lineno">  161 </span><span class="spaces">                            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitSet [ v | v &lt;- vals, v /= dummyElem ]))</span>
-<span class="lineno">  162 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  162 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  163 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  164 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constant</span></span>
 <span class="lineno">  165 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

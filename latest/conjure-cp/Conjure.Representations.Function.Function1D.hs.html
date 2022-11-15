@@ -41,7 +41,7 @@ span.spaces    { background: white }
 <span class="lineno">   22 </span>import qualified Data.HashMap.Strict as M
 <span class="lineno">   23 </span>
 <span class="lineno">   24 </span>
-<span class="lineno">   25 </span>function1D :: forall m . (MonadFail m, NameGen m, ?typeCheckerMode :: TypeCheckerMode) =&gt; Representation m
+<span class="lineno">   25 </span>function1D :: forall m . (MonadFailDoc m, NameGen m, ?typeCheckerMode :: TypeCheckerMode) =&gt; Representation m
 <span class="lineno">   26 </span><span class="decl"><span class="istickedoff">function1D = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
 <span class="lineno">   27 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -161,7 +161,7 @@ span.spaces    { background: white }
 <span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">[ val</span>
 <span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">| fr &lt;- froms</span>
 <span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">, let val = case M.lookup fr vals of</span>
-<span class="lineno">  145 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty fr</span></span>
+<span class="lineno">  145 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty fr</span></span>
 <span class="lineno">  146 </span><span class="spaces">                                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;In:&quot; &lt;+&gt; pretty (AbsLitFunction vals_)</span></span>
 <span class="lineno">  147 </span><span class="spaces">                                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  148 </span><span class="spaces">                                </span><span class="istickedoff">Just v  -&gt; return v</span>
@@ -178,7 +178,7 @@ span.spaces    { background: white }
 <span class="lineno">  159 </span><span class="spaces">                                </span><span class="istickedoff">(FunctionAttr _ PartialityAttr_Total _)</span>
 <span class="lineno">  160 </span><span class="spaces">                                </span><span class="istickedoff">innerDomainFr _)) =</span>
 <span class="lineno">  161 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
-<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Function1D up)&quot;</span></span>
 <span class="lineno">  164 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  165 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -192,7 +192,7 @@ span.spaces    { background: white }
 <span class="lineno">  173 </span><span class="spaces">                            </span><span class="istickedoff">return ( <span class="nottickedoff">name</span></span>
 <span class="lineno">  174 </span><span class="spaces">                                   </span><span class="istickedoff">, ConstantAbstract $ AbsLitFunction $ zip froms vals</span>
 <span class="lineno">  175 </span><span class="spaces">                                   </span><span class="istickedoff">)</span>
-<span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  177 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  178 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constant</span></span>
 <span class="lineno">  179 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -205,14 +205,16 @@ span.spaces    { background: white }
 <span class="lineno">  186 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[inner] &lt;- downX1 inp</span></span>
 <span class="lineno">  187 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
 <span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
-<span class="lineno">  189 </span>
+<span class="lineno">  189 </span>            
 <span class="lineno">  190 </span>
-<span class="lineno">  191 </span>domainValues :: (MonadFail m, Pretty r) =&gt; Domain r Constant -&gt; m [Constant]
-<span class="lineno">  192 </span><span class="decl"><span class="istickedoff">domainValues dom =</span>
-<span class="lineno">  193 </span><span class="spaces">    </span><span class="istickedoff">case dom of</span>
-<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff">DomainBool -&gt; return [ConstantBool False, ConstantBool True]</span>
-<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">DomainInt t rs -&gt; map (ConstantInt t) &lt;$&gt; valuesInIntDomain rs</span>
-<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;domainValues, not supported:&quot; &lt;+&gt; pretty dom)</span></span></span>
+<span class="lineno">  191 </span>
+<span class="lineno">  192 </span>domainValues :: (MonadFailDoc m, Pretty r) =&gt; Domain r Constant -&gt; m [Constant]
+<span class="lineno">  193 </span><span class="decl"><span class="istickedoff">domainValues dom =</span>
+<span class="lineno">  194 </span><span class="spaces">    </span><span class="istickedoff">case dom of</span>
+<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">DomainBool -&gt; return [ConstantBool False, ConstantBool True]</span>
+<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">DomainInt t rs -&gt; map (ConstantInt t) &lt;$&gt; valuesInIntDomain rs</span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc (&quot;domainValues, not supported:&quot; &lt;+&gt; pretty dom)</span></span></span>
+<span class="lineno">  198 </span>
 
 </pre>
 </body>

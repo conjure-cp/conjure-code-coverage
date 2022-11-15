@@ -440,8 +440,8 @@ span.spaces    { background: white }
 <span class="lineno">  421 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; na &quot;rule_Matrix_Lt_Primitive&quot;</span>
 <span class="lineno">  422 </span><span class="spaces">        </span><span class="istickedoff">tx &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
 <span class="lineno">  423 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf y</span>
-<span class="lineno">  424 </span><span class="spaces">        </span><span class="istickedoff">unless (matrixNumDims tx &gt; 0 &amp;&amp; <span class="nottickedoff">isPrimitiveType tx</span>) $ fail (&quot;not a primitive type:&quot; &lt;+&gt; pretty tx)</span>
-<span class="lineno">  425 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (matrixNumDims ty &gt; 0 &amp;&amp; isPrimitiveType ty) $ fail (&quot;not a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  424 </span><span class="spaces">        </span><span class="istickedoff">unless (matrixNumDims tx &gt; 0 &amp;&amp; <span class="nottickedoff">isPrimitiveType tx</span>) $ failDoc (&quot;not a primitive type:&quot; &lt;+&gt; pretty tx)</span>
+<span class="lineno">  425 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (matrixNumDims ty &gt; 0 &amp;&amp; isPrimitiveType ty) $ failDoc (&quot;not a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
 <span class="lineno">  426 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">x' = flattenIfNeeded (matrixNumDims tx) x</span></span>
 <span class="lineno">  427 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">y' = flattenIfNeeded (matrixNumDims ty) y</span></span>
 <span class="lineno">  428 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -459,8 +459,8 @@ span.spaces    { background: white }
 <span class="lineno">  440 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; na &quot;rule_Matrix_Leq_Primitive&quot;</span>
 <span class="lineno">  441 </span><span class="spaces">        </span><span class="istickedoff">tx &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
 <span class="lineno">  442 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf y</span>
-<span class="lineno">  443 </span><span class="spaces">        </span><span class="istickedoff">unless (matrixNumDims tx &gt; 0 &amp;&amp; <span class="nottickedoff">isPrimitiveType tx</span>) $ fail (&quot;not a primitive type:&quot; &lt;+&gt; pretty tx)</span>
-<span class="lineno">  444 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (matrixNumDims ty &gt; 0 &amp;&amp; isPrimitiveType ty) $ fail (&quot;not a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  443 </span><span class="spaces">        </span><span class="istickedoff">unless (matrixNumDims tx &gt; 0 &amp;&amp; <span class="nottickedoff">isPrimitiveType tx</span>) $ failDoc (&quot;not a primitive type:&quot; &lt;+&gt; pretty tx)</span>
+<span class="lineno">  444 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (matrixNumDims ty &gt; 0 &amp;&amp; isPrimitiveType ty) $ failDoc (&quot;not a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
 <span class="lineno">  445 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">x' = flattenIfNeeded (matrixNumDims tx) x</span></span>
 <span class="lineno">  446 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">y' = flattenIfNeeded (matrixNumDims ty) y</span></span>
 <span class="lineno">  447 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -475,8 +475,8 @@ span.spaces    { background: white }
 <span class="lineno">  456 </span><span class="spaces">        </span><span class="istickedoff">(x,y)           &lt;- match opLt p</span>
 <span class="lineno">  457 </span><span class="spaces">        </span><span class="istickedoff">tx@TypeMatrix{} &lt;- typeOf x     -- TODO: check matrix index &amp; tuple arity</span>
 <span class="lineno">  458 </span><span class="spaces">        </span><span class="istickedoff">ty@TypeMatrix{} &lt;- <span class="nottickedoff">typeOf y</span></span>
-<span class="lineno">  459 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType tx) $ fail (&quot;this is a primitive type:&quot; &lt;+&gt; pretty tx)</span></span>
-<span class="lineno">  460 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType ty) $ fail (&quot;this is a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  459 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType tx) $ failDoc (&quot;this is a primitive type:&quot; &lt;+&gt; pretty tx)</span></span>
+<span class="lineno">  460 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType ty) $ failDoc (&quot;this is a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
 <span class="lineno">  461 </span><span class="spaces">        </span><span class="istickedoff">xs              &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">  462 </span><span class="spaces">        </span><span class="istickedoff">ys              &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">  463 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -491,8 +491,8 @@ span.spaces    { background: white }
 <span class="lineno">  472 </span><span class="spaces">        </span><span class="istickedoff">(x,y)           &lt;- match opLeq p</span>
 <span class="lineno">  473 </span><span class="spaces">        </span><span class="istickedoff">tx@TypeMatrix{} &lt;- typeOf x     -- TODO: check matrix index &amp; tuple arity</span>
 <span class="lineno">  474 </span><span class="spaces">        </span><span class="istickedoff">ty@TypeMatrix{} &lt;- <span class="nottickedoff">typeOf y</span></span>
-<span class="lineno">  475 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType tx) $ fail (&quot;this is a primitive type:&quot; &lt;+&gt; pretty tx)</span></span>
-<span class="lineno">  476 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType ty) $ fail (&quot;this is a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  475 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType tx) $ failDoc (&quot;this is a primitive type:&quot; &lt;+&gt; pretty tx)</span></span>
+<span class="lineno">  476 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (isPrimitiveType ty) $ failDoc (&quot;this is a primitive type:&quot; &lt;+&gt; pretty ty)</span></span>
 <span class="lineno">  477 </span><span class="spaces">        </span><span class="istickedoff">xs              &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">  478 </span><span class="spaces">        </span><span class="istickedoff">ys              &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">  479 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>

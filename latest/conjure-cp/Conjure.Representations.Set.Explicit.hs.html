@@ -27,7 +27,7 @@ span.spaces    { background: white }
 <span class="lineno">    8 </span>import Conjure.Representations.Internal
 <span class="lineno">    9 </span>
 <span class="lineno">   10 </span>
-<span class="lineno">   11 </span>setExplicit :: forall m . (MonadFail m, NameGen m) =&gt; Representation m
+<span class="lineno">   11 </span>setExplicit :: forall m . (MonadFailDoc m, NameGen m) =&gt; Representation m
 <span class="lineno">   12 </span><span class="decl"><span class="istickedoff">setExplicit = Representation chck downD structuralCons downC up symmetryOrdering</span>
 <span class="lineno">   13 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   14 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -98,7 +98,7 @@ span.spaces    { background: white }
 <span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
 <span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainSet Set_Explicit (SetAttr (SizeAttr_Size _)) _)) =</span>
 <span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
-<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Set Explicit up)&quot;</span></span>
 <span class="lineno">   84 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">   85 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -109,7 +109,7 @@ span.spaces    { background: white }
 <span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constant of</span>
 <span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt;</span>
 <span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff">return (name, ConstantAbstract (AbsLitSet vals))</span>
-<span class="lineno">   93 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">   93 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">   94 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">   95 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constant</span></span>
 <span class="lineno">   96 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

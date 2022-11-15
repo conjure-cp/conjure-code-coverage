@@ -62,8 +62,8 @@ span.spaces    { background: white }
 <span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt; <span class="nottickedoff">bug (vcat [&quot;BUGFAIL at&quot; &lt;+&gt; loc, err])</span></span>
 <span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">Right x  -&gt; return x</span></span>
 <span class="lineno">   45 </span>
-<span class="lineno">   46 </span>instance MonadFail IO where
-<span class="lineno">   47 </span>    <span class="decl"><span class="nottickedoff">fail msg = bug (vcat [&quot;IO Error&quot;, msg])</span></span>
+<span class="lineno">   46 </span>instance MonadFailDoc IO where
+<span class="lineno">   47 </span>    <span class="decl"><span class="nottickedoff">failDoc msg = bug (vcat [&quot;IO Error&quot;, msg])</span></span>
 
 </pre>
 </body>

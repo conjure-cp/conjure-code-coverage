@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>functionAsRelation
-<span class="lineno">   17 </span>    :: forall m . (MonadFail m, NameGen m)
+<span class="lineno">   17 </span>    :: forall m . (MonadFailDoc m, NameGen m)
 <span class="lineno">   18 </span>    =&gt; (forall x . DispatchFunction m x)
 <span class="lineno">   19 </span>    -&gt; (forall r x . ReprOptionsFunction m r x)
 <span class="lineno">   20 </span>    -&gt; Representation m
@@ -173,17 +173,17 @@ span.spaces    { background: white }
 <span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
 <span class="lineno">  155 </span><span class="spaces">                </span><span class="istickedoff">Just (viewConstantRelation -&gt; Just  pairs) -&gt; do</span>
 <span class="lineno">  156 </span><span class="spaces">                    </span><span class="istickedoff">let pairOut [a,b] = return (a,b)</span>
-<span class="lineno">  157 </span><span class="spaces">                        </span><span class="istickedoff">pairOut c = <span class="nottickedoff">fail $ &quot;Expecting a 2-tuple, but got:&quot; &lt;++&gt; prettyList prParens &quot;,&quot; c</span></span>
+<span class="lineno">  157 </span><span class="spaces">                        </span><span class="istickedoff">pairOut c = <span class="nottickedoff">failDoc $ &quot;Expecting a 2-tuple, but got:&quot; &lt;++&gt; prettyList prParens &quot;,&quot; c</span></span>
 <span class="lineno">  158 </span><span class="spaces">                    </span><span class="istickedoff">vals &lt;- mapM pairOut pairs</span>
 <span class="lineno">  159 </span><span class="spaces">                    </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitFunction vals))</span>
-<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  161 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in FunctionAsRelation up)&quot;</span></span>
 <span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  164 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  165 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  166 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  167 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  167 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  168 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Incompatible value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  169 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  170 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
@@ -197,10 +197,10 @@ span.spaces    { background: white }
 <span class="lineno">  178 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
 <span class="lineno">  180 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
-<span class="lineno">  181 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[rel] &lt;- downX1 inp</span></span>
-<span class="lineno">  182 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, relDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
-<span class="lineno">  183 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 rel relDomain</span></span></span>
-<span class="lineno">  184 </span>
+<span class="lineno">  181 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[rel] &lt;- downX1 inp</span></span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, relDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
+<span class="lineno">  184 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 rel relDomain</span></span></span>
 
 </pre>
 </body>

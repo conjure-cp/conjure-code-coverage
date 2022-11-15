@@ -34,7 +34,7 @@ span.spaces    { background: white }
 <span class="lineno">   15 </span>--   Make sure the output is normalised.
 <span class="lineno">   16 </span>class EvaluateOp op where
 <span class="lineno">   17 </span>    evaluateOp :: 
-<span class="lineno">   18 </span>        MonadFail m =&gt;
+<span class="lineno">   18 </span>        MonadFailDoc m =&gt;
 <span class="lineno">   19 </span>        NameGen m =&gt;
 <span class="lineno">   20 </span>        EnumerateDomain m =&gt;
 <span class="lineno">   21 </span>        (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -130,7 +130,7 @@ span.spaces    { background: white }
 <span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpFlatten (Just n) m) = do</span>
 <span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">let flat lvl c | lvl &lt; 0 = return [c]</span>
 <span class="lineno">  113 </span><span class="spaces">            </span><span class="istickedoff">flat lvl (viewConstantMatrix -&gt; Just (_, xs)) = concatMapM (flat (lvl-1)) xs</span>
-<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff">flat _ _ = <span class="nottickedoff">fail $ &quot;Cannot flatten&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;levels.&quot;</span></span>
+<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff">flat _ _ = <span class="nottickedoff">failDoc $ &quot;Cannot flatten&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;levels.&quot;</span></span>
 <span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">flattened &lt;- flat n m</span>
 <span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">return (ConstantAbstract $ AbsLitMatrix</span>
 <span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 (fromInt (genericLength flattened))])</span>
@@ -223,7 +223,7 @@ span.spaces    { background: white }
 <span class="lineno">  204 </span><span class="spaces">        </span><span class="istickedoff">ty   &lt;- typeOf m</span>
 <span class="lineno">  205 </span><span class="spaces">        </span><span class="istickedoff">tyTo &lt;- case ty of TypeMatrix _ tyTo -&gt; return tyTo</span>
 <span class="lineno">  206 </span><span class="spaces">                           </span><span class="istickedoff">TypeList tyTo     -&gt; <span class="nottickedoff">return tyTo</span></span>
-<span class="lineno">  207 </span><span class="spaces">                           </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;evaluateOp{OpIndexing}&quot;</span></span>
+<span class="lineno">  207 </span><span class="spaces">                           </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc &quot;evaluateOp{OpIndexing}&quot;</span></span>
 <span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">return $ mkUndef tyTo $ <span class="nottickedoff">&quot;Has undefined children (index):&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpIndexing m@(viewConstantMatrix -&gt; Just (DomainInt _ index, vals)) (ConstantInt _ x)) = do</span>
 <span class="lineno">  210 </span><span class="spaces">            </span><span class="istickedoff">ty   &lt;- typeOf m</span>
@@ -245,7 +245,7 @@ span.spaces    { background: white }
 <span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff">return (at vals (fromInteger (x-1)))</span>
 <span class="lineno">  227 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp rec@(OpIndexing (viewConstantRecord -&gt; Just vals) (ConstantField name _)) =</span>
 <span class="lineno">  228 </span><span class="spaces">        </span><span class="istickedoff">case lookup name vals of</span>
-<span class="lineno">  229 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  229 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  230 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Record doesn't have a member with this name:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  231 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Record:&quot; &lt;+&gt; pretty rec</span></span>
 <span class="lineno">  232 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
@@ -818,21 +818,21 @@ span.spaces    { background: white }
 <span class="lineno">  799 </span><span class="spaces">        </span><span class="nottickedoff">where xor xs = 1 == length [ () | True &lt;- xs ]</span></span>
 <span class="lineno">  800 </span>
 <span class="lineno">  801 </span>
-<span class="lineno">  802 </span>boolsOut :: MonadFail m =&gt; Constant -&gt; m [Bool]
+<span class="lineno">  802 </span>boolsOut :: MonadFailDoc m =&gt; Constant -&gt; m [Bool]
 <span class="lineno">  803 </span><span class="decl"><span class="istickedoff">boolsOut (viewConstantMatrix -&gt; Just (_, cs)) = concatMapM boolsOut cs</span>
 <span class="lineno">  804 </span><span class="spaces"></span><span class="istickedoff">boolsOut b = return &lt;$&gt; boolOut b</span></span>
 <span class="lineno">  805 </span>
-<span class="lineno">  806 </span>intsOut :: MonadFail m =&gt; Doc -&gt; Constant -&gt; m [Integer]
+<span class="lineno">  806 </span>intsOut :: MonadFailDoc m =&gt; Doc -&gt; Constant -&gt; m [Integer]
 <span class="lineno">  807 </span><span class="decl"><span class="istickedoff">intsOut doc (viewConstantMatrix -&gt; Just (_, cs)) = concatMapM (intsOut <span class="nottickedoff">doc</span>) cs</span>
 <span class="lineno">  808 </span><span class="spaces"></span><span class="istickedoff">intsOut doc (viewConstantSet -&gt; Just cs) = concatMapM (intsOut <span class="nottickedoff">doc</span>) cs</span>
 <span class="lineno">  809 </span><span class="spaces"></span><span class="istickedoff">intsOut doc (viewConstantMSet -&gt; Just cs) = <span class="nottickedoff">concatMapM (intsOut doc) cs</span></span>
 <span class="lineno">  810 </span><span class="spaces"></span><span class="istickedoff">intsOut doc b = return &lt;$&gt; intOut <span class="nottickedoff">(&quot;intsOut&quot; &lt;+&gt; doc)</span> b</span></span>
 <span class="lineno">  811 </span>
-<span class="lineno">  812 </span>intsOut2D :: MonadFail m =&gt; Doc -&gt; Constant -&gt; m [[Integer]]
+<span class="lineno">  812 </span>intsOut2D :: MonadFailDoc m =&gt; Doc -&gt; Constant -&gt; m [[Integer]]
 <span class="lineno">  813 </span><span class="decl"><span class="nottickedoff">intsOut2D doc (viewConstantMatrix -&gt; Just (_, cs)) = mapM (intsOut doc) cs</span>
 <span class="lineno">  814 </span><span class="spaces"></span><span class="nottickedoff">intsOut2D doc (viewConstantSet -&gt; Just cs) = mapM (intsOut doc) cs</span>
 <span class="lineno">  815 </span><span class="spaces"></span><span class="nottickedoff">intsOut2D doc (viewConstantMSet -&gt; Just cs) = mapM (intsOut doc) cs</span>
-<span class="lineno">  816 </span><span class="spaces"></span><span class="nottickedoff">intsOut2D doc _ = fail (&quot;intsOut2D&quot; &lt;+&gt; doc)</span></span>
+<span class="lineno">  816 </span><span class="spaces"></span><span class="nottickedoff">intsOut2D doc _ = failDoc (&quot;intsOut2D&quot; &lt;+&gt; doc)</span></span>
 <span class="lineno">  817 </span>
 <span class="lineno">  818 </span>tildeLt :: Constant -&gt; Constant -&gt; Bool
 <span class="lineno">  819 </span><span class="decl"><span class="istickedoff">tildeLt = tilLt</span>

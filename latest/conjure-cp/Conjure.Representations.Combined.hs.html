@@ -64,7 +64,7 @@ span.spaces    { background: white }
 <span class="lineno">   45 </span>-- | Refine (down) a domain, outputting refinement expressions (X) one level (1).
 <span class="lineno">   46 </span>--   The domain is allowed to be at the class level.
 <span class="lineno">   47 </span>downToX1 ::
-<span class="lineno">   48 </span>    MonadFail m =&gt;
+<span class="lineno">   48 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   49 </span>    NameGen m =&gt;
 <span class="lineno">   50 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   51 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -74,7 +74,7 @@ span.spaces    { background: white }
 <span class="lineno">   55 </span>-- | Refine (down) a domain (D), one level (1).
 <span class="lineno">   56 </span>--   The domain is allowed to be at the class level.
 <span class="lineno">   57 </span>downD1 ::
-<span class="lineno">   58 </span>    MonadFail m =&gt;
+<span class="lineno">   58 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   59 </span>    NameGen m =&gt;
 <span class="lineno">   60 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   61 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -84,7 +84,7 @@ span.spaces    { background: white }
 <span class="lineno">   65 </span>-- | Refine (down) a domain, together with a constant (C), one level (1).
 <span class="lineno">   66 </span>--   The domain has to be fully instantiated.
 <span class="lineno">   67 </span>downC1 ::
-<span class="lineno">   68 </span>    MonadFail m =&gt;
+<span class="lineno">   68 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   69 </span>    NameGen m =&gt;
 <span class="lineno">   70 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   71 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -96,7 +96,7 @@ span.spaces    { background: white }
 <span class="lineno">   77 </span>--   The high level domain (i.e. the target domain) has to be given.
 <span class="lineno">   78 </span>--   The domain has to be fully instantiated.
 <span class="lineno">   79 </span>up1 ::
-<span class="lineno">   80 </span>    MonadFail m =&gt;
+<span class="lineno">   80 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   81 </span>    NameGen m =&gt;
 <span class="lineno">   82 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   83 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -107,7 +107,7 @@ span.spaces    { background: white }
 <span class="lineno">   88 </span>-- | Refine (down) a domain (D), all the way.
 <span class="lineno">   89 </span>--   The domain is allowed to be at the class level.
 <span class="lineno">   90 </span>downD ::
-<span class="lineno">   91 </span>    MonadFail m =&gt;
+<span class="lineno">   91 </span>    MonadFailDoc m =&gt;
 <span class="lineno">   92 </span>    NameGen m =&gt;
 <span class="lineno">   93 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   94 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -121,7 +121,7 @@ span.spaces    { background: white }
 <span class="lineno">  102 </span>-- | Refine (down) a domain, together with a constant (C), all the way.
 <span class="lineno">  103 </span>--   The domain has to be fully instantiated.
 <span class="lineno">  104 </span>downC ::
-<span class="lineno">  105 </span>    MonadFail m =&gt;
+<span class="lineno">  105 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  106 </span>    NameGen m =&gt;
 <span class="lineno">  107 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  108 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -138,7 +138,7 @@ span.spaces    { background: white }
 <span class="lineno">  119 </span>--   The high level domain (i.e. the target domain) has to be given.
 <span class="lineno">  120 </span>--   The domain has to be fully instantiated.
 <span class="lineno">  121 </span>up ::
-<span class="lineno">  122 </span>    MonadFail m =&gt;
+<span class="lineno">  122 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  123 </span>    NameGen m =&gt;
 <span class="lineno">  124 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  125 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -150,7 +150,7 @@ span.spaces    { background: white }
 <span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">case toDescend' of</span>
 <span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt;</span>
 <span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">case lookup name ctxt of</span>
-<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
 <span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
 <span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
@@ -167,7 +167,7 @@ span.spaces    { background: white }
 <span class="lineno">  148 </span>
 <span class="lineno">  149 </span>-- | ...
 <span class="lineno">  150 </span>symmetryOrderingDispatch ::
-<span class="lineno">  151 </span>    MonadFail m =&gt;
+<span class="lineno">  151 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  152 </span>    NameGen m =&gt;
 <span class="lineno">  153 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  154 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -185,7 +185,7 @@ span.spaces    { background: white }
 <span class="lineno">  166 </span>-- | Combine all known representations into one.
 <span class="lineno">  167 </span>--   Dispatch into the actual implementation of the representation depending on the provided domain.
 <span class="lineno">  168 </span>dispatch ::
-<span class="lineno">  169 </span>    MonadFail m =&gt;
+<span class="lineno">  169 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  170 </span>    NameGen m =&gt;
 <span class="lineno">  171 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  172 </span>    Pretty x =&gt;
@@ -245,7 +245,7 @@ span.spaces    { background: white }
 <span class="lineno">  226 </span>
 <span class="lineno">  227 </span>-- | No levels!
 <span class="lineno">  228 </span>reprsStandardOrderNoLevels ::
-<span class="lineno">  229 </span>    MonadFail m =&gt;
+<span class="lineno">  229 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  230 </span>    NameGen m =&gt;
 <span class="lineno">  231 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  232 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -257,7 +257,7 @@ span.spaces    { background: white }
 <span class="lineno">  238 </span>--   As a crude measure, implementing levels here.
 <span class="lineno">  239 </span>--   We shouldn't have levels between representations in the long run.
 <span class="lineno">  240 </span>reprsStandardOrder ::
-<span class="lineno">  241 </span>    MonadFail m =&gt;
+<span class="lineno">  241 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  242 </span>    NameGen m =&gt;
 <span class="lineno">  243 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  244 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -281,7 +281,7 @@ span.spaces    { background: white }
 <span class="lineno">  262 </span>
 <span class="lineno">  263 </span>-- | Sparser representations are to be preferred for parameters.
 <span class="lineno">  264 </span>reprsSparseOrder ::
-<span class="lineno">  265 </span>    MonadFail m =&gt;
+<span class="lineno">  265 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  266 </span>    NameGen m =&gt;
 <span class="lineno">  267 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  268 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -335,7 +335,7 @@ span.spaces    { background: white }
 <span class="lineno">  316 </span>--   Makes recursive calls to generate the complete structural constraints.
 <span class="lineno">  317 </span>--   Takes in a function to refine inner guys.
 <span class="lineno">  318 </span>getStructurals ::
-<span class="lineno">  319 </span>    MonadFail m =&gt;
+<span class="lineno">  319 </span>    MonadFailDoc m =&gt;
 <span class="lineno">  320 </span>    NameGen m =&gt;
 <span class="lineno">  321 </span>    EnumerateDomain m =&gt;
 <span class="lineno">  322 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;

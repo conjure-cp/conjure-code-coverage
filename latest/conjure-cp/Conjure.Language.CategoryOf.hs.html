@@ -77,7 +77,7 @@ span.spaces    { background: white }
 <span class="lineno">   58 </span>
 <span class="lineno">   59 </span>-- | Category checking to check if domains have anything &gt;CatParameter in them.
 <span class="lineno">   60 </span>--   Run only after name resolution.
-<span class="lineno">   61 </span>categoryChecking :: (MonadFail m, MonadUserError m) =&gt; Model -&gt; m Model
+<span class="lineno">   61 </span>categoryChecking :: (MonadFailDoc m, MonadUserError m) =&gt; Model -&gt; m Model
 <span class="lineno">   62 </span><span class="decl"><span class="istickedoff">categoryChecking m = do</span>
 <span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">errors1 &lt;- fmap concat $ forM (mStatements m) $ \ st -&gt; case st of</span>
 <span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">Declaration (FindOrGiven _forg name domain) -&gt; do</span>

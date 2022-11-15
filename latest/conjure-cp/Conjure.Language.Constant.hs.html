@@ -165,7 +165,7 @@ span.spaces    { background: white }
 <span class="lineno">  146 </span>    <span class="decl"><span class="istickedoff">domainSizeOf DomainBool{} = return 2</span>
 <span class="lineno">  147 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainIntE x) = <span class="nottickedoff">bug (&quot;not implemented, domainSizeOf DomainIntE&quot; &lt;+&gt; pretty (show x))</span></span>
 <span class="lineno">  148 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainInt _ rs) = domainSizeOfRanges rs</span>
-<span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf DomainEnum{} = <span class="nottickedoff">fail &quot;domainSizeOf: Unknown for given enum.&quot;</span></span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf DomainEnum{} = <span class="nottickedoff">failDoc  &quot;domainSizeOf: Unknown for given enum.&quot;</span></span>
 <span class="lineno">  150 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainTuple ds) = <span class="nottickedoff">product &lt;$&gt; mapM domainSizeOf ds</span></span>
 <span class="lineno">  151 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf (DomainMatrix index inner) = <span class="nottickedoff">intPow &lt;$&gt; domainSizeOf inner &lt;*&gt; domainSizeOf index</span></span>
 <span class="lineno">  152 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf d@(DomainSet _ (SetAttr attrs) inner) =</span>
@@ -186,7 +186,7 @@ span.spaces    { background: white }
 <span class="lineno">  167 </span><span class="spaces">            </span><span class="istickedoff">SizeAttr_MinMaxSize (ConstantInt _ minSize) (ConstantInt _ maxSize) -&gt; <span class="nottickedoff">do</span></span>
 <span class="lineno">  168 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">innerSize &lt;- domainSizeOf inner</span></span>
 <span class="lineno">  169 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ sum [ nchoosek (product . enumFromTo 1) innerSize k | k &lt;- [minSize .. maxSize] ]</span></span>
-<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail (&quot;domainSizeOf{Constant}&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc  (&quot;domainSizeOf{Constant}&quot; &lt;+&gt; pretty d)</span></span>
 <span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf DomainMSet      {} = <span class="nottickedoff">bug &quot;not implemented: domainSizeOf DomainMSet&quot;</span></span>
 <span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf DomainFunction  {} = <span class="nottickedoff">bug &quot;not implemented: domainSizeOf DomainFunction&quot;</span></span>
 <span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">domainSizeOf DomainRelation  {} = <span class="nottickedoff">bug &quot;not implemented: domainSizeOf DomainRelation&quot;</span></span>
@@ -207,7 +207,7 @@ span.spaces    { background: white }
 <span class="lineno">  188 </span>intPow :: Integer -&gt; Integer -&gt; Integer
 <span class="lineno">  189 </span><span class="decl"><span class="istickedoff">intPow = (^)</span></span>
 <span class="lineno">  190 </span>
-<span class="lineno">  191 </span>domainSizeOfRanges :: MonadFail m =&gt; [Range Constant] -&gt; m Integer
+<span class="lineno">  191 </span>domainSizeOfRanges :: MonadFailDoc m =&gt; [Range Constant] -&gt; m Integer
 <span class="lineno">  192 </span><span class="decl"><span class="istickedoff">domainSizeOfRanges = fmap genericLength . valuesInIntDomain</span></span>
 <span class="lineno">  193 </span>
 <span class="lineno">  194 </span>instance DomainSizeOf Constant Constant where
@@ -250,18 +250,18 @@ span.spaces    { background: white }
 <span class="lineno">  231 </span>    <span class="decl"><span class="istickedoff">fromInt = ConstantInt TagInt</span></span>
 <span class="lineno">  232 </span>    <span class="decl"><span class="istickedoff">fromIntWithTag i t = ConstantInt t i</span></span>
 <span class="lineno">  233 </span>    <span class="decl"><span class="istickedoff">intOut _ (ConstantInt _ x) = return x</span>
-<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">intOut doc c = <span class="nottickedoff">fail $ vcat [ &quot;Expecting an integer, but found:&quot; &lt;+&gt; pretty c</span></span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">intOut doc c = <span class="nottickedoff">failDoc  $ vcat [ &quot;Expecting an integer, but found:&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  235 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Called from:&quot; &lt;+&gt; doc</span></span>
 <span class="lineno">  236 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
 <span class="lineno">  237 </span>
 <span class="lineno">  238 </span>    <span class="decl"><span class="istickedoff">fromBool = ConstantBool</span></span>
 <span class="lineno">  239 </span>    <span class="decl"><span class="istickedoff">boolOut (ConstantBool x) = return x</span>
 <span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff">boolOut ConstantUndefined{} = return False</span>
-<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">boolOut c = <span class="nottickedoff">fail (&quot;Expecting a boolean, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
+<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">boolOut c = <span class="nottickedoff">failDoc  (&quot;Expecting a boolean, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  242 </span>
 <span class="lineno">  243 </span>    <span class="decl"><span class="istickedoff">fromList xs = ConstantAbstract $ AbsLitMatrix <span class="nottickedoff">(mkDomainIntB 1 (fromInt $ genericLength xs))</span> xs</span></span>
 <span class="lineno">  244 </span>    <span class="decl"><span class="istickedoff">listOut (ConstantAbstract (AbsLitMatrix _ xs)) = return xs</span>
-<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff">listOut c = fail <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
+<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff">listOut c = failDoc  <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  246 </span>
 <span class="lineno">  247 </span>instance ReferenceContainer Constant where
 <span class="lineno">  248 </span>    <span class="decl"><span class="nottickedoff">fromName name = bug (&quot;ReferenceContainer{Constant} fromName --&quot; &lt;+&gt; pretty name)</span></span>
@@ -271,7 +271,7 @@ span.spaces    { background: white }
 <span class="lineno">  252 </span>instance DomainContainer Constant (Domain ()) where
 <span class="lineno">  253 </span>    <span class="decl"><span class="nottickedoff">fromDomain = DomainInConstant</span></span>
 <span class="lineno">  254 </span>    <span class="decl"><span class="nottickedoff">domainOut (DomainInConstant dom) = return dom</span>
-<span class="lineno">  255 </span><span class="spaces">    </span><span class="nottickedoff">domainOut _ = fail &quot;domainOut{Constant}&quot;</span></span>
+<span class="lineno">  255 </span><span class="spaces">    </span><span class="nottickedoff">domainOut _ = failDoc  &quot;domainOut{Constant}&quot;</span></span>
 <span class="lineno">  256 </span>
 <span class="lineno">  257 </span>mkUndef :: Type -&gt; Doc -&gt; Constant
 <span class="lineno">  258 </span><span class="decl"><span class="istickedoff">mkUndef TypeBool _ = ConstantBool False</span>
@@ -306,11 +306,11 @@ span.spaces    { background: white }
 <span class="lineno">  287 </span>    <span class="decl"><span class="istickedoff">fromInteger = ConstantInt TagInt . fromInteger</span></span>
 <span class="lineno">  288 </span>
 <span class="lineno">  289 </span>
-<span class="lineno">  290 </span>valuesInIntDomain :: MonadFail m =&gt; [Range Constant] -&gt; m [Integer]
+<span class="lineno">  290 </span>valuesInIntDomain :: MonadFailDoc m =&gt; [Range Constant] -&gt; m [Integer]
 <span class="lineno">  291 </span><span class="decl"><span class="istickedoff">valuesInIntDomain ranges =</span>
 <span class="lineno">  292 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlytrue">isFinite</span></span>
 <span class="lineno">  293 </span><span class="spaces">        </span><span class="istickedoff">then return allValues</span>
-<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">fail $ &quot;Expected finite integer ranges, but got:&quot; &lt;++&gt; prettyList id &quot;,&quot; ranges</span></span>
+<span class="lineno">  294 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">failDoc  $ &quot;Expected finite integer ranges, but got:&quot; &lt;++&gt; prettyList id &quot;,&quot; ranges</span></span>
 <span class="lineno">  295 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  297 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -331,55 +331,55 @@ span.spaces    { background: white }
 <span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">allValues = sortNub $ concat $ catMaybes allRanges</span></span>
 <span class="lineno">  313 </span>
 <span class="lineno">  314 </span>
-<span class="lineno">  315 </span>viewConstantBool :: MonadFail m =&gt; Constant -&gt; m Bool
+<span class="lineno">  315 </span>viewConstantBool :: MonadFailDoc m =&gt; Constant -&gt; m Bool
 <span class="lineno">  316 </span><span class="decl"><span class="istickedoff">viewConstantBool (ConstantBool i) = return i</span>
 <span class="lineno">  317 </span><span class="spaces"></span><span class="istickedoff">viewConstantBool (ConstantInt _ 0) = return <span class="nottickedoff">False</span></span>
 <span class="lineno">  318 </span><span class="spaces"></span><span class="istickedoff">viewConstantBool (ConstantInt _ 1) = return <span class="nottickedoff">True</span></span>
-<span class="lineno">  319 </span><span class="spaces"></span><span class="istickedoff">viewConstantBool constant = fail <span class="nottickedoff">(&quot;Expecting a boolean, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  319 </span><span class="spaces"></span><span class="istickedoff">viewConstantBool constant = failDoc  <span class="nottickedoff">(&quot;Expecting a boolean, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  320 </span>
-<span class="lineno">  321 </span>viewConstantInt :: MonadFail m =&gt; Constant -&gt; m Integer
+<span class="lineno">  321 </span>viewConstantInt :: MonadFailDoc m =&gt; Constant -&gt; m Integer
 <span class="lineno">  322 </span><span class="decl"><span class="istickedoff">viewConstantInt (ConstantInt _ i) = return i</span>
-<span class="lineno">  323 </span><span class="spaces"></span><span class="istickedoff">viewConstantInt constant = <span class="nottickedoff">fail (&quot;Expecting an integer, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  323 </span><span class="spaces"></span><span class="istickedoff">viewConstantInt constant = <span class="nottickedoff">failDoc  (&quot;Expecting an integer, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  324 </span>
-<span class="lineno">  325 </span>viewConstantIntWithTag :: MonadFail m =&gt; Constant -&gt; m (IntTag, Integer)
+<span class="lineno">  325 </span>viewConstantIntWithTag :: MonadFailDoc m =&gt; Constant -&gt; m (IntTag, Integer)
 <span class="lineno">  326 </span><span class="decl"><span class="istickedoff">viewConstantIntWithTag (ConstantInt t i) = return (t, i)</span>
-<span class="lineno">  327 </span><span class="spaces"></span><span class="istickedoff">viewConstantIntWithTag constant = fail <span class="nottickedoff">(&quot;Expecting an integer, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  327 </span><span class="spaces"></span><span class="istickedoff">viewConstantIntWithTag constant = failDoc  <span class="nottickedoff">(&quot;Expecting an integer, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  328 </span>
-<span class="lineno">  329 </span>viewConstantTuple :: MonadFail m =&gt; Constant -&gt; m [Constant]
+<span class="lineno">  329 </span>viewConstantTuple :: MonadFailDoc m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  330 </span><span class="decl"><span class="istickedoff">viewConstantTuple (ConstantAbstract (AbsLitTuple xs)) = return xs</span>
 <span class="lineno">  331 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple (TypedConstant c _) = viewConstantTuple c</span>
 <span class="lineno">  332 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple (ConstantFromJSON xs) = <span class="nottickedoff">return xs</span></span>
-<span class="lineno">  333 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple constant = fail <span class="nottickedoff">(&quot;Expecting a tuple, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  333 </span><span class="spaces"></span><span class="istickedoff">viewConstantTuple constant = failDoc  <span class="nottickedoff">(&quot;Expecting a tuple, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  334 </span>
-<span class="lineno">  335 </span>viewConstantRecord :: MonadFail m =&gt; Constant -&gt; m [(Name, Constant)]
+<span class="lineno">  335 </span>viewConstantRecord :: MonadFailDoc m =&gt; Constant -&gt; m [(Name, Constant)]
 <span class="lineno">  336 </span><span class="decl"><span class="istickedoff">viewConstantRecord (ConstantAbstract (AbsLitRecord xs)) = return (sortOn fst xs)</span>
 <span class="lineno">  337 </span><span class="spaces"></span><span class="istickedoff">viewConstantRecord (TypedConstant c _) = viewConstantRecord c</span>
-<span class="lineno">  338 </span><span class="spaces"></span><span class="istickedoff">viewConstantRecord constant = fail <span class="nottickedoff">(&quot;Expecting a record, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  338 </span><span class="spaces"></span><span class="istickedoff">viewConstantRecord constant = failDoc  <span class="nottickedoff">(&quot;Expecting a record, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  339 </span>
-<span class="lineno">  340 </span>viewConstantVariant :: MonadFail m =&gt; Constant -&gt; m (Maybe [(Name, Domain () Constant)], Name, Constant)
+<span class="lineno">  340 </span>viewConstantVariant :: MonadFailDoc m =&gt; Constant -&gt; m (Maybe [(Name, Domain () Constant)], Name, Constant)
 <span class="lineno">  341 </span><span class="decl"><span class="istickedoff">viewConstantVariant (ConstantAbstract (AbsLitVariant lu nm x)) = return (lu, nm, x)</span>
 <span class="lineno">  342 </span><span class="spaces"></span><span class="istickedoff">viewConstantVariant (TypedConstant c _) = viewConstantVariant c</span>
-<span class="lineno">  343 </span><span class="spaces"></span><span class="istickedoff">viewConstantVariant constant = fail <span class="nottickedoff">(&quot;Expecting a variant, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  343 </span><span class="spaces"></span><span class="istickedoff">viewConstantVariant constant = failDoc  <span class="nottickedoff">(&quot;Expecting a variant, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  344 </span>
-<span class="lineno">  345 </span>viewConstantMatrix :: MonadFail m =&gt; Constant -&gt; m (Domain () Constant, [Constant])
+<span class="lineno">  345 </span>viewConstantMatrix :: MonadFailDoc m =&gt; Constant -&gt; m (Domain () Constant, [Constant])
 <span class="lineno">  346 </span><span class="decl"><span class="istickedoff">viewConstantMatrix (ConstantAbstract (AbsLitMatrix ind xs)) = return (expandDomainReference ind, xs)</span>
 <span class="lineno">  347 </span><span class="spaces"></span><span class="istickedoff">viewConstantMatrix (TypedConstant c _) = viewConstantMatrix c</span>
 <span class="lineno">  348 </span><span class="spaces"></span><span class="istickedoff">viewConstantMatrix (ConstantFromJSON xs) = <span class="nottickedoff">return (DomainInt TagInt [RangeBounded 1 (genericLength xs)] ,xs)</span></span>
-<span class="lineno">  349 </span><span class="spaces"></span><span class="istickedoff">viewConstantMatrix constant = fail <span class="nottickedoff">(&quot;Expecting a matrix, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  349 </span><span class="spaces"></span><span class="istickedoff">viewConstantMatrix constant = failDoc  <span class="nottickedoff">(&quot;Expecting a matrix, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  350 </span>
-<span class="lineno">  351 </span>viewConstantSet :: MonadFail m =&gt; Constant -&gt; m [Constant]
+<span class="lineno">  351 </span>viewConstantSet :: MonadFailDoc m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  352 </span><span class="decl"><span class="istickedoff">viewConstantSet (ConstantAbstract (AbsLitSet xs)) = return xs</span>
 <span class="lineno">  353 </span><span class="spaces"></span><span class="istickedoff">viewConstantSet (TypedConstant c _) = viewConstantSet c</span>
 <span class="lineno">  354 </span><span class="spaces"></span><span class="istickedoff">viewConstantSet (ConstantFromJSON xs) = <span class="nottickedoff">return xs</span></span>
-<span class="lineno">  355 </span><span class="spaces"></span><span class="istickedoff">viewConstantSet constant = fail <span class="nottickedoff">(&quot;Expecting a set, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  355 </span><span class="spaces"></span><span class="istickedoff">viewConstantSet constant = failDoc  <span class="nottickedoff">(&quot;Expecting a set, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  356 </span>
-<span class="lineno">  357 </span>viewConstantMSet :: MonadFail m =&gt; Constant -&gt; m [Constant]
+<span class="lineno">  357 </span>viewConstantMSet :: MonadFailDoc m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  358 </span><span class="decl"><span class="istickedoff">viewConstantMSet (ConstantAbstract (AbsLitMSet xs)) = return xs</span>
 <span class="lineno">  359 </span><span class="spaces"></span><span class="istickedoff">viewConstantMSet (TypedConstant c _) = viewConstantMSet c</span>
 <span class="lineno">  360 </span><span class="spaces"></span><span class="istickedoff">viewConstantMSet (ConstantFromJSON xs) = <span class="nottickedoff">return xs</span></span>
-<span class="lineno">  361 </span><span class="spaces"></span><span class="istickedoff">viewConstantMSet constant = fail <span class="nottickedoff">(&quot;Expecting an mset, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  361 </span><span class="spaces"></span><span class="istickedoff">viewConstantMSet constant = failDoc <span class="nottickedoff">(&quot;Expecting an mset, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  362 </span>
-<span class="lineno">  363 </span>viewConstantFunction :: MonadFail m =&gt; Constant -&gt; m [(Constant, Constant)]
+<span class="lineno">  363 </span>viewConstantFunction :: MonadFailDoc m =&gt; Constant -&gt; m [(Constant, Constant)]
 <span class="lineno">  364 </span><span class="decl"><span class="istickedoff">viewConstantFunction (ConstantAbstract (AbsLitFunction xs)) = return xs</span>
 <span class="lineno">  365 </span><span class="spaces"></span><span class="istickedoff">viewConstantFunction (TypedConstant c _) = viewConstantFunction c</span>
 <span class="lineno">  366 </span><span class="spaces"></span><span class="istickedoff">viewConstantFunction constant = do</span>
@@ -390,28 +390,28 @@ span.spaces    { background: white }
 <span class="lineno">  371 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Just $ pretty $ AbsLitFunction (zip (map (ConstantInt TagInt) froms) vals)</span></span>
 <span class="lineno">  372 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return Nothing</span>
 <span class="lineno">  373 </span><span class="spaces">    </span><span class="istickedoff">suggestion &gt;&gt;= \case</span>
-<span class="lineno">  374 </span><span class="spaces">        </span><span class="istickedoff">Nothing  -&gt; fail <span class="nottickedoff">(&quot;Expecting a function, but got:&quot; &lt;++&gt; pretty constant)</span></span>
-<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">Just sug -&gt; <span class="nottickedoff">fail (vcat [ &quot;Expecting a function, but got:&quot; &lt;++&gt; pretty constant</span></span>
+<span class="lineno">  374 </span><span class="spaces">        </span><span class="istickedoff">Nothing  -&gt; failDoc <span class="nottickedoff">(&quot;Expecting a function, but got:&quot; &lt;++&gt; pretty constant)</span></span>
+<span class="lineno">  375 </span><span class="spaces">        </span><span class="istickedoff">Just sug -&gt; <span class="nottickedoff">failDoc (vcat [ &quot;Expecting a function, but got:&quot; &lt;++&gt; pretty constant</span></span>
 <span class="lineno">  376 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Maybe you meant:&quot; &lt;++&gt; sug</span></span>
 <span class="lineno">  377 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">])</span></span></span>
 <span class="lineno">  378 </span>
-<span class="lineno">  379 </span>viewConstantSequence :: MonadFail m =&gt; Constant -&gt; m [Constant]
+<span class="lineno">  379 </span>viewConstantSequence :: MonadFailDoc m =&gt; Constant -&gt; m [Constant]
 <span class="lineno">  380 </span><span class="decl"><span class="istickedoff">viewConstantSequence (ConstantAbstract (AbsLitSequence xs)) = return xs</span>
 <span class="lineno">  381 </span><span class="spaces"></span><span class="istickedoff">viewConstantSequence (TypedConstant c _) = viewConstantSequence c</span>
 <span class="lineno">  382 </span><span class="spaces"></span><span class="istickedoff">viewConstantSequence (ConstantFromJSON xs) = <span class="nottickedoff">return xs</span></span>
-<span class="lineno">  383 </span><span class="spaces"></span><span class="istickedoff">viewConstantSequence constant = fail <span class="nottickedoff">(&quot;Expecting a sequence, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  383 </span><span class="spaces"></span><span class="istickedoff">viewConstantSequence constant = failDoc <span class="nottickedoff">(&quot;Expecting a sequence, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  384 </span>
-<span class="lineno">  385 </span>viewConstantRelation :: MonadFail m =&gt; Constant -&gt; m [[Constant]]
+<span class="lineno">  385 </span>viewConstantRelation :: MonadFailDoc m =&gt; Constant -&gt; m [[Constant]]
 <span class="lineno">  386 </span><span class="decl"><span class="istickedoff">viewConstantRelation (ConstantAbstract (AbsLitRelation xs)) = return xs</span>
 <span class="lineno">  387 </span><span class="spaces"></span><span class="istickedoff">viewConstantRelation (TypedConstant c _) = viewConstantRelation c</span>
 <span class="lineno">  388 </span><span class="spaces"></span><span class="istickedoff">viewConstantRelation (ConstantFromJSON xs) = <span class="nottickedoff">mapM viewConstantTuple xs</span></span>
-<span class="lineno">  389 </span><span class="spaces"></span><span class="istickedoff">viewConstantRelation constant = fail <span class="nottickedoff">(&quot;Expecting a relation, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  389 </span><span class="spaces"></span><span class="istickedoff">viewConstantRelation constant = failDoc <span class="nottickedoff">(&quot;Expecting a relation, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  390 </span>
-<span class="lineno">  391 </span>viewConstantPartition :: MonadFail m =&gt; Constant -&gt; m [[Constant]]
+<span class="lineno">  391 </span>viewConstantPartition :: MonadFailDoc m =&gt; Constant -&gt; m [[Constant]]
 <span class="lineno">  392 </span><span class="decl"><span class="istickedoff">viewConstantPartition (ConstantAbstract (AbsLitPartition xs)) = return xs</span>
 <span class="lineno">  393 </span><span class="spaces"></span><span class="istickedoff">viewConstantPartition (TypedConstant c _) = viewConstantPartition c</span>
 <span class="lineno">  394 </span><span class="spaces"></span><span class="istickedoff">viewConstantPartition (ConstantFromJSON xs) = <span class="nottickedoff">mapM viewConstantSet xs</span></span>
-<span class="lineno">  395 </span><span class="spaces"></span><span class="istickedoff">viewConstantPartition constant = fail <span class="nottickedoff">(&quot;Expecting a partition, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
+<span class="lineno">  395 </span><span class="spaces"></span><span class="istickedoff">viewConstantPartition constant = failDoc <span class="nottickedoff">(&quot;Expecting a partition, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  396 </span>
 
 </pre>

@@ -30,7 +30,7 @@ span.spaces    { background: white }
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>
 <span class="lineno">   13 </span>sequenceExplicitBounded :: forall m .
-<span class="lineno">   14 </span>    MonadFail m =&gt;
+<span class="lineno">   14 </span>    MonadFailDoc m=&gt;
 <span class="lineno">   15 </span>    NameGen m =&gt;
 <span class="lineno">   16 </span>    EnumerateDomain m =&gt;
 <span class="lineno">   17 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
@@ -54,7 +54,7 @@ span.spaces    { background: white }
 <span class="lineno">   35 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize (SizeAttr_MaxSize x) = return x</span>
 <span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize (SizeAttr_MinMaxSize _ x) = return x</span>
-<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize _ = <span class="nottickedoff">fail &quot;Unknown maxSize&quot;</span></span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">getMaxSize _ = <span class="nottickedoff">failDoc &quot;Unknown maxSize&quot;</span></span>
 <span class="lineno">   39 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
 <span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">downD (name, domain@(DomainSequence</span>
@@ -248,7 +248,7 @@ span.spaces    { background: white }
 <span class="lineno">  229 </span><span class="spaces">            </span><span class="istickedoff">maxSizeInt &lt;-</span>
 <span class="lineno">  230 </span><span class="spaces">                </span><span class="istickedoff">case maxSize of</span>
 <span class="lineno">  231 </span><span class="spaces">                    </span><span class="istickedoff">ConstantInt _ x -&gt; return x</span>
-<span class="lineno">  232 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  232 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  233 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer for the maxSize attribute.&quot;</span></span>
 <span class="lineno">  234 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty maxSize</span></span>
 <span class="lineno">  235 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
@@ -281,26 +281,26 @@ span.spaces    { background: white }
 <span class="lineno">  262 </span><span class="spaces">                            </span><span class="istickedoff">case viewConstantMatrix constantMatrix of</span>
 <span class="lineno">  263 </span><span class="spaces">                                </span><span class="istickedoff">Just (_, vals) -&gt;</span>
 <span class="lineno">  264 </span><span class="spaces">                                    </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitSequence (genericTake card vals)))</span>
-<span class="lineno">  265 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  265 </span><span class="spaces">                                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  266 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  267 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
 <span class="lineno">  268 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  269 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  270 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  271 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat</span></span>
+<span class="lineno">  271 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  272 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting an integer literal for:&quot; &lt;+&gt; pretty (nameMarker domain name)</span></span>
 <span class="lineno">  273 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty marker</span></span>
 <span class="lineno">  274 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  275 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  276 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  277 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  278 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Sequence ExplicitBounded up 1)&quot;</span></span>
 <span class="lineno">  279 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameMarker domain name)</span></span>
 <span class="lineno">  280 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  281 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  282 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  283 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  284 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  284 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  285 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Sequence ExplicitBounded up 2)&quot;</span></span>
 <span class="lineno">  286 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  287 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>

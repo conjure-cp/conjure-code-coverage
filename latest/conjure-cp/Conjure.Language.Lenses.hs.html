@@ -68,7 +68,7 @@ span.spaces    { background: white }
 <span class="lineno">   49 </span>opMinus
 <span class="lineno">   50 </span>    :: ( Op x :&lt; x
 <span class="lineno">   51 </span>       , Pretty x
-<span class="lineno">   52 </span>       , MonadFail m
+<span class="lineno">   52 </span>       , MonadFailDoc m
 <span class="lineno">   53 </span>       )
 <span class="lineno">   54 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">   55 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -87,7 +87,7 @@ span.spaces    { background: white }
 <span class="lineno">   68 </span>opDiv
 <span class="lineno">   69 </span>    :: ( Op x :&lt; x
 <span class="lineno">   70 </span>       , Pretty x
-<span class="lineno">   71 </span>       , MonadFail m
+<span class="lineno">   71 </span>       , MonadFailDoc m
 <span class="lineno">   72 </span>       )
 <span class="lineno">   73 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">   74 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -106,7 +106,7 @@ span.spaces    { background: white }
 <span class="lineno">   87 </span>opMod
 <span class="lineno">   88 </span>    :: ( Op x :&lt; x
 <span class="lineno">   89 </span>       , Pretty x
-<span class="lineno">   90 </span>       , MonadFail m
+<span class="lineno">   90 </span>       , MonadFailDoc m
 <span class="lineno">   91 </span>       )
 <span class="lineno">   92 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">   93 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -125,7 +125,7 @@ span.spaces    { background: white }
 <span class="lineno">  106 </span>opPow
 <span class="lineno">  107 </span>    :: ( Op x :&lt; x
 <span class="lineno">  108 </span>       , Pretty x
-<span class="lineno">  109 </span>       , MonadFail m
+<span class="lineno">  109 </span>       , MonadFailDoc m
 <span class="lineno">  110 </span>       )
 <span class="lineno">  111 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  112 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -144,7 +144,7 @@ span.spaces    { background: white }
 <span class="lineno">  125 </span>opNegate
 <span class="lineno">  126 </span>    :: ( Op x :&lt; x
 <span class="lineno">  127 </span>       , Pretty x
-<span class="lineno">  128 </span>       , MonadFail m
+<span class="lineno">  128 </span>       , MonadFailDoc m
 <span class="lineno">  129 </span>       )
 <span class="lineno">  130 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  131 </span>    -&gt; ( x -&gt; x
@@ -163,7 +163,7 @@ span.spaces    { background: white }
 <span class="lineno">  144 </span>opDontCare
 <span class="lineno">  145 </span>    :: ( Op x :&lt; x
 <span class="lineno">  146 </span>       , Pretty x
-<span class="lineno">  147 </span>       , MonadFail m
+<span class="lineno">  147 </span>       , MonadFailDoc m
 <span class="lineno">  148 </span>       )
 <span class="lineno">  149 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  150 </span>    -&gt; ( x -&gt; x
@@ -180,7 +180,7 @@ span.spaces    { background: white }
 <span class="lineno">  161 </span>
 <span class="lineno">  162 </span>
 <span class="lineno">  163 </span>opDefined
-<span class="lineno">  164 </span>    :: MonadFail m
+<span class="lineno">  164 </span>    :: MonadFailDoc m
 <span class="lineno">  165 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  166 </span>    -&gt; ( Expression -&gt; Expression
 <span class="lineno">  167 </span>       , Expression -&gt; m Expression
@@ -195,7 +195,7 @@ span.spaces    { background: white }
 <span class="lineno">  176 </span>
 <span class="lineno">  177 </span>
 <span class="lineno">  178 </span>opRange
-<span class="lineno">  179 </span>    :: MonadFail m
+<span class="lineno">  179 </span>    :: MonadFailDoc m
 <span class="lineno">  180 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  181 </span>    -&gt; ( Expression -&gt; Expression
 <span class="lineno">  182 </span>       , Expression -&gt; m Expression
@@ -212,7 +212,7 @@ span.spaces    { background: white }
 <span class="lineno">  193 </span>opDefinedOrRange
 <span class="lineno">  194 </span>    :: ( Op x :&lt; x
 <span class="lineno">  195 </span>       , Pretty x
-<span class="lineno">  196 </span>       , MonadFail m
+<span class="lineno">  196 </span>       , MonadFailDoc m
 <span class="lineno">  197 </span>       )
 <span class="lineno">  198 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  199 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
@@ -228,7 +228,7 @@ span.spaces    { background: white }
 <span class="lineno">  209 </span>
 <span class="lineno">  210 </span>
 <span class="lineno">  211 </span>opRestrict
-<span class="lineno">  212 </span>    :: MonadFail m
+<span class="lineno">  212 </span>    :: MonadFailDoc m
 <span class="lineno">  213 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  214 </span>    -&gt; ( Expression -&gt; Domain () Expression -&gt; Expression
 <span class="lineno">  215 </span>       , Expression -&gt; m (Expression, Domain () Expression)
@@ -245,7 +245,7 @@ span.spaces    { background: white }
 <span class="lineno">  226 </span>opToInt
 <span class="lineno">  227 </span>    :: ( Op x :&lt; x
 <span class="lineno">  228 </span>       , Pretty x
-<span class="lineno">  229 </span>       , MonadFail m
+<span class="lineno">  229 </span>       , MonadFailDoc m
 <span class="lineno">  230 </span>       )
 <span class="lineno">  231 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  232 </span>    -&gt; ( x -&gt; x
@@ -264,7 +264,7 @@ span.spaces    { background: white }
 <span class="lineno">  245 </span>opPowerSet
 <span class="lineno">  246 </span>    :: ( Op x :&lt; x
 <span class="lineno">  247 </span>       , Pretty x
-<span class="lineno">  248 </span>       , MonadFail m
+<span class="lineno">  248 </span>       , MonadFailDoc m
 <span class="lineno">  249 </span>       )
 <span class="lineno">  250 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  251 </span>    -&gt; ( x -&gt; x
@@ -283,7 +283,7 @@ span.spaces    { background: white }
 <span class="lineno">  264 </span>opToSet
 <span class="lineno">  265 </span>    :: ( Op x :&lt; x
 <span class="lineno">  266 </span>       , Pretty x
-<span class="lineno">  267 </span>       , MonadFail m
+<span class="lineno">  267 </span>       , MonadFailDoc m
 <span class="lineno">  268 </span>       )
 <span class="lineno">  269 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  270 </span>    -&gt; ( x -&gt; x
@@ -302,7 +302,7 @@ span.spaces    { background: white }
 <span class="lineno">  283 </span>opToSetWithFlag
 <span class="lineno">  284 </span>    :: ( Op x :&lt; x
 <span class="lineno">  285 </span>       , Pretty x
-<span class="lineno">  286 </span>       , MonadFail m
+<span class="lineno">  286 </span>       , MonadFailDoc m
 <span class="lineno">  287 </span>       )
 <span class="lineno">  288 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  289 </span>    -&gt; ( Bool -&gt; x -&gt; x
@@ -321,7 +321,7 @@ span.spaces    { background: white }
 <span class="lineno">  302 </span>opToMSet
 <span class="lineno">  303 </span>    :: ( Op x :&lt; x
 <span class="lineno">  304 </span>       , Pretty x
-<span class="lineno">  305 </span>       , MonadFail m
+<span class="lineno">  305 </span>       , MonadFailDoc m
 <span class="lineno">  306 </span>       )
 <span class="lineno">  307 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  308 </span>    -&gt; ( x -&gt; x
@@ -340,7 +340,7 @@ span.spaces    { background: white }
 <span class="lineno">  321 </span>opToRelation
 <span class="lineno">  322 </span>    :: ( Op x :&lt; x
 <span class="lineno">  323 </span>       , Pretty x
-<span class="lineno">  324 </span>       , MonadFail m
+<span class="lineno">  324 </span>       , MonadFailDoc m
 <span class="lineno">  325 </span>       )
 <span class="lineno">  326 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  327 </span>    -&gt; ( x -&gt; x
@@ -359,7 +359,7 @@ span.spaces    { background: white }
 <span class="lineno">  340 </span>opParts
 <span class="lineno">  341 </span>    :: ( Op x :&lt; x
 <span class="lineno">  342 </span>       , Pretty x
-<span class="lineno">  343 </span>       , MonadFail m
+<span class="lineno">  343 </span>       , MonadFailDoc m
 <span class="lineno">  344 </span>       )
 <span class="lineno">  345 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  346 </span>    -&gt; ( x -&gt; x
@@ -378,7 +378,7 @@ span.spaces    { background: white }
 <span class="lineno">  359 </span>opParty
 <span class="lineno">  360 </span>    :: ( Op x :&lt; x
 <span class="lineno">  361 </span>       , Pretty x
-<span class="lineno">  362 </span>       , MonadFail m
+<span class="lineno">  362 </span>       , MonadFailDoc m
 <span class="lineno">  363 </span>       )
 <span class="lineno">  364 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  365 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -397,7 +397,7 @@ span.spaces    { background: white }
 <span class="lineno">  378 </span>opParticipants
 <span class="lineno">  379 </span>    :: ( Op x :&lt; x
 <span class="lineno">  380 </span>       , Pretty x
-<span class="lineno">  381 </span>       , MonadFail m
+<span class="lineno">  381 </span>       , MonadFailDoc m
 <span class="lineno">  382 </span>       )
 <span class="lineno">  383 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  384 </span>    -&gt; ( x -&gt; x
@@ -416,7 +416,7 @@ span.spaces    { background: white }
 <span class="lineno">  397 </span>opImage
 <span class="lineno">  398 </span>    :: ( Op x :&lt; x
 <span class="lineno">  399 </span>       , Pretty x
-<span class="lineno">  400 </span>       , MonadFail m
+<span class="lineno">  400 </span>       , MonadFailDoc m
 <span class="lineno">  401 </span>       )
 <span class="lineno">  402 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  403 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -435,7 +435,7 @@ span.spaces    { background: white }
 <span class="lineno">  416 </span>opImageSet
 <span class="lineno">  417 </span>    :: ( Op x :&lt; x
 <span class="lineno">  418 </span>       , Pretty x
-<span class="lineno">  419 </span>       , MonadFail m
+<span class="lineno">  419 </span>       , MonadFailDoc m
 <span class="lineno">  420 </span>       )
 <span class="lineno">  421 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  422 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -453,7 +453,7 @@ span.spaces    { background: white }
 <span class="lineno">  434 </span>opTransform
 <span class="lineno">  435 </span>    :: ( Op x :&lt; x
 <span class="lineno">  436 </span>       , Pretty x
-<span class="lineno">  437 </span>       , MonadFail m
+<span class="lineno">  437 </span>       , MonadFailDoc m
 <span class="lineno">  438 </span>       )
 <span class="lineno">  439 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  440 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -472,7 +472,7 @@ span.spaces    { background: white }
 <span class="lineno">  453 </span>opRelationProj
 <span class="lineno">  454 </span>    :: ( Op x :&lt; x
 <span class="lineno">  455 </span>       , Pretty x
-<span class="lineno">  456 </span>       , MonadFail m
+<span class="lineno">  456 </span>       , MonadFailDoc m
 <span class="lineno">  457 </span>       )
 <span class="lineno">  458 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  459 </span>    -&gt; ( x -&gt; [Maybe x] -&gt; x
@@ -491,7 +491,7 @@ span.spaces    { background: white }
 <span class="lineno">  472 </span>opRelationImage
 <span class="lineno">  473 </span>    :: ( Op x :&lt; x
 <span class="lineno">  474 </span>       , Pretty x
-<span class="lineno">  475 </span>       , MonadFail m
+<span class="lineno">  475 </span>       , MonadFailDoc m
 <span class="lineno">  476 </span>       )
 <span class="lineno">  477 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  478 </span>    -&gt; ( x -&gt; [x] -&gt; x
@@ -513,7 +513,7 @@ span.spaces    { background: white }
 <span class="lineno">  494 </span>opIndexing
 <span class="lineno">  495 </span>    :: ( Op x :&lt; x
 <span class="lineno">  496 </span>       , Pretty x
-<span class="lineno">  497 </span>       , MonadFail m
+<span class="lineno">  497 </span>       , MonadFailDoc m
 <span class="lineno">  498 </span>       )
 <span class="lineno">  499 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  500 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -533,7 +533,7 @@ span.spaces    { background: white }
 <span class="lineno">  514 </span>    :: ( Op x :&lt; x
 <span class="lineno">  515 </span>       , Pretty x
 <span class="lineno">  516 </span>       , TypeOf x
-<span class="lineno">  517 </span>       , MonadFail m
+<span class="lineno">  517 </span>       , MonadFailDoc m
 <span class="lineno">  518 </span>       , ?typeCheckerMode :: TypeCheckerMode
 <span class="lineno">  519 </span>       )
 <span class="lineno">  520 </span>    =&gt; Proxy (m :: * -&gt; *)
@@ -564,7 +564,7 @@ span.spaces    { background: white }
 <span class="lineno">  545 </span>opMatrixIndexingSlicing
 <span class="lineno">  546 </span>    :: ( Op x :&lt; x
 <span class="lineno">  547 </span>       , Pretty x
-<span class="lineno">  548 </span>       , MonadFail m
+<span class="lineno">  548 </span>       , MonadFailDoc m
 <span class="lineno">  549 </span>       , TypeOf x
 <span class="lineno">  550 </span>       , ?typeCheckerMode :: TypeCheckerMode
 <span class="lineno">  551 </span>       )
@@ -608,7 +608,7 @@ span.spaces    { background: white }
 <span class="lineno">  589 </span>opSlicing
 <span class="lineno">  590 </span>    :: ( Op x :&lt; x
 <span class="lineno">  591 </span>       , Pretty x
-<span class="lineno">  592 </span>       , MonadFail m
+<span class="lineno">  592 </span>       , MonadFailDoc m
 <span class="lineno">  593 </span>       )
 <span class="lineno">  594 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  595 </span>    -&gt; ( x -&gt; Maybe x -&gt; Maybe x -&gt; x
@@ -627,7 +627,7 @@ span.spaces    { background: white }
 <span class="lineno">  608 </span>opFlatten
 <span class="lineno">  609 </span>    :: ( Op x :&lt; x
 <span class="lineno">  610 </span>       , Pretty x
-<span class="lineno">  611 </span>       , MonadFail m
+<span class="lineno">  611 </span>       , MonadFailDoc m
 <span class="lineno">  612 </span>       )
 <span class="lineno">  613 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  614 </span>    -&gt; ( x -&gt; x
@@ -667,7 +667,7 @@ span.spaces    { background: white }
 <span class="lineno">  648 </span>opConcatenate
 <span class="lineno">  649 </span>    :: ( Op x :&lt; x
 <span class="lineno">  650 </span>       , Pretty x
-<span class="lineno">  651 </span>       , MonadFail m
+<span class="lineno">  651 </span>       , MonadFailDoc m
 <span class="lineno">  652 </span>       )
 <span class="lineno">  653 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  654 </span>    -&gt; ( x -&gt; x
@@ -686,7 +686,7 @@ span.spaces    { background: white }
 <span class="lineno">  667 </span>opIn
 <span class="lineno">  668 </span>    :: ( Op x :&lt; x
 <span class="lineno">  669 </span>       , Pretty x
-<span class="lineno">  670 </span>       , MonadFail m
+<span class="lineno">  670 </span>       , MonadFailDoc m
 <span class="lineno">  671 </span>       )
 <span class="lineno">  672 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  673 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -705,7 +705,7 @@ span.spaces    { background: white }
 <span class="lineno">  686 </span>opFreq
 <span class="lineno">  687 </span>    :: ( Op x :&lt; x
 <span class="lineno">  688 </span>       , Pretty x
-<span class="lineno">  689 </span>       , MonadFail m
+<span class="lineno">  689 </span>       , MonadFailDoc m
 <span class="lineno">  690 </span>       )
 <span class="lineno">  691 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  692 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -724,7 +724,7 @@ span.spaces    { background: white }
 <span class="lineno">  705 </span>opHist
 <span class="lineno">  706 </span>    :: ( Op x :&lt; x
 <span class="lineno">  707 </span>       , Pretty x
-<span class="lineno">  708 </span>       , MonadFail m
+<span class="lineno">  708 </span>       , MonadFailDoc m
 <span class="lineno">  709 </span>       )
 <span class="lineno">  710 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  711 </span>    -&gt; ( x -&gt; x
@@ -743,7 +743,7 @@ span.spaces    { background: white }
 <span class="lineno">  724 </span>opIntersect
 <span class="lineno">  725 </span>    :: ( Op x :&lt; x
 <span class="lineno">  726 </span>       , Pretty x
-<span class="lineno">  727 </span>       , MonadFail m
+<span class="lineno">  727 </span>       , MonadFailDoc m
 <span class="lineno">  728 </span>       )
 <span class="lineno">  729 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  730 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -762,7 +762,7 @@ span.spaces    { background: white }
 <span class="lineno">  743 </span>opUnion
 <span class="lineno">  744 </span>    :: ( Op x :&lt; x
 <span class="lineno">  745 </span>       , Pretty x
-<span class="lineno">  746 </span>       , MonadFail m
+<span class="lineno">  746 </span>       , MonadFailDoc m
 <span class="lineno">  747 </span>       )
 <span class="lineno">  748 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  749 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -781,7 +781,7 @@ span.spaces    { background: white }
 <span class="lineno">  762 </span>opSubsetEq
 <span class="lineno">  763 </span>    :: ( Op x :&lt; x
 <span class="lineno">  764 </span>       , Pretty x
-<span class="lineno">  765 </span>       , MonadFail m
+<span class="lineno">  765 </span>       , MonadFailDoc m
 <span class="lineno">  766 </span>       )
 <span class="lineno">  767 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  768 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -800,7 +800,7 @@ span.spaces    { background: white }
 <span class="lineno">  781 </span>opEq
 <span class="lineno">  782 </span>    :: ( Op x :&lt; x
 <span class="lineno">  783 </span>       , Pretty x
-<span class="lineno">  784 </span>       , MonadFail m
+<span class="lineno">  784 </span>       , MonadFailDoc m
 <span class="lineno">  785 </span>       )
 <span class="lineno">  786 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  787 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -819,7 +819,7 @@ span.spaces    { background: white }
 <span class="lineno">  800 </span>opNeq
 <span class="lineno">  801 </span>    :: ( Op x :&lt; x
 <span class="lineno">  802 </span>       , Pretty x
-<span class="lineno">  803 </span>       , MonadFail m
+<span class="lineno">  803 </span>       , MonadFailDoc m
 <span class="lineno">  804 </span>       )
 <span class="lineno">  805 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  806 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -838,7 +838,7 @@ span.spaces    { background: white }
 <span class="lineno">  819 </span>opLt
 <span class="lineno">  820 </span>    :: ( Op x :&lt; x
 <span class="lineno">  821 </span>       , Pretty x
-<span class="lineno">  822 </span>       , MonadFail m
+<span class="lineno">  822 </span>       , MonadFailDoc m
 <span class="lineno">  823 </span>       )
 <span class="lineno">  824 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  825 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -857,7 +857,7 @@ span.spaces    { background: white }
 <span class="lineno">  838 </span>opLeq
 <span class="lineno">  839 </span>    :: ( Op x :&lt; x
 <span class="lineno">  840 </span>       , Pretty x
-<span class="lineno">  841 </span>       , MonadFail m
+<span class="lineno">  841 </span>       , MonadFailDoc m
 <span class="lineno">  842 </span>       )
 <span class="lineno">  843 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  844 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -876,7 +876,7 @@ span.spaces    { background: white }
 <span class="lineno">  857 </span>opGt
 <span class="lineno">  858 </span>    :: ( Op x :&lt; x
 <span class="lineno">  859 </span>       , Pretty x
-<span class="lineno">  860 </span>       , MonadFail m
+<span class="lineno">  860 </span>       , MonadFailDoc m
 <span class="lineno">  861 </span>       )
 <span class="lineno">  862 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  863 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -895,7 +895,7 @@ span.spaces    { background: white }
 <span class="lineno">  876 </span>opGeq
 <span class="lineno">  877 </span>    :: ( Op x :&lt; x
 <span class="lineno">  878 </span>       , Pretty x
-<span class="lineno">  879 </span>       , MonadFail m
+<span class="lineno">  879 </span>       , MonadFailDoc m
 <span class="lineno">  880 </span>       )
 <span class="lineno">  881 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  882 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -914,7 +914,7 @@ span.spaces    { background: white }
 <span class="lineno">  895 </span>opDotLt
 <span class="lineno">  896 </span>    :: ( Op x :&lt; x
 <span class="lineno">  897 </span>       , Pretty x
-<span class="lineno">  898 </span>       , MonadFail m
+<span class="lineno">  898 </span>       , MonadFailDoc m
 <span class="lineno">  899 </span>       )
 <span class="lineno">  900 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  901 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -933,7 +933,7 @@ span.spaces    { background: white }
 <span class="lineno">  914 </span>opDotLeq
 <span class="lineno">  915 </span>    :: ( Op x :&lt; x
 <span class="lineno">  916 </span>       , Pretty x
-<span class="lineno">  917 </span>       , MonadFail m
+<span class="lineno">  917 </span>       , MonadFailDoc m
 <span class="lineno">  918 </span>       )
 <span class="lineno">  919 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  920 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -952,7 +952,7 @@ span.spaces    { background: white }
 <span class="lineno">  933 </span>opTildeLt
 <span class="lineno">  934 </span>    :: ( Op x :&lt; x
 <span class="lineno">  935 </span>       , Pretty x
-<span class="lineno">  936 </span>       , MonadFail m
+<span class="lineno">  936 </span>       , MonadFailDoc m
 <span class="lineno">  937 </span>       )
 <span class="lineno">  938 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  939 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -971,7 +971,7 @@ span.spaces    { background: white }
 <span class="lineno">  952 </span>opTildeLeq
 <span class="lineno">  953 </span>    :: ( Op x :&lt; x
 <span class="lineno">  954 </span>       , Pretty x
-<span class="lineno">  955 </span>       , MonadFail m
+<span class="lineno">  955 </span>       , MonadFailDoc m
 <span class="lineno">  956 </span>       )
 <span class="lineno">  957 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  958 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -990,7 +990,7 @@ span.spaces    { background: white }
 <span class="lineno">  971 </span>opOr
 <span class="lineno">  972 </span>    :: ( Op x :&lt; x
 <span class="lineno">  973 </span>       , Pretty x
-<span class="lineno">  974 </span>       , MonadFail m
+<span class="lineno">  974 </span>       , MonadFailDoc m
 <span class="lineno">  975 </span>       )
 <span class="lineno">  976 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  977 </span>    -&gt; ( x -&gt; x
@@ -1009,7 +1009,7 @@ span.spaces    { background: white }
 <span class="lineno">  990 </span>opAnd
 <span class="lineno">  991 </span>    :: ( Op x :&lt; x
 <span class="lineno">  992 </span>       , Pretty x
-<span class="lineno">  993 </span>       , MonadFail m
+<span class="lineno">  993 </span>       , MonadFailDoc m
 <span class="lineno">  994 </span>       )
 <span class="lineno">  995 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno">  996 </span>    -&gt; ( x -&gt; x
@@ -1028,7 +1028,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1009 </span>opMax
 <span class="lineno"> 1010 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1011 </span>       , Pretty x
-<span class="lineno"> 1012 </span>       , MonadFail m
+<span class="lineno"> 1012 </span>       , MonadFailDoc m
 <span class="lineno"> 1013 </span>       )
 <span class="lineno"> 1014 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1015 </span>    -&gt; ( x -&gt; x
@@ -1047,7 +1047,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1028 </span>opMin
 <span class="lineno"> 1029 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1030 </span>       , Pretty x
-<span class="lineno"> 1031 </span>       , MonadFail m
+<span class="lineno"> 1031 </span>       , MonadFailDoc m
 <span class="lineno"> 1032 </span>       )
 <span class="lineno"> 1033 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1034 </span>    -&gt; ( x -&gt; x
@@ -1066,7 +1066,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1047 </span>opImply
 <span class="lineno"> 1048 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1049 </span>       , Pretty x
-<span class="lineno"> 1050 </span>       , MonadFail m
+<span class="lineno"> 1050 </span>       , MonadFailDoc m
 <span class="lineno"> 1051 </span>       )
 <span class="lineno"> 1052 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1053 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -1085,7 +1085,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1066 </span>opNot
 <span class="lineno"> 1067 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1068 </span>       , Pretty x
-<span class="lineno"> 1069 </span>       , MonadFail m
+<span class="lineno"> 1069 </span>       , MonadFailDoc m
 <span class="lineno"> 1070 </span>       )
 <span class="lineno"> 1071 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1072 </span>    -&gt; ( x -&gt; x
@@ -1104,7 +1104,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1085 </span>opProduct
 <span class="lineno"> 1086 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1087 </span>       , Pretty x
-<span class="lineno"> 1088 </span>       , MonadFail m
+<span class="lineno"> 1088 </span>       , MonadFailDoc m
 <span class="lineno"> 1089 </span>       )
 <span class="lineno"> 1090 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1091 </span>    -&gt; ( x -&gt; x
@@ -1123,7 +1123,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1104 </span>opSum
 <span class="lineno"> 1105 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1106 </span>       , Pretty x
-<span class="lineno"> 1107 </span>       , MonadFail m
+<span class="lineno"> 1107 </span>       , MonadFailDoc m
 <span class="lineno"> 1108 </span>       )
 <span class="lineno"> 1109 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1110 </span>    -&gt; ( x -&gt; x
@@ -1145,7 +1145,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1126 </span>opReducer
 <span class="lineno"> 1127 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1128 </span>       , Pretty x
-<span class="lineno"> 1129 </span>       , MonadFail m
+<span class="lineno"> 1129 </span>       , MonadFailDoc m
 <span class="lineno"> 1130 </span>       )
 <span class="lineno"> 1131 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1132 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
@@ -1175,7 +1175,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1156 </span>
 <span class="lineno"> 1157 </span>opModifier
 <span class="lineno"> 1158 </span>    :: ( Op x :&lt; x
-<span class="lineno"> 1159 </span>       , MonadFail m
+<span class="lineno"> 1159 </span>       , MonadFailDoc m
 <span class="lineno"> 1160 </span>       )
 <span class="lineno"> 1161 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1162 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
@@ -1194,7 +1194,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1175 </span>
 <span class="lineno"> 1176 </span>opModifierNoP
 <span class="lineno"> 1177 </span>    :: ( Op x :&lt; x
-<span class="lineno"> 1178 </span>       , MonadFail m
+<span class="lineno"> 1178 </span>       , MonadFailDoc m
 <span class="lineno"> 1179 </span>       )
 <span class="lineno"> 1180 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1181 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
@@ -1213,7 +1213,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1194 </span>opAllDiff
 <span class="lineno"> 1195 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1196 </span>       , Pretty x
-<span class="lineno"> 1197 </span>       , MonadFail m
+<span class="lineno"> 1197 </span>       , MonadFailDoc m
 <span class="lineno"> 1198 </span>       )
 <span class="lineno"> 1199 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1200 </span>    -&gt; ( x -&gt; x
@@ -1232,7 +1232,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1213 </span>opAllDiffExcept
 <span class="lineno"> 1214 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1215 </span>       , Pretty x
-<span class="lineno"> 1216 </span>       , MonadFail m
+<span class="lineno"> 1216 </span>       , MonadFailDoc m
 <span class="lineno"> 1217 </span>       )
 <span class="lineno"> 1218 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1219 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -1249,7 +1249,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1230 </span>
 <span class="lineno"> 1231 </span>
 <span class="lineno"> 1232 </span>constantInt
-<span class="lineno"> 1233 </span>    :: MonadFail m
+<span class="lineno"> 1233 </span>    :: MonadFailDoc m
 <span class="lineno"> 1234 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1235 </span>    -&gt; ( Integer -&gt; Expression
 <span class="lineno"> 1236 </span>       , Expression -&gt; m Integer
@@ -1263,7 +1263,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1244 </span>
 <span class="lineno"> 1245 </span>
 <span class="lineno"> 1246 </span>matrixLiteral
-<span class="lineno"> 1247 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1247 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1248 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1249 </span>    -&gt; ( Type -&gt; Domain () Expression -&gt; [Expression] -&gt; Expression
 <span class="lineno"> 1250 </span>       , Expression -&gt; m (Type, Domain () Expression, [Expression])
@@ -1317,7 +1317,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1298 </span>
 <span class="lineno"> 1299 </span>
 <span class="lineno"> 1300 </span>setLiteral
-<span class="lineno"> 1301 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1301 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1302 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1303 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
 <span class="lineno"> 1304 </span>       , Expression -&gt; m (Type, [Expression])
@@ -1341,7 +1341,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1322 </span>
 <span class="lineno"> 1323 </span>
 <span class="lineno"> 1324 </span>msetLiteral
-<span class="lineno"> 1325 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1325 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1326 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1327 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
 <span class="lineno"> 1328 </span>       , Expression -&gt; m (Type, [Expression])
@@ -1365,7 +1365,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1346 </span>
 <span class="lineno"> 1347 </span>
 <span class="lineno"> 1348 </span>functionLiteral
-<span class="lineno"> 1349 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1349 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1350 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1351 </span>    -&gt; ( Type -&gt; [(Expression,Expression)] -&gt; Expression
 <span class="lineno"> 1352 </span>       , Expression -&gt; m (Type, [(Expression,Expression)])
@@ -1389,7 +1389,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1370 </span>
 <span class="lineno"> 1371 </span>
 <span class="lineno"> 1372 </span>sequenceLiteral
-<span class="lineno"> 1373 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1373 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1374 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1375 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
 <span class="lineno"> 1376 </span>       , Expression -&gt; m (Type, [Expression])
@@ -1413,7 +1413,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1394 </span>
 <span class="lineno"> 1395 </span>
 <span class="lineno"> 1396 </span>relationLiteral
-<span class="lineno"> 1397 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1397 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1398 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1399 </span>    -&gt; ( Type -&gt; [[Expression]] -&gt; Expression
 <span class="lineno"> 1400 </span>       , Expression -&gt; m (Type, [[Expression]])
@@ -1437,7 +1437,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1418 </span>
 <span class="lineno"> 1419 </span>
 <span class="lineno"> 1420 </span>partitionLiteral
-<span class="lineno"> 1421 </span>    :: (MonadFail m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1421 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
 <span class="lineno"> 1422 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1423 </span>    -&gt; ( Type -&gt; [[Expression]] -&gt; Expression
 <span class="lineno"> 1424 </span>       , Expression -&gt; m (Type, [[Expression]])
@@ -1463,7 +1463,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1444 </span>opTwoBars
 <span class="lineno"> 1445 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1446 </span>       , Pretty x
-<span class="lineno"> 1447 </span>       , MonadFail m
+<span class="lineno"> 1447 </span>       , MonadFailDoc m
 <span class="lineno"> 1448 </span>       )
 <span class="lineno"> 1449 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1450 </span>    -&gt; ( x -&gt; x
@@ -1482,7 +1482,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1463 </span>opPreImage
 <span class="lineno"> 1464 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1465 </span>       , Pretty x
-<span class="lineno"> 1466 </span>       , MonadFail m
+<span class="lineno"> 1466 </span>       , MonadFailDoc m
 <span class="lineno"> 1467 </span>       )
 <span class="lineno"> 1468 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1469 </span>    -&gt; ( x -&gt; x -&gt; x
@@ -1501,7 +1501,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1482 </span>opActive
 <span class="lineno"> 1483 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1484 </span>       , Pretty x
-<span class="lineno"> 1485 </span>       , MonadFail m
+<span class="lineno"> 1485 </span>       , MonadFailDoc m
 <span class="lineno"> 1486 </span>       )
 <span class="lineno"> 1487 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1488 </span>    -&gt; ( x -&gt; Name -&gt; x
@@ -1520,7 +1520,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1501 </span>opFactorial
 <span class="lineno"> 1502 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1503 </span>       , Pretty x
-<span class="lineno"> 1504 </span>       , MonadFail m
+<span class="lineno"> 1504 </span>       , MonadFailDoc m
 <span class="lineno"> 1505 </span>       )
 <span class="lineno"> 1506 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1507 </span>    -&gt; ( x -&gt; x
@@ -1539,7 +1539,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1520 </span>opLex
 <span class="lineno"> 1521 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1522 </span>       , Pretty x
-<span class="lineno"> 1523 </span>       , MonadFail m
+<span class="lineno"> 1523 </span>       , MonadFailDoc m
 <span class="lineno"> 1524 </span>       )
 <span class="lineno"> 1525 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1526 </span>    -&gt; ( (x -&gt; x -&gt; x, (x,x)) -&gt; x
@@ -1557,7 +1557,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1538 </span>opOrdering
 <span class="lineno"> 1539 </span>    :: ( Op x :&lt; x
 <span class="lineno"> 1540 </span>       , Pretty x
-<span class="lineno"> 1541 </span>       , MonadFail m
+<span class="lineno"> 1541 </span>       , MonadFailDoc m
 <span class="lineno"> 1542 </span>       )
 <span class="lineno"> 1543 </span>    =&gt; Proxy (m :: * -&gt; *)
 <span class="lineno"> 1544 </span>    -&gt; ( (x -&gt; x -&gt; x, (x,x)) -&gt; x
@@ -1596,35 +1596,35 @@ span.spaces    { background: white }
 <span class="lineno"> 1577 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; p</span></span>
 <span class="lineno"> 1578 </span>
 <span class="lineno"> 1579 </span>
-<span class="lineno"> 1580 </span>maxOfDomain :: (MonadFail m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
-<span class="lineno"> 1581 </span><span class="decl"><span class="istickedoff">maxOfDomain (DomainInt _ [] ) = <span class="nottickedoff">fail &quot;rule_DomainMinMax.maxOfDomain []&quot;</span></span>
+<span class="lineno"> 1580 </span>maxOfDomain :: (MonadFailDoc m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
+<span class="lineno"> 1581 </span><span class="decl"><span class="istickedoff">maxOfDomain (DomainInt _ [] ) = <span class="nottickedoff">failDoc &quot;rule_DomainMinMax.maxOfDomain []&quot;</span></span>
 <span class="lineno"> 1582 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainInt _ [r]) = maxOfRange r</span>
 <span class="lineno"> 1583 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainInt _ rs ) = do</span>
 <span class="lineno"> 1584 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- mapM maxOfRange rs</span>
 <span class="lineno"> 1585 </span><span class="spaces">    </span><span class="istickedoff">return (make opMax (fromList xs))</span>
 <span class="lineno"> 1586 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainReference _ (Just d)) = <span class="nottickedoff">maxOfDomain d</span></span>
-<span class="lineno"> 1587 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain d = <span class="nottickedoff">fail (&quot;rule_DomainMinMax.maxOfDomain&quot; &lt;+&gt; pretty d)</span></span></span>
+<span class="lineno"> 1587 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain d = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.maxOfDomain&quot; &lt;+&gt; pretty d)</span></span></span>
 <span class="lineno"> 1588 </span>
-<span class="lineno"> 1589 </span>maxOfRange :: MonadFail m =&gt; Range Expression -&gt; m Expression
+<span class="lineno"> 1589 </span>maxOfRange :: MonadFailDoc m =&gt; Range Expression -&gt; m Expression
 <span class="lineno"> 1590 </span><span class="decl"><span class="istickedoff">maxOfRange (RangeSingle x) = return x</span>
 <span class="lineno"> 1591 </span><span class="spaces"></span><span class="istickedoff">maxOfRange (RangeBounded _ x) = return x</span>
 <span class="lineno"> 1592 </span><span class="spaces"></span><span class="istickedoff">maxOfRange (RangeUpperBounded x) = <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 1593 </span><span class="spaces"></span><span class="istickedoff">maxOfRange r = <span class="nottickedoff">fail (&quot;rule_DomainMinMax.maxOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
+<span class="lineno"> 1593 </span><span class="spaces"></span><span class="istickedoff">maxOfRange r = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.maxOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
 <span class="lineno"> 1594 </span>
-<span class="lineno"> 1595 </span>minOfDomain :: (MonadFail m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
-<span class="lineno"> 1596 </span><span class="decl"><span class="istickedoff">minOfDomain (DomainInt _ [] ) = <span class="nottickedoff">fail &quot;rule_DomainMinMax.minOfDomain []&quot;</span></span>
+<span class="lineno"> 1595 </span>minOfDomain :: (MonadFailDoc m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
+<span class="lineno"> 1596 </span><span class="decl"><span class="istickedoff">minOfDomain (DomainInt _ [] ) = <span class="nottickedoff">failDoc &quot;rule_DomainMinMax.minOfDomain []&quot;</span></span>
 <span class="lineno"> 1597 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainInt _ [r]) = minOfRange r</span>
 <span class="lineno"> 1598 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainInt _ rs ) = do</span>
 <span class="lineno"> 1599 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- mapM minOfRange rs</span>
 <span class="lineno"> 1600 </span><span class="spaces">    </span><span class="istickedoff">return (make opMin (fromList xs))</span>
 <span class="lineno"> 1601 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainReference _ (Just d)) = <span class="nottickedoff">minOfDomain d</span></span>
-<span class="lineno"> 1602 </span><span class="spaces"></span><span class="istickedoff">minOfDomain d = fail (&quot;rule_DomainMinMax.minOfDomain&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno"> 1602 </span><span class="spaces"></span><span class="istickedoff">minOfDomain d = failDoc (&quot;rule_DomainMinMax.minOfDomain&quot; &lt;+&gt; pretty d)</span></span>
 <span class="lineno"> 1603 </span>
-<span class="lineno"> 1604 </span>minOfRange :: MonadFail m =&gt; Range Expression -&gt; m Expression
+<span class="lineno"> 1604 </span>minOfRange :: MonadFailDoc m =&gt; Range Expression -&gt; m Expression
 <span class="lineno"> 1605 </span><span class="decl"><span class="istickedoff">minOfRange (RangeSingle x) = return x</span>
 <span class="lineno"> 1606 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeBounded x _) = return x</span>
 <span class="lineno"> 1607 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeLowerBounded x) = <span class="nottickedoff">return x</span></span>
-<span class="lineno"> 1608 </span><span class="spaces"></span><span class="istickedoff">minOfRange r = <span class="nottickedoff">fail (&quot;rule_DomainMinMax.minOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
+<span class="lineno"> 1608 </span><span class="spaces"></span><span class="istickedoff">minOfRange r = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.minOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
 
 </pre>
 </body>

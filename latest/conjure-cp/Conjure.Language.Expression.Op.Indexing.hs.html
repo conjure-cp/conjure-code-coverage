@@ -47,7 +47,7 @@ span.spaces    { background: white }
 <span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">case tyM of</span>
 <span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix tyIndex inn</span>
 <span class="lineno">   30 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlytrue">typesUnify [tyIndex, tyI]</span> -&gt; return inn</span>
-<span class="lineno">   31 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">fail $ &quot;Indexing with inappropriate type:&quot; &lt;++&gt; vcat</span></span>
+<span class="lineno">   31 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">failDoc $ &quot;Indexing with inappropriate type:&quot; &lt;++&gt; vcat</span></span>
 <span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The expression:&quot;  &lt;+&gt; pretty p</span></span>
 <span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Indexing:&quot;        &lt;+&gt; pretty m</span></span>
 <span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected type of index:&quot; &lt;+&gt; pretty tyIndex</span></span>
@@ -55,7 +55,7 @@ span.spaces    { background: white }
 <span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">TypeList inn</span>
 <span class="lineno">   38 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlytrue">typesUnify [TypeInt TagInt, tyI]</span> -&gt; return inn</span>
-<span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">fail $ &quot;Indexing with inappropriate type:&quot; &lt;++&gt; vcat</span></span>
+<span class="lineno">   39 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">failDoc $ &quot;Indexing with inappropriate type:&quot; &lt;++&gt; vcat</span></span>
 <span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The expression:&quot;  &lt;+&gt; pretty p</span></span>
 <span class="lineno">   41 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Indexing:&quot;        &lt;+&gt; pretty m</span></span>
 <span class="lineno">   42 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected type of index:&quot; &lt;+&gt; pretty (TypeInt TagInt)</span></span>
@@ -65,16 +65,16 @@ span.spaces    { background: white }
 <span class="lineno">   46 </span><span class="spaces">                </span><span class="istickedoff">TypeInt t &lt;- typeOf i</span>
 <span class="lineno">   47 </span><span class="spaces">                </span><span class="istickedoff">case t of</span>
 <span class="lineno">   48 </span><span class="spaces">                    </span><span class="istickedoff">TagInt -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   49 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ &quot;Tuples cannot be indexed by enums/unnameds:&quot; &lt;++&gt; pretty p</span></span>
+<span class="lineno">   49 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ &quot;Tuples cannot be indexed by enums/unnameds:&quot; &lt;++&gt; pretty p</span></span>
 <span class="lineno">   50 </span><span class="spaces">                </span><span class="istickedoff">case intOut <span class="nottickedoff">&quot;OpIndexing&quot;</span> i of</span>
-<span class="lineno">   51 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ &quot;Tuples can only be indexed by constants:&quot; &lt;++&gt; pretty p</span></span>
+<span class="lineno">   51 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ &quot;Tuples can only be indexed by constants:&quot; &lt;++&gt; pretty p</span></span>
 <span class="lineno">   52 </span><span class="spaces">                    </span><span class="istickedoff">Just iInt | <span class="tickonlyfalse">iInt &lt;= 0 || iInt &gt; genericLength inns</span> -&gt;</span>
-<span class="lineno">   53 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">fail $ &quot;Out of bounds tuple indexing:&quot; &lt;++&gt; pretty p</span></span>
+<span class="lineno">   53 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">failDoc $ &quot;Out of bounds tuple indexing:&quot; &lt;++&gt; pretty p</span></span>
 <span class="lineno">   54 </span><span class="spaces">                              </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> -&gt; return (at inns (fromInteger (iInt-1)))</span>
 <span class="lineno">   55 </span><span class="spaces">            </span><span class="istickedoff">TypeRecord inns  -&gt; do</span>
 <span class="lineno">   56 </span><span class="spaces">                </span><span class="istickedoff">nm &lt;- nameOut i</span>
 <span class="lineno">   57 </span><span class="spaces">                </span><span class="istickedoff">case lookup nm inns of</span>
-<span class="lineno">   58 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ &quot;Record indexing with non-member field:&quot; &lt;++&gt; vcat</span></span>
+<span class="lineno">   58 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ &quot;Record indexing with non-member field:&quot; &lt;++&gt; vcat</span></span>
 <span class="lineno">   59 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The expression:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   60 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Indexing:&quot;       &lt;+&gt; pretty m</span></span>
 <span class="lineno">   61 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With type:&quot;      &lt;+&gt; pretty tyM</span></span>
@@ -83,13 +83,13 @@ span.spaces    { background: white }
 <span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">TypeVariant inns -&gt; do</span>
 <span class="lineno">   65 </span><span class="spaces">                </span><span class="istickedoff">nm &lt;- nameOut i</span>
 <span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff">case lookup nm inns of</span>
-<span class="lineno">   67 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ &quot;Variant indexing with non-member field:&quot; &lt;++&gt; vcat</span></span>
+<span class="lineno">   67 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ &quot;Variant indexing with non-member field:&quot; &lt;++&gt; vcat</span></span>
 <span class="lineno">   68 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The expression:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Indexing:&quot;       &lt;+&gt; pretty m</span></span>
 <span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;With type:&quot;      &lt;+&gt; pretty tyM</span></span>
 <span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   72 </span><span class="spaces">                    </span><span class="istickedoff">Just ty -&gt; return ty</span>
-<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ &quot;Indexing something other than a matrix or a tuple:&quot; &lt;++&gt; vcat</span></span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ &quot;Indexing something other than a matrix or a tuple:&quot; &lt;++&gt; vcat</span></span>
 <span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The expression:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Indexing:&quot;       &lt;+&gt; pretty m</span></span>
 <span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With type:&quot;      &lt;+&gt; pretty tyM</span></span>

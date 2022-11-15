@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span>import qualified Data.HashMap.Strict as M
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>
-<span class="lineno">   17 </span>function1DPartial :: forall m . (MonadFail m, NameGen m, EnumerateDomain m) =&gt; Representation m
+<span class="lineno">   17 </span>function1DPartial :: forall m . (MonadFailDoc m, NameGen m, EnumerateDomain m) =&gt; Representation m
 <span class="lineno">   18 </span><span class="decl"><span class="istickedoff">function1DPartial = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up symmetryOrdering</span>
 <span class="lineno">   19 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">where</span>
@@ -196,26 +196,26 @@ span.spaces    { background: white }
 <span class="lineno">  177 </span><span class="spaces">                    </span><span class="istickedoff">functionValues &lt;- forM (zip3 flagMatrix froms valuesMatrix) $ \ (flag, from, to) -&gt;</span>
 <span class="lineno">  178 </span><span class="spaces">                        </span><span class="istickedoff">case viewConstantBool flag of</span>
 <span class="lineno">  179 </span><span class="spaces">                            </span><span class="istickedoff">Just b  -&gt; return $ if b then Just (from,to) else Nothing</span>
-<span class="lineno">  180 </span><span class="spaces">                            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">fail $ vcat [ &quot;Expected a boolean, but got:&quot; &lt;++&gt; pretty flag</span></span>
+<span class="lineno">  180 </span><span class="spaces">                            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;Expected a boolean, but got:&quot; &lt;++&gt; pretty flag</span></span>
 <span class="lineno">  181 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  182 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  183 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  184 </span><span class="spaces">                    </span><span class="istickedoff">return ( <span class="nottickedoff">name</span>, ConstantAbstract $ AbsLitFunction $ catMaybes functionValues )</span>
-<span class="lineno">  185 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  185 </span><span class="spaces">                </span><span class="istickedoff">(Nothing, _) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  186 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Function1DPartial up 1)&quot;</span></span>
 <span class="lineno">  187 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameFlags domain name)</span></span>
 <span class="lineno">  188 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  189 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  190 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  191 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">(_, Nothing) -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  193 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Function1DPartial up 2)&quot;</span></span>
 <span class="lineno">  194 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  195 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  196 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  197 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  198 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  199 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail $ vcat $</span></span>
+<span class="lineno">  199 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  200 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expected matrix literals for:&quot; &lt;+&gt; pretty (nameFlags domain name)</span></span>
 <span class="lineno">  201 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">&lt;+&gt; &quot;and&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  202 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
