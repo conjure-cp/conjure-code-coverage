@@ -34,7 +34,7 @@ span.spaces    { background: white }
 <span class="lineno">   15 </span>
 <span class="lineno">   16 </span>instance Serialize x =&gt; Serialize (OpNeq x)
 <span class="lineno">   17 </span>instance Hashable  x =&gt; Hashable  (OpNeq x)
-<span class="lineno">   18 </span>instance ToJSON    x =&gt; ToJSON    (OpNeq x) where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   18 </span>instance ToJSON    x =&gt; ToJSON    (OpNeq x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   19 </span>instance FromJSON  x =&gt; FromJSON  (OpNeq x) where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   20 </span>
 <span class="lineno">   21 </span>instance BinaryOperator (OpNeq x) where
