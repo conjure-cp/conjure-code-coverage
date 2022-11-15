@@ -368,12 +368,12 @@ span.spaces    { background: white }
 <span class="lineno">  349 </span>
 <span class="lineno">  350 </span>instance Serialize AttrName
 <span class="lineno">  351 </span>instance Hashable  AttrName
-<span class="lineno">  352 </span>instance ToJSON    AttrName where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  352 </span>instance ToJSON    AttrName where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">  353 </span>instance FromJSON  AttrName where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  354 </span>
 <span class="lineno">  355 </span>instance Pretty AttrName where
 <span class="lineno">  356 </span>    <span class="decl"><span class="istickedoff">pretty AttrName_size = <span class="nottickedoff">&quot;size&quot;</span></span>
-<span class="lineno">  357 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minSize = &quot;minSize&quot;</span>
+<span class="lineno">  357 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minSize = <span class="nottickedoff">&quot;minSize&quot;</span></span>
 <span class="lineno">  358 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxSize = &quot;maxSize&quot;</span>
 <span class="lineno">  359 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minOccur = <span class="nottickedoff">&quot;minOccur&quot;</span></span>
 <span class="lineno">  360 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxOccur = <span class="nottickedoff">&quot;maxOccur&quot;</span></span>
@@ -511,8 +511,8 @@ span.spaces    { background: white }
 <span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [ pretty a</span>
 <span class="lineno">  493 </span><span class="spaces">                                        </span><span class="istickedoff">, pretty b</span>
 <span class="lineno">  494 </span><span class="spaces">                                        </span><span class="istickedoff">]</span>
-<span class="lineno">  495 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
-<span class="lineno">  496 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  495 </span><span class="spaces">        </span><span class="istickedoff">in  if <span class="tickonlyfalse">null inside</span></span>
+<span class="lineno">  496 </span><span class="spaces">                </span><span class="istickedoff">then <span class="nottickedoff">prEmpty</span></span>
 <span class="lineno">  497 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
 <span class="lineno">  498 </span>
 <span class="lineno">  499 </span>
@@ -599,9 +599,9 @@ span.spaces    { background: white }
 <span class="lineno">  580 </span>instance Pretty a =&gt; Pretty (SequenceAttr a) where
 <span class="lineno">  581 </span>    <span class="decl"><span class="istickedoff">pretty (SequenceAttr a b) =</span>
 <span class="lineno">  582 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b]</span>
-<span class="lineno">  583 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
-<span class="lineno">  584 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
-<span class="lineno">  585 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  583 </span><span class="spaces">        </span><span class="istickedoff">in  if <span class="tickonlyfalse">null inside</span></span>
+<span class="lineno">  584 </span><span class="spaces">                </span><span class="istickedoff">then <span class="nottickedoff">prEmpty</span></span>
+<span class="lineno">  585 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens <span class="nottickedoff">&quot;,&quot;</span> inside</span></span>
 <span class="lineno">  586 </span>
 <span class="lineno">  587 </span>
 <span class="lineno">  588 </span>data RelationAttr a = RelationAttr (SizeAttr a) BinaryRelationAttrs
@@ -663,17 +663,17 @@ span.spaces    { background: white }
 <span class="lineno">  644 </span>instance Pretty BinaryRelationAttr where
 <span class="lineno">  645 </span>    <span class="decl"><span class="istickedoff">pretty BinRelAttr_Reflexive          = &quot;reflexive&quot;</span>
 <span class="lineno">  646 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Irreflexive        = &quot;irreflexive&quot;</span>
-<span class="lineno">  647 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Coreflexive        = &quot;coreflexive&quot;</span>
+<span class="lineno">  647 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Coreflexive        = <span class="nottickedoff">&quot;coreflexive&quot;</span></span>
 <span class="lineno">  648 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Symmetric          = &quot;symmetric&quot;</span>
-<span class="lineno">  649 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_AntiSymmetric      = &quot;antiSymmetric&quot;</span>
-<span class="lineno">  650 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_ASymmetric         = &quot;aSymmetric&quot;</span>
+<span class="lineno">  649 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_AntiSymmetric      = <span class="nottickedoff">&quot;antiSymmetric&quot;</span></span>
+<span class="lineno">  650 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_ASymmetric         = <span class="nottickedoff">&quot;aSymmetric&quot;</span></span>
 <span class="lineno">  651 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Transitive         = &quot;transitive&quot;</span>
 <span class="lineno">  652 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Total              = &quot;total&quot;</span>
 <span class="lineno">  653 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_LeftTotal          = <span class="nottickedoff">&quot;leftTotal&quot;</span></span>
 <span class="lineno">  654 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_RightTotal         = <span class="nottickedoff">&quot;rightTotal&quot;</span></span>
 <span class="lineno">  655 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Connex             = &quot;connex&quot;</span>
-<span class="lineno">  656 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Euclidean          = &quot;Euclidean&quot;</span>
-<span class="lineno">  657 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Serial             = &quot;serial&quot;</span>
+<span class="lineno">  656 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Euclidean          = <span class="nottickedoff">&quot;Euclidean&quot;</span></span>
+<span class="lineno">  657 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Serial             = <span class="nottickedoff">&quot;serial&quot;</span></span>
 <span class="lineno">  658 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Equivalence        = &quot;equivalence&quot;</span>
 <span class="lineno">  659 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_PartialOrder       = &quot;partialOrder&quot;</span>
 <span class="lineno">  660 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_LinearOrder        = <span class="nottickedoff">&quot;linearOrder&quot;</span></span>
@@ -685,10 +685,10 @@ span.spaces    { background: white }
 <span class="lineno">  666 </span>readBinRel :: MonadFailDoc m =&gt; AttrName -&gt; m BinaryRelationAttr
 <span class="lineno">  667 </span><span class="decl"><span class="istickedoff">readBinRel AttrName_reflexive          = return BinRelAttr_Reflexive</span>
 <span class="lineno">  668 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_irreflexive        = return BinRelAttr_Irreflexive</span>
-<span class="lineno">  669 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_coreflexive        = return BinRelAttr_Coreflexive</span>
+<span class="lineno">  669 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_coreflexive        = <span class="nottickedoff">return BinRelAttr_Coreflexive</span></span>
 <span class="lineno">  670 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_symmetric          = return BinRelAttr_Symmetric</span>
-<span class="lineno">  671 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_antiSymmetric      = return BinRelAttr_AntiSymmetric</span>
-<span class="lineno">  672 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_aSymmetric         = return BinRelAttr_ASymmetric</span>
+<span class="lineno">  671 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_antiSymmetric      = <span class="nottickedoff">return BinRelAttr_AntiSymmetric</span></span>
+<span class="lineno">  672 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_aSymmetric         = <span class="nottickedoff">return BinRelAttr_ASymmetric</span></span>
 <span class="lineno">  673 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_transitive         = return BinRelAttr_Transitive</span>
 <span class="lineno">  674 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_total              = return BinRelAttr_Total</span>
 <span class="lineno">  675 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_leftTotal          = <span class="nottickedoff">return BinRelAttr_LeftTotal</span></span>
@@ -904,8 +904,8 @@ span.spaces    { background: white }
 <span class="lineno">  885 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
 <span class="lineno">  886 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
 <span class="lineno">  887 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  888 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainVariant xs) = &quot;variant&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
-<span class="lineno">  889 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
+<span class="lineno">  888 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainVariant xs) = <span class="nottickedoff">&quot;variant&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span></span>
+<span class="lineno">  889 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span></span>
 <span class="lineno">  890 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  891 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMatrix index innerNested)</span>
 <span class="lineno">  892 </span><span class="spaces">        </span><span class="istickedoff">= &quot;matrix indexed by&quot; &lt;+&gt; prettyList prBrackets &quot;,&quot; indices</span>
@@ -959,10 +959,10 @@ span.spaces    { background: white }
 <span class="lineno">  940 </span><span class="spaces">    </span><span class="nottickedoff">pretty DADotDot = &quot;..&quot;</span></span>
 <span class="lineno">  941 </span>
 <span class="lineno">  942 </span>instance Pretty a =&gt; Pretty (Range a) where
-<span class="lineno">  943 </span>    <span class="decl"><span class="istickedoff">pretty RangeOpen = &quot;..&quot;</span>
+<span class="lineno">  943 </span>    <span class="decl"><span class="istickedoff">pretty RangeOpen = <span class="nottickedoff">&quot;..&quot;</span></span>
 <span class="lineno">  944 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeSingle x) = pretty x</span>
 <span class="lineno">  945 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeLowerBounded x) = pretty x &lt;&gt; &quot;..&quot;</span>
-<span class="lineno">  946 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeUpperBounded x) = &quot;..&quot; &lt;&gt; pretty x</span>
+<span class="lineno">  946 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeUpperBounded x) = <span class="nottickedoff">&quot;..&quot; &lt;&gt; pretty x</span></span>
 <span class="lineno">  947 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) | show (pretty x) == show (pretty y) = pretty x</span>
 <span class="lineno">  948 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) = pretty x &lt;&gt; &quot;..&quot; &lt;&gt; pretty y</span></span>
 <span class="lineno">  949 </span>

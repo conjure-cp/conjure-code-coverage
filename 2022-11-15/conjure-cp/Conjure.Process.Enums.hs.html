@@ -86,12 +86,12 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces">                                </span><span class="istickedoff">[] -&gt; modify ( ( [(ename, outDomain)]</span>
 <span class="lineno">   68 </span><span class="spaces">                                             </span><span class="istickedoff">, zip names (zip (cycle [ename]) allNats)</span>
 <span class="lineno">   69 </span><span class="spaces">                                             </span><span class="istickedoff">) `mappend` )</span>
-<span class="lineno">   70 </span><span class="spaces">                                </span><span class="istickedoff">repeated -&gt; userErr1 $ vcat</span>
-<span class="lineno">   71 </span><span class="spaces">                                    </span><span class="istickedoff">[ &quot;Some members of this enum domain (&quot; &lt;&gt; pretty ename &lt;&gt; &quot;) seem to be defined&quot;</span>
-<span class="lineno">   72 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;as part of other enum domains.&quot;</span>
-<span class="lineno">   73 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;Repeated:&quot; &lt;+&gt; prettyList id &quot;,&quot; repeated</span>
-<span class="lineno">   74 </span><span class="spaces">                                    </span><span class="istickedoff">, &quot;While working on domain:&quot; &lt;+&gt; pretty st</span>
-<span class="lineno">   75 </span><span class="spaces">                                    </span><span class="istickedoff">]</span>
+<span class="lineno">   70 </span><span class="spaces">                                </span><span class="istickedoff">repeated -&gt; <span class="nottickedoff">userErr1 $ vcat</span></span>
+<span class="lineno">   71 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Some members of this enum domain (&quot; &lt;&gt; pretty ename &lt;&gt; &quot;) seem to be defined&quot;</span></span>
+<span class="lineno">   72 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;as part of other enum domains.&quot;</span></span>
+<span class="lineno">   73 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Repeated:&quot; &lt;+&gt; prettyList id &quot;,&quot; repeated</span></span>
+<span class="lineno">   74 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;While working on domain:&quot; &lt;+&gt; pretty st</span></span>
+<span class="lineno">   75 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   76 </span><span class="spaces">                            </span><span class="istickedoff">return (Declaration (Letting ename (Domain outDomain)))</span>
 <span class="lineno">   77 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; return st</span>
 <span class="lineno">   78 </span><span class="spaces"></span><span class="istickedoff"></span>

@@ -41,7 +41,7 @@ span.spaces    { background: white }
 <span class="lineno">   22 </span><span class="spaces">            </span><span class="istickedoff">forM_ (mStatements m) $ \ st -&gt; case st of</span>
 <span class="lineno">   23 </span><span class="spaces">                </span><span class="istickedoff">Declaration (FindOrGiven Given _ _) -&gt; return <span class="nottickedoff">()</span> -- skip</span>
 <span class="lineno">   24 </span><span class="spaces">                </span><span class="istickedoff">Declaration FindOrGiven{}           -&gt; mapM_ (checkDomain True  (Just st)) (universeBi (forgetRefs st))</span>
-<span class="lineno">   25 </span><span class="spaces">                </span><span class="istickedoff">_                                   -&gt; mapM_ (checkDomain False (Just st)) (universeBi (forgetRefs st))</span>
+<span class="lineno">   25 </span><span class="spaces">                </span><span class="istickedoff">_                                   -&gt; mapM_ (checkDomain False <span class="nottickedoff">(Just st)</span>) (universeBi (forgetRefs st))</span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">forM_ (mStatements m) $ \ st -&gt; case st of</span>
 <span class="lineno">   27 </span><span class="spaces">                </span><span class="istickedoff">SuchThat{} -&gt;</span>
 <span class="lineno">   28 </span><span class="spaces">                    </span><span class="istickedoff">forM_ (universeBi st) $ \ x -&gt; do</span>
@@ -93,10 +93,10 @@ span.spaces    { background: white }
 <span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_Size{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MaxSize{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MinMaxSize{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; recordErr</span>
-<span class="lineno">   78 </span><span class="spaces">                        </span><span class="istickedoff">[ &quot;sequence requires (at least) one of the following attributes: size, maxSize&quot;</span>
-<span class="lineno">   79 </span><span class="spaces">                        </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; maybe <span class="nottickedoff">(pretty domain)</span> pretty mstmt</span>
-<span class="lineno">   80 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">   78 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;sequence requires (at least) one of the following attributes: size, maxSize&quot;</span></span>
+<span class="lineno">   79 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Context:&quot; &lt;++&gt; maybe (pretty domain) pretty mstmt</span></span>
+<span class="lineno">   80 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">DomainMSet _ (MSetAttr size occur) _ -&gt;</span>
 <span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">case (size, occur) of</span>
 <span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff">(SizeAttr_Size{}, _) -&gt; return <span class="nottickedoff">()</span></span>
@@ -104,10 +104,10 @@ span.spaces    { background: white }
 <span class="lineno">   85 </span><span class="spaces">                    </span><span class="istickedoff">(SizeAttr_MinMaxSize{}, _) -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   86 </span><span class="spaces">                    </span><span class="istickedoff">(_, OccurAttr_MaxOccur{}) -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   87 </span><span class="spaces">                    </span><span class="istickedoff">(_, OccurAttr_MinMaxOccur{}) -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   88 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; recordErr</span>
-<span class="lineno">   89 </span><span class="spaces">                        </span><span class="istickedoff">[ &quot;mset requires (at least) one of the following attributes: size, maxSize, maxOccur&quot;</span>
-<span class="lineno">   90 </span><span class="spaces">                        </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; maybe <span class="nottickedoff">(pretty domain)</span> pretty mstmt</span>
-<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   88 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">   89 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;mset requires (at least) one of the following attributes: size, maxSize, maxOccur&quot;</span></span>
+<span class="lineno">   90 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Context:&quot; &lt;++&gt; maybe (pretty domain) pretty mstmt</span></span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   92 </span><span class="spaces">            </span><span class="istickedoff">DomainRelation _ (RelationAttr _ binRelAttr) [a,b]</span>
 <span class="lineno">   93 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlyfalse">binRelAttr /= def &amp;&amp; a /= b</span></span>
 <span class="lineno">   94 </span><span class="spaces">                </span><span class="istickedoff">-&gt; <span class="nottickedoff">recordErr</span></span>
