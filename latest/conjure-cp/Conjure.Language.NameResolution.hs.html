@@ -341,7 +341,7 @@ span.spaces    { background: white }
 <span class="lineno">  322 </span><span class="spaces">        </span><span class="istickedoff">isTheVariant _ = Nothing</span>
 <span class="lineno">  323 </span><span class="spaces">    </span><span class="istickedoff">case mapMaybe (isTheVariant . snd) mval of</span>
 <span class="lineno">  324 </span><span class="spaces">        </span><span class="istickedoff">(DomainVariant dom:_) -&gt; return (AbsLitVariant (Just dom) n x')</span>
-<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return (AbsLitVariant Nothing n x')</span>
+<span class="lineno">  325 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">return (AbsLitVariant Nothing n x')</span></span>
 <span class="lineno">  326 </span><span class="spaces"></span><span class="istickedoff">resolveAbsLit lit = (descendBiM resolveX &gt;=&gt; descendBiM resolveD') lit</span>
 <span class="lineno">  327 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  328 </span><span class="spaces">        </span><span class="istickedoff">resolveD' d = resolveD (d :: Domain () Expression)</span></span>
