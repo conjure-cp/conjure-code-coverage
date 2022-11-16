@@ -1,0 +1,1100 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, DeriveFunctor, DeriveTraversable, DeriveFoldable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE TupleSections #-}
+<span class="lineno">    3 </span>{-# LANGUAGE NoMonomorphismRestriction #-}
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>module Conjure.Language.Domain
+<span class="lineno">    6 </span>    ( Domain(..)
+<span class="lineno">    7 </span>    , HasRepresentation(..)
+<span class="lineno">    8 </span>    , Range(..), rangesInts
+<span class="lineno">    9 </span>    , SetAttr(..), SizeAttr(..), getMaxFrom_SizeAttr, intersectSizeAttr
+<span class="lineno">   10 </span>    , MSetAttr(..), OccurAttr(..), getMaxFrom_OccurAttr
+<span class="lineno">   11 </span>    , FunctionAttr(..), PartialityAttr(..), JectivityAttr(..)
+<span class="lineno">   12 </span>    , SequenceAttr(..)
+<span class="lineno">   13 </span>    , RelationAttr(..), BinaryRelationAttrs(..), BinaryRelationAttr(..), binRelNames
+<span class="lineno">   14 </span>    , PartitionAttr(..)
+<span class="lineno">   15 </span>    , AttrName(..)
+<span class="lineno">   16 </span>    , DomainAttributes(..), DomainAttribute(..)         -- only for parsing
+<span class="lineno">   17 </span>    , textToRepresentation, representationToShortText, representationToFullText
+<span class="lineno">   18 </span>    , isPrimitiveDomain, domainCanIndexMatrix, expandDomainReference, getIndices
+<span class="lineno">   19 </span>    , Tree(..), reprTree, reprAtTopLevel, applyReprTree
+<span class="lineno">   20 </span>    , reprTreeEncoded
+<span class="lineno">   21 </span>    , forgetRepr, changeRepr, defRepr
+<span class="lineno">   22 </span>    , mkDomainBool, mkDomainInt, mkDomainIntB, mkDomainIntBTagged, mkDomainAny
+<span class="lineno">   23 </span>    , typeOfDomain
+<span class="lineno">   24 </span>    , readBinRel, binRelToAttrName
+<span class="lineno">   25 </span>    , normaliseDomain, normaliseRange
+<span class="lineno">   26 </span>    , innerDomainOf
+<span class="lineno">   27 </span>    , singletonDomainInt
+<span class="lineno">   28 </span>    , matrixNumDimsD
+<span class="lineno">   29 </span>    ) where
+<span class="lineno">   30 </span>
+<span class="lineno">   31 </span>-- conjure
+<span class="lineno">   32 </span>import Conjure.Prelude
+<span class="lineno">   33 </span>import Conjure.Bug
+<span class="lineno">   34 </span>import Conjure.Language.Name
+<span class="lineno">   35 </span>import Conjure.Language.Type
+<span class="lineno">   36 </span>import Conjure.Language.TypeOf
+<span class="lineno">   37 </span>import Conjure.Language.AdHoc
+<span class="lineno">   38 </span>import Conjure.Language.Pretty
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>-- base
+<span class="lineno">   41 </span>import qualified Data.Semigroup as Semigroup ( (&lt;&gt;) )
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>-- QuickCheck
+<span class="lineno">   44 </span>import Test.QuickCheck ( Arbitrary(..), choose, oneof, vectorOf, sized )
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>-- containers
+<span class="lineno">   47 </span>import Data.Set as S ( Set, empty, toList, union )
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>-- syb
+<span class="lineno">   50 </span>import Data.Data ( toConstr, constrIndex )
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>data Domain r x
+<span class="lineno">   54 </span>    = DomainAny Text Type
+<span class="lineno">   55 </span>    | DomainBool
+<span class="lineno">   56 </span>    | DomainIntE x
+<span class="lineno">   57 </span>    | DomainInt IntTag [Range x]
+<span class="lineno">   58 </span>    | DomainEnum
+<span class="lineno">   59 </span>        Name
+<span class="lineno">   60 </span>        (Maybe [Range x])           -- subset of values for this domain
+<span class="lineno">   61 </span>                                    -- Nothing *only* when GivenDomainDefnEnum and not LettingDomainDefnEnum
+<span class="lineno">   62 </span>        (Maybe [(Name, Integer)])   -- the mapping to integers, if available
+<span class="lineno">   63 </span>    | DomainUnnamed Name x
+<span class="lineno">   64 </span>    | DomainTuple [Domain r x]
+<span class="lineno">   65 </span>    | DomainRecord [(Name, Domain r x)]
+<span class="lineno">   66 </span>    | DomainVariant [(Name, Domain r x)]
+<span class="lineno">   67 </span>    | DomainMatrix (Domain () x) (Domain r x)
+<span class="lineno">   68 </span>    | DomainSet       r (SetAttr x) (Domain r x)
+<span class="lineno">   69 </span>    | DomainMSet      r (MSetAttr x) (Domain r x)
+<span class="lineno">   70 </span>    | DomainFunction  r (FunctionAttr x) (Domain r x) (Domain r x)
+<span class="lineno">   71 </span>    | DomainSequence  r (SequenceAttr x) (Domain r x)
+<span class="lineno">   72 </span>    | DomainRelation  r (RelationAttr x) [Domain r x]
+<span class="lineno">   73 </span>    | DomainPartition r (PartitionAttr x) (Domain r x)
+<span class="lineno">   74 </span>    | DomainOp Name [Domain r x]
+<span class="lineno">   75 </span>    | DomainReference Name (Maybe (Domain r x))
+<span class="lineno">   76 </span>    | DomainMetaVar String
+<span class="lineno">   77 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff">Ord</span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>instance (VarSymBreakingDescription x, ToJSON r) =&gt; VarSymBreakingDescription (Domain r x) where
+<span class="lineno">   80 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription domain = toJSON $ fmap varSymBreakingDescription domain</span></span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>mkDomainBool :: Domain () x
+<span class="lineno">   83 </span><span class="decl"><span class="nottickedoff">mkDomainBool = DomainBool</span></span>
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>mkDomainInt :: [Range x] -&gt; Domain () x
+<span class="lineno">   86 </span><span class="decl"><span class="nottickedoff">mkDomainInt = DomainInt TagInt</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>mkDomainIntB :: x -&gt; x -&gt; Domain () x
+<span class="lineno">   89 </span><span class="decl"><span class="istickedoff">mkDomainIntB l u = DomainInt TagInt [RangeBounded l u]</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>mkDomainIntBTagged :: IntTag -&gt; x -&gt; x -&gt; Domain () x
+<span class="lineno">   92 </span><span class="decl"><span class="istickedoff">mkDomainIntBTagged t l u = DomainInt t [RangeBounded l u]</span></span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>mkDomainAny :: Doc -&gt; Type -&gt; Domain r x
+<span class="lineno">   95 </span><span class="decl"><span class="istickedoff">mkDomainAny reason = DomainAny (stringToText $ show reason)</span></span>
+<span class="lineno">   96 </span>
+<span class="lineno">   97 </span>instance (Serialize r, Serialize x) =&gt; Serialize (Domain r x)
+<span class="lineno">   98 </span>instance (Hashable  r, Hashable  x) =&gt; Hashable  (Domain r x)
+<span class="lineno">   99 </span>instance (ToJSON    r, ToJSON    x) =&gt; ToJSON    (Domain r x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  100 </span>instance (FromJSON  r, FromJSON  x) =&gt; FromJSON  (Domain r x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>instance Arbitrary x =&gt; Arbitrary (Domain r x) where
+<span class="lineno">  103 </span>    <span class="decl"><span class="nottickedoff">arbitrary = sized f</span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">where</span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="nottickedoff">f 0 = oneof [ return DomainBool</span>
+<span class="lineno">  106 </span><span class="spaces">                        </span><span class="nottickedoff">, DomainInt TagInt &lt;$&gt; arbitrary</span>
+<span class="lineno">  107 </span><span class="spaces">                        </span><span class="nottickedoff">-- , DomainEnum &lt;$&gt; arbitrary &lt;*&gt; arbitrary</span>
+<span class="lineno">  108 </span><span class="spaces">                        </span><span class="nottickedoff">]</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="nottickedoff">f s = do</span>
+<span class="lineno">  110 </span><span class="spaces">                </span><span class="nottickedoff">arity &lt;- choose (2 :: Int, 10)</span>
+<span class="lineno">  111 </span><span class="spaces">                </span><span class="nottickedoff">DomainTuple &lt;$&gt; vectorOf arity (f (div s 10))</span></span>
+<span class="lineno">  112 </span>    <span class="decl"><span class="nottickedoff">shrink DomainBool = []</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="nottickedoff">shrink (DomainInt _ []) = [DomainBool]</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">shrink (DomainInt t [r]) = DomainBool : DomainInt t [] : [DomainInt t [r'] | r' &lt;- shrink r]</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="nottickedoff">shrink (DomainInt t rs) = [DomainInt t (init rs)]</span>
+<span class="lineno">  116 </span><span class="spaces">    </span><span class="nottickedoff">shrink _ = []</span></span>
+<span class="lineno">  117 </span>
+<span class="lineno">  118 </span>
+<span class="lineno">  119 </span>typeOfDomain ::
+<span class="lineno">  120 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  121 </span>    Pretty r =&gt;
+<span class="lineno">  122 </span>    TypeOf x =&gt;
+<span class="lineno">  123 </span>    Pretty x =&gt;
+<span class="lineno">  124 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  125 </span>    Domain r x -&gt; m Type
+<span class="lineno">  126 </span><span class="decl"><span class="istickedoff">typeOfDomain (DomainAny _ ty)          = <span class="nottickedoff">return ty</span></span>
+<span class="lineno">  127 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain DomainBool                = return TypeBool</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain d@(DomainIntE x)          = do</span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  130 </span><span class="spaces">    </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt                -&gt; return <span class="nottickedoff">()</span>       -- pre recoverDomainInt</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">TypeList     (TypeInt TagInt) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix _ (TypeInt TagInt) -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">TypeSet      (TypeInt TagInt) -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;Expected an integer, but got:&quot; &lt;++&gt; pretty ty</span></span>
+<span class="lineno">  136 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">, &quot;In domain:&quot; &lt;+&gt; pretty d</span></span>
+<span class="lineno">  137 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="istickedoff">return (TypeInt TagInt)</span>
+<span class="lineno">  139 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain d@(DomainInt t rs)        = do</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">forM_ rs $ \ r -&gt; forM_ r $ \ x -&gt; do</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  143 </span><span class="spaces">            </span><span class="istickedoff">TypeInt{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  144 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;Expected an integer, but got:&quot; &lt;++&gt; pretty ty</span></span>
+<span class="lineno">  145 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;For:&quot; &lt;+&gt; pretty x</span></span>
+<span class="lineno">  146 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;In domain:&quot; &lt;+&gt; pretty d</span></span>
+<span class="lineno">  147 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  148 </span><span class="spaces">    </span><span class="istickedoff">return (TypeInt t)</span>
+<span class="lineno">  149 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainEnum    defn _ _ ) = return <span class="nottickedoff">(TypeEnum defn)</span></span>
+<span class="lineno">  150 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainUnnamed defn _   ) = return <span class="nottickedoff">(TypeUnnamed defn)</span></span>
+<span class="lineno">  151 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainTuple         xs ) = TypeTuple      &lt;$&gt; mapM typeOfDomain xs</span>
+<span class="lineno">  152 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainRecord        xs ) = TypeRecord     &lt;$&gt; sequence [ do t &lt;- typeOfDomain d ; return (n, t)</span>
+<span class="lineno">  153 </span><span class="spaces">                                                                     </span><span class="istickedoff">| (n,d) &lt;- xs ]</span>
+<span class="lineno">  154 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainVariant       xs ) = TypeVariant    &lt;$&gt; sequence [ do t &lt;- typeOfDomain d ; return (n, t)</span>
+<span class="lineno">  155 </span><span class="spaces">                                                                     </span><span class="istickedoff">| (n,d) &lt;- xs ]</span>
+<span class="lineno">  156 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainMatrix ind inn   ) = TypeMatrix     &lt;$&gt; typeOfDomain ind &lt;*&gt; typeOfDomain inn</span>
+<span class="lineno">  157 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainSet       _ _ x  ) = TypeSet        &lt;$&gt; typeOfDomain x</span>
+<span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainMSet      _ _ x  ) = TypeMSet       &lt;$&gt; typeOfDomain x</span>
+<span class="lineno">  159 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainFunction  _ _ x y) = TypeFunction   &lt;$&gt; typeOfDomain x &lt;*&gt; typeOfDomain y</span>
+<span class="lineno">  160 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainSequence  _ _ x  ) = TypeSequence   &lt;$&gt; typeOfDomain x</span>
+<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainRelation  _ _ xs ) = TypeRelation   &lt;$&gt; mapM typeOfDomain xs</span>
+<span class="lineno">  162 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainPartition _ _ x  ) = TypePartition  &lt;$&gt; typeOfDomain x</span>
+<span class="lineno">  163 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain p@(DomainOp _ ds) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">ts &lt;- mapM typeOfDomain ds</span></span>
+<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if typesUnify ts</span></span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then return (mostDefined ts)</span></span>
+<span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else failDoc (&quot;Type error in&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno">  168 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainReference _ (Just d)) = typeOfDomain d</span>
+<span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainReference nm Nothing) = <span class="nottickedoff">bug $ &quot;typeOfDomain: DomainReference&quot; &lt;+&gt; pretty nm</span></span>
+<span class="lineno">  170 </span><span class="spaces"></span><span class="istickedoff">typeOfDomain (DomainMetaVar nm) = <span class="nottickedoff">bug $ &quot;typeOfDomain: DomainMetaVar &amp;&quot; &lt;&gt; pretty nm</span></span></span>
+<span class="lineno">  171 </span>
+<span class="lineno">  172 </span>forgetRepr :: Domain r x -&gt; Domain () x
+<span class="lineno">  173 </span><span class="decl"><span class="istickedoff">forgetRepr = defRepr</span></span>
+<span class="lineno">  174 </span>
+<span class="lineno">  175 </span>defRepr :: Default r2 =&gt; Domain r x -&gt; Domain r2 x
+<span class="lineno">  176 </span><span class="decl"><span class="istickedoff">defRepr = changeRepr def</span></span>
+<span class="lineno">  177 </span>
+<span class="lineno">  178 </span>changeRepr :: r2 -&gt; Domain r x -&gt; Domain r2 x
+<span class="lineno">  179 </span><span class="decl"><span class="istickedoff">changeRepr rep = go</span>
+<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  181 </span><span class="spaces">        </span><span class="istickedoff">go (DomainAny t ty) = <span class="nottickedoff">DomainAny t ty</span></span>
+<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff">go DomainBool = DomainBool</span>
+<span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">go (DomainIntE x) = DomainIntE x</span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">go (DomainInt t rs) = DomainInt t rs</span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">go (DomainEnum defn rs mp) = DomainEnum defn rs mp</span>
+<span class="lineno">  186 </span><span class="spaces">        </span><span class="istickedoff">go (DomainUnnamed defn s) = DomainUnnamed <span class="nottickedoff">defn</span> s</span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">go (DomainTuple ds) = DomainTuple (map go ds)</span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">go (DomainRecord xs) = DomainRecord (map (second go) xs)</span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">go (DomainVariant xs) = DomainVariant (map (second go) xs)</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">go (DomainMatrix index inner) = DomainMatrix index (go inner)</span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff">go (DomainSet _   attr d) =</span>
+<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff">DomainSet rep attr (go d)</span>
+<span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff">go (DomainMSet _   attr d) =</span>
+<span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff">DomainMSet rep attr (go d)</span>
+<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">go (DomainFunction _   attr d1 d2) =</span>
+<span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff">DomainFunction rep attr (go d1) (go d2)</span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff">go (DomainSequence _   attr d) =</span>
+<span class="lineno">  198 </span><span class="spaces">            </span><span class="istickedoff">DomainSequence rep attr (go d)</span>
+<span class="lineno">  199 </span><span class="spaces">        </span><span class="istickedoff">go (DomainRelation _   attr ds) =</span>
+<span class="lineno">  200 </span><span class="spaces">            </span><span class="istickedoff">DomainRelation rep attr (map go ds)</span>
+<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">go (DomainPartition _   attr d) =</span>
+<span class="lineno">  202 </span><span class="spaces">            </span><span class="istickedoff">DomainPartition rep attr (go d)</span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff">go (DomainOp op ds) = <span class="nottickedoff">DomainOp op (map go ds)</span></span>
+<span class="lineno">  204 </span><span class="spaces">        </span><span class="istickedoff">go (DomainReference x r) = DomainReference x (fmap go r)</span>
+<span class="lineno">  205 </span><span class="spaces">        </span><span class="istickedoff">go (DomainMetaVar x) = <span class="nottickedoff">DomainMetaVar x</span></span></span>
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>
+<span class="lineno">  208 </span>data Tree a = Tree { <span class="istickedoff"><span class="decl"><span class="istickedoff">rootLabel</span></span></span> :: a, <span class="nottickedoff"><span class="decl"><span class="nottickedoff">subForest</span></span></span> :: [Tree a] }
+<span class="lineno">  209 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  210 </span>
+<span class="lineno">  211 </span>instance Serialize a =&gt; Serialize (Tree a)
+<span class="lineno">  212 </span>instance Hashable  a =&gt; Hashable  (Tree a)
+<span class="lineno">  213 </span>instance ToJSON    a =&gt; ToJSON    (Tree a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  214 </span>instance FromJSON  a =&gt; FromJSON  (Tree a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  215 </span>
+<span class="lineno">  216 </span>-- | This is to be used when defining `Conjure.Representations.Internal.mkOutName`.
+<span class="lineno">  217 </span>--   Reason is to avoid sharing variables for parts of the same decision variable with differing representations.
+<span class="lineno">  218 </span>--   Example case:
+<span class="lineno">  219 </span>--      (1) find x : set {A} of (int(a..b) , set {B} of int(c..d))
+<span class="lineno">  220 </span>--      (2) find x : set {A} of (int(a..b) , set {C} of int(c..d))
+<span class="lineno">  221 </span>--      Here x_1's should not be shared!
+<span class="lineno">  222 </span>--      If they are, the channelling and symmetry breaking constraints will clash and solutions will be lost.
+<span class="lineno">  223 </span>reprTreeEncoded :: Domain HasRepresentation x -&gt; Text
+<span class="lineno">  224 </span><span class="decl"><span class="istickedoff">reprTreeEncoded = mconcat . enc1 . reprTree</span>
+<span class="lineno">  225 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff">enc1 (Tree lbl sub) =</span>
+<span class="lineno">  227 </span><span class="spaces">            </span><span class="istickedoff">maybe</span>
+<span class="lineno">  228 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(bug &quot;reprTreeEncoded: top-most representation is Nothing&quot;)</span></span>
+<span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff">representationToShortText</span>
+<span class="lineno">  230 </span><span class="spaces">                </span><span class="istickedoff">lbl</span>
+<span class="lineno">  231 </span><span class="spaces">            </span><span class="istickedoff">: concatMap enc sub</span>
+<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">enc (Tree lbl sub) =</span>
+<span class="lineno">  233 </span><span class="spaces">            </span><span class="istickedoff">maybe [] representationConstrIndex lbl</span>
+<span class="lineno">  234 </span><span class="spaces">            </span><span class="istickedoff">++ concatMap enc sub</span></span>
+<span class="lineno">  235 </span>
+<span class="lineno">  236 </span>reprTree :: Domain r x -&gt; Tree (Maybe r)
+<span class="lineno">  237 </span><span class="decl"><span class="istickedoff">reprTree DomainAny{}     = <span class="nottickedoff">Tree Nothing []</span></span>
+<span class="lineno">  238 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainBool{}    = Tree Nothing []</span>
+<span class="lineno">  239 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainIntE{}    = Tree Nothing []</span>
+<span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainInt{}     = Tree Nothing []</span>
+<span class="lineno">  241 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainEnum{}    = <span class="nottickedoff">Tree Nothing []</span></span>
+<span class="lineno">  242 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainUnnamed{} = <span class="nottickedoff">Tree Nothing []</span></span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainTuple  as ) = Tree Nothing (map reprTree as)</span>
+<span class="lineno">  244 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainRecord as ) = Tree Nothing (map (reprTree . snd) as)</span>
+<span class="lineno">  245 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainVariant as) = Tree Nothing (map (reprTree . snd) as)</span>
+<span class="lineno">  246 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainMatrix _ a) = Tree Nothing [reprTree a]</span>
+<span class="lineno">  247 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainSet       r _ a  ) = Tree (Just r) [reprTree a]</span>
+<span class="lineno">  248 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainMSet      r _ a  ) = Tree (Just r) [reprTree a]</span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainFunction  r _ a b) = Tree (Just r) [reprTree a, reprTree b]</span>
+<span class="lineno">  250 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainSequence  r _ a  ) = Tree (Just r) [reprTree a]</span>
+<span class="lineno">  251 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainRelation  r _ as ) = Tree (Just r) (map reprTree as)</span>
+<span class="lineno">  252 </span><span class="spaces"></span><span class="istickedoff">reprTree (DomainPartition r _ a  ) = Tree (Just r) [reprTree a]</span>
+<span class="lineno">  253 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainOp{}        = <span class="nottickedoff">Tree Nothing []</span></span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainReference{} = <span class="nottickedoff">Tree Nothing []</span></span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">reprTree DomainMetaVar{}   = <span class="nottickedoff">Tree Nothing []</span></span></span>
+<span class="lineno">  256 </span>
+<span class="lineno">  257 </span>reprAtTopLevel :: Domain r x -&gt; Maybe r
+<span class="lineno">  258 </span><span class="decl"><span class="nottickedoff">reprAtTopLevel = rootLabel . reprTree</span></span>
+<span class="lineno">  259 </span>
+<span class="lineno">  260 </span>applyReprTree :: (MonadFailDoc m, Pretty x, Pretty r2, Default r) =&gt; Domain r2 x -&gt; Tree (Maybe r) -&gt; m (Domain r x)
+<span class="lineno">  261 </span><span class="decl"><span class="istickedoff">applyReprTree dom@DomainBool{}    (Tree Nothing []) = return (defRepr dom)</span>
+<span class="lineno">  262 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainInt{}     (Tree Nothing []) = return (defRepr dom)</span>
+<span class="lineno">  263 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainIntE{}    (Tree Nothing []) = return (defRepr dom)</span>
+<span class="lineno">  264 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainEnum{}    (Tree Nothing []) = <span class="nottickedoff">return (defRepr dom)</span></span>
+<span class="lineno">  265 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainUnnamed{} (Tree Nothing []) = <span class="nottickedoff">return (defRepr dom)</span></span>
+<span class="lineno">  266 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainTuple as  ) (Tree Nothing asRepr) =</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">DomainTuple &lt;$&gt; zipWithM applyReprTree as asRepr</span>
+<span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainRecord as ) (Tree Nothing asRepr) =</span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">(DomainRecord  . zip (map <span class="nottickedoff">fst</span> as)) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
+<span class="lineno">  270 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainVariant as) (Tree Nothing asRepr) =</span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">(DomainVariant . zip (map <span class="nottickedoff">fst</span> as)) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
+<span class="lineno">  272 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainMatrix b a) (Tree Nothing [aRepr]) = DomainMatrix b &lt;$&gt; applyReprTree a aRepr</span>
+<span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainSet       _ attr a  ) (Tree (Just r) [aRepr]) = DomainSet r attr &lt;$&gt; applyReprTree a aRepr</span>
+<span class="lineno">  274 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainMSet      _ attr a  ) (Tree (Just r) [aRepr]) = DomainMSet r attr &lt;$&gt; applyReprTree a aRepr</span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainFunction  _ attr a b) (Tree (Just r) [aRepr, bRepr]) = DomainFunction r attr &lt;$&gt; applyReprTree a aRepr &lt;*&gt; applyReprTree b bRepr</span>
+<span class="lineno">  276 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainSequence  _ attr a  ) (Tree (Just r) [aRepr]) = <span class="nottickedoff">DomainSequence r attr &lt;$&gt; applyReprTree a aRepr</span></span>
+<span class="lineno">  277 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainRelation  _ attr as ) (Tree (Just r) asRepr) = DomainRelation r <span class="nottickedoff">attr</span> &lt;$&gt; zipWithM applyReprTree as asRepr</span>
+<span class="lineno">  278 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainPartition _ attr a  ) (Tree (Just r) [aRepr]) = DomainPartition r attr &lt;$&gt; applyReprTree a aRepr</span>
+<span class="lineno">  279 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainOp{}        (Tree Nothing []) = <span class="nottickedoff">return (defRepr dom)</span></span>
+<span class="lineno">  280 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainReference{} (Tree Nothing []) = <span class="nottickedoff">return (defRepr dom)</span></span>
+<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom@DomainMetaVar{}   (Tree Nothing []) = <span class="nottickedoff">return (defRepr dom)</span></span>
+<span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">applyReprTree dom _ = <span class="nottickedoff">failDoc $ &quot;applyReprTree:&quot; &lt;++&gt; pretty dom</span></span></span>
+<span class="lineno">  283 </span>
+<span class="lineno">  284 </span>isPrimitiveDomain :: Domain r x -&gt; Bool
+<span class="lineno">  285 </span><span class="decl"><span class="istickedoff">isPrimitiveDomain DomainBool{} = True</span>
+<span class="lineno">  286 </span><span class="spaces"></span><span class="istickedoff">isPrimitiveDomain DomainIntE{} = True</span>
+<span class="lineno">  287 </span><span class="spaces"></span><span class="istickedoff">isPrimitiveDomain DomainInt{} = True</span>
+<span class="lineno">  288 </span><span class="spaces"></span><span class="istickedoff">isPrimitiveDomain (DomainMatrix index inner) = and [isPrimitiveDomain index, isPrimitiveDomain inner]</span>
+<span class="lineno">  289 </span><span class="spaces"></span><span class="istickedoff">isPrimitiveDomain _ = <span class="nottickedoff">False</span></span></span>
+<span class="lineno">  290 </span>
+<span class="lineno">  291 </span>getIndices :: Domain r x -&gt; ([Domain () x], Domain r x)
+<span class="lineno">  292 </span><span class="decl"><span class="istickedoff">getIndices (DomainMatrix index inner) = first (index:) (getIndices inner)</span>
+<span class="lineno">  293 </span><span class="spaces"></span><span class="istickedoff">getIndices d = ([], <span class="nottickedoff">d</span>)</span></span>
+<span class="lineno">  294 </span>
+<span class="lineno">  295 </span>domainCanIndexMatrix :: Domain r x -&gt; Bool
+<span class="lineno">  296 </span><span class="decl"><span class="istickedoff">domainCanIndexMatrix (DomainReference _ (Just d)) = domainCanIndexMatrix d</span>
+<span class="lineno">  297 </span><span class="spaces"></span><span class="istickedoff">domainCanIndexMatrix DomainBool{} = True</span>
+<span class="lineno">  298 </span><span class="spaces"></span><span class="istickedoff">domainCanIndexMatrix DomainInt {} = True</span>
+<span class="lineno">  299 </span><span class="spaces"></span><span class="istickedoff">domainCanIndexMatrix DomainIntE{} = True</span>
+<span class="lineno">  300 </span><span class="spaces"></span><span class="istickedoff">domainCanIndexMatrix DomainEnum{} = <span class="nottickedoff">True</span></span>
+<span class="lineno">  301 </span><span class="spaces"></span><span class="istickedoff">domainCanIndexMatrix _            = False</span></span>
+<span class="lineno">  302 </span>
+<span class="lineno">  303 </span>expandDomainReference :: Data r =&gt; Data x =&gt; Domain r x -&gt; Domain r x
+<span class="lineno">  304 </span><span class="decl"><span class="istickedoff">expandDomainReference (DomainReference _ (Just d)) = expandDomainReference d</span>
+<span class="lineno">  305 </span><span class="spaces"></span><span class="istickedoff">expandDomainReference d = descend expandDomainReference d</span></span>
+<span class="lineno">  306 </span>
+<span class="lineno">  307 </span>
+<span class="lineno">  308 </span>--------------------------------------------------------------------------------
+<span class="lineno">  309 </span>-- attribute-as-constraint handling --------------------------------------------
+<span class="lineno">  310 </span>--------------------------------------------------------------------------------
+<span class="lineno">  311 </span>
+<span class="lineno">  312 </span>data AttrName
+<span class="lineno">  313 </span>    = AttrName_size
+<span class="lineno">  314 </span>    | AttrName_minSize
+<span class="lineno">  315 </span>    | AttrName_maxSize
+<span class="lineno">  316 </span>    | AttrName_minOccur
+<span class="lineno">  317 </span>    | AttrName_maxOccur
+<span class="lineno">  318 </span>    | AttrName_numParts
+<span class="lineno">  319 </span>    | AttrName_minNumParts
+<span class="lineno">  320 </span>    | AttrName_maxNumParts
+<span class="lineno">  321 </span>    | AttrName_partSize
+<span class="lineno">  322 </span>    | AttrName_minPartSize
+<span class="lineno">  323 </span>    | AttrName_maxPartSize
+<span class="lineno">  324 </span>    | AttrName_total
+<span class="lineno">  325 </span>    | AttrName_injective
+<span class="lineno">  326 </span>    | AttrName_surjective
+<span class="lineno">  327 </span>    | AttrName_bijective
+<span class="lineno">  328 </span>    | AttrName_regular
+<span class="lineno">  329 </span>    -- bin rel ones
+<span class="lineno">  330 </span>    | AttrName_reflexive
+<span class="lineno">  331 </span>    | AttrName_irreflexive
+<span class="lineno">  332 </span>    | AttrName_coreflexive
+<span class="lineno">  333 </span>    | AttrName_symmetric
+<span class="lineno">  334 </span>    | AttrName_antiSymmetric
+<span class="lineno">  335 </span>    | AttrName_aSymmetric
+<span class="lineno">  336 </span>    | AttrName_transitive
+<span class="lineno">  337 </span>    | AttrName_leftTotal
+<span class="lineno">  338 </span>    | AttrName_rightTotal
+<span class="lineno">  339 </span>    | AttrName_connex
+<span class="lineno">  340 </span>    | AttrName_Euclidean
+<span class="lineno">  341 </span>    | AttrName_serial
+<span class="lineno">  342 </span>    | AttrName_equivalence
+<span class="lineno">  343 </span>    | AttrName_partialOrder
+<span class="lineno">  344 </span>    | AttrName_linearOrder
+<span class="lineno">  345 </span>    | AttrName_weakOrder
+<span class="lineno">  346 </span>    | AttrName_preOrder
+<span class="lineno">  347 </span>    | AttrName_strictPartialOrder
+<span class="lineno">  348 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  349 </span>
+<span class="lineno">  350 </span>instance Serialize AttrName
+<span class="lineno">  351 </span>instance Hashable  AttrName
+<span class="lineno">  352 </span>instance ToJSON    AttrName where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  353 </span>instance FromJSON  AttrName where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  354 </span>
+<span class="lineno">  355 </span>instance Pretty AttrName where
+<span class="lineno">  356 </span>    <span class="decl"><span class="istickedoff">pretty AttrName_size = <span class="nottickedoff">&quot;size&quot;</span></span>
+<span class="lineno">  357 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minSize = &quot;minSize&quot;</span>
+<span class="lineno">  358 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxSize = &quot;maxSize&quot;</span>
+<span class="lineno">  359 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minOccur = <span class="nottickedoff">&quot;minOccur&quot;</span></span>
+<span class="lineno">  360 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxOccur = <span class="nottickedoff">&quot;maxOccur&quot;</span></span>
+<span class="lineno">  361 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_numParts = <span class="nottickedoff">&quot;numParts&quot;</span></span>
+<span class="lineno">  362 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minNumParts = <span class="nottickedoff">&quot;minNumParts&quot;</span></span>
+<span class="lineno">  363 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxNumParts = <span class="nottickedoff">&quot;maxNumParts&quot;</span></span>
+<span class="lineno">  364 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_partSize = <span class="nottickedoff">&quot;partSize&quot;</span></span>
+<span class="lineno">  365 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_minPartSize = <span class="nottickedoff">&quot;minPartSize&quot;</span></span>
+<span class="lineno">  366 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_maxPartSize = <span class="nottickedoff">&quot;maxPartSize&quot;</span></span>
+<span class="lineno">  367 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_total = <span class="nottickedoff">&quot;total&quot;</span></span>
+<span class="lineno">  368 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_injective = <span class="nottickedoff">&quot;injective&quot;</span></span>
+<span class="lineno">  369 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_surjective = <span class="nottickedoff">&quot;surjective&quot;</span></span>
+<span class="lineno">  370 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_bijective = <span class="nottickedoff">&quot;bijective&quot;</span></span>
+<span class="lineno">  371 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_regular = <span class="nottickedoff">&quot;regular&quot;</span></span>
+<span class="lineno">  372 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_reflexive = <span class="nottickedoff">&quot;reflexive&quot;</span></span>
+<span class="lineno">  373 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_irreflexive = <span class="nottickedoff">&quot;irreflexive&quot;</span></span>
+<span class="lineno">  374 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_coreflexive = <span class="nottickedoff">&quot;coreflexive&quot;</span></span>
+<span class="lineno">  375 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_symmetric = <span class="nottickedoff">&quot;symmetric&quot;</span></span>
+<span class="lineno">  376 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_antiSymmetric = <span class="nottickedoff">&quot;antiSymmetric&quot;</span></span>
+<span class="lineno">  377 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_aSymmetric = <span class="nottickedoff">&quot;aSymmetric&quot;</span></span>
+<span class="lineno">  378 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_transitive = <span class="nottickedoff">&quot;transitive&quot;</span></span>
+<span class="lineno">  379 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_leftTotal = <span class="nottickedoff">&quot;leftTotal&quot;</span></span>
+<span class="lineno">  380 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_rightTotal = <span class="nottickedoff">&quot;rightTotal&quot;</span></span>
+<span class="lineno">  381 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_connex = <span class="nottickedoff">&quot;connex&quot;</span></span>
+<span class="lineno">  382 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_Euclidean = <span class="nottickedoff">&quot;Euclidean&quot;</span></span>
+<span class="lineno">  383 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_serial = <span class="nottickedoff">&quot;serial&quot;</span></span>
+<span class="lineno">  384 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_equivalence = <span class="nottickedoff">&quot;equivalence&quot;</span></span>
+<span class="lineno">  385 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_partialOrder = <span class="nottickedoff">&quot;partialOrder&quot;</span></span>
+<span class="lineno">  386 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_linearOrder = <span class="nottickedoff">&quot;linearOrder&quot;</span></span>
+<span class="lineno">  387 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_weakOrder = <span class="nottickedoff">&quot;weakOrder&quot;</span></span>
+<span class="lineno">  388 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_preOrder = <span class="nottickedoff">&quot;preOrder&quot;</span></span>
+<span class="lineno">  389 </span><span class="spaces">    </span><span class="istickedoff">pretty AttrName_strictPartialOrder = <span class="nottickedoff">&quot;strictPartialOrder&quot;</span></span></span>
+<span class="lineno">  390 </span>
+<span class="lineno">  391 </span>instance IsString AttrName where
+<span class="lineno">  392 </span>    <span class="decl"><span class="istickedoff">fromString &quot;size&quot; = AttrName_size</span>
+<span class="lineno">  393 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;minSize&quot; = AttrName_minSize</span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;maxSize&quot; = AttrName_maxSize</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;minOccur&quot; = <span class="nottickedoff">AttrName_minOccur</span></span>
+<span class="lineno">  396 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;maxOccur&quot; = <span class="nottickedoff">AttrName_maxOccur</span></span>
+<span class="lineno">  397 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;numParts&quot; = <span class="nottickedoff">AttrName_numParts</span></span>
+<span class="lineno">  398 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;minNumParts&quot; = <span class="nottickedoff">AttrName_minNumParts</span></span>
+<span class="lineno">  399 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;maxNumParts&quot; = <span class="nottickedoff">AttrName_maxNumParts</span></span>
+<span class="lineno">  400 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;partSize&quot; = <span class="nottickedoff">AttrName_partSize</span></span>
+<span class="lineno">  401 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;minPartSize&quot; = <span class="nottickedoff">AttrName_minPartSize</span></span>
+<span class="lineno">  402 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;maxPartSize&quot; = <span class="nottickedoff">AttrName_maxPartSize</span></span>
+<span class="lineno">  403 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;total&quot; = AttrName_total</span>
+<span class="lineno">  404 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;injective&quot; = AttrName_injective</span>
+<span class="lineno">  405 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;surjective&quot; = <span class="nottickedoff">AttrName_surjective</span></span>
+<span class="lineno">  406 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;bijective&quot; = <span class="nottickedoff">AttrName_bijective</span></span>
+<span class="lineno">  407 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;regular&quot; = <span class="nottickedoff">AttrName_regular</span></span>
+<span class="lineno">  408 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;reflexive&quot; = AttrName_reflexive</span>
+<span class="lineno">  409 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;irreflexive&quot; = AttrName_irreflexive</span>
+<span class="lineno">  410 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;coreflexive&quot; = AttrName_coreflexive</span>
+<span class="lineno">  411 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;symmetric&quot; = AttrName_symmetric</span>
+<span class="lineno">  412 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;antiSymmetric&quot; = AttrName_antiSymmetric</span>
+<span class="lineno">  413 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;aSymmetric&quot; = AttrName_aSymmetric</span>
+<span class="lineno">  414 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;transitive&quot; = AttrName_transitive</span>
+<span class="lineno">  415 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;connex&quot; = AttrName_connex</span>
+<span class="lineno">  416 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;leftTotal&quot; = <span class="nottickedoff">AttrName_leftTotal</span></span>
+<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;rightTotal&quot; = <span class="nottickedoff">AttrName_rightTotal</span></span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;Euclidean&quot; = AttrName_Euclidean</span>
+<span class="lineno">  419 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;serial&quot; = AttrName_serial</span>
+<span class="lineno">  420 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;equivalence&quot; = AttrName_equivalence</span>
+<span class="lineno">  421 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;partialOrder&quot; = AttrName_partialOrder</span>
+<span class="lineno">  422 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;linearOrder&quot; = <span class="nottickedoff">AttrName_linearOrder</span></span>
+<span class="lineno">  423 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;weakOrder&quot; = <span class="nottickedoff">AttrName_weakOrder</span></span>
+<span class="lineno">  424 </span><span class="spaces">    </span><span class="istickedoff">fromString &quot;preOrder&quot; = <span class="nottickedoff">AttrName_preOrder</span></span>
+<span class="lineno">  425 </span><span class="spaces">    </span><span class="istickedoff">fromString s = <span class="nottickedoff">bug $ &quot;fromString{AttrName}:&quot; &lt;+&gt; pretty s</span></span></span>
+<span class="lineno">  426 </span>
+<span class="lineno">  427 </span>binRelNames :: [String]
+<span class="lineno">  428 </span><span class="decl"><span class="istickedoff">binRelNames = [ &quot;reflexive&quot;, &quot;irreflexive&quot;, &quot;coreflexive&quot;</span>
+<span class="lineno">  429 </span><span class="spaces">              </span><span class="istickedoff">, &quot;symmetric&quot;, &quot;antiSymmetric&quot;, &quot;aSymmetric&quot;</span>
+<span class="lineno">  430 </span><span class="spaces">              </span><span class="istickedoff">, &quot;transitive&quot;, &quot;total&quot;, &quot;leftTotal&quot;, &quot;rightTotal&quot;, &quot;connex&quot;, &quot;Euclidean&quot;</span>
+<span class="lineno">  431 </span><span class="spaces">              </span><span class="istickedoff">, &quot;serial&quot;, &quot;equivalence&quot;, &quot;weakOrder&quot;, &quot;preOrder&quot;, &quot;partialOrder&quot;, &quot;strictPartialOrder&quot;, &quot;linearOrder&quot;</span>
+<span class="lineno">  432 </span><span class="spaces">              </span><span class="istickedoff">]</span></span>
+<span class="lineno">  433 </span>
+<span class="lineno">  434 </span>
+<span class="lineno">  435 </span>--------------------------------------------------------------------------------
+<span class="lineno">  436 </span>-- attribute definitions -------------------------------------------------------
+<span class="lineno">  437 </span>--------------------------------------------------------------------------------
+<span class="lineno">  438 </span>
+<span class="lineno">  439 </span>data SetAttr a = SetAttr (SizeAttr a)
+<span class="lineno">  440 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  441 </span>instance Serialize a =&gt; Serialize (SetAttr a)
+<span class="lineno">  442 </span>instance Hashable  a =&gt; Hashable  (SetAttr a)
+<span class="lineno">  443 </span>instance ToJSON    a =&gt; ToJSON    (SetAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  444 </span>instance FromJSON  a =&gt; FromJSON  (SetAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  445 </span>instance Default (SetAttr a) where <span class="decl"><span class="istickedoff">def = SetAttr def</span></span>
+<span class="lineno">  446 </span>instance Pretty a =&gt; Pretty (SetAttr a) where
+<span class="lineno">  447 </span>    <span class="decl"><span class="istickedoff">pretty (SetAttr SizeAttr_None) = prEmpty</span>
+<span class="lineno">  448 </span><span class="spaces">    </span><span class="istickedoff">pretty (SetAttr a) = prParens (pretty a)</span></span>
+<span class="lineno">  449 </span>
+<span class="lineno">  450 </span>
+<span class="lineno">  451 </span>data SizeAttr a
+<span class="lineno">  452 </span>    = SizeAttr_None
+<span class="lineno">  453 </span>    | SizeAttr_Size a
+<span class="lineno">  454 </span>    | SizeAttr_MinSize a
+<span class="lineno">  455 </span>    | SizeAttr_MaxSize a
+<span class="lineno">  456 </span>    | SizeAttr_MinMaxSize a a
+<span class="lineno">  457 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  458 </span>instance Serialize a =&gt; Serialize (SizeAttr a)
+<span class="lineno">  459 </span>instance Hashable  a =&gt; Hashable  (SizeAttr a)
+<span class="lineno">  460 </span>instance ToJSON    a =&gt; ToJSON    (SizeAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  461 </span>instance FromJSON  a =&gt; FromJSON  (SizeAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  462 </span>instance Default (SizeAttr a) where <span class="decl"><span class="istickedoff">def = SizeAttr_None</span></span>
+<span class="lineno">  463 </span>instance Pretty a =&gt; Pretty (SizeAttr a) where
+<span class="lineno">  464 </span>    <span class="decl"><span class="istickedoff">pretty SizeAttr_None = prEmpty</span>
+<span class="lineno">  465 </span><span class="spaces">    </span><span class="istickedoff">pretty (SizeAttr_Size       x  ) = &quot;size&quot;    &lt;+&gt; pretty x</span>
+<span class="lineno">  466 </span><span class="spaces">    </span><span class="istickedoff">pretty (SizeAttr_MinSize    x  ) = &quot;minSize&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  467 </span><span class="spaces">    </span><span class="istickedoff">pretty (SizeAttr_MaxSize    x  ) = &quot;maxSize&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  468 </span><span class="spaces">    </span><span class="istickedoff">pretty (SizeAttr_MinMaxSize x y) = &quot;minSize&quot; &lt;+&gt; pretty x &lt;&gt; &quot;, maxSize&quot; &lt;+&gt; pretty y</span></span>
+<span class="lineno">  469 </span>
+<span class="lineno">  470 </span>
+<span class="lineno">  471 </span>getMaxFrom_SizeAttr :: MonadFail m =&gt; SizeAttr a -&gt; m a
+<span class="lineno">  472 </span><span class="decl"><span class="nottickedoff">getMaxFrom_SizeAttr (SizeAttr_Size n) = return n</span>
+<span class="lineno">  473 </span><span class="spaces"></span><span class="nottickedoff">getMaxFrom_SizeAttr (SizeAttr_MaxSize n) = return n</span>
+<span class="lineno">  474 </span><span class="spaces"></span><span class="nottickedoff">getMaxFrom_SizeAttr (SizeAttr_MinMaxSize _ n) = return n</span>
+<span class="lineno">  475 </span><span class="spaces"></span><span class="nottickedoff">getMaxFrom_SizeAttr _ = fail &quot;getMaxFrom_SizeAttr&quot;</span></span>
+<span class="lineno">  476 </span>
+<span class="lineno">  477 </span>intersectSizeAttr :: SizeAttr a -&gt; SizeAttr a -&gt; SizeAttr a
+<span class="lineno">  478 </span><span class="decl"><span class="nottickedoff">intersectSizeAttr SizeAttr_None s = s</span>
+<span class="lineno">  479 </span><span class="spaces"></span><span class="nottickedoff">intersectSizeAttr s@SizeAttr_Size{} _ = s</span>
+<span class="lineno">  480 </span><span class="spaces"></span><span class="nottickedoff">intersectSizeAttr _ s@SizeAttr_Size{} = s</span>
+<span class="lineno">  481 </span><span class="spaces"></span><span class="nottickedoff">intersectSizeAttr s _ = s</span></span>
+<span class="lineno">  482 </span>
+<span class="lineno">  483 </span>data MSetAttr a = MSetAttr (SizeAttr a) (OccurAttr a)
+<span class="lineno">  484 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  485 </span>instance Serialize a =&gt; Serialize (MSetAttr a)
+<span class="lineno">  486 </span>instance Hashable  a =&gt; Hashable  (MSetAttr a)
+<span class="lineno">  487 </span>instance ToJSON    a =&gt; ToJSON    (MSetAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  488 </span>instance FromJSON  a =&gt; FromJSON  (MSetAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  489 </span>instance Default (MSetAttr a) where <span class="decl"><span class="nottickedoff">def = MSetAttr def def</span></span>
+<span class="lineno">  490 </span>instance Pretty a =&gt; Pretty (MSetAttr a) where
+<span class="lineno">  491 </span>    <span class="decl"><span class="istickedoff">pretty (MSetAttr a b) =</span>
+<span class="lineno">  492 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [ pretty a</span>
+<span class="lineno">  493 </span><span class="spaces">                                        </span><span class="istickedoff">, pretty b</span>
+<span class="lineno">  494 </span><span class="spaces">                                        </span><span class="istickedoff">]</span>
+<span class="lineno">  495 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
+<span class="lineno">  496 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  497 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  498 </span>
+<span class="lineno">  499 </span>
+<span class="lineno">  500 </span>data OccurAttr a
+<span class="lineno">  501 </span>    = OccurAttr_None
+<span class="lineno">  502 </span>    | OccurAttr_MinOccur a
+<span class="lineno">  503 </span>    | OccurAttr_MaxOccur a
+<span class="lineno">  504 </span>    | OccurAttr_MinMaxOccur a a
+<span class="lineno">  505 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  506 </span>instance Serialize a =&gt; Serialize (OccurAttr a)
+<span class="lineno">  507 </span>instance Hashable  a =&gt; Hashable  (OccurAttr a)
+<span class="lineno">  508 </span>instance ToJSON    a =&gt; ToJSON    (OccurAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  509 </span>instance FromJSON  a =&gt; FromJSON  (OccurAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  510 </span>instance Default (OccurAttr a) where <span class="decl"><span class="nottickedoff">def = OccurAttr_None</span></span>
+<span class="lineno">  511 </span>instance Pretty a =&gt; Pretty (OccurAttr a) where
+<span class="lineno">  512 </span>    <span class="decl"><span class="istickedoff">pretty OccurAttr_None = prEmpty</span>
+<span class="lineno">  513 </span><span class="spaces">    </span><span class="istickedoff">pretty (OccurAttr_MinOccur    x  ) = &quot;minOccur&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  514 </span><span class="spaces">    </span><span class="istickedoff">pretty (OccurAttr_MaxOccur    x  ) = &quot;maxOccur&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  515 </span><span class="spaces">    </span><span class="istickedoff">pretty (OccurAttr_MinMaxOccur x y) = &quot;minOccur&quot; &lt;+&gt; pretty x &lt;&gt; &quot;, maxOccur&quot; &lt;+&gt; pretty y</span></span>
+<span class="lineno">  516 </span>
+<span class="lineno">  517 </span>
+<span class="lineno">  518 </span>getMaxFrom_OccurAttr :: MonadFail m =&gt; OccurAttr a -&gt; m a
+<span class="lineno">  519 </span><span class="decl"><span class="nottickedoff">getMaxFrom_OccurAttr (OccurAttr_MaxOccur n) = return n</span>
+<span class="lineno">  520 </span><span class="spaces"></span><span class="nottickedoff">getMaxFrom_OccurAttr (OccurAttr_MinMaxOccur _ n) = return n</span>
+<span class="lineno">  521 </span><span class="spaces"></span><span class="nottickedoff">getMaxFrom_OccurAttr _ = fail &quot;getMaxFrom_OccurAttr&quot;</span></span>
+<span class="lineno">  522 </span>
+<span class="lineno">  523 </span>
+<span class="lineno">  524 </span>data FunctionAttr x
+<span class="lineno">  525 </span>    = FunctionAttr (SizeAttr x) PartialityAttr JectivityAttr
+<span class="lineno">  526 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  527 </span>instance Serialize a =&gt; Serialize (FunctionAttr a)
+<span class="lineno">  528 </span>instance Hashable  a =&gt; Hashable  (FunctionAttr a)
+<span class="lineno">  529 </span>instance ToJSON    a =&gt; ToJSON    (FunctionAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  530 </span>instance FromJSON  a =&gt; FromJSON  (FunctionAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  531 </span>instance Default (FunctionAttr a) where <span class="decl"><span class="istickedoff">def = FunctionAttr def def def</span></span>
+<span class="lineno">  532 </span>instance Pretty a =&gt; Pretty (FunctionAttr a) where
+<span class="lineno">  533 </span>    <span class="decl"><span class="istickedoff">pretty (FunctionAttr a b c) =</span>
+<span class="lineno">  534 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b, pretty c]</span>
+<span class="lineno">  535 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
+<span class="lineno">  536 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  537 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  538 </span>
+<span class="lineno">  539 </span>
+<span class="lineno">  540 </span>data PartialityAttr
+<span class="lineno">  541 </span>    = PartialityAttr_Partial
+<span class="lineno">  542 </span>    | PartialityAttr_Total
+<span class="lineno">  543 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  544 </span>instance Serialize PartialityAttr
+<span class="lineno">  545 </span>instance Hashable  PartialityAttr
+<span class="lineno">  546 </span>instance ToJSON    PartialityAttr where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  547 </span>instance FromJSON  PartialityAttr where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  548 </span>instance Default   PartialityAttr where <span class="decl"><span class="istickedoff">def = PartialityAttr_Partial</span></span>
+<span class="lineno">  549 </span>instance Pretty    PartialityAttr where
+<span class="lineno">  550 </span>    <span class="decl"><span class="istickedoff">pretty PartialityAttr_Partial = prEmpty -- partial is the default</span>
+<span class="lineno">  551 </span><span class="spaces">    </span><span class="istickedoff">pretty PartialityAttr_Total = &quot;total&quot;</span></span>
+<span class="lineno">  552 </span>
+<span class="lineno">  553 </span>
+<span class="lineno">  554 </span>data JectivityAttr
+<span class="lineno">  555 </span>    = JectivityAttr_None
+<span class="lineno">  556 </span>    | JectivityAttr_Injective
+<span class="lineno">  557 </span>    | JectivityAttr_Surjective
+<span class="lineno">  558 </span>    | JectivityAttr_Bijective
+<span class="lineno">  559 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  560 </span>instance Serialize JectivityAttr
+<span class="lineno">  561 </span>instance Hashable  JectivityAttr
+<span class="lineno">  562 </span>instance ToJSON    JectivityAttr where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  563 </span>instance FromJSON  JectivityAttr where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  564 </span>instance Default   JectivityAttr where <span class="decl"><span class="istickedoff">def = JectivityAttr_None</span></span>
+<span class="lineno">  565 </span>instance Pretty    JectivityAttr where
+<span class="lineno">  566 </span>    <span class="decl"><span class="istickedoff">pretty JectivityAttr_None = prEmpty</span>
+<span class="lineno">  567 </span><span class="spaces">    </span><span class="istickedoff">pretty JectivityAttr_Injective = &quot;injective&quot;</span>
+<span class="lineno">  568 </span><span class="spaces">    </span><span class="istickedoff">pretty JectivityAttr_Surjective = &quot;surjective&quot;</span>
+<span class="lineno">  569 </span><span class="spaces">    </span><span class="istickedoff">pretty JectivityAttr_Bijective = &quot;bijective&quot;</span></span>
+<span class="lineno">  570 </span>
+<span class="lineno">  571 </span>
+<span class="lineno">  572 </span>data SequenceAttr x
+<span class="lineno">  573 </span>    = SequenceAttr (SizeAttr x) JectivityAttr
+<span class="lineno">  574 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  575 </span>instance Serialize a =&gt; Serialize (SequenceAttr a)
+<span class="lineno">  576 </span>instance Hashable  a =&gt; Hashable  (SequenceAttr a)
+<span class="lineno">  577 </span>instance ToJSON    a =&gt; ToJSON    (SequenceAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  578 </span>instance FromJSON  a =&gt; FromJSON  (SequenceAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  579 </span>instance Default (SequenceAttr a) where <span class="decl"><span class="nottickedoff">def = SequenceAttr def def</span></span>
+<span class="lineno">  580 </span>instance Pretty a =&gt; Pretty (SequenceAttr a) where
+<span class="lineno">  581 </span>    <span class="decl"><span class="istickedoff">pretty (SequenceAttr a b) =</span>
+<span class="lineno">  582 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b]</span>
+<span class="lineno">  583 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
+<span class="lineno">  584 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  585 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  586 </span>
+<span class="lineno">  587 </span>
+<span class="lineno">  588 </span>data RelationAttr a = RelationAttr (SizeAttr a) BinaryRelationAttrs
+<span class="lineno">  589 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  590 </span>instance Serialize a =&gt; Serialize (RelationAttr a)
+<span class="lineno">  591 </span>instance Hashable  a =&gt; Hashable  (RelationAttr a)
+<span class="lineno">  592 </span>instance ToJSON    a =&gt; ToJSON    (RelationAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  593 </span>instance FromJSON  a =&gt; FromJSON  (RelationAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  594 </span>instance Default (RelationAttr a) where <span class="decl"><span class="nottickedoff">def = RelationAttr def def</span></span>
+<span class="lineno">  595 </span>instance Pretty a =&gt; Pretty (RelationAttr a) where
+<span class="lineno">  596 </span>    <span class="decl"><span class="istickedoff">pretty (RelationAttr a b) =</span>
+<span class="lineno">  597 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [pretty a, pretty b]</span>
+<span class="lineno">  598 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
+<span class="lineno">  599 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  600 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  601 </span>
+<span class="lineno">  602 </span>
+<span class="lineno">  603 </span>data BinaryRelationAttrs = BinaryRelationAttrs (S.Set BinaryRelationAttr)
+<span class="lineno">  604 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  605 </span>instance Serialize BinaryRelationAttrs
+<span class="lineno">  606 </span>instance Hashable  BinaryRelationAttrs where <span class="decl"><span class="istickedoff">hashWithSalt salt (BinaryRelationAttrs a) = hashWithSalt salt (S.toList a)</span></span>
+<span class="lineno">  607 </span>instance ToJSON    BinaryRelationAttrs where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  608 </span>instance FromJSON  BinaryRelationAttrs where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  609 </span>instance Default   BinaryRelationAttrs where <span class="decl"><span class="istickedoff">def = BinaryRelationAttrs S.empty</span></span>
+<span class="lineno">  610 </span>instance Pretty BinaryRelationAttrs where
+<span class="lineno">  611 </span>    <span class="decl"><span class="istickedoff">pretty (BinaryRelationAttrs attrs) = prettyList id &quot;,&quot; (S.toList attrs)</span></span>
+<span class="lineno">  612 </span>instance Semigroup BinaryRelationAttrs where
+<span class="lineno">  613 </span>    <span class="decl"><span class="nottickedoff">(&lt;&gt;) = mappend</span></span>
+<span class="lineno">  614 </span>instance Monoid BinaryRelationAttrs where
+<span class="lineno">  615 </span>    <span class="decl"><span class="nottickedoff">mempty = BinaryRelationAttrs def</span></span>
+<span class="lineno">  616 </span>    <span class="decl"><span class="istickedoff">mappend (BinaryRelationAttrs a) (BinaryRelationAttrs b) = BinaryRelationAttrs (S.union a b)</span></span>
+<span class="lineno">  617 </span>
+<span class="lineno">  618 </span>
+<span class="lineno">  619 </span>data BinaryRelationAttr
+<span class="lineno">  620 </span>    = BinRelAttr_Reflexive
+<span class="lineno">  621 </span>    | BinRelAttr_Irreflexive
+<span class="lineno">  622 </span>    | BinRelAttr_Coreflexive
+<span class="lineno">  623 </span>    | BinRelAttr_Symmetric
+<span class="lineno">  624 </span>    | BinRelAttr_AntiSymmetric
+<span class="lineno">  625 </span>    | BinRelAttr_ASymmetric
+<span class="lineno">  626 </span>    | BinRelAttr_Transitive
+<span class="lineno">  627 </span>    | BinRelAttr_Total
+<span class="lineno">  628 </span>    | BinRelAttr_LeftTotal
+<span class="lineno">  629 </span>    | BinRelAttr_RightTotal
+<span class="lineno">  630 </span>    | BinRelAttr_Connex
+<span class="lineno">  631 </span>    | BinRelAttr_Euclidean
+<span class="lineno">  632 </span>    | BinRelAttr_Serial
+<span class="lineno">  633 </span>    | BinRelAttr_Equivalence
+<span class="lineno">  634 </span>    | BinRelAttr_PartialOrder
+<span class="lineno">  635 </span>    | BinRelAttr_LinearOrder
+<span class="lineno">  636 </span>    | BinRelAttr_WeakOrder
+<span class="lineno">  637 </span>    | BinRelAttr_PreOrder
+<span class="lineno">  638 </span>    | BinRelAttr_StrictPartialOrder
+<span class="lineno">  639 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  640 </span>instance Serialize BinaryRelationAttr
+<span class="lineno">  641 </span>instance Hashable  BinaryRelationAttr
+<span class="lineno">  642 </span>instance ToJSON    BinaryRelationAttr where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  643 </span>instance FromJSON  BinaryRelationAttr where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  644 </span>instance Pretty BinaryRelationAttr where
+<span class="lineno">  645 </span>    <span class="decl"><span class="istickedoff">pretty BinRelAttr_Reflexive          = &quot;reflexive&quot;</span>
+<span class="lineno">  646 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Irreflexive        = &quot;irreflexive&quot;</span>
+<span class="lineno">  647 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Coreflexive        = &quot;coreflexive&quot;</span>
+<span class="lineno">  648 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Symmetric          = &quot;symmetric&quot;</span>
+<span class="lineno">  649 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_AntiSymmetric      = &quot;antiSymmetric&quot;</span>
+<span class="lineno">  650 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_ASymmetric         = &quot;aSymmetric&quot;</span>
+<span class="lineno">  651 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Transitive         = &quot;transitive&quot;</span>
+<span class="lineno">  652 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Total              = &quot;total&quot;</span>
+<span class="lineno">  653 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_LeftTotal          = <span class="nottickedoff">&quot;leftTotal&quot;</span></span>
+<span class="lineno">  654 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_RightTotal         = <span class="nottickedoff">&quot;rightTotal&quot;</span></span>
+<span class="lineno">  655 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Connex             = &quot;connex&quot;</span>
+<span class="lineno">  656 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Euclidean          = &quot;Euclidean&quot;</span>
+<span class="lineno">  657 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Serial             = &quot;serial&quot;</span>
+<span class="lineno">  658 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_Equivalence        = &quot;equivalence&quot;</span>
+<span class="lineno">  659 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_PartialOrder       = &quot;partialOrder&quot;</span>
+<span class="lineno">  660 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_LinearOrder        = <span class="nottickedoff">&quot;linearOrder&quot;</span></span>
+<span class="lineno">  661 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_WeakOrder          = <span class="nottickedoff">&quot;weakOrder&quot;</span></span>
+<span class="lineno">  662 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_PreOrder           = <span class="nottickedoff">&quot;preOrder&quot;</span></span>
+<span class="lineno">  663 </span><span class="spaces">    </span><span class="istickedoff">pretty BinRelAttr_StrictPartialOrder = <span class="nottickedoff">&quot;strictPartialOrder&quot;</span></span></span>
+<span class="lineno">  664 </span>
+<span class="lineno">  665 </span>
+<span class="lineno">  666 </span>readBinRel :: MonadFailDoc m =&gt; AttrName -&gt; m BinaryRelationAttr
+<span class="lineno">  667 </span><span class="decl"><span class="istickedoff">readBinRel AttrName_reflexive          = return BinRelAttr_Reflexive</span>
+<span class="lineno">  668 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_irreflexive        = return BinRelAttr_Irreflexive</span>
+<span class="lineno">  669 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_coreflexive        = return BinRelAttr_Coreflexive</span>
+<span class="lineno">  670 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_symmetric          = return BinRelAttr_Symmetric</span>
+<span class="lineno">  671 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_antiSymmetric      = return BinRelAttr_AntiSymmetric</span>
+<span class="lineno">  672 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_aSymmetric         = return BinRelAttr_ASymmetric</span>
+<span class="lineno">  673 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_transitive         = return BinRelAttr_Transitive</span>
+<span class="lineno">  674 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_total              = return BinRelAttr_Total</span>
+<span class="lineno">  675 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_leftTotal          = <span class="nottickedoff">return BinRelAttr_LeftTotal</span></span>
+<span class="lineno">  676 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_rightTotal         = <span class="nottickedoff">return BinRelAttr_RightTotal</span></span>
+<span class="lineno">  677 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_connex             = return BinRelAttr_Connex</span>
+<span class="lineno">  678 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_Euclidean          = return BinRelAttr_Euclidean</span>
+<span class="lineno">  679 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_serial             = return BinRelAttr_Serial</span>
+<span class="lineno">  680 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_equivalence        = return BinRelAttr_Equivalence</span>
+<span class="lineno">  681 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_partialOrder       = return BinRelAttr_PartialOrder</span>
+<span class="lineno">  682 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_strictPartialOrder = <span class="nottickedoff">return BinRelAttr_StrictPartialOrder</span></span>
+<span class="lineno">  683 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_linearOrder        = <span class="nottickedoff">return BinRelAttr_LinearOrder</span></span>
+<span class="lineno">  684 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_weakOrder          = <span class="nottickedoff">return BinRelAttr_WeakOrder</span></span>
+<span class="lineno">  685 </span><span class="spaces"></span><span class="istickedoff">readBinRel AttrName_preOrder           = <span class="nottickedoff">return BinRelAttr_PreOrder</span></span>
+<span class="lineno">  686 </span><span class="spaces"></span><span class="istickedoff">readBinRel a = <span class="nottickedoff">failDoc $ &quot;Not a binary relation attribute:&quot; &lt;+&gt; pretty a</span></span></span>
+<span class="lineno">  687 </span>
+<span class="lineno">  688 </span>binRelToAttrName :: BinaryRelationAttr -&gt; AttrName
+<span class="lineno">  689 </span><span class="decl"><span class="istickedoff">binRelToAttrName BinRelAttr_Reflexive          = <span class="nottickedoff">AttrName_reflexive</span></span>
+<span class="lineno">  690 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Irreflexive        = AttrName_irreflexive</span>
+<span class="lineno">  691 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Coreflexive        = <span class="nottickedoff">AttrName_coreflexive</span></span>
+<span class="lineno">  692 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Symmetric          = AttrName_symmetric</span>
+<span class="lineno">  693 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_AntiSymmetric      = <span class="nottickedoff">AttrName_antiSymmetric</span></span>
+<span class="lineno">  694 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_ASymmetric         = <span class="nottickedoff">AttrName_aSymmetric</span></span>
+<span class="lineno">  695 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Transitive         = <span class="nottickedoff">AttrName_transitive</span></span>
+<span class="lineno">  696 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Total              = <span class="nottickedoff">AttrName_total</span></span>
+<span class="lineno">  697 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_LeftTotal          = <span class="nottickedoff">AttrName_leftTotal</span></span>
+<span class="lineno">  698 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_RightTotal         = <span class="nottickedoff">AttrName_rightTotal</span></span>
+<span class="lineno">  699 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Connex             = AttrName_connex</span>
+<span class="lineno">  700 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Euclidean          = AttrName_Euclidean</span>
+<span class="lineno">  701 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Serial             = AttrName_serial</span>
+<span class="lineno">  702 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_Equivalence        = AttrName_equivalence</span>
+<span class="lineno">  703 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_PartialOrder       = AttrName_partialOrder</span>
+<span class="lineno">  704 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_LinearOrder        = <span class="nottickedoff">AttrName_linearOrder</span></span>
+<span class="lineno">  705 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_WeakOrder          = <span class="nottickedoff">AttrName_weakOrder</span></span>
+<span class="lineno">  706 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_PreOrder           = <span class="nottickedoff">AttrName_preOrder</span></span>
+<span class="lineno">  707 </span><span class="spaces"></span><span class="istickedoff">binRelToAttrName BinRelAttr_StrictPartialOrder = <span class="nottickedoff">AttrName_strictPartialOrder</span></span></span>
+<span class="lineno">  708 </span>
+<span class="lineno">  709 </span>
+<span class="lineno">  710 </span>
+<span class="lineno">  711 </span>
+<span class="lineno">  712 </span>data PartitionAttr a = PartitionAttr
+<span class="lineno">  713 </span>    { <span class="istickedoff"><span class="decl"><span class="istickedoff">partsNum</span></span></span>          :: SizeAttr a
+<span class="lineno">  714 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">partsSize</span></span></span>         :: SizeAttr a
+<span class="lineno">  715 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">isRegular</span></span></span>         :: Bool
+<span class="lineno">  716 </span>    }
+<span class="lineno">  717 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  718 </span>instance Serialize a =&gt; Serialize (PartitionAttr a)
+<span class="lineno">  719 </span>instance Hashable  a =&gt; Hashable  (PartitionAttr a)
+<span class="lineno">  720 </span>instance ToJSON    a =&gt; ToJSON    (PartitionAttr a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  721 </span>instance FromJSON  a =&gt; FromJSON  (PartitionAttr a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  722 </span>instance Default (PartitionAttr a) where <span class="decl"><span class="nottickedoff">def = PartitionAttr def def False</span></span>
+<span class="lineno">  723 </span>instance Pretty a =&gt; Pretty (PartitionAttr a) where
+<span class="lineno">  724 </span>    <span class="decl"><span class="istickedoff">pretty (PartitionAttr a b c) =</span>
+<span class="lineno">  725 </span><span class="spaces">        </span><span class="istickedoff">let inside = filter (/=prEmpty) [ prettyNum a</span>
+<span class="lineno">  726 </span><span class="spaces">                                        </span><span class="istickedoff">, prettySize b</span>
+<span class="lineno">  727 </span><span class="spaces">                                        </span><span class="istickedoff">, prettyReg c</span>
+<span class="lineno">  728 </span><span class="spaces">                                        </span><span class="istickedoff">]</span>
+<span class="lineno">  729 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  730 </span><span class="spaces">            </span><span class="istickedoff">prettyNum SizeAttr_None = prEmpty</span>
+<span class="lineno">  731 </span><span class="spaces">            </span><span class="istickedoff">prettyNum (SizeAttr_Size       x  ) = &quot;numParts&quot;    &lt;+&gt; pretty x</span>
+<span class="lineno">  732 </span><span class="spaces">            </span><span class="istickedoff">prettyNum (SizeAttr_MinSize    x  ) = &quot;minNumParts&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  733 </span><span class="spaces">            </span><span class="istickedoff">prettyNum (SizeAttr_MaxSize    x  ) = &quot;maxNumParts&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  734 </span><span class="spaces">            </span><span class="istickedoff">prettyNum (SizeAttr_MinMaxSize x y) = &quot;minNumParts&quot; &lt;+&gt; pretty x &lt;&gt; &quot;, maxNumParts&quot; &lt;+&gt; pretty y</span>
+<span class="lineno">  735 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  736 </span><span class="spaces">            </span><span class="istickedoff">prettySize SizeAttr_None = prEmpty</span>
+<span class="lineno">  737 </span><span class="spaces">            </span><span class="istickedoff">prettySize (SizeAttr_Size       x  ) = &quot;partSize&quot;    &lt;+&gt; pretty x</span>
+<span class="lineno">  738 </span><span class="spaces">            </span><span class="istickedoff">prettySize (SizeAttr_MinSize    x  ) = &quot;minPartSize&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  739 </span><span class="spaces">            </span><span class="istickedoff">prettySize (SizeAttr_MaxSize    x  ) = &quot;maxPartSize&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  740 </span><span class="spaces">            </span><span class="istickedoff">prettySize (SizeAttr_MinMaxSize x y) = &quot;minPartSize&quot; &lt;+&gt; pretty x &lt;&gt; &quot;, maxPartSize&quot; &lt;+&gt; pretty y</span>
+<span class="lineno">  741 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  742 </span><span class="spaces">            </span><span class="istickedoff">prettyReg False = prEmpty</span>
+<span class="lineno">  743 </span><span class="spaces">            </span><span class="istickedoff">prettyReg True  = &quot;regular&quot;</span>
+<span class="lineno">  744 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  745 </span><span class="spaces">        </span><span class="istickedoff">in  if null inside</span>
+<span class="lineno">  746 </span><span class="spaces">                </span><span class="istickedoff">then prEmpty</span>
+<span class="lineno">  747 </span><span class="spaces">                </span><span class="istickedoff">else prettyList prParens &quot;,&quot; inside</span></span>
+<span class="lineno">  748 </span>
+<span class="lineno">  749 </span>
+<span class="lineno">  750 </span>data DomainAttributes a = DomainAttributes [DomainAttribute a]
+<span class="lineno">  751 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  752 </span>
+<span class="lineno">  753 </span>instance Serialize a =&gt; Serialize (DomainAttributes a)
+<span class="lineno">  754 </span>instance Hashable  a =&gt; Hashable  (DomainAttributes a)
+<span class="lineno">  755 </span>instance ToJSON    a =&gt; ToJSON    (DomainAttributes a) where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  756 </span>instance FromJSON  a =&gt; FromJSON  (DomainAttributes a) where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  757 </span>
+<span class="lineno">  758 </span>instance Default (DomainAttributes a) where
+<span class="lineno">  759 </span>    <span class="decl"><span class="nottickedoff">def = DomainAttributes []</span></span>
+<span class="lineno">  760 </span>
+<span class="lineno">  761 </span>
+<span class="lineno">  762 </span>data DomainAttribute a
+<span class="lineno">  763 </span>    = DAName Name
+<span class="lineno">  764 </span>    | DANameValue Name a
+<span class="lineno">  765 </span>    | DADotDot
+<span class="lineno">  766 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  767 </span>
+<span class="lineno">  768 </span>instance Serialize a =&gt; Serialize (DomainAttribute a)
+<span class="lineno">  769 </span>instance Hashable  a =&gt; Hashable  (DomainAttribute a)
+<span class="lineno">  770 </span>instance ToJSON    a =&gt; ToJSON    (DomainAttribute a) where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  771 </span>instance FromJSON  a =&gt; FromJSON  (DomainAttribute a) where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  772 </span>
+<span class="lineno">  773 </span>
+<span class="lineno">  774 </span>data Range a
+<span class="lineno">  775 </span>    = RangeOpen
+<span class="lineno">  776 </span>    | RangeSingle a
+<span class="lineno">  777 </span>    | RangeLowerBounded a
+<span class="lineno">  778 </span>    | RangeUpperBounded a
+<span class="lineno">  779 </span>    | RangeBounded a a
+<span class="lineno">  780 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff">Ord</span></span>, <span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  781 </span>
+<span class="lineno">  782 </span>instance Serialize a =&gt; Serialize (Range a)
+<span class="lineno">  783 </span>instance Hashable  a =&gt; Hashable (Range a)
+<span class="lineno">  784 </span>instance ToJSON    a =&gt; ToJSON (Range a) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  785 </span>instance FromJSON  a =&gt; FromJSON (Range a) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  786 </span>
+<span class="lineno">  787 </span>instance Arbitrary a =&gt; Arbitrary (Range a) where
+<span class="lineno">  788 </span>    <span class="decl"><span class="nottickedoff">arbitrary = oneof</span>
+<span class="lineno">  789 </span><span class="spaces">        </span><span class="nottickedoff">[ return RangeOpen</span>
+<span class="lineno">  790 </span><span class="spaces">        </span><span class="nottickedoff">, RangeSingle &lt;$&gt; arbitrary</span>
+<span class="lineno">  791 </span><span class="spaces">        </span><span class="nottickedoff">, RangeLowerBounded &lt;$&gt; arbitrary</span>
+<span class="lineno">  792 </span><span class="spaces">        </span><span class="nottickedoff">, RangeUpperBounded &lt;$&gt; arbitrary</span>
+<span class="lineno">  793 </span><span class="spaces">        </span><span class="nottickedoff">, RangeBounded &lt;$&gt; arbitrary &lt;*&gt; arbitrary</span>
+<span class="lineno">  794 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  795 </span>
+<span class="lineno">  796 </span>rangesInts :: (MonadFailDoc m, ExpressionLike c) =&gt; [Range c] -&gt; m [Integer]
+<span class="lineno">  797 </span><span class="decl"><span class="istickedoff">rangesInts = fmap (sortNub . concat) . mapM rangeInts</span>
+<span class="lineno">  798 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  799 </span><span class="spaces">        </span><span class="istickedoff">rangeInts (RangeSingle x) = return &lt;$&gt; intOut <span class="nottickedoff">&quot;rangeInts 1&quot;</span> x</span>
+<span class="lineno">  800 </span><span class="spaces">        </span><span class="istickedoff">rangeInts (RangeBounded x y) = do x' &lt;- intOut <span class="nottickedoff">&quot;rangeInts 2&quot;</span> x</span>
+<span class="lineno">  801 </span><span class="spaces">                                          </span><span class="istickedoff">y' &lt;- intOut <span class="nottickedoff">&quot;rangeInts 3&quot;</span> y</span>
+<span class="lineno">  802 </span><span class="spaces">                                          </span><span class="istickedoff">return [x' .. y']</span>
+<span class="lineno">  803 </span><span class="spaces">        </span><span class="istickedoff">rangeInts _ = failDoc <span class="nottickedoff">&quot;Infinite range (or not an integer range)&quot;</span></span></span>
+<span class="lineno">  804 </span>
+<span class="lineno">  805 </span>expandRanges :: ExpressionLike c =&gt; [Range c] -&gt; [Range c]
+<span class="lineno">  806 </span><span class="decl"><span class="istickedoff">expandRanges [RangeBounded a b] = [RangeBounded a b]</span>
+<span class="lineno">  807 </span><span class="spaces"></span><span class="istickedoff">expandRanges r =</span>
+<span class="lineno">  808 </span><span class="spaces">    </span><span class="istickedoff">case rangesInts r of</span>
+<span class="lineno">  809 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; r</span>
+<span class="lineno">  810 </span><span class="spaces">        </span><span class="istickedoff">Just [] -&gt; []</span>
+<span class="lineno">  811 </span><span class="spaces">        </span><span class="istickedoff">Just is -&gt;</span>
+<span class="lineno">  812 </span><span class="spaces">            </span><span class="istickedoff">if [ minimum is .. maximum is ] == is</span>
+<span class="lineno">  813 </span><span class="spaces">                </span><span class="istickedoff">then [RangeBounded (fromInt (minimum is)) (fromInt (maximum is))]</span>
+<span class="lineno">  814 </span><span class="spaces">                </span><span class="istickedoff">else map (RangeSingle . fromInt) is</span></span>
+<span class="lineno">  815 </span>
+<span class="lineno">  816 </span>
+<span class="lineno">  817 </span>data HasRepresentation
+<span class="lineno">  818 </span>    = NoRepresentation
+<span class="lineno">  819 </span>
+<span class="lineno">  820 </span>    | Set_Occurrence
+<span class="lineno">  821 </span>    | Set_Explicit
+<span class="lineno">  822 </span>    | Set_ExplicitVarSizeWithFlags
+<span class="lineno">  823 </span>    | Set_ExplicitVarSizeWithMarker
+<span class="lineno">  824 </span>    | Set_ExplicitVarSizeWithDummy
+<span class="lineno">  825 </span>
+<span class="lineno">  826 </span>    | MSet_Occurrence
+<span class="lineno">  827 </span>    | MSet_ExplicitWithFlags
+<span class="lineno">  828 </span>    | MSet_ExplicitWithRepetition
+<span class="lineno">  829 </span>
+<span class="lineno">  830 </span>    | Function_1D
+<span class="lineno">  831 </span>    | Function_1DPartial
+<span class="lineno">  832 </span>    | Function_ND
+<span class="lineno">  833 </span>    | Function_NDPartial
+<span class="lineno">  834 </span>    | Function_NDPartialDummy
+<span class="lineno">  835 </span>    | Function_AsRelation HasRepresentation                     -- carries: representation for the inner relation
+<span class="lineno">  836 </span>
+<span class="lineno">  837 </span>    | Sequence_ExplicitBounded
+<span class="lineno">  838 </span>
+<span class="lineno">  839 </span>    | Relation_AsMatrix
+<span class="lineno">  840 </span>    | Relation_AsSet HasRepresentation                          -- carries: representation for the inner set
+<span class="lineno">  841 </span>
+<span class="lineno">  842 </span>    | Partition_AsSet HasRepresentation HasRepresentation       -- carries: representations for the inner sets
+<span class="lineno">  843 </span>    | Partition_Occurrence
+<span class="lineno">  844 </span>
+<span class="lineno">  845 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">  846 </span>
+<span class="lineno">  847 </span>instance Serialize HasRepresentation
+<span class="lineno">  848 </span>instance Hashable  HasRepresentation
+<span class="lineno">  849 </span>instance ToJSON    HasRepresentation where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  850 </span>instance FromJSON  HasRepresentation where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  851 </span>
+<span class="lineno">  852 </span>instance Default HasRepresentation where
+<span class="lineno">  853 </span>    <span class="decl"><span class="nottickedoff">def = NoRepresentation</span></span>
+<span class="lineno">  854 </span>
+<span class="lineno">  855 </span>representationConstrIndex :: HasRepresentation -&gt; [Text]
+<span class="lineno">  856 </span><span class="decl"><span class="istickedoff">representationConstrIndex r = oneLevel r : concatMap representationConstrIndex (children r)</span>
+<span class="lineno">  857 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  858 </span><span class="spaces">        </span><span class="istickedoff">oneLevel :: HasRepresentation -&gt; Text</span>
+<span class="lineno">  859 </span><span class="spaces">        </span><span class="istickedoff">oneLevel = stringToText . (&quot;R&quot;++) . show . constrIndex . toConstr</span></span>
+<span class="lineno">  860 </span>
+<span class="lineno">  861 </span>instance (Pretty r, Pretty a) =&gt; Pretty (Domain r a) where
+<span class="lineno">  862 </span>
+<span class="lineno">  863 </span>    <span class="decl"><span class="istickedoff">pretty DomainAny{} = &quot;?&quot;</span>
+<span class="lineno">  864 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  865 </span><span class="spaces">    </span><span class="istickedoff">pretty DomainBool = &quot;bool&quot;</span>
+<span class="lineno">  866 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  867 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainIntE x) = &quot;int&quot; &lt;&gt; prParens (pretty x)</span>
+<span class="lineno">  868 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  869 </span><span class="spaces">    </span><span class="istickedoff">-- print them like integers even when they are tagged</span>
+<span class="lineno">  870 </span><span class="spaces">    </span><span class="istickedoff">-- pretty (DomainInt (TagEnum nm) _) = pretty nm</span>
+<span class="lineno">  871 </span><span class="spaces">    </span><span class="istickedoff">-- pretty (DomainInt (TagUnnamed nm) _) = pretty nm</span>
+<span class="lineno">  872 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  873 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ []) = &quot;int&quot;</span>
+<span class="lineno">  874 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInt _ ranges) = &quot;int&quot; &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
+<span class="lineno">  875 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  876 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name (Just ranges) _) = pretty name &lt;&gt; prettyList prParens &quot;,&quot; ranges</span>
+<span class="lineno">  877 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainEnum name _             _) = pretty name</span>
+<span class="lineno">  878 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  879 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainUnnamed name _) = <span class="nottickedoff">pretty name</span></span>
+<span class="lineno">  880 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  881 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainTuple inners)</span>
+<span class="lineno">  882 </span><span class="spaces">        </span><span class="istickedoff">= (if length inners &lt; 2 then &quot;tuple&quot; else prEmpty)</span>
+<span class="lineno">  883 </span><span class="spaces">        </span><span class="istickedoff">&lt;+&gt; prettyList prParens &quot;,&quot; inners</span>
+<span class="lineno">  884 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  885 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRecord xs) = &quot;record&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
+<span class="lineno">  886 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
+<span class="lineno">  887 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  888 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainVariant xs) = &quot;variant&quot; &lt;+&gt; prettyList prBraces &quot;,&quot;</span>
+<span class="lineno">  889 </span><span class="spaces">        </span><span class="istickedoff">[ pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty d | (nm, d) &lt;- xs ]</span>
+<span class="lineno">  890 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  891 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMatrix index innerNested)</span>
+<span class="lineno">  892 </span><span class="spaces">        </span><span class="istickedoff">= &quot;matrix indexed by&quot; &lt;+&gt; prettyList prBrackets &quot;,&quot; indices</span>
+<span class="lineno">  893 </span><span class="spaces">                              </span><span class="istickedoff">&lt;+&gt; &quot;of&quot; &lt;+&gt; pretty inner</span>
+<span class="lineno">  894 </span><span class="spaces">        </span><span class="istickedoff">where</span>
+<span class="lineno">  895 </span><span class="spaces">            </span><span class="istickedoff">(indices,inner) = first (index:) $ collect innerNested</span>
+<span class="lineno">  896 </span><span class="spaces">            </span><span class="istickedoff">collect (DomainMatrix i j) = first (i:) $ collect j</span>
+<span class="lineno">  897 </span><span class="spaces">            </span><span class="istickedoff">collect x = ([],x)</span>
+<span class="lineno">  898 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  899 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSet r attrs inner) =</span>
+<span class="lineno">  900 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;set&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  901 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  902 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMSet r attrs inner) =</span>
+<span class="lineno">  903 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;mset&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  904 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  905 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainFunction r attrs innerFrom innerTo) =</span>
+<span class="lineno">  906 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;function&quot; &lt;+&gt; prettyAttrs r attrs) 4 $</span>
+<span class="lineno">  907 </span><span class="spaces">            </span><span class="istickedoff">hang (pretty innerFrom) 4 $</span>
+<span class="lineno">  908 </span><span class="spaces">                </span><span class="istickedoff">&quot;--&gt;&quot; &lt;+&gt; pretty innerTo</span>
+<span class="lineno">  909 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  910 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainSequence r attrs inner) =</span>
+<span class="lineno">  911 </span><span class="spaces">        </span><span class="istickedoff">hang (&quot;sequence&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (pretty inner)</span>
+<span class="lineno">  912 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  913 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainRelation r attrs inners)</span>
+<span class="lineno">  914 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;relation&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;of&quot;) 4 (prettyList prParens &quot; *&quot; inners)</span>
+<span class="lineno">  915 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  916 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainPartition r attrs inner)</span>
+<span class="lineno">  917 </span><span class="spaces">        </span><span class="istickedoff">= hang (&quot;partition&quot; &lt;+&gt; prettyAttrs r attrs &lt;+&gt; &quot;from&quot;) 4 (pretty inner)</span>
+<span class="lineno">  918 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  919 </span><span class="spaces">    </span><span class="istickedoff">pretty d@DomainOp{} = <span class="nottickedoff">pretty (show d)</span></span>
+<span class="lineno">  920 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  921 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainReference x _) = pretty x</span>
+<span class="lineno">  922 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  923 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainMetaVar x) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty x</span></span></span>
+<span class="lineno">  924 </span>
+<span class="lineno">  925 </span>
+<span class="lineno">  926 </span>prettyAttrs :: (Pretty a, Pretty b) =&gt; a -&gt; b -&gt; Doc
+<span class="lineno">  927 </span><span class="decl"><span class="istickedoff">prettyAttrs a bs =</span>
+<span class="lineno">  928 </span><span class="spaces">    </span><span class="istickedoff">let prettya = pretty a</span>
+<span class="lineno">  929 </span><span class="spaces">    </span><span class="istickedoff">in  if <span class="tickonlytrue">prettya == &quot;()&quot;</span></span>
+<span class="lineno">  930 </span><span class="spaces">            </span><span class="istickedoff">then pretty bs</span>
+<span class="lineno">  931 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">prBraces prettya &lt;+&gt; pretty bs</span></span></span>
+<span class="lineno">  932 </span>
+<span class="lineno">  933 </span>instance Pretty a =&gt; Pretty (DomainAttributes a) where
+<span class="lineno">  934 </span>    <span class="decl"><span class="nottickedoff">pretty (DomainAttributes []) = prEmpty</span>
+<span class="lineno">  935 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DomainAttributes attrs) = prettyList prParens &quot;,&quot; attrs</span></span>
+<span class="lineno">  936 </span>
+<span class="lineno">  937 </span>instance Pretty a =&gt; Pretty (DomainAttribute a) where
+<span class="lineno">  938 </span>    <span class="decl"><span class="nottickedoff">pretty (DAName name) = pretty name</span>
+<span class="lineno">  939 </span><span class="spaces">    </span><span class="nottickedoff">pretty (DANameValue name value) = pretty name &lt;+&gt; pretty value</span>
+<span class="lineno">  940 </span><span class="spaces">    </span><span class="nottickedoff">pretty DADotDot = &quot;..&quot;</span></span>
+<span class="lineno">  941 </span>
+<span class="lineno">  942 </span>instance Pretty a =&gt; Pretty (Range a) where
+<span class="lineno">  943 </span>    <span class="decl"><span class="istickedoff">pretty RangeOpen = &quot;..&quot;</span>
+<span class="lineno">  944 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeSingle x) = pretty x</span>
+<span class="lineno">  945 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeLowerBounded x) = pretty x &lt;&gt; &quot;..&quot;</span>
+<span class="lineno">  946 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeUpperBounded x) = &quot;..&quot; &lt;&gt; pretty x</span>
+<span class="lineno">  947 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) | show (pretty x) == show (pretty y) = pretty x</span>
+<span class="lineno">  948 </span><span class="spaces">    </span><span class="istickedoff">pretty (RangeBounded x y) = pretty x &lt;&gt; &quot;..&quot; &lt;&gt; pretty y</span></span>
+<span class="lineno">  949 </span>
+<span class="lineno">  950 </span>instance Pretty HasRepresentation where
+<span class="lineno">  951 </span>    <span class="decl"><span class="nottickedoff">pretty NoRepresentation = &quot;∅&quot;</span>
+<span class="lineno">  952 </span><span class="spaces">    </span><span class="nottickedoff">pretty r = pretty (representationToFullText r)</span></span>
+<span class="lineno">  953 </span>
+<span class="lineno">  954 </span>textToRepresentation :: Text -&gt; [HasRepresentation] -&gt; Maybe HasRepresentation
+<span class="lineno">  955 </span><span class="decl"><span class="nottickedoff">textToRepresentation t []             | t == &quot;Occurrence&quot;                 = return Set_Occurrence</span>
+<span class="lineno">  956 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Explicit&quot;                   = return Set_Explicit</span>
+<span class="lineno">  957 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithFlags&quot;   = return Set_ExplicitVarSizeWithFlags</span>
+<span class="lineno">  958 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithMarker&quot;  = return Set_ExplicitVarSizeWithMarker</span>
+<span class="lineno">  959 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitVarSizeWithDummy&quot;   = return Set_ExplicitVarSizeWithDummy</span>
+<span class="lineno">  960 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;MOccurrence&quot;                = return MSet_Occurrence</span>
+<span class="lineno">  961 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithFlags&quot;          = return MSet_ExplicitWithFlags</span>
+<span class="lineno">  962 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitWithRepetition&quot;     = return MSet_ExplicitWithRepetition</span>
+<span class="lineno">  963 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1D&quot;                 = return Function_1D</span>
+<span class="lineno">  964 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;Function1DPartial&quot;          = return Function_1DPartial</span>
+<span class="lineno">  965 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionND&quot;                 = return Function_ND</span>
+<span class="lineno">  966 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartial&quot;          = return Function_NDPartial</span>
+<span class="lineno">  967 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;FunctionNDPartialDummy&quot;     = return Function_NDPartialDummy</span>
+<span class="lineno">  968 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;FunctionAsRelation&quot;         = return (Function_AsRelation repr)</span>
+<span class="lineno">  969 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;ExplicitBounded&quot;            = return Sequence_ExplicitBounded</span>
+<span class="lineno">  970 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;RelationAsMatrix&quot;           = return Relation_AsMatrix</span>
+<span class="lineno">  971 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr]         | t == &quot;RelationAsSet&quot;              = return (Relation_AsSet repr)</span>
+<span class="lineno">  972 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t [repr1, repr2] | t == &quot;PartitionAsSet&quot;             = return (Partition_AsSet repr1 repr2)</span>
+<span class="lineno">  973 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation t []             | t == &quot;PartitionOccurrence&quot;        = return Partition_Occurrence</span>
+<span class="lineno">  974 </span><span class="spaces"></span><span class="nottickedoff">textToRepresentation _ _ = Nothing</span></span>
+<span class="lineno">  975 </span>
+<span class="lineno">  976 </span>representationToShortText :: HasRepresentation -&gt; Text
+<span class="lineno">  977 </span><span class="decl"><span class="istickedoff">representationToShortText Set_Occurrence                 = &quot;Occurrence&quot;</span>
+<span class="lineno">  978 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_Explicit                   = &quot;Explicit&quot;</span>
+<span class="lineno">  979 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithFlags   = &quot;ExplicitVarSizeWithFlags&quot;</span>
+<span class="lineno">  980 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithMarker  = &quot;ExplicitVarSizeWithMarker&quot;</span>
+<span class="lineno">  981 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Set_ExplicitVarSizeWithDummy   = &quot;ExplicitVarSizeWithDummy&quot;</span>
+<span class="lineno">  982 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_Occurrence                = &quot;MOccurrence&quot;</span>
+<span class="lineno">  983 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithFlags         = &quot;ExplicitWithFlags&quot;</span>
+<span class="lineno">  984 </span><span class="spaces"></span><span class="istickedoff">representationToShortText MSet_ExplicitWithRepetition    = &quot;ExplicitWithRepetition&quot;</span>
+<span class="lineno">  985 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1D                    = &quot;Function1D&quot;</span>
+<span class="lineno">  986 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_1DPartial             = &quot;Function1DPartial&quot;</span>
+<span class="lineno">  987 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_ND                    = &quot;FunctionND&quot;</span>
+<span class="lineno">  988 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartial             = &quot;FunctionNDPartial&quot;</span>
+<span class="lineno">  989 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_NDPartialDummy        = &quot;FunctionNDPartialDummy&quot;</span>
+<span class="lineno">  990 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Function_AsRelation{}          = &quot;FunctionAsRelation&quot;</span>
+<span class="lineno">  991 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Sequence_ExplicitBounded       = &quot;ExplicitBounded&quot;</span>
+<span class="lineno">  992 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsMatrix              = &quot;RelationAsMatrix&quot;</span>
+<span class="lineno">  993 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Relation_AsSet{}               = &quot;RelationAsSet&quot;</span>
+<span class="lineno">  994 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_AsSet{}              = &quot;PartitionAsSet&quot;</span>
+<span class="lineno">  995 </span><span class="spaces"></span><span class="istickedoff">representationToShortText Partition_Occurrence           = &quot;PartitionOccurrence&quot;</span>
+<span class="lineno">  996 </span><span class="spaces"></span><span class="istickedoff">representationToShortText r = <span class="nottickedoff">bug (&quot;representationToShortText:&quot; &lt;+&gt; pretty (show r))</span></span></span>
+<span class="lineno">  997 </span>
+<span class="lineno">  998 </span>representationToFullText :: HasRepresentation -&gt; Text
+<span class="lineno">  999 </span><span class="decl"><span class="nottickedoff">representationToFullText (Function_AsRelation repr)     = mconcat [ &quot;FunctionAsRelation&quot;</span>
+<span class="lineno"> 1000 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno"> 1001 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
+<span class="lineno"> 1002 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno"> 1003 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno"> 1004 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Relation_AsSet repr)          = mconcat [ &quot;RelationAsSet&quot;</span>
+<span class="lineno"> 1005 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno"> 1006 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr</span>
+<span class="lineno"> 1007 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno"> 1008 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno"> 1009 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText (Partition_AsSet repr1 repr2)  = mconcat [ &quot;PartitionAsSet&quot;</span>
+<span class="lineno"> 1010 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;[&quot;</span>
+<span class="lineno"> 1011 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr1</span>
+<span class="lineno"> 1012 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;,&quot;</span>
+<span class="lineno"> 1013 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, representationToFullText repr2</span>
+<span class="lineno"> 1014 </span><span class="spaces">                                                                  </span><span class="nottickedoff">, &quot;]&quot;</span>
+<span class="lineno"> 1015 </span><span class="spaces">                                                                  </span><span class="nottickedoff">]</span>
+<span class="lineno"> 1016 </span><span class="spaces"></span><span class="nottickedoff">representationToFullText r = representationToShortText r</span></span>
+<span class="lineno"> 1017 </span>
+<span class="lineno"> 1018 </span>
+<span class="lineno"> 1019 </span>normaliseDomain :: (Ord c, ExpressionLike c) =&gt; (c -&gt; c) -&gt; Domain r c -&gt; Domain r c
+<span class="lineno"> 1020 </span><span class="decl"><span class="istickedoff">normaliseDomain _norm DomainBool                  = DomainBool</span>
+<span class="lineno"> 1021 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainInt t rs           ) = DomainInt t $ sort $ map (normaliseRange norm) (expandRanges rs)</span>
+<span class="lineno"> 1022 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n Nothing   mp) = <span class="nottickedoff">DomainEnum n Nothing mp</span></span>
+<span class="lineno"> 1023 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm (DomainEnum n (Just rs) mp) = DomainEnum <span class="nottickedoff">n</span> (Just $ sort rs) mp</span>
+<span class="lineno"> 1024 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainUnnamed n x        ) = DomainUnnamed <span class="nottickedoff">n</span> (norm x)</span>
+<span class="lineno"> 1025 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRecord           doms     ) = DomainRecord  [ (n, normaliseDomain norm d)</span>
+<span class="lineno"> 1026 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
+<span class="lineno"> 1027 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainVariant          doms     ) = DomainVariant [ (n, normaliseDomain norm d)</span>
+<span class="lineno"> 1028 </span><span class="spaces">                                                                         </span><span class="istickedoff">| (n, d) &lt;- doms ]</span>
+<span class="lineno"> 1029 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainTuple            doms     ) = DomainTuple $ map (normaliseDomain norm) doms</span>
+<span class="lineno"> 1030 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMatrix           dom1 dom2) = DomainMatrix      (normaliseDomain norm dom1)</span>
+<span class="lineno"> 1031 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
+<span class="lineno"> 1032 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSet       r attr dom      ) = DomainSet       r (fmap norm attr)</span>
+<span class="lineno"> 1033 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1034 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainMSet      r attr dom      ) = DomainMSet      r (fmap norm attr)</span>
+<span class="lineno"> 1035 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1036 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainFunction  r attr dom1 dom2) = DomainFunction  r (fmap norm attr)</span>
+<span class="lineno"> 1037 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom1)</span>
+<span class="lineno"> 1038 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom2)</span>
+<span class="lineno"> 1039 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainSequence  r attr dom      ) = DomainSequence  r (fmap norm attr)</span>
+<span class="lineno"> 1040 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1041 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainRelation  r attr doms     ) = DomainRelation  r (fmap norm attr)</span>
+<span class="lineno"> 1042 </span><span class="spaces">                                                                             </span><span class="istickedoff">(map (normaliseDomain norm) doms)</span>
+<span class="lineno"> 1043 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain  norm (DomainPartition r attr dom      ) = DomainPartition r (fmap norm attr)</span>
+<span class="lineno"> 1044 </span><span class="spaces">                                                                             </span><span class="istickedoff">(normaliseDomain norm dom)</span>
+<span class="lineno"> 1045 </span><span class="spaces"></span><span class="istickedoff">normaliseDomain _norm d = d</span></span>
+<span class="lineno"> 1046 </span>
+<span class="lineno"> 1047 </span>normaliseRange :: (c -&gt; c) -&gt; Range c -&gt; Range c
+<span class="lineno"> 1048 </span><span class="decl"><span class="istickedoff">normaliseRange _norm RangeOpen             = <span class="nottickedoff">RangeOpen</span></span>
+<span class="lineno"> 1049 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeSingle x)       = RangeBounded (norm x) (norm x)</span>
+<span class="lineno"> 1050 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeLowerBounded x) = RangeLowerBounded (norm x)</span>
+<span class="lineno"> 1051 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeUpperBounded x) = <span class="nottickedoff">RangeUpperBounded (norm x)</span></span>
+<span class="lineno"> 1052 </span><span class="spaces"></span><span class="istickedoff">normaliseRange  norm (RangeBounded x y)    = RangeBounded (norm x) (norm y)</span></span>
+<span class="lineno"> 1053 </span>
+<span class="lineno"> 1054 </span>innerDomainOf :: (MonadFailDoc m, Show x) =&gt; Domain () x -&gt; m (Domain () x)
+<span class="lineno"> 1055 </span><span class="decl"><span class="istickedoff">innerDomainOf (DomainMatrix _ t) = return t</span>
+<span class="lineno"> 1056 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainSet _ _ t) = return t</span>
+<span class="lineno"> 1057 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainMSet _ _ t) = return t</span>
+<span class="lineno"> 1058 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainFunction _ _ a b) = return (DomainTuple [a,b])</span>
+<span class="lineno"> 1059 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainRelation _ _ ts) = return (DomainTuple ts)</span>
+<span class="lineno"> 1060 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf (DomainPartition _ _ t) = <span class="nottickedoff">return (DomainSet () def t)</span></span>
+<span class="lineno"> 1061 </span><span class="spaces"></span><span class="istickedoff">innerDomainOf t = failDoc (&quot;innerDomainOf:&quot; &lt;+&gt; pretty (show t))</span></span>
+<span class="lineno"> 1062 </span>
+<span class="lineno"> 1063 </span>singletonDomainInt :: (Eq x, CanBeAnAlias x) =&gt; Domain r x -&gt; Maybe x
+<span class="lineno"> 1064 </span><span class="decl"><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeSingle a]) = Just a</span>
+<span class="lineno"> 1065 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt (DomainInt _ [RangeBounded a b]) =</span>
+<span class="lineno"> 1066 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno"> 1067 </span><span class="spaces">        </span><span class="istickedoff">followAlias (isAlias -&gt; Just x) = followAlias x</span>
+<span class="lineno"> 1068 </span><span class="spaces">        </span><span class="istickedoff">followAlias x = x</span>
+<span class="lineno"> 1069 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno"> 1070 </span><span class="spaces">        </span><span class="istickedoff">if followAlias a == followAlias b</span>
+<span class="lineno"> 1071 </span><span class="spaces">            </span><span class="istickedoff">then Just a</span>
+<span class="lineno"> 1072 </span><span class="spaces">            </span><span class="istickedoff">else Nothing</span>
+<span class="lineno"> 1073 </span><span class="spaces"></span><span class="istickedoff">singletonDomainInt _ = Nothing</span></span>
+<span class="lineno"> 1074 </span>
+<span class="lineno"> 1075 </span>matrixNumDimsD :: Domain r x -&gt; Int
+<span class="lineno"> 1076 </span><span class="decl"><span class="nottickedoff">matrixNumDimsD (DomainMatrix _ t) = 1 + matrixNumDimsD t</span>
+<span class="lineno"> 1077 </span><span class="spaces"></span><span class="nottickedoff">matrixNumDimsD _ = 0</span></span>
+
+</pre>
+</body>
+</html>
