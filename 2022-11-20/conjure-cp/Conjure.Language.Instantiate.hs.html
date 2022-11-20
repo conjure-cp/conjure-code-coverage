@@ -1,0 +1,460 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Instantiate
+<span class="lineno">    4 </span>    ( instantiateExpression
+<span class="lineno">    5 </span>    , instantiateDomain
+<span class="lineno">    6 </span>    , trySimplify
+<span class="lineno">    7 </span>    , entailed
+<span class="lineno">    8 </span>    ) where
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>-- conjure
+<span class="lineno">   11 </span>import Conjure.Prelude
+<span class="lineno">   12 </span>import Conjure.Bug
+<span class="lineno">   13 </span>import Conjure.UserError
+<span class="lineno">   14 </span>import Conjure.Language.Definition
+<span class="lineno">   15 </span>import Conjure.Language.Expression.Op
+<span class="lineno">   16 </span>import Conjure.Language.Domain
+<span class="lineno">   17 </span>import Conjure.Language.Constant
+<span class="lineno">   18 </span>import Conjure.Language.Type
+<span class="lineno">   19 </span>import Conjure.Language.TypeOf
+<span class="lineno">   20 </span>import Conjure.Language.Pretty
+<span class="lineno">   21 </span>import Conjure.Language.EvaluateOp ( evaluateOp )
+<span class="lineno">   22 </span>import Conjure.Process.Enumerate ( EnumerateDomain, enumerateDomain, enumerateInConstant )
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>-- | Try to simplify an expression recursively.
+<span class="lineno">   26 </span>trySimplify ::
+<span class="lineno">   27 </span>    MonadUserError m =&gt;
+<span class="lineno">   28 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   29 </span>    NameGen m =&gt;
+<span class="lineno">   30 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   31 </span>    [(Name, Expression)] -&gt; Expression -&gt; m Expression
+<span class="lineno">   32 </span><span class="decl"><span class="istickedoff">trySimplify ctxt x = do</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">res &lt;- runMaybeT $ instantiateExpression ctxt x</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">case res of</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">Just c                                                  -- if the expression can be evaluated into a Constant</span>
+<span class="lineno">   36 </span><span class="spaces">            </span><span class="istickedoff">| null [<span class="nottickedoff">()</span> | ConstantUndefined{} &lt;- universe c]     -- and if it doesn't contain undefined's in it</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">-&gt; return (Constant c)                              -- evaluate to the constant</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">_   -&gt; descendM (trySimplify ctxt) x</span></span>                    -- otherwise, try the same on its children
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>instantiateExpression ::
+<span class="lineno">   42 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   43 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   44 </span>    NameGen m =&gt;
+<span class="lineno">   45 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   46 </span>    [(Name, Expression)] -&gt; Expression -&gt; m Constant
+<span class="lineno">   47 </span><span class="decl"><span class="istickedoff">instantiateExpression ctxt x = do</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">constant &lt;- normaliseConstant &lt;$&gt; evalStateT (instantiateE x) ctxt</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">case (emptyCollection constant, constant) of</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">(_, TypedConstant{}) -&gt; return constant</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">(True, _) -&gt; do</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">   53 </span><span class="spaces">            </span><span class="istickedoff">return (TypedConstant constant ty)</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">(False, _) -&gt; return constant</span></span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>instantiateDomain ::
+<span class="lineno">   58 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   59 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   60 </span>    NameGen m =&gt;
+<span class="lineno">   61 </span>    Pretty r =&gt;
+<span class="lineno">   62 </span>    Default r =&gt;
+<span class="lineno">   63 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   64 </span>    [(Name, Expression)] -&gt; Domain r Expression -&gt; m (Domain r Constant)
+<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">instantiateDomain ctxt x = normaliseDomain normaliseConstant &lt;$&gt; evalStateT (instantiateD x) ctxt</span></span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>newtype HasUndef = HasUndef Any
+<span class="lineno">   69 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Semigroup</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Monoid</span></span></span></span></span></span>)
+<span class="lineno">   70 </span>
+<span class="lineno">   71 </span>instantiateE ::
+<span class="lineno">   72 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   73 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">   74 </span>    EnumerateDomain m =&gt;
+<span class="lineno">   75 </span>    NameGen m =&gt;
+<span class="lineno">   76 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   77 </span>    Expression -&gt; m Constant
+<span class="lineno">   78 </span><span class="decl"><span class="istickedoff">instantiateE (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">loop ::</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">MonadFailDoc m =&gt;</span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff">MonadState [(Name, Expression)] m =&gt;</span>
+<span class="lineno">   83 </span><span class="spaces">            </span><span class="istickedoff">EnumerateDomain m =&gt;</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">NameGen m =&gt;</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">[GeneratorOrCondition] -&gt; WriterT HasUndef m [Constant]</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">loop [] = return &lt;$&gt; instantiateE body</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">loop (Generator (GenDomainNoRepr pat domain) : rest) = do</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">DomainInConstant domainConstant &lt;- instantiateE (Domain domain)</span>
+<span class="lineno">   89 </span><span class="spaces">            </span><span class="istickedoff">let undefinedsInsideTheDomain =</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">[ <span class="nottickedoff">und</span></span>
+<span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff">| und@ConstantUndefined{} &lt;- universeBi domainConstant</span>
+<span class="lineno">   92 </span><span class="spaces">                    </span><span class="istickedoff">]</span>
+<span class="lineno">   93 </span><span class="spaces">            </span><span class="istickedoff">if null undefinedsInsideTheDomain</span>
+<span class="lineno">   94 </span><span class="spaces">                </span><span class="istickedoff">then do</span>
+<span class="lineno">   95 </span><span class="spaces">                    </span><span class="istickedoff">enumeration &lt;- enumerateDomain domainConstant</span>
+<span class="lineno">   96 </span><span class="spaces">                    </span><span class="istickedoff">concatMapM</span>
+<span class="lineno">   97 </span><span class="spaces">                        </span><span class="istickedoff">(\ val -&gt; scope $ do</span>
+<span class="lineno">   98 </span><span class="spaces">                            </span><span class="istickedoff">valid &lt;- bind pat val</span>
+<span class="lineno">   99 </span><span class="spaces">                            </span><span class="istickedoff">if <span class="tickonlytrue">valid</span></span>
+<span class="lineno">  100 </span><span class="spaces">                                </span><span class="istickedoff">then loop rest</span>
+<span class="lineno">  101 </span><span class="spaces">                                </span><span class="istickedoff">else <span class="nottickedoff">return []</span> )</span>
+<span class="lineno">  102 </span><span class="spaces">                        </span><span class="istickedoff">enumeration</span>
+<span class="lineno">  103 </span><span class="spaces">                </span><span class="istickedoff">else do</span>
+<span class="lineno">  104 </span><span class="spaces">                    </span><span class="istickedoff">tell (HasUndef (Any True))</span>
+<span class="lineno">  105 </span><span class="spaces">                    </span><span class="istickedoff">return <span class="nottickedoff">[]</span></span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">loop (Generator (GenDomainHasRepr pat domain) : rest) =</span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff">loop (Generator (GenDomainNoRepr (Single pat) (forgetRepr domain)) : rest)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff">loop (Generator (GenInExpr pat expr) : rest) = do</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff">exprConstant &lt;- instantiateE expr</span>
+<span class="lineno">  110 </span><span class="spaces">            </span><span class="istickedoff">enumeration &lt;- enumerateInConstant exprConstant</span>
+<span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff">concatMapM</span>
+<span class="lineno">  112 </span><span class="spaces">                </span><span class="istickedoff">(\ val -&gt; scope $ do</span>
+<span class="lineno">  113 </span><span class="spaces">                    </span><span class="istickedoff">valid &lt;- bind pat val</span>
+<span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">if valid</span>
+<span class="lineno">  115 </span><span class="spaces">                        </span><span class="istickedoff">then loop rest</span>
+<span class="lineno">  116 </span><span class="spaces">                        </span><span class="istickedoff">else return [] )</span>
+<span class="lineno">  117 </span><span class="spaces">                </span><span class="istickedoff">enumeration</span>
+<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">loop (Condition expr : rest) = do</span>
+<span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff">constant &lt;- instantiateE expr</span>
+<span class="lineno">  120 </span><span class="spaces">            </span><span class="istickedoff">if constant == ConstantBool True</span>
+<span class="lineno">  121 </span><span class="spaces">                </span><span class="istickedoff">then loop rest</span>
+<span class="lineno">  122 </span><span class="spaces">                </span><span class="istickedoff">else return []</span>
+<span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">loop (ComprehensionLetting pat expr : rest) = do</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">constant &lt;- instantiateE expr</span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">valid &lt;- bind pat constant</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">unless valid <span class="nottickedoff">(bug &quot;ComprehensionLetting.bind expected to be valid&quot;)</span></span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">loop rest</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  129 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  130 </span><span class="spaces">    </span><span class="istickedoff">(constants, HasUndef (Any undefinedsInsideGeneratorDomains)) &lt;- runWriterT (loop gensOrConds)</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">if undefinedsInsideGeneratorDomains</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">then do</span>
+<span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">ty &lt;- typeOf (Comprehension body gensOrConds)</span>
+<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">return $ ConstantUndefined</span>
+<span class="lineno">  135 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">&quot;Comprehension contains undefined values inside generator domains.&quot;</span></span>
+<span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ty</span></span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">else</span>
+<span class="lineno">  138 </span><span class="spaces">            </span><span class="istickedoff">return $ ConstantAbstract $ AbsLitMatrix</span>
+<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff">(DomainInt TagInt [RangeBounded 1 (fromInt (genericLength constants))])</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">constants</span>
+<span class="lineno">  141 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  142 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Reference name (Just (RecordField _ ty))) = return $ ConstantField name ty</span>
+<span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Reference name (Just (VariantField _ ty))) = return $ ConstantField name ty</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Reference name refto) = do</span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">ctxt &lt;- gets id</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff">case name `lookup` ctxt of</span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">Just x -&gt; instantiateE x</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt;</span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">case refto of</span>
+<span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff">Just (Alias x) -&gt;</span>
+<span class="lineno">  151 </span><span class="spaces">                    </span><span class="istickedoff">-- we do not have this name in context, but we have it stored in the Reference itself</span>
+<span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff">-- reuse that</span>
+<span class="lineno">  153 </span><span class="spaces">                    </span><span class="istickedoff">instantiateE x</span>
+<span class="lineno">  154 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; </span>
+<span class="lineno">  155 </span><span class="spaces">                    </span><span class="istickedoff">failDoc $ vcat</span>
+<span class="lineno">  156 </span><span class="spaces">                    </span><span class="istickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span>
+<span class="lineno">  157 </span><span class="spaces">                    </span><span class="istickedoff">: &quot;Bindings in context:&quot;</span>
+<span class="lineno">  158 </span><span class="spaces">                    </span><span class="istickedoff">: <span class="nottickedoff">prettyContext ctxt</span></span>
+<span class="lineno">  159 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  160 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Constant c) = return c</span>
+<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff">instantiateE (AbstractLiteral lit) = instantiateAbsLit lit</span>
+<span class="lineno">  162 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Typed x ty) = TypedConstant &lt;$&gt; instantiateE x &lt;*&gt; pure ty</span>
+<span class="lineno">  163 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Op op) = instantiateOp op</span>
+<span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  165 </span><span class="spaces"></span><span class="istickedoff">-- &quot;Domain () Expression&quot;s inside expressions are handled specially</span>
+<span class="lineno">  166 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Domain (DomainReference _ (Just d))) = instantiateE (Domain d)</span>
+<span class="lineno">  167 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Domain (DomainReference name Nothing)) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">ctxt &lt;- gets id</span></span>
+<span class="lineno">  169 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">case name `lookup` ctxt of</span></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Just (Domain d) -&gt; instantiateE (Domain d)</span></span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc $ vcat</span></span>
+<span class="lineno">  172 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
+<span class="lineno">  173 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
+<span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
+<span class="lineno">  175 </span><span class="spaces"></span><span class="istickedoff">instantiateE (Domain domain) = DomainInConstant &lt;$&gt; instantiateD domain</span>
+<span class="lineno">  176 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  177 </span><span class="spaces"></span><span class="istickedoff">instantiateE (WithLocals b (AuxiliaryVars locals)) = do</span>
+<span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">forM_ locals $ \ local -&gt; case local of</span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">SuchThat xs -&gt; <span class="nottickedoff">forM_ xs $ \ x -&gt; do</span></span>
+<span class="lineno">  180 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">constant &lt;- instantiateE x</span></span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case constant of</span></span>
+<span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantBool True -&gt; return ()</span></span>
+<span class="lineno">  183 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_                 -&gt; failDoc $ &quot;local:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; failDoc $ &quot;local:&quot; &lt;+&gt; pretty local</span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">instantiateE b</span></span>
+<span class="lineno">  186 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  187 </span><span class="spaces"></span><span class="istickedoff">instantiateE (WithLocals b (DefinednessConstraints locals)) = do</span>
+<span class="lineno">  188 </span><span class="spaces">    </span><span class="istickedoff">forM_ locals $ \ x -&gt; do</span>
+<span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff">constant &lt;- instantiateE x</span>
+<span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff">case constant of</span>
+<span class="lineno">  191 </span><span class="spaces">                </span><span class="istickedoff">ConstantBool True -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  192 </span><span class="spaces">                </span><span class="istickedoff">_                 -&gt; failDoc $ &quot;local:&quot; &lt;+&gt; pretty constant</span>
+<span class="lineno">  193 </span><span class="spaces">    </span><span class="istickedoff">instantiateE b</span>
+<span class="lineno">  194 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  195 </span><span class="spaces"></span><span class="istickedoff">instantiateE x = <span class="nottickedoff">failDoc $ &quot;instantiateE:&quot; &lt;+&gt; pretty (show x)</span></span></span>
+<span class="lineno">  196 </span>
+<span class="lineno">  197 </span>
+<span class="lineno">  198 </span>instantiateOp ::
+<span class="lineno">  199 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  200 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  201 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  202 </span>    NameGen m =&gt;
+<span class="lineno">  203 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  204 </span>    Op Expression -&gt; m Constant
+<span class="lineno">  205 </span><span class="decl"><span class="istickedoff">instantiateOp opx = mapM instantiateE opx &gt;&gt;= evaluateOp . fmap normaliseConstant</span></span>
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>
+<span class="lineno">  208 </span>instantiateAbsLit ::
+<span class="lineno">  209 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  210 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  211 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  212 </span>    NameGen m =&gt;
+<span class="lineno">  213 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  214 </span>    AbstractLiteral Expression -&gt; m Constant
+<span class="lineno">  215 </span><span class="decl"><span class="istickedoff">instantiateAbsLit x = do</span>
+<span class="lineno">  216 </span><span class="spaces">    </span><span class="istickedoff">c &lt;- mapM instantiateE x</span>
+<span class="lineno">  217 </span><span class="spaces">    </span><span class="istickedoff">case c of</span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff">-- for functions, if the same thing is mapped to multiple values, the result is undefined</span>
+<span class="lineno">  219 </span><span class="spaces">        </span><span class="istickedoff">AbsLitFunction vals -&gt; do</span>
+<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff">let nubVals = sortNub vals</span>
+<span class="lineno">  221 </span><span class="spaces">            </span><span class="istickedoff">if length (sortNub (map fst nubVals)) == length nubVals</span>
+<span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff">then return $ ConstantAbstract $ AbsLitFunction nubVals</span>
+<span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff">else do</span>
+<span class="lineno">  224 </span><span class="spaces">                    </span><span class="istickedoff">ty &lt;- typeOf c</span>
+<span class="lineno">  225 </span><span class="spaces">                    </span><span class="istickedoff">return $ ConstantUndefined <span class="nottickedoff">&quot;Multiple mappings for the same value.&quot;</span> ty</span>
+<span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return $ ConstantAbstract c</span></span>
+<span class="lineno">  227 </span>
+<span class="lineno">  228 </span>
+<span class="lineno">  229 </span>instantiateD ::
+<span class="lineno">  230 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  231 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  232 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  233 </span>    NameGen m =&gt;
+<span class="lineno">  234 </span>    Pretty r =&gt;
+<span class="lineno">  235 </span>    Default r =&gt;
+<span class="lineno">  236 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  237 </span>    Domain r Expression -&gt; m (Domain r Constant)
+<span class="lineno">  238 </span><span class="decl"><span class="istickedoff">instantiateD (DomainAny t ty) = <span class="nottickedoff">return (DomainAny t ty)</span></span>
+<span class="lineno">  239 </span><span class="spaces"></span><span class="istickedoff">instantiateD DomainBool = return DomainBool</span>
+<span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainIntE x) = do</span>
+<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">x' &lt;- instantiateE x</span>
+<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">let vals = case (x', viewConstantMatrix x', <span class="nottickedoff">viewConstantSet x'</span>) of</span>
+<span class="lineno">  243 </span><span class="spaces">                </span><span class="istickedoff">(ConstantInt{}, _, _) -&gt; [x']</span>
+<span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff">(_, Just (_, xs), _) -&gt; xs</span>
+<span class="lineno">  245 </span><span class="spaces">                </span><span class="istickedoff">(_, _, Just xs) -&gt; <span class="nottickedoff">xs</span></span>
+<span class="lineno">  246 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">[]</span></span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">return (DomainInt TagInt (map RangeSingle vals))</span>
+<span class="lineno">  248 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainInt t ranges) = DomainInt t &lt;$&gt; mapM instantiateR ranges</span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm Nothing _) = do</span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets id</span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">case lookup nm st of</span>
+<span class="lineno">  252 </span><span class="spaces">        </span><span class="istickedoff">Just (Domain dom) -&gt; instantiateD (defRepr dom)</span>
+<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff">Just _  -&gt; <span class="nottickedoff">failDoc $ (&quot;DomainEnum not found in state, Just:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
+<span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ (&quot;DomainEnum not found in state, Nothing:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm rs0 _) = do</span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">let fmap4 = fmap . fmap . fmap . fmap</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">let e2c' x = either <span class="nottickedoff">bug</span> id (e2c x)</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">rs &lt;- transformBiM (\ x -&gt; Constant &lt;$&gt; instantiateE x ) (rs0 :: Maybe [Range Expression])</span>
+<span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff">|&gt; fmap4 e2c'</span>
+<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets <span class="nottickedoff">id</span></span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">mp &lt;- forM (universeBi rs :: [Name]) $ <span class="nottickedoff">\ n -&gt; case lookup n st of</span></span>
+<span class="lineno">  262 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just (Constant (ConstantInt _ i)) -&gt; return (n, i)</span></span>
+<span class="lineno">  263 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ &quot;No value for member of enum domain:&quot; &lt;+&gt; pretty n</span></span>
+<span class="lineno">  264 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just c  -&gt; failDoc $ vcat [ &quot;Incompatible value for member of enum domain:&quot; &lt;+&gt; pretty nm</span></span>
+<span class="lineno">  265 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;    Looking up for member:&quot; &lt;+&gt; pretty n</span></span>
+<span class="lineno">  266 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;    Expected an integer, but got:&quot; &lt;+&gt; pretty c</span></span>
+<span class="lineno">  267 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">return (DomainEnum <span class="nottickedoff">nm</span> (rs :: Maybe [Range Constant]) (Just <span class="nottickedoff">mp</span>))</span>
+<span class="lineno">  269 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainUnnamed nm s) = DomainUnnamed <span class="nottickedoff">nm</span> &lt;$&gt; instantiateE s</span>
+<span class="lineno">  270 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainTuple inners) = DomainTuple &lt;$&gt; mapM instantiateD inners</span>
+<span class="lineno">  271 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainRecord  inners) = DomainRecord  &lt;$&gt; sequence [ do d' &lt;- instantiateD d ; return (n,d')</span>
+<span class="lineno">  272 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,d) &lt;- inners ]</span>
+<span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainVariant inners) = DomainVariant &lt;$&gt; sequence [ do d' &lt;- instantiateD d ; return (n,d')</span>
+<span class="lineno">  274 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,d) &lt;- inners ]</span>
+<span class="lineno">  275 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainMatrix index inner) = DomainMatrix &lt;$&gt; instantiateD index &lt;*&gt; instantiateD inner</span>
+<span class="lineno">  276 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainSet       r attrs inner) = DomainSet r &lt;$&gt; instantiateSetAttr attrs &lt;*&gt; instantiateD inner</span>
+<span class="lineno">  277 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainMSet      r attrs inner) = DomainMSet r &lt;$&gt; instantiateMSetAttr attrs &lt;*&gt; instantiateD inner</span>
+<span class="lineno">  278 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainFunction  r attrs innerFr innerTo) = DomainFunction r &lt;$&gt; instantiateFunctionAttr attrs &lt;*&gt; instantiateD innerFr &lt;*&gt; instantiateD innerTo</span>
+<span class="lineno">  279 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainSequence  r attrs inner) = DomainSequence r &lt;$&gt; instantiateSequenceAttr attrs &lt;*&gt; instantiateD inner</span>
+<span class="lineno">  280 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainRelation  r attrs inners) = DomainRelation r &lt;$&gt; instantiateRelationAttr attrs &lt;*&gt; mapM instantiateD inners</span>
+<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainPartition r attrs inner) = DomainPartition r &lt;$&gt; instantiatePartitionAttr attrs &lt;*&gt; instantiateD inner</span>
+<span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainOp nm ds) = <span class="nottickedoff">DomainOp nm &lt;$&gt; mapM instantiateD ds</span></span>
+<span class="lineno">  283 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainReference _ (Just d)) = instantiateD d</span>
+<span class="lineno">  284 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainReference name Nothing) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  285 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">ctxt &lt;- gets id</span></span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">case name `lookup` ctxt of</span></span>
+<span class="lineno">  287 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Just (Domain d) -&gt; instantiateD (defRepr d)</span></span>
+<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc $ vcat</span></span>
+<span class="lineno">  289 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">$ (&quot;No value for:&quot; &lt;+&gt; pretty name)</span></span>
+<span class="lineno">  290 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: &quot;Bindings in context:&quot;</span></span>
+<span class="lineno">  291 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">: prettyContext ctxt</span></span>
+<span class="lineno">  292 </span><span class="spaces"></span><span class="istickedoff">instantiateD DomainMetaVar{} = <span class="nottickedoff">bug &quot;instantiateD DomainMetaVar&quot;</span></span></span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>
+<span class="lineno">  295 </span>instantiateSetAttr ::
+<span class="lineno">  296 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  297 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  298 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  299 </span>    NameGen m =&gt;
+<span class="lineno">  300 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  301 </span>    SetAttr Expression -&gt; m (SetAttr Constant)
+<span class="lineno">  302 </span><span class="decl"><span class="istickedoff">instantiateSetAttr (SetAttr s) = SetAttr &lt;$&gt; instantiateSizeAttr s</span></span>
+<span class="lineno">  303 </span>
+<span class="lineno">  304 </span>
+<span class="lineno">  305 </span>instantiateSizeAttr ::
+<span class="lineno">  306 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  307 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  308 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  309 </span>    NameGen m =&gt;
+<span class="lineno">  310 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  311 </span>    SizeAttr Expression -&gt; m (SizeAttr Constant)
+<span class="lineno">  312 </span><span class="decl"><span class="istickedoff">instantiateSizeAttr SizeAttr_None = return SizeAttr_None</span>
+<span class="lineno">  313 </span><span class="spaces"></span><span class="istickedoff">instantiateSizeAttr (SizeAttr_Size x) = SizeAttr_Size &lt;$&gt; instantiateE x</span>
+<span class="lineno">  314 </span><span class="spaces"></span><span class="istickedoff">instantiateSizeAttr (SizeAttr_MinSize x) = SizeAttr_MinSize &lt;$&gt; instantiateE x</span>
+<span class="lineno">  315 </span><span class="spaces"></span><span class="istickedoff">instantiateSizeAttr (SizeAttr_MaxSize x) = SizeAttr_MaxSize &lt;$&gt; instantiateE x</span>
+<span class="lineno">  316 </span><span class="spaces"></span><span class="istickedoff">instantiateSizeAttr (SizeAttr_MinMaxSize x y) = SizeAttr_MinMaxSize &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span>
+<span class="lineno">  317 </span>
+<span class="lineno">  318 </span>
+<span class="lineno">  319 </span>instantiateMSetAttr ::
+<span class="lineno">  320 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  321 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  322 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  323 </span>    NameGen m =&gt;
+<span class="lineno">  324 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  325 </span>    MSetAttr Expression -&gt; m (MSetAttr Constant)
+<span class="lineno">  326 </span><span class="decl"><span class="istickedoff">instantiateMSetAttr (MSetAttr s o) = MSetAttr &lt;$&gt; instantiateSizeAttr s &lt;*&gt; instantiateOccurAttr o</span></span>
+<span class="lineno">  327 </span>
+<span class="lineno">  328 </span>
+<span class="lineno">  329 </span>instantiateOccurAttr ::
+<span class="lineno">  330 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  331 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  332 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  333 </span>    NameGen m =&gt;
+<span class="lineno">  334 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  335 </span>    OccurAttr Expression -&gt; m (OccurAttr Constant)
+<span class="lineno">  336 </span><span class="decl"><span class="istickedoff">instantiateOccurAttr OccurAttr_None = return OccurAttr_None</span>
+<span class="lineno">  337 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinOccur x) = OccurAttr_MinOccur &lt;$&gt; instantiateE x</span>
+<span class="lineno">  338 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MaxOccur x) = OccurAttr_MaxOccur &lt;$&gt; instantiateE x</span>
+<span class="lineno">  339 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinMaxOccur x y) = OccurAttr_MinMaxOccur &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span>
+<span class="lineno">  340 </span>
+<span class="lineno">  341 </span>
+<span class="lineno">  342 </span>instantiateFunctionAttr ::
+<span class="lineno">  343 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  344 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  345 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  346 </span>    NameGen m =&gt;
+<span class="lineno">  347 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  348 </span>    FunctionAttr Expression -&gt; m (FunctionAttr Constant)
+<span class="lineno">  349 </span><span class="decl"><span class="istickedoff">instantiateFunctionAttr (FunctionAttr s p j) =</span>
+<span class="lineno">  350 </span><span class="spaces">    </span><span class="istickedoff">FunctionAttr &lt;$&gt; instantiateSizeAttr s</span>
+<span class="lineno">  351 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pure p</span>
+<span class="lineno">  352 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pure j</span></span>
+<span class="lineno">  353 </span>
+<span class="lineno">  354 </span>
+<span class="lineno">  355 </span>instantiateSequenceAttr ::
+<span class="lineno">  356 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  357 </span>    MonadUserError m =&gt;
+<span class="lineno">  358 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  359 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  360 </span>    NameGen m =&gt;
+<span class="lineno">  361 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  362 </span>    SequenceAttr Expression -&gt; m (SequenceAttr Constant)
+<span class="lineno">  363 </span><span class="decl"><span class="istickedoff">instantiateSequenceAttr (SequenceAttr s j) =</span>
+<span class="lineno">  364 </span><span class="spaces">    </span><span class="istickedoff">SequenceAttr &lt;$&gt; instantiateSizeAttr s</span>
+<span class="lineno">  365 </span><span class="spaces">                 </span><span class="istickedoff">&lt;*&gt; pure j</span></span>
+<span class="lineno">  366 </span>
+<span class="lineno">  367 </span>
+<span class="lineno">  368 </span>instantiateRelationAttr ::
+<span class="lineno">  369 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  370 </span>    MonadUserError m =&gt;
+<span class="lineno">  371 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  372 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  373 </span>    NameGen m =&gt;
+<span class="lineno">  374 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  375 </span>    RelationAttr Expression -&gt; m (RelationAttr Constant)
+<span class="lineno">  376 </span><span class="decl"><span class="istickedoff">instantiateRelationAttr (RelationAttr s b) = RelationAttr &lt;$&gt; instantiateSizeAttr s &lt;*&gt; pure b</span></span>
+<span class="lineno">  377 </span>
+<span class="lineno">  378 </span>
+<span class="lineno">  379 </span>instantiatePartitionAttr ::
+<span class="lineno">  380 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  381 </span>    MonadUserError m =&gt;
+<span class="lineno">  382 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  383 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  384 </span>    NameGen m =&gt;
+<span class="lineno">  385 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  386 </span>    PartitionAttr Expression -&gt; m (PartitionAttr Constant)
+<span class="lineno">  387 </span><span class="decl"><span class="istickedoff">instantiatePartitionAttr (PartitionAttr a b r) =</span>
+<span class="lineno">  388 </span><span class="spaces">    </span><span class="istickedoff">PartitionAttr &lt;$&gt; instantiateSizeAttr a</span>
+<span class="lineno">  389 </span><span class="spaces">                  </span><span class="istickedoff">&lt;*&gt; instantiateSizeAttr b</span>
+<span class="lineno">  390 </span><span class="spaces">                  </span><span class="istickedoff">&lt;*&gt; pure <span class="nottickedoff">r</span></span></span>
+<span class="lineno">  391 </span>
+<span class="lineno">  392 </span>
+<span class="lineno">  393 </span>instantiateR ::
+<span class="lineno">  394 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  395 </span>    MonadState [(Name, Expression)] m =&gt;
+<span class="lineno">  396 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  397 </span>    NameGen m =&gt;
+<span class="lineno">  398 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  399 </span>    Range Expression -&gt; m (Range Constant)
+<span class="lineno">  400 </span><span class="decl"><span class="istickedoff">instantiateR RangeOpen = <span class="nottickedoff">return RangeOpen</span></span>
+<span class="lineno">  401 </span><span class="spaces"></span><span class="istickedoff">instantiateR (RangeSingle x) = RangeSingle &lt;$&gt; instantiateE x</span>
+<span class="lineno">  402 </span><span class="spaces"></span><span class="istickedoff">instantiateR (RangeLowerBounded x) = RangeLowerBounded &lt;$&gt; instantiateE x</span>
+<span class="lineno">  403 </span><span class="spaces"></span><span class="istickedoff">instantiateR (RangeUpperBounded x) = <span class="nottickedoff">RangeUpperBounded &lt;$&gt; instantiateE x</span></span>
+<span class="lineno">  404 </span><span class="spaces"></span><span class="istickedoff">instantiateR (RangeBounded x y) = RangeBounded &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span>
+<span class="lineno">  405 </span>
+<span class="lineno">  406 </span>
+<span class="lineno">  407 </span>bind :: (Functor m, MonadState [(Name, Expression)] m)
+<span class="lineno">  408 </span>    =&gt; AbstractPattern
+<span class="lineno">  409 </span>    -&gt; Constant
+<span class="lineno">  410 </span>    -&gt; m Bool -- False means skip
+<span class="lineno">  411 </span><span class="decl"><span class="istickedoff">bind (Single nm) val = modify ((nm, Constant val) :) &gt;&gt; return True</span>
+<span class="lineno">  412 </span><span class="spaces"></span><span class="istickedoff">bind (AbsPatTuple pats) (viewConstantTuple -&gt; Just vals)</span>
+<span class="lineno">  413 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">length pats == length vals</span> = and &lt;$&gt; zipWithM bind pats vals</span>
+<span class="lineno">  414 </span><span class="spaces"></span><span class="istickedoff">bind (AbsPatMatrix pats) (viewConstantMatrix -&gt; Just (_, vals))</span>
+<span class="lineno">  415 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">length pats == length vals</span> = <span class="nottickedoff">and &lt;$&gt; zipWithM bind pats vals</span></span>
+<span class="lineno">  416 </span><span class="spaces"></span><span class="istickedoff">bind (AbsPatSet pats) (viewConstantSet -&gt; Just vals)</span>
+<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">| length pats == length vals = and &lt;$&gt; zipWithM bind pats vals</span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>                  = return False</span>
+<span class="lineno">  419 </span><span class="spaces"></span><span class="istickedoff">bind pat val = <span class="nottickedoff">bug $ &quot;Instantiate.bind:&quot; &lt;++&gt; vcat [&quot;pat:&quot; &lt;+&gt; pretty pat, &quot;val:&quot; &lt;+&gt; pretty val]</span></span></span>
+<span class="lineno">  420 </span>
+<span class="lineno">  421 </span>
+<span class="lineno">  422 </span>-- check if the given expression can be evaluated to True
+<span class="lineno">  423 </span>-- False means it is not entailed, as opposed to &quot;it is known to be false&quot;
+<span class="lineno">  424 </span>entailed ::
+<span class="lineno">  425 </span>    MonadUserError m =&gt;
+<span class="lineno">  426 </span>    EnumerateDomain m =&gt;
+<span class="lineno">  427 </span>    NameGen m =&gt;
+<span class="lineno">  428 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  429 </span>    Expression -&gt; m Bool
+<span class="lineno">  430 </span><span class="decl"><span class="nottickedoff">entailed x = do</span>
+<span class="lineno">  431 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;entailed x:&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  432 </span><span class="spaces">    </span><span class="nottickedoff">c &lt;- trySimplify [] x</span>
+<span class="lineno">  433 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;entailed c:&quot; &lt;+&gt; pretty c</span>
+<span class="lineno">  434 </span><span class="spaces">    </span><span class="nottickedoff">case c of</span>
+<span class="lineno">  435 </span><span class="spaces">        </span><span class="nottickedoff">Constant (ConstantBool True) -&gt; return True</span>
+<span class="lineno">  436 </span><span class="spaces">        </span><span class="nottickedoff">_                            -&gt; return False</span></span>
+<span class="lineno">  437 </span>
+
+</pre>
+</body>
+</html>
