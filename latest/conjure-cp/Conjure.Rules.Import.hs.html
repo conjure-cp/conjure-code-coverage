@@ -55,22 +55,23 @@ span.spaces    { background: white }
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">Just z -&gt; do</span>
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">let h = Zipper.hole z</span>
 <span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">case ( match opAnd h, match opOr h, match opSum h</span>
-<span class="lineno">   39 </span><span class="spaces">                 </span><span class="istickedoff">, match opMin h, match opMax h ) of</span>
-<span class="lineno">   40 </span><span class="spaces">                </span><span class="istickedoff">(Just{}, _, _, _, _) -&gt; return False</span>
-<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff">(_, Just{}, _, _, _) -&gt; return False</span>
-<span class="lineno">   42 </span><span class="spaces">                </span><span class="istickedoff">(_, _, Just{}, _, _) -&gt; <span class="nottickedoff">return True</span></span>
-<span class="lineno">   43 </span><span class="spaces">                </span><span class="istickedoff">(_, _, _, Just{}, _) -&gt; <span class="nottickedoff">return False</span></span>
-<span class="lineno">   44 </span><span class="spaces">                </span><span class="istickedoff">(_, _, _, _, Just{}) -&gt; <span class="nottickedoff">return False</span></span>
-<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">_                    -&gt; na &quot;doDuplicatesMatter 2&quot;</span></span>
-<span class="lineno">   46 </span>                                        -- case Zipper.up z of
-<span class="lineno">   47 </span>                                        --     Nothing -&gt; na &quot;doDuplicatesMatter&quot;
-<span class="lineno">   48 </span>                                        --     Just u  -&gt; doDuplicatesMatter u
-<span class="lineno">   49 </span>
-<span class="lineno">   50 </span>referenceToComprehensionVar :: Expression -&gt; Bool
-<span class="lineno">   51 </span><span class="decl"><span class="istickedoff">referenceToComprehensionVar (Reference _ (Just InComprehension{})) = True</span>
-<span class="lineno">   52 </span><span class="spaces"></span><span class="istickedoff">referenceToComprehensionVar (Op (MkOpIndexing (OpIndexing m _))) = referenceToComprehensionVar m</span>
-<span class="lineno">   53 </span><span class="spaces"></span><span class="istickedoff">referenceToComprehensionVar _ = False</span></span>
-<span class="lineno">   54 </span>
+<span class="lineno">   39 </span><span class="spaces">                 </span><span class="istickedoff">, match opProduct h, match opMin h, match opMax h ) of</span>
+<span class="lineno">   40 </span><span class="spaces">                </span><span class="istickedoff">(Just{}, _, _, _, _, _) -&gt; return False -- and</span>
+<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff">(_, Just{}, _, _, _, _) -&gt; return False -- or</span>
+<span class="lineno">   42 </span><span class="spaces">                </span><span class="istickedoff">(_, _, Just{}, _, _, _) -&gt; <span class="nottickedoff">return True</span>  -- sum</span>
+<span class="lineno">   43 </span><span class="spaces">                </span><span class="istickedoff">(_, _, _, Just{}, _, _) -&gt; <span class="nottickedoff">return True</span>  -- product</span>
+<span class="lineno">   44 </span><span class="spaces">                </span><span class="istickedoff">(_, _, _, _, Just{}, _) -&gt; <span class="nottickedoff">return False</span> -- min</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">(_, _, _, _, _, Just{}) -&gt; <span class="nottickedoff">return False</span> -- max</span>
+<span class="lineno">   46 </span><span class="spaces">                </span><span class="istickedoff">_                       -&gt; na &quot;doDuplicatesMatter 2&quot;</span></span>
+<span class="lineno">   47 </span>                                        -- case Zipper.up z of
+<span class="lineno">   48 </span>                                        --     Nothing -&gt; na &quot;doDuplicatesMatter&quot;
+<span class="lineno">   49 </span>                                        --     Just u  -&gt; doDuplicatesMatter u
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>referenceToComprehensionVar :: Expression -&gt; Bool
+<span class="lineno">   52 </span><span class="decl"><span class="istickedoff">referenceToComprehensionVar (Reference _ (Just InComprehension{})) = True</span>
+<span class="lineno">   53 </span><span class="spaces"></span><span class="istickedoff">referenceToComprehensionVar (Op (MkOpIndexing (OpIndexing m _))) = referenceToComprehensionVar m</span>
+<span class="lineno">   54 </span><span class="spaces"></span><span class="istickedoff">referenceToComprehensionVar _ = False</span></span>
+<span class="lineno">   55 </span>
 
 </pre>
 </body>
