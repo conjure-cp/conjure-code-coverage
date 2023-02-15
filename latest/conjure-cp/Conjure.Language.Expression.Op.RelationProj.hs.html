@@ -63,7 +63,7 @@ span.spaces    { background: white }
 <span class="lineno">   44 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">else raiseTypeError $ &quot;(relation projection)&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   45 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">loop _ _ = raiseTypeError $ &quot;(relation projection)&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   46 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">TypeRelation &lt;$&gt; loop xs ts'</span></span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ &quot;(relation projection)&quot; &lt;+&gt; pretty p</span></span></span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ &quot;(relation projection)&quot; &lt;+&gt; vcat [pretty p, pretty tyR]</span></span></span>
 <span class="lineno">   48 </span>
 <span class="lineno">   49 </span>instance SimplifyOp OpRelationProj x where
 <span class="lineno">   50 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpRelationProj}&quot;</span></span>

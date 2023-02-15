@@ -2754,20 +2754,20 @@ span.spaces    { background: white }
 <span class="lineno"> 2735 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = Comprehension [essence| toInt(&amp;body) |] goc</span></span>
 <span class="lineno"> 2736 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno"> 2737 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2738 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
+<span class="lineno"> 2738 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) % 2 |]</span></span>
 <span class="lineno"> 2739 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno"> 2740 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitMatrix dom elems) -&gt; do</span></span>
 <span class="lineno"> 2741 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let argOut = AbstractLiteral $ AbsLitMatrix dom</span></span>
 <span class="lineno"> 2742 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| toInt(&amp;el) |] | el &lt;- elems ]</span></span>
 <span class="lineno"> 2743 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno"> 2744 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2745 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) |]</span></span>
+<span class="lineno"> 2745 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum(&amp;argOut) % 2 |]</span></span>
 <span class="lineno"> 2746 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno"> 2747 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; do</span></span>
 <span class="lineno"> 2748 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
 <span class="lineno"> 2749 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno"> 2750 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">( &quot;xor to sum&quot;</span></span>
-<span class="lineno"> 2751 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum([ toInt(&amp;i) | &amp;iPat &lt;- &amp;arg ]) |]</span></span>
+<span class="lineno"> 2751 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, return [essence| 1 = sum([ toInt(&amp;i) | &amp;iPat &lt;- &amp;arg ]) % 2 |]</span></span>
 <span class="lineno"> 2752 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno"> 2753 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Xor_To_Sum&quot;</span></span>
 <span class="lineno"> 2754 </span>
