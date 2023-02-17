@@ -305,7 +305,7 @@ span.spaces    { background: white }
 <span class="lineno">  286 </span>
 <span class="lineno">  287 </span>rule_Lift_Transformed_Indexing :: Rule
 <span class="lineno">  288 </span><span class="decl"><span class="istickedoff">rule_Lift_Transformed_Indexing = <span class="nottickedoff">&quot;lift-transformed-indexing&quot;</span> `namedRule` theRule where</span>
-<span class="lineno">  289 </span><span class="spaces">  </span><span class="istickedoff">matchIndexing :: (?typeCheckerMode::TypeCheckerMode)</span>
+<span class="lineno">  289 </span><span class="spaces">  </span><span class="istickedoff">matchIndexing :: (?typeCheckerMode :: TypeCheckerMode)</span>
 <span class="lineno">  290 </span><span class="spaces">                      </span><span class="istickedoff">=&gt; Expression</span>
 <span class="lineno">  291 </span><span class="spaces">                      </span><span class="istickedoff">-&gt; Maybe (Expression, Expression, Expression, Expression) </span>
 <span class="lineno">  292 </span><span class="spaces">  </span><span class="istickedoff">matchIndexing exp = do</span>
