@@ -383,7 +383,7 @@ span.spaces    { background: white }
 <span class="lineno">  364 </span><span class="spaces">                    </span><span class="nottickedoff">(JSON.Number a'', JSON.Number b'') -&gt; return (JSON.Number (a'' - b''))</span>
 <span class="lineno">  365 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; noToSimpleJSON x</span>
 <span class="lineno">  366 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; noToSimpleJSON x</span></span>
-<span class="lineno">  367 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON x = Constant &lt;$&gt; fromSimpleJSON x</span></span>
+<span class="lineno">  367 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON t x = Constant &lt;$&gt; fromSimpleJSON t x</span></span>
 <span class="lineno">  368 </span>
 <span class="lineno">  369 </span>instance ToFromMiniZinc Expression where
 <span class="lineno">  370 </span>    <span class="decl"><span class="nottickedoff">toMiniZinc x =</span>
