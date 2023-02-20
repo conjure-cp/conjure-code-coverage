@@ -774,12 +774,12 @@ span.spaces    { background: white }
 <span class="lineno">  755 </span>instance FromJSON  ReferenceTo where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  756 </span>
 <span class="lineno">  757 </span>instance Pretty ReferenceTo where
-<span class="lineno">  758 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = &quot;Alias&quot; &lt;+&gt; prParens (pretty x)</span>
-<span class="lineno">  759 </span><span class="spaces">    </span><span class="istickedoff">pretty (InComprehension gen) = &quot;InComprehension&quot; &lt;+&gt; prParens (pretty gen)</span>
-<span class="lineno">  760 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclNoRepr  forg nm dom _) = &quot;DeclNoRepr&quot; &lt;+&gt; prParens (pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom)</span>
-<span class="lineno">  761 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclHasRepr forg nm dom  ) = <span class="nottickedoff">&quot;DeclHasRepr&quot; &lt;+&gt; prParens (pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom)</span></span>
-<span class="lineno">  762 </span><span class="spaces">    </span><span class="istickedoff">pretty (RecordField  nm ty) = <span class="nottickedoff">&quot;RecordField&quot;  &lt;+&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span>
-<span class="lineno">  763 </span><span class="spaces">    </span><span class="istickedoff">pretty (VariantField nm ty) = <span class="nottickedoff">&quot;VariantField&quot; &lt;+&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span></span>
+<span class="lineno">  758 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = &quot;an alias for&quot; &lt;++&gt; pretty x</span>
+<span class="lineno">  759 </span><span class="spaces">    </span><span class="istickedoff">pretty (InComprehension gen) = &quot;a comprehension generator&quot; &lt;++&gt; <span class="nottickedoff">pretty gen</span></span>
+<span class="lineno">  760 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclNoRepr  forg nm dom _) = &quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span>
+<span class="lineno">  761 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclHasRepr forg nm dom  ) = <span class="nottickedoff">&quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span></span>
+<span class="lineno">  762 </span><span class="spaces">    </span><span class="istickedoff">pretty (RecordField  nm ty) = <span class="nottickedoff">&quot;record field&quot;  &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  763 </span><span class="spaces">    </span><span class="istickedoff">pretty (VariantField nm ty) = <span class="nottickedoff">&quot;variant field&quot; &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span></span>
 <span class="lineno">  764 </span>
 <span class="lineno">  765 </span>data Region
 <span class="lineno">  766 </span>    = NoRegion
@@ -818,10 +818,10 @@ span.spaces    { background: white }
 <span class="lineno">  799 </span>
 <span class="lineno">  800 </span>instance Pretty AbstractPattern where
 <span class="lineno">  801 </span>    <span class="decl"><span class="istickedoff">pretty (Single       nm) = pretty nm</span>
-<span class="lineno">  802 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatTuple  xs) = (if <span class="tickonlyfalse">length xs &lt;= 1</span> then <span class="nottickedoff">&quot;tuple&quot;</span> else prEmpty) &lt;&gt;</span>
-<span class="lineno">  803 </span><span class="spaces">                               </span><span class="istickedoff">prettyList prParens   &quot;,&quot; xs</span>
+<span class="lineno">  802 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatTuple  xs) = <span class="nottickedoff">(if length xs &lt;= 1 then &quot;tuple&quot; else prEmpty) &lt;&gt;</span></span>
+<span class="lineno">  803 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">prettyList prParens   &quot;,&quot; xs</span></span>
 <span class="lineno">  804 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatMatrix xs) = <span class="nottickedoff">prettyList prBrackets &quot;,&quot; xs</span></span>
-<span class="lineno">  805 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatSet    xs) = prettyList prBraces &quot;,&quot; xs</span>
+<span class="lineno">  805 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatSet    xs) = <span class="nottickedoff">prettyList prBraces &quot;,&quot; xs</span></span>
 <span class="lineno">  806 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbstractPatternMetaVar s) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty s</span></span></span>
 <span class="lineno">  807 </span>
 <span class="lineno">  808 </span>instance VarSymBreakingDescription AbstractPattern where
