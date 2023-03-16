@@ -1,6 +1,6 @@
 This repository holds code coverage reports for Conjure.
 
-Populated from Azure Pipelines.
+Populated from Github actions.
 
 Hosted via Github pages.
 
