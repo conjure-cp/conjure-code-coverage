@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Name where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>-- conjure
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Bug
+<span class="lineno">    8 </span>import Conjure.Language.Pretty
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>-- base
+<span class="lineno">   11 </span>import qualified Data.Semigroup as Semigroup ( (&lt;&gt;) )
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>-- text
+<span class="lineno">   14 </span>import qualified Data.Text as T
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>-- QuickCheck
+<span class="lineno">   17 </span>import Test.QuickCheck ( Arbitrary(..), choose )
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>data Name = Name Text | MachineName Text Int [Text] | NameMetaVar String
+<span class="lineno">   21 </span>    deriving (<span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>instance Eq Name where
+<span class="lineno">   24 </span>    <span class="decl"><span class="istickedoff">Name x == Name y = x == y</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">x == y = show (pretty x) == show (pretty y)</span></span>
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>instance Ord Name where
+<span class="lineno">   28 </span>    <span class="decl"><span class="istickedoff">compare (Name x) (Name y) = compare x y</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">compare x y = compare (show (pretty x)) (show (pretty y))</span></span>
+<span class="lineno">   30 </span>
+<span class="lineno">   31 </span>instance Serialize Name
+<span class="lineno">   32 </span>instance Hashable  Name
+<span class="lineno">   33 </span>instance ToJSON    Name where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   34 </span>instance FromJSON  Name where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>instance Arbitrary Name where
+<span class="lineno">   37 </span>    <span class="decl"><span class="nottickedoff">arbitrary = do</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="nottickedoff">ch &lt;- choose ('a', 'z')</span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="nottickedoff">return $ Name $ T.pack [ch]</span></span>
+<span class="lineno">   40 </span>    <span class="decl"><span class="nottickedoff">shrink (Name n) = [ Name (T.drop 1 n) | T.length n &gt; 1 ]</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="nottickedoff">shrink _ = []</span></span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>instance IsString Name where
+<span class="lineno">   44 </span>    <span class="decl"><span class="istickedoff">fromString = Name . fromString</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>instance Pretty Name where
+<span class="lineno">   47 </span>    <span class="decl"><span class="istickedoff">pretty (Name n) = pretty n</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">pretty (MachineName base n rest) = pretty base &lt;&gt; pretty n &lt;&gt; hcat (map pretty rest)</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">pretty (NameMetaVar n) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty n</span></span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance Semigroup Name where
+<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">(&lt;&gt;) = mappend</span></span>
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>instance Monoid Name where
+<span class="lineno">   55 </span>    <span class="decl"><span class="istickedoff">mempty = &quot;&quot;</span></span>
+<span class="lineno">   56 </span>    <span class="decl"><span class="istickedoff">mappend (Name a) (Name b) = Name (mappend a b)</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">mappend (MachineName base n rest) (Name new) = MachineName base n (rest++[new])</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">mappend (Name a) (MachineName base n rest) = <span class="nottickedoff">MachineName (mappend a base) n rest</span></span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">mappend a b = <span class="nottickedoff">bug $ &quot;mappend{Name}&quot; &lt;+&gt; vcat [pretty (show a), pretty (show b)]</span></span></span>
+
+</pre>
+</body>
+</html>
