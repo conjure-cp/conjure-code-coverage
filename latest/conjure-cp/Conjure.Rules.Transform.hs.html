@@ -518,7 +518,7 @@ span.spaces    { background: white }
 <span class="lineno">  499 </span><span class="spaces">        </span><span class="istickedoff">name           &lt;- <span class="nottickedoff">nameOut arg</span></span>
 <span class="lineno">  500 </span><span class="spaces">        </span><span class="istickedoff">argInt         &lt;-</span>
 <span class="lineno">  501 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">case elemIndex name (map fst ds) of</span></span>
-<span class="lineno">  502 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing     -&gt; fail &quot;Variant indexing, not a member of the type.&quot;</span></span>
+<span class="lineno">  502 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing     -&gt; failDoc &quot;Variant indexing, not a member of the type.&quot;</span></span>
 <span class="lineno">  503 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just argInt -&gt; return argInt</span></span>
 <span class="lineno">  504 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">  505 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Variant indexing on:&quot; &lt;+&gt; pretty p</span></span>
@@ -540,7 +540,7 @@ span.spaces    { background: white }
 <span class="lineno">  521 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant ds &lt;- <span class="nottickedoff">typeOf x</span></span>
 <span class="lineno">  522 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:_)     &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">  523 </span><span class="spaces">        </span><span class="istickedoff">argInt         &lt;- <span class="nottickedoff">case elemIndex name (map fst ds) of</span></span>
-<span class="lineno">  524 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">Nothing     -&gt; fail &quot;Variant indexing, not a member of the type.&quot;</span></span>
+<span class="lineno">  524 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">Nothing     -&gt; failDoc &quot;Variant indexing, not a member of the type.&quot;</span></span>
 <span class="lineno">  525 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">Just argInt -&gt; return $ fromInt $ fromIntegral $ argInt + 1</span></span>
 <span class="lineno">  526 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">  527 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Variant active on:&quot; &lt;+&gt; pretty p</span></span>

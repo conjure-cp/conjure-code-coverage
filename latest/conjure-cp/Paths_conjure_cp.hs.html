@@ -20,53 +20,54 @@ span.spaces    { background: white }
 <span class="lineno">    1 </span>{-# LANGUAGE CPP #-}
 <span class="lineno">    2 </span>{-# LANGUAGE NoRebindableSyntax #-}
 <span class="lineno">    3 </span>{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
-<span class="lineno">    4 </span>module Paths_conjure_cp (
-<span class="lineno">    5 </span>    version,
-<span class="lineno">    6 </span>    getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir,
-<span class="lineno">    7 </span>    getDataFileName, getSysconfDir
-<span class="lineno">    8 </span>  ) where
-<span class="lineno">    9 </span>
-<span class="lineno">   10 </span>import qualified Control.Exception as Exception
-<span class="lineno">   11 </span>import Data.Version (Version(..))
-<span class="lineno">   12 </span>import System.Environment (getEnv)
-<span class="lineno">   13 </span>import Prelude
-<span class="lineno">   14 </span>
-<span class="lineno">   15 </span>#if defined(VERSION_base)
-<span class="lineno">   16 </span>
-<span class="lineno">   17 </span>#if MIN_VERSION_base(4,0,0)
-<span class="lineno">   18 </span>catchIO :: IO a -&gt; (Exception.IOException -&gt; IO a) -&gt; IO a
-<span class="lineno">   19 </span>#else
-<span class="lineno">   20 </span>catchIO :: IO a -&gt; (Exception.Exception -&gt; IO a) -&gt; IO a
-<span class="lineno">   21 </span>#endif
-<span class="lineno">   22 </span>
-<span class="lineno">   23 </span>#else
-<span class="lineno">   24 </span>catchIO :: IO a -&gt; (Exception.IOException -&gt; IO a) -&gt; IO a
-<span class="lineno">   25 </span>#endif
-<span class="lineno">   26 </span><span class="decl"><span class="nottickedoff">catchIO = Exception.catch</span></span>
-<span class="lineno">   27 </span>
-<span class="lineno">   28 </span>version :: Version
-<span class="lineno">   29 </span><span class="decl"><span class="nottickedoff">version = Version [2,4,1] []</span></span>
-<span class="lineno">   30 </span>bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
-<span class="lineno">   31 </span>
-<span class="lineno">   32 </span><span class="decl"><span class="nottickedoff">bindir     = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/bin&quot;</span></span>
-<span class="lineno">   33 </span><span class="decl"><span class="nottickedoff">libdir     = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/lib/x86_64-linux-ghc-8.6.5/conjure-cp&quot;</span></span>
-<span class="lineno">   34 </span><span class="decl"><span class="nottickedoff">dynlibdir  = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/lib/x86_64-linux-ghc-8.6.5&quot;</span></span>
-<span class="lineno">   35 </span><span class="decl"><span class="nottickedoff">datadir    = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/share/x86_64-linux-ghc-8.6.5/conjure-cp-2.4.1&quot;</span></span>
-<span class="lineno">   36 </span><span class="decl"><span class="nottickedoff">libexecdir = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/libexec/x86_64-linux-ghc-8.6.5/conjure-cp-2.4.1&quot;</span></span>
-<span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">sysconfdir = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/935f11b32b9d03d15d14a33c6e7b3a54b1f1f9bb3581108953cb40b362cb2964/8.6.5/etc&quot;</span></span>
-<span class="lineno">   38 </span>
-<span class="lineno">   39 </span>getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
-<span class="lineno">   40 </span><span class="decl"><span class="nottickedoff">getBinDir = catchIO (getEnv &quot;conjure_cp_bindir&quot;) (\_ -&gt; return bindir)</span></span>
-<span class="lineno">   41 </span><span class="decl"><span class="nottickedoff">getLibDir = catchIO (getEnv &quot;conjure_cp_libdir&quot;) (\_ -&gt; return libdir)</span></span>
-<span class="lineno">   42 </span><span class="decl"><span class="nottickedoff">getDynLibDir = catchIO (getEnv &quot;conjure_cp_dynlibdir&quot;) (\_ -&gt; return dynlibdir)</span></span>
-<span class="lineno">   43 </span><span class="decl"><span class="nottickedoff">getDataDir = catchIO (getEnv &quot;conjure_cp_datadir&quot;) (\_ -&gt; return datadir)</span></span>
-<span class="lineno">   44 </span><span class="decl"><span class="nottickedoff">getLibexecDir = catchIO (getEnv &quot;conjure_cp_libexecdir&quot;) (\_ -&gt; return libexecdir)</span></span>
-<span class="lineno">   45 </span><span class="decl"><span class="nottickedoff">getSysconfDir = catchIO (getEnv &quot;conjure_cp_sysconfdir&quot;) (\_ -&gt; return sysconfdir)</span></span>
-<span class="lineno">   46 </span>
-<span class="lineno">   47 </span>getDataFileName :: FilePath -&gt; IO FilePath
-<span class="lineno">   48 </span><span class="decl"><span class="nottickedoff">getDataFileName name = do</span>
-<span class="lineno">   49 </span><span class="spaces">  </span><span class="nottickedoff">dir &lt;- getDataDir</span>
-<span class="lineno">   50 </span><span class="spaces">  </span><span class="nottickedoff">return (dir ++ &quot;/&quot; ++ name)</span></span>
+<span class="lineno">    4 </span>{-# OPTIONS_GHC -Wno-missing-safe-haskell-mode #-}
+<span class="lineno">    5 </span>module Paths_conjure_cp (
+<span class="lineno">    6 </span>    version,
+<span class="lineno">    7 </span>    getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir,
+<span class="lineno">    8 </span>    getDataFileName, getSysconfDir
+<span class="lineno">    9 </span>  ) where
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>import qualified Control.Exception as Exception
+<span class="lineno">   12 </span>import Data.Version (Version(..))
+<span class="lineno">   13 </span>import System.Environment (getEnv)
+<span class="lineno">   14 </span>import Prelude
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>#if defined(VERSION_base)
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>#if MIN_VERSION_base(4,0,0)
+<span class="lineno">   19 </span>catchIO :: IO a -&gt; (Exception.IOException -&gt; IO a) -&gt; IO a
+<span class="lineno">   20 </span>#else
+<span class="lineno">   21 </span>catchIO :: IO a -&gt; (Exception.Exception -&gt; IO a) -&gt; IO a
+<span class="lineno">   22 </span>#endif
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>#else
+<span class="lineno">   25 </span>catchIO :: IO a -&gt; (Exception.IOException -&gt; IO a) -&gt; IO a
+<span class="lineno">   26 </span>#endif
+<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">catchIO = Exception.catch</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>version :: Version
+<span class="lineno">   30 </span><span class="decl"><span class="nottickedoff">version = Version [2,4,1] []</span></span>
+<span class="lineno">   31 </span>bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
+<span class="lineno">   32 </span>
+<span class="lineno">   33 </span><span class="decl"><span class="nottickedoff">bindir     = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/bin&quot;</span></span>
+<span class="lineno">   34 </span><span class="decl"><span class="nottickedoff">libdir     = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/lib/x86_64-linux-ghc-9.0.2/conjure-cp&quot;</span></span>
+<span class="lineno">   35 </span><span class="decl"><span class="nottickedoff">dynlibdir  = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/lib/x86_64-linux-ghc-9.0.2&quot;</span></span>
+<span class="lineno">   36 </span><span class="decl"><span class="nottickedoff">datadir    = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/share/x86_64-linux-ghc-9.0.2/conjure-cp-2.4.1&quot;</span></span>
+<span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">libexecdir = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/libexec/x86_64-linux-ghc-9.0.2/conjure-cp-2.4.1&quot;</span></span>
+<span class="lineno">   38 </span><span class="decl"><span class="nottickedoff">sysconfdir = &quot;/home/runner/work/conjure/conjure/.stack-work/install/x86_64-linux-tinfo6/e79f4344acba65ab59269d36b06a0ec208aa34cff99b2518c34df2ba6e992bdb/9.0.2/etc&quot;</span></span>
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
+<span class="lineno">   41 </span><span class="decl"><span class="nottickedoff">getBinDir = catchIO (getEnv &quot;conjure_cp_bindir&quot;) (\_ -&gt; return bindir)</span></span>
+<span class="lineno">   42 </span><span class="decl"><span class="nottickedoff">getLibDir = catchIO (getEnv &quot;conjure_cp_libdir&quot;) (\_ -&gt; return libdir)</span></span>
+<span class="lineno">   43 </span><span class="decl"><span class="nottickedoff">getDynLibDir = catchIO (getEnv &quot;conjure_cp_dynlibdir&quot;) (\_ -&gt; return dynlibdir)</span></span>
+<span class="lineno">   44 </span><span class="decl"><span class="nottickedoff">getDataDir = catchIO (getEnv &quot;conjure_cp_datadir&quot;) (\_ -&gt; return datadir)</span></span>
+<span class="lineno">   45 </span><span class="decl"><span class="nottickedoff">getLibexecDir = catchIO (getEnv &quot;conjure_cp_libexecdir&quot;) (\_ -&gt; return libexecdir)</span></span>
+<span class="lineno">   46 </span><span class="decl"><span class="nottickedoff">getSysconfDir = catchIO (getEnv &quot;conjure_cp_sysconfdir&quot;) (\_ -&gt; return sysconfdir)</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>getDataFileName :: FilePath -&gt; IO FilePath
+<span class="lineno">   49 </span><span class="decl"><span class="nottickedoff">getDataFileName name = do</span>
+<span class="lineno">   50 </span><span class="spaces">  </span><span class="nottickedoff">dir &lt;- getDataDir</span>
+<span class="lineno">   51 </span><span class="spaces">  </span><span class="nottickedoff">return (dir ++ &quot;/&quot; ++ name)</span></span>
 
 </pre>
 </body>

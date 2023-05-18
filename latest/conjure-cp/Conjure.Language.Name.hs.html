@@ -37,7 +37,7 @@ span.spaces    { background: white }
 <span class="lineno">   18 </span>
 <span class="lineno">   19 </span>
 <span class="lineno">   20 </span>data Name = Name Text | MachineName Text Int [Text] | NameMetaVar String
-<span class="lineno">   21 </span>    deriving (<span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   21 </span>    deriving (<span class="decl"><span class="istickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Data</span></span></span></span></span></span></span></span>, Typeable, Generic)
 <span class="lineno">   22 </span>
 <span class="lineno">   23 </span>instance Eq Name where
 <span class="lineno">   24 </span>    <span class="decl"><span class="istickedoff">Name x == Name y = x == y</span>
@@ -68,14 +68,13 @@ span.spaces    { background: white }
 <span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">pretty (NameMetaVar n) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty n</span></span></span>
 <span class="lineno">   50 </span>
 <span class="lineno">   51 </span>instance Semigroup Name where
-<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">(&lt;&gt;) = mappend</span></span>
-<span class="lineno">   53 </span>
-<span class="lineno">   54 </span>instance Monoid Name where
-<span class="lineno">   55 </span>    <span class="decl"><span class="istickedoff">mempty = &quot;&quot;</span></span>
-<span class="lineno">   56 </span>    <span class="decl"><span class="istickedoff">mappend (Name a) (Name b) = Name (mappend a b)</span>
-<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">mappend (MachineName base n rest) (Name new) = MachineName base n (rest++[new])</span>
-<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">mappend (Name a) (MachineName base n rest) = <span class="nottickedoff">MachineName (mappend a base) n rest</span></span>
-<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">mappend a b = <span class="nottickedoff">bug $ &quot;mappend{Name}&quot; &lt;+&gt; vcat [pretty (show a), pretty (show b)]</span></span></span>
+<span class="lineno">   52 </span>    <span class="decl"><span class="istickedoff">(&lt;&gt;) (Name a) (Name b) = Name (mappend a b)</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">(&lt;&gt;) (MachineName base n rest) (Name new) = MachineName base n (rest++[new])</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">(&lt;&gt;) (Name a) (MachineName base n rest) = <span class="nottickedoff">MachineName (mappend a base) n rest</span></span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">(&lt;&gt;) a b = <span class="nottickedoff">bug $ &quot;mappend{Name}&quot; &lt;+&gt; vcat [pretty (show a), pretty (show b)]</span></span></span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>instance Monoid Name where
+<span class="lineno">   58 </span>    <span class="decl"><span class="istickedoff">mempty = &quot;&quot;</span></span>
 
 </pre>
 </body>

@@ -1,0 +1,298 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.AST.Reformer (Flattenable(..)) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.Language.AST.Syntax
+<span class="lineno">    4 </span>import Conjure.Language.Lexer (ETok (..))
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Data.Sequence ((&gt;&lt;))
+<span class="lineno">    7 </span>import qualified Data.Sequence as S
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>class Flattenable a where
+<span class="lineno">   13 </span>    flatten :: Flattenable a =&gt; a -&gt; S.Seq ETok
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>instance Flattenable (S.Seq ETok) where
+<span class="lineno">   16 </span>    <span class="decl"><span class="nottickedoff">flatten = id</span></span>
+<span class="lineno">   17 </span>instance Flattenable ProgramTree where
+<span class="lineno">   18 </span>    <span class="decl"><span class="istickedoff">flatten (ProgramTree lv sts end) = mconcat [flatten lv , mconcat $ map flatten sts , flatten end]</span></span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>instance Flattenable LangVersionNode where
+<span class="lineno">   21 </span>    <span class="decl"><span class="istickedoff">flatten (LangVersionNode l1 l2 l3) = flatten l1 &gt;&lt; flatten l2 &gt;&lt; flatten l3</span></span>
+<span class="lineno">   22 </span>instance Flattenable StatementNode where
+<span class="lineno">   23 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">DeclarationStatement dsn -&gt; flatten dsn</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">BranchingStatement bsn -&gt; flatten bsn</span>
+<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">SuchThatStatement stsn -&gt; flatten stsn</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">WhereStatement wsn -&gt; flatten wsn</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveStatement osn -&gt; flatten osn</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">HeuristicStatement l1 ex -&gt; flatten l1 &gt;&lt; flatten ex</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">UnexpectedToken tok -&gt; flatten tok</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>instance Flattenable DeclarationStatementNode where
+<span class="lineno">   33 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">FindStatement f fsn -&gt; flatten f &gt;&lt; flatten fsn</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">GivenStatement g gsn -&gt; flatten g &gt;&lt; flatten gsn</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">LettingStatement t lsn -&gt; flatten t &gt;&lt; flatten lsn</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>instance Flattenable LettingStatementNode where 
+<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">flatten (LettingStatementNode a b c) = mconcat[ flatten a, flatten b, flatten c]</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>instance Flattenable LettingAssignmentNode where
+<span class="lineno">   43 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">LettingExpr d -&gt;  flatten d</span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">LettingDomain d e -&gt; flatten d &gt;&lt; flatten e</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">LettingEnum d e f g -&gt; mconcat [flatten d, flatten e, flatten f, flatten g]</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">LettingAnon d e f g h -&gt; mconcat [flatten d, flatten e, flatten f, flatten g, flatten h]</span></span>
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>instance Flattenable FindStatementNode where
+<span class="lineno">   50 </span>    <span class="decl"><span class="istickedoff">flatten (FindStatementNode a b c) = mconcat  [flatten a, flatten b, flatten c]</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>instance Flattenable GivenStatementNode where
+<span class="lineno">   53 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">GivenStatementNode a b c -&gt; mconcat [flatten a, flatten b, flatten c]</span>
+<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff">GivenEnumNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span></span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>instance Flattenable BranchingStatementNode where
+<span class="lineno">   60 </span>    <span class="decl"><span class="istickedoff">flatten (BranchingStatementNode lt lt' ln) = mconcat [flatten lt, flatten lt', flatten ln]</span></span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>instance Flattenable SuchThatStatementNode where
+<span class="lineno">   64 </span>    <span class="decl"><span class="istickedoff">flatten (SuchThatStatementNode l1 l2 l3) =  flatten l1 &gt;&lt; flatten l2 &gt;&lt; flatten l3</span></span>
+<span class="lineno">   65 </span>instance Flattenable WhereStatementNode where
+<span class="lineno">   66 </span>    <span class="decl"><span class="istickedoff">flatten (WhereStatementNode l1 l2) =  flatten l1 &gt;&lt; flatten l2</span></span>
+<span class="lineno">   67 </span>instance Flattenable ObjectiveStatementNode where
+<span class="lineno">   68 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMin lt en -&gt; flatten lt &gt;&lt; flatten en</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMax lt en -&gt; flatten lt &gt;&lt; flatten en</span></span>
+<span class="lineno">   71 </span>
+<span class="lineno">   72 </span>instance Flattenable LToken where
+<span class="lineno">   73 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff">RealToken st -&gt; flatten st</span>
+<span class="lineno">   75 </span><span class="spaces">        </span><span class="istickedoff">MissingToken et -&gt;  flatten et</span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">SkippedToken et -&gt;  flatten et</span></span>
+<span class="lineno">   77 </span>
+<span class="lineno">   78 </span>instance Flattenable SToken where
+<span class="lineno">   79 </span>    <span class="decl"><span class="istickedoff">flatten (StrictToken xs e) = flatten xs &gt;&lt; flatten e</span></span>
+<span class="lineno">   80 </span>instance Flattenable ETok where
+<span class="lineno">   81 </span>    <span class="decl"><span class="istickedoff">flatten = pure</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>instance Flattenable ExpressionNode where
+<span class="lineno">   84 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">Literal ln -&gt; flatten ln</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">IdentifierNode nn -&gt; flatten nn</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">MetaVarExpr tk -&gt; flatten tk</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">QuantificationExpr qen -&gt; flatten qen</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">OperatorExpressionNode oen -&gt; flatten oen</span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff">ParenExpression pen -&gt;flatten pen</span>
+<span class="lineno">   91 </span><span class="spaces">        </span><span class="istickedoff">AbsExpression pen -&gt;  flatten pen</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">DomainExpression dex -&gt; flatten dex</span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">FunctionalApplicationNode lt ln -&gt;  flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">SpecialCase nd -&gt; flatten nd</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">AttributeAsConstriant l1 exprs -&gt; flatten l1 &gt;&lt; flatten exprs</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">MissingExpressionNode e -&gt;  flatten e</span></span>
+<span class="lineno">   97 </span>
+<span class="lineno">   98 </span>instance Flattenable SpecialCaseNode where 
+<span class="lineno">   99 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of </span>
+<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">ExprWithDecls l1 en l2 sns l3 -&gt; mconcat [flatten l1,flatten en,flatten l2, flatten sns , flatten l3]</span></span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>instance Flattenable DomainExpressionNode where
+<span class="lineno">  103 </span>    <span class="decl"><span class="istickedoff">flatten (DomainExpressionNode a b c) = flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span></span>
+<span class="lineno">  104 </span>instance Flattenable QuantificationExpressionNode where
+<span class="lineno">  105 </span>    <span class="decl"><span class="istickedoff">flatten (QuantificationExpressionNode a b c d e f) = mconcat [</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">flatten a, flatten b, flatten c, flatten d, flatten e, flatten f]</span></span>
+<span class="lineno">  107 </span>instance Flattenable QuantificationOverNode where
+<span class="lineno">  108 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">  109 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedSubsetOfNode a b -&gt; flatten a &gt;&lt; flatten b</span>
+<span class="lineno">  110 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedMemberOfNode a b -&gt; flatten a &gt;&lt; flatten b</span>
+<span class="lineno">  111 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedDomainNode a -&gt; flatten a</span></span>
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>instance Flattenable OverDomainNode where
+<span class="lineno">  114 </span>    <span class="decl"><span class="istickedoff">flatten (OverDomainNode a b) = flatten a &gt;&lt; flatten b</span></span>
+<span class="lineno">  115 </span>
+<span class="lineno">  116 </span>instance Flattenable QuanticationGuard where
+<span class="lineno">  117 </span>    <span class="decl"><span class="istickedoff">flatten (QuanticationGuard a b ) = flatten a &gt;&lt; flatten b</span></span>
+<span class="lineno">  118 </span>
+<span class="lineno">  119 </span>instance Flattenable AbstractPatternNode where
+<span class="lineno">  120 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">  121 </span><span class="spaces">      </span><span class="istickedoff">AbstractIdentifier nn -&gt; flatten nn</span>
+<span class="lineno">  122 </span><span class="spaces">      </span><span class="istickedoff">AbstractMetaVar lt -&gt; <span class="nottickedoff">flatten lt</span></span>
+<span class="lineno">  123 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternTuple a b -&gt; flatten a &gt;&lt; flatten b</span>
+<span class="lineno">  124 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternMatrix ln -&gt; flatten ln</span>
+<span class="lineno">  125 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternSet ln -&gt; flatten ln</span></span>
+<span class="lineno">  126 </span>instance Flattenable QuantificationPattern where
+<span class="lineno">  127 </span>    <span class="decl"><span class="nottickedoff">flatten (QuantificationPattern en) = flatten en</span></span>
+<span class="lineno">  128 </span>
+<span class="lineno">  129 </span>instance Flattenable LiteralNode where
+<span class="lineno">  130 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">IntLiteral lt -&gt; flatten lt</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">BoolLiteral lt -&gt; flatten lt</span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">MatrixLiteral mln -&gt; flatten mln</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNode lt -&gt; flatten lt</span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNodeShort st -&gt; flatten st</span>
+<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">RecordLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">VariantLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">SetLiteral ln -&gt; flatten ln</span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">MSetLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">FunctionLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">SequenceLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">RelationLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">PartitionLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span></span>
+<span class="lineno">  144 </span>
+<span class="lineno">  145 </span>instance Flattenable PartitionElemNode where
+<span class="lineno">  146 </span>    <span class="decl"><span class="istickedoff">flatten (PartitionElemNode ln) = flatten ln</span></span>
+<span class="lineno">  147 </span>
+<span class="lineno">  148 </span>instance Flattenable RelationElemNode where
+<span class="lineno">  149 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeLabeled lt -&gt; flatten lt</span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeShort st -&gt; flatten st</span></span>
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>instance Flattenable ArrowPairNode where
+<span class="lineno">  154 </span>    <span class="decl"><span class="istickedoff">flatten (ArrowPairNode a b c) = mconcat [flatten a, flatten b, flatten c]</span></span>
+<span class="lineno">  155 </span>
+<span class="lineno">  156 </span>instance Flattenable RecordMemberNode where
+<span class="lineno">  157 </span>    <span class="decl"><span class="istickedoff">flatten (RecordMemberNode nn lt en) =  mconcat [flatten nn, flatten lt, flatten en]</span></span>
+<span class="lineno">  158 </span>instance Flattenable LongTuple where
+<span class="lineno">  159 </span>    <span class="decl"><span class="istickedoff">flatten (LongTuple a b) =  flatten a &gt;&lt; flatten b</span></span>
+<span class="lineno">  160 </span>
+<span class="lineno">  161 </span>instance Flattenable ShortTuple where
+<span class="lineno">  162 </span>    <span class="decl"><span class="istickedoff">flatten (ShortTuple a) = flatten a</span></span>
+<span class="lineno">  163 </span>
+<span class="lineno">  164 </span>instance Flattenable MatrixLiteralNode where
+<span class="lineno">  165 </span>    <span class="decl"><span class="istickedoff">flatten ( MatrixLiteralNode a b c d e) = mconcat</span>
+<span class="lineno">  166 </span><span class="spaces">            </span><span class="istickedoff">[ flatten a</span>
+<span class="lineno">  167 </span><span class="spaces">            </span><span class="istickedoff">, flatten b</span>
+<span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">, flatten c</span>
+<span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">, flatten d</span>
+<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">, flatten e</span>
+<span class="lineno">  171 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
+<span class="lineno">  172 </span>
+<span class="lineno">  173 </span>instance Flattenable ComprehensionNode where
+<span class="lineno">  174 </span>    <span class="decl"><span class="istickedoff">flatten (ComprehensionNode a b) = flatten a &gt;&lt; flatten b</span></span>
+<span class="lineno">  175 </span>instance Flattenable ComprehensionExpressionNode where
+<span class="lineno">  176 </span>    <span class="decl"><span class="nottickedoff">flatten (ComprehensionExpressionNode a b c d e) =</span>
+<span class="lineno">  177 </span><span class="spaces">        </span><span class="nottickedoff">mconcat</span>
+<span class="lineno">  178 </span><span class="spaces">            </span><span class="nottickedoff">[ flatten a</span>
+<span class="lineno">  179 </span><span class="spaces">            </span><span class="nottickedoff">, flatten b</span>
+<span class="lineno">  180 </span><span class="spaces">            </span><span class="nottickedoff">, flatten c</span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="nottickedoff">, flatten d</span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="nottickedoff">, flatten e</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  184 </span>
+<span class="lineno">  185 </span>instance Flattenable ComprehensionBodyNode where
+<span class="lineno">  186 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">CompBodyCondition en -&gt; flatten en</span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">CompBodyDomain a b c -&gt; flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">CompBodyGenExpr a b c -&gt; flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">CompBodyLettingNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span></span>
+<span class="lineno">  191 </span>
+<span class="lineno">  192 </span>instance Flattenable OperatorExpressionNode where
+<span class="lineno">  193 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff">PostfixOpNode en pon -&gt; flatten en &gt;&lt; flatten pon</span>
+<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">PrefixOpNode lt en -&gt; flatten lt &gt;&lt; flatten en</span>
+<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">BinaryOpNode en lt en' -&gt; mconcat [flatten en, flatten lt, flatten en']</span></span>
+<span class="lineno">  197 </span>
+<span class="lineno">  198 </span>instance Flattenable PostfixOpNode where
+<span class="lineno">  199 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff">IndexedNode l -&gt; flatten l</span>
+<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">OpFactorial lt -&gt; flatten lt</span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff">ApplicationNode ln -&gt; flatten ln</span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff">ExplicitDomain l1 l2 dom l3 -&gt; mconcat  [flatten l1,flatten l2,flatten dom,flatten l3]</span></span>
+<span class="lineno">  204 </span>
+<span class="lineno">  205 </span>instance Flattenable DomainNode where
+<span class="lineno">  206 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff">ParenDomainNode a b c -&gt; mconcat [flatten a, flatten b, flatten c]</span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">BoolDomainNode lt -&gt; flatten lt</span>
+<span class="lineno">  209 </span><span class="spaces">        </span><span class="istickedoff">RangedIntDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">MetaVarDomain a -&gt; flatten a</span>
+<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">RangedEnumNode nn ln -&gt; flatten nn &gt;&lt; flatten ln</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">-- EnumDomainNode nn -&gt; flatten nn</span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">ShortTupleDomainNode ln -&gt; flatten ln</span>
+<span class="lineno">  214 </span><span class="spaces">        </span><span class="istickedoff">TupleDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">RecordDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff">VariantDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
+<span class="lineno">  217 </span><span class="spaces">        </span><span class="istickedoff">MatrixDomainNode a m_ib b c d -&gt; mconcat [flatten a, flatten m_ib, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff">SetDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  219 </span><span class="spaces">        </span><span class="istickedoff">MSetDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff">FunctionDomainNode a b c d e -&gt; mconcat [flatten a, flatten b, flatten c, flatten d, flatten e]</span>
+<span class="lineno">  221 </span><span class="spaces">        </span><span class="istickedoff">SequenceDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">RelationDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff">PartitionDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff">MissingDomainNode m -&gt; flatten m</span></span>
+<span class="lineno">  225 </span>
+<span class="lineno">  226 </span>instance Flattenable IndexedByNode where
+<span class="lineno">  227 </span>    <span class="decl"><span class="istickedoff">flatten (IndexedByNode a b ) = flatten a &gt;&lt; flatten b</span></span>
+<span class="lineno">  228 </span>
+<span class="lineno">  229 </span>instance (Flattenable a) =&gt; Flattenable (Maybe a) where
+<span class="lineno">  230 </span>    <span class="decl"><span class="istickedoff">flatten (Just x) = flatten x</span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">flatten Nothing = S.empty</span></span>
+<span class="lineno">  232 </span>instance Flattenable AttributeNode where
+<span class="lineno">  233 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff">NamedAttributeNode nn m_e -&gt; flatten nn &gt;&lt; flatten m_e</span></span>
+<span class="lineno">  235 </span>        -- NamedExpressionAttribute nn en -&gt; flatten nn &gt;&lt; flatten en
+<span class="lineno">  236 </span>
+<span class="lineno">  237 </span>instance Flattenable RangeNode where
+<span class="lineno">  238 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
+<span class="lineno">  239 </span><span class="spaces">        </span><span class="istickedoff">SingleRangeNode en -&gt; flatten en</span>
+<span class="lineno">  240 </span><span class="spaces">        </span><span class="istickedoff">OpenRangeNode ddn -&gt; flatten ddn</span>
+<span class="lineno">  241 </span><span class="spaces">        </span><span class="istickedoff">RightUnboundedRangeNode en ddn -&gt; flatten en &gt;&lt; flatten ddn</span>
+<span class="lineno">  242 </span><span class="spaces">        </span><span class="istickedoff">LeftUnboundedRangeNode ddn en -&gt; flatten ddn &gt;&lt; flatten en</span>
+<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">BoundedRangeNode en ddn en' -&gt; mconcat [flatten en, flatten ddn, flatten en']</span></span>
+<span class="lineno">  244 </span>
+<span class="lineno">  245 </span>-- instance Flattenable DoubleDotNode where
+<span class="lineno">  246 </span>--     flatten (DoubleDotNode a b) =  flatten a &gt;&lt; flatten b
+<span class="lineno">  247 </span>
+<span class="lineno">  248 </span>instance Flattenable NamedDomainNode where
+<span class="lineno">  249 </span>    <span class="decl"><span class="istickedoff">flatten (NameDomainNode a Nothing) = flatten a</span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">flatten (NameDomainNode a (Just (b,c))) = mconcat [flatten a,flatten b,flatten c]</span></span>
+<span class="lineno">  251 </span>
+<span class="lineno">  252 </span>instance Flattenable NameNode where
+<span class="lineno">  253 </span>    <span class="decl"><span class="istickedoff">flatten (NameNode n) =  flatten n</span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">flatten (MissingNameNode n) =  flatten n</span></span>
+<span class="lineno">  255 </span>instance Flattenable NameNodeS where
+<span class="lineno">  256 </span>    <span class="decl"><span class="istickedoff">flatten (NameNodeS n) =  flatten n</span></span>
+<span class="lineno">  257 </span>
+<span class="lineno">  258 </span>instance Flattenable ParenExpressionNode where
+<span class="lineno">  259 </span>    <span class="decl"><span class="istickedoff">flatten (ParenExpressionNode a b c) =  flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span></span>
+<span class="lineno">  260 </span>
+<span class="lineno">  261 </span>instance Flattenable b =&gt; Flattenable (ListNode b) where
+<span class="lineno">  262 </span>    <span class="decl"><span class="istickedoff">flatten (ListNode l1 seq l2) =  mconcat [flatten l1, flatten seq, flatten l2]</span></span>
+<span class="lineno">  263 </span>
+<span class="lineno">  264 </span>instance Flattenable b =&gt; Flattenable (Sequence b) where
+<span class="lineno">  265 </span>    <span class="decl"><span class="istickedoff">flatten (Seq es) = mconcat $ map flatten es</span></span>
+<span class="lineno">  266 </span>
+<span class="lineno">  267 </span>instance Flattenable b =&gt; Flattenable (SeqElem b) where
+<span class="lineno">  268 </span>    <span class="decl"><span class="istickedoff">flatten (SeqElem v s) =  flatten v &gt;&lt; flatten s</span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">flatten (MissingSeqElem v s) =  flatten v &gt;&lt; flatten s</span></span>
+<span class="lineno">  270 </span>instance Flattenable b =&gt; Flattenable [b] where
+<span class="lineno">  271 </span>    <span class="decl"><span class="istickedoff">flatten = mconcat . map flatten</span></span> 
+<span class="lineno">  272 </span>
+<span class="lineno">  273 </span>
+<span class="lineno">  274 </span>
+<span class="lineno">  275 </span>
+
+</pre>
+</body>
+</html>

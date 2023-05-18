@@ -26,64 +26,65 @@ span.spaces    { background: white }
 <span class="lineno">    7 </span>import Conjure.Language.Expression.Op.Internal.Common
 <span class="lineno">    8 </span>
 <span class="lineno">    9 </span>import qualified Data.Aeson as JSON             -- aeson
-<span class="lineno">   10 </span>import qualified Data.HashMap.Strict as M       -- unordered-containers
-<span class="lineno">   11 </span>import qualified Data.Vector as V               -- vector
-<span class="lineno">   12 </span>
+<span class="lineno">   10 </span>import qualified Data.Aeson.KeyMap as KM
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>import qualified Data.Vector as V               -- vector
 <span class="lineno">   13 </span>
-<span class="lineno">   14 </span>data OpMax x = OpMax x
-<span class="lineno">   15 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
-<span class="lineno">   16 </span>
-<span class="lineno">   17 </span>instance Serialize x =&gt; Serialize (OpMax x)
-<span class="lineno">   18 </span>instance Hashable  x =&gt; Hashable  (OpMax x)
-<span class="lineno">   19 </span>instance ToJSON    x =&gt; ToJSON    (OpMax x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">   20 </span>instance FromJSON  x =&gt; FromJSON  (OpMax x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">   21 </span>
-<span class="lineno">   22 </span>instance ( TypeOf x, Pretty x
-<span class="lineno">   23 </span>         , Domain () x :&lt; x
-<span class="lineno">   24 </span>         ) =&gt; TypeOf (OpMax x) where
-<span class="lineno">   25 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpMax x) | Just (dom :: Domain () x) &lt;- project x = do</span>
-<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
-<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return ty</span>
-<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; return ty</span>
-<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">return ty</span></span>
-<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   32 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   33 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(OpMax x) = do</span>
-<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
-<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">tyInner &lt;- case ty of</span>
-<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
-<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
-<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
-<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   42 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside max:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   43 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">case tyInner of</span>
-<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   48 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside max:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   49 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">return tyInner</span></span>
-<span class="lineno">   51 </span>
-<span class="lineno">   52 </span>instance SimplifyOp OpMax x where
-<span class="lineno">   53 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpMax}&quot;</span></span>
-<span class="lineno">   54 </span>
-<span class="lineno">   55 </span>instance Pretty x =&gt; Pretty (OpMax x) where
-<span class="lineno">   56 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpMax x) = &quot;max&quot; &lt;&gt; prParens (pretty x)</span></span>
-<span class="lineno">   57 </span>
-<span class="lineno">   58 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpMax x) where
-<span class="lineno">   59 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpMax x) | Just xs &lt;- listOut x = JSON.Object $ M.fromList</span>
-<span class="lineno">   60 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMax&quot;)</span>
-<span class="lineno">   61 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   62 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (OpMax x) = JSON.Object $ M.fromList</span>
-<span class="lineno">   65 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMax&quot;)</span>
-<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>data OpMax x = OpMax x
+<span class="lineno">   16 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff">Traversable</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span>, Typeable, Generic)
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>instance Serialize x =&gt; Serialize (OpMax x)
+<span class="lineno">   19 </span>instance Hashable  x =&gt; Hashable  (OpMax x)
+<span class="lineno">   20 </span>instance ToJSON    x =&gt; ToJSON    (OpMax x) where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   21 </span>instance FromJSON  x =&gt; FromJSON  (OpMax x) where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>instance ( TypeOf x, Pretty x
+<span class="lineno">   24 </span>         , Domain () x :&lt; x
+<span class="lineno">   25 </span>         ) =&gt; TypeOf (OpMax x) where
+<span class="lineno">   26 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpMax x) | Just (dom :: Domain () x) &lt;- project x = do</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return ty</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; return ty</span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">return ty</span></span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   33 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   34 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(OpMax x) = do</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">tyInner &lt;- case ty of</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   43 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside max:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   44 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">case tyInner of</span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   49 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside max:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   50 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">return tyInner</span></span>
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>instance SimplifyOp OpMax x where
+<span class="lineno">   54 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpMax}&quot;</span></span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>instance Pretty x =&gt; Pretty (OpMax x) where
+<span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpMax x) = &quot;max&quot; &lt;&gt; prParens (pretty x)</span></span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpMax x) where
+<span class="lineno">   60 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpMax x) | Just xs &lt;- listOut x = JSON.Object $ KM.fromList</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMax&quot;)</span>
+<span class="lineno">   62 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (OpMax x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMax&quot;)</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

@@ -98,7 +98,7 @@ span.spaces    { background: white }
 <span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">TypeRecord ds &lt;- typeOf t</span>
 <span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">name          &lt;- nameOut i</span>
 <span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">iInt          &lt;- case elemIndex name (map fst ds) of</span>
-<span class="lineno">   82 </span><span class="spaces">                            </span><span class="istickedoff">Nothing   -&gt; <span class="nottickedoff">fail &quot;Record indexing, not a member of the type.&quot;</span></span>
+<span class="lineno">   82 </span><span class="spaces">                            </span><span class="istickedoff">Nothing   -&gt; <span class="nottickedoff">failDoc &quot;Record indexing, not a member of the type.&quot;</span></span>
 <span class="lineno">   83 </span><span class="spaces">                            </span><span class="istickedoff">Just iInt -&gt; return iInt</span>
 <span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">ts            &lt;- downX1 t</span>
 <span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">return</span>

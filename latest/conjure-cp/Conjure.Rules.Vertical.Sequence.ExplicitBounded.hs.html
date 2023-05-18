@@ -37,7 +37,7 @@ span.spaces    { background: white }
 <span class="lineno">   18 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_Size x -&gt; <span class="nottickedoff">return x</span></span>
 <span class="lineno">   19 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MaxSize x -&gt; return x</span>
 <span class="lineno">   20 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MinMaxSize _ x -&gt; <span class="nottickedoff">return x</span></span>
-<span class="lineno">   21 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">fail &quot;rule_Comprehension_Defined maxSize&quot;</span></span>
+<span class="lineno">   21 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc &quot;rule_Comprehension_Defined maxSize&quot;</span></span>
 <span class="lineno">   22 </span><span class="spaces">        </span><span class="istickedoff">[sLength, sValues]         &lt;- downX1 sequ</span>
 <span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction pat old val</span>
 <span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">return</span>

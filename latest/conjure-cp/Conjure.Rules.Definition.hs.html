@@ -133,7 +133,7 @@ span.spaces    { background: white }
 <span class="lineno">  114 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">responsesRepresentation</span></span></span>    :: Maybe [(Name, Int)]
 <span class="lineno">  115 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">estimateNumberOfModels</span></span></span>     :: Bool
 <span class="lineno">  116 </span>    }
-<span class="lineno">  117 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span>, Typeable)
+<span class="lineno">  117 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span>, Typeable)
 <span class="lineno">  118 </span>
 <span class="lineno">  119 </span>instance Default Config where
 <span class="lineno">  120 </span>    <span class="decl"><span class="nottickedoff">def = Config</span>
@@ -181,7 +181,7 @@ span.spaces    { background: white }
 <span class="lineno">  162 </span>                -- a fail in {n} means that the rule isn't applicable
 <span class="lineno">  163 </span>            , MonadFailDoc m, MonadUserError m, MonadLog m
 <span class="lineno">  164 </span>            , NameGen m, EnumerateDomain m
-<span class="lineno">  165 </span>                -- a fail in {m} means a bug
+<span class="lineno">  165 </span>                -- a failDoc in {m} means a bug
 <span class="lineno">  166 </span>            , ?typeCheckerMode :: TypeCheckerMode
 <span class="lineno">  167 </span>            )
 <span class="lineno">  168 </span>        =&gt; Zipper a Expression            -- to query context

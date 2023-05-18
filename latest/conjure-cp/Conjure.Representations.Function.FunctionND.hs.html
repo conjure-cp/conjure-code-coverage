@@ -275,66 +275,67 @@ span.spaces    { background: white }
 <span class="lineno">  256 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
 <span class="lineno">  257 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
 <span class="lineno">  258 </span>
-<span class="lineno">  259 </span>viewAsDomainTuple :: Domain r x -&gt; Maybe [Domain r x]
-<span class="lineno">  260 </span><span class="decl"><span class="istickedoff">viewAsDomainTuple (DomainTuple doms) = Just doms</span>
-<span class="lineno">  261 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTuple (DomainRecord doms) = Just (doms |&gt; sortBy (comparing fst) |&gt; map snd)</span>
-<span class="lineno">  262 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTuple _ = Nothing</span></span>
-<span class="lineno">  263 </span>
-<span class="lineno">  264 </span>-- acts like viewAsDomainTuple, except single domains are returned as singleton tuples too
-<span class="lineno">  265 </span>viewAsDomainTupleS :: Domain r x -&gt; Maybe [Domain r x]
-<span class="lineno">  266 </span><span class="decl"><span class="istickedoff">viewAsDomainTupleS (DomainTuple doms) = Just doms</span>
-<span class="lineno">  267 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTupleS (DomainRecord doms) = Just (doms |&gt; sortBy (comparing fst) |&gt; map snd)</span>
-<span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTupleS d = Just [d]</span></span>
-<span class="lineno">  269 </span>
+<span class="lineno">  259 </span>
+<span class="lineno">  260 </span>viewAsDomainTuple :: Domain r x -&gt; Maybe [Domain r x]
+<span class="lineno">  261 </span><span class="decl"><span class="istickedoff">viewAsDomainTuple (DomainTuple doms) = Just doms</span>
+<span class="lineno">  262 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTuple (DomainRecord doms) = Just (doms |&gt; sortBy (comparing fst) |&gt; map snd)</span>
+<span class="lineno">  263 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTuple _ = Nothing</span></span>
+<span class="lineno">  264 </span>
+<span class="lineno">  265 </span>-- acts like viewAsDomainTuple, except single domains are returned as singleton tuples too
+<span class="lineno">  266 </span>viewAsDomainTupleS :: Domain r x -&gt; Maybe [Domain r x]
+<span class="lineno">  267 </span><span class="decl"><span class="istickedoff">viewAsDomainTupleS (DomainTuple doms) = Just doms</span>
+<span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTupleS (DomainRecord doms) = Just (doms |&gt; sortBy (comparing fst) |&gt; map snd)</span>
+<span class="lineno">  269 </span><span class="spaces"></span><span class="istickedoff">viewAsDomainTupleS d = Just [d]</span></span>
 <span class="lineno">  270 </span>
-<span class="lineno">  271 </span>mkLensAsDomainTuple :: Domain r x -&gt; Maybe ( [Constant] -&gt; Constant             -- how to make a literal
-<span class="lineno">  272 </span>                                           , Constant -&gt; Maybe [Constant]       -- how to inspect a literal
-<span class="lineno">  273 </span>                                           )
-<span class="lineno">  274 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTuple (DomainTuple _) =</span>
-<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  276 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
-<span class="lineno">  277 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
-<span class="lineno">  278 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span>
-<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno">  280 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  281 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple (DomainRecord doms) =</span>
-<span class="lineno">  282 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
-<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
-<span class="lineno">  284 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
-<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
-<span class="lineno">  286 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  289 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple _ = <span class="nottickedoff">Nothing</span></span></span>
-<span class="lineno">  290 </span>
+<span class="lineno">  271 </span>
+<span class="lineno">  272 </span>mkLensAsDomainTuple :: Domain r x -&gt; Maybe ( [Constant] -&gt; Constant             -- how to make a literal
+<span class="lineno">  273 </span>                                           , Constant -&gt; Maybe [Constant]       -- how to inspect a literal
+<span class="lineno">  274 </span>                                           )
+<span class="lineno">  275 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTuple (DomainTuple _) =</span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
+<span class="lineno">  277 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
+<span class="lineno">  278 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
+<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  281 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple (DomainRecord doms) =</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
+<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
+<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span>
+<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple _ = <span class="nottickedoff">Nothing</span></span></span>
 <span class="lineno">  291 </span>
 <span class="lineno">  292 </span>
-<span class="lineno">  293 </span>-- acts like mkLensAsDomainTuple, except single domains are returned as singleton tuples too
-<span class="lineno">  294 </span>mkLensAsDomainTupleS :: Domain r x -&gt; Maybe ( [Constant] -&gt; Constant             -- how to make a literal
-<span class="lineno">  295 </span>                                            , Constant -&gt; Maybe [Constant]       -- how to inspect a literal
-<span class="lineno">  296 </span>                                            )
-<span class="lineno">  297 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTupleS (DomainTuple _) =</span>
-<span class="lineno">  298 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  299 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
-<span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
-<span class="lineno">  301 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span></span>
-<span class="lineno">  302 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
-<span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  304 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS (DomainRecord doms) =</span>
-<span class="lineno">  305 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
-<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
-<span class="lineno">  307 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
-<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
-<span class="lineno">  309 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
-<span class="lineno">  310 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
-<span class="lineno">  311 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  312 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS _ =</span>
-<span class="lineno">  313 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  314 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; case vals of</span>
-<span class="lineno">  315 </span><span class="spaces">                        </span><span class="istickedoff">[v] -&gt; v</span>
-<span class="lineno">  316 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;mkLensAsDomainTupleS&quot;</span></span>
-<span class="lineno">  317 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ v -&gt; Just [v]</span></span>
-<span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>-- acts like mkLensAsDomainTuple, except single domains are returned as singleton tuples too
+<span class="lineno">  295 </span>mkLensAsDomainTupleS :: Domain r x -&gt; Maybe ( [Constant] -&gt; Constant             -- how to make a literal
+<span class="lineno">  296 </span>                                            , Constant -&gt; Maybe [Constant]       -- how to inspect a literal
+<span class="lineno">  297 </span>                                            )
+<span class="lineno">  298 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTupleS (DomainTuple _) =</span>
+<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
+<span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
+<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
+<span class="lineno">  302 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span></span>
+<span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
+<span class="lineno">  304 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  305 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS (DomainRecord doms) =</span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
+<span class="lineno">  307 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
+<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
+<span class="lineno">  309 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
+<span class="lineno">  310 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
+<span class="lineno">  311 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
+<span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  313 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS _ =</span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
+<span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; case vals of</span>
+<span class="lineno">  316 </span><span class="spaces">                        </span><span class="istickedoff">[v] -&gt; v</span>
+<span class="lineno">  317 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;mkLensAsDomainTupleS&quot;</span></span>
+<span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ v -&gt; Just [v]</span></span>
+<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
 
 </pre>
 </body>

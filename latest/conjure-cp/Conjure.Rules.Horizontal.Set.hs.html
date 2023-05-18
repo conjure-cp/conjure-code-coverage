@@ -144,7 +144,7 @@ span.spaces    { background: white }
 <span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; <span class="nottickedoff">return ()</span></span>
 <span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation{} -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">fail &quot;type incompatibility in intersect operator&quot;</span></span>
+<span class="lineno">  128 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">failDoc &quot;type incompatibility in intersect operator&quot;</span></span>
 <span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">let i = Reference iPat Nothing</span>
 <span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  131 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set intersection&quot;</span></span>
@@ -173,7 +173,7 @@ span.spaces    { background: white }
 <span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet{}     -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  155 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction{} -&gt; <span class="nottickedoff">return ()</span></span>
 <span class="lineno">  156 </span><span class="spaces">            </span><span class="istickedoff">TypeRelation{} -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">fail &quot;type incompatibility in union operator&quot;</span></span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">_              -&gt; <span class="nottickedoff">failDoc &quot;type incompatibility in union operator&quot;</span></span>
 <span class="lineno">  158 </span><span class="spaces">        </span><span class="istickedoff">let i = Reference iPat Nothing</span>
 <span class="lineno">  159 </span><span class="spaces">        </span><span class="istickedoff">return</span>
 <span class="lineno">  160 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for set union&quot;</span></span>
@@ -208,7 +208,7 @@ span.spaces    { background: white }
 <span class="lineno">  189 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeMSet{}     -&gt; return ()</span></span>
 <span class="lineno">  190 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} -&gt; return ()</span></span>
 <span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TypeRelation{} -&gt; return ()</span></span>
-<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_              -&gt; fail &quot;type incompatibility in difference operator&quot;</span></span>
+<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_              -&gt; failDoc &quot;type incompatibility in difference operator&quot;</span></span>
 <span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">i = Reference iPat Nothing</span></span>
 <span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set difference&quot;</span></span>

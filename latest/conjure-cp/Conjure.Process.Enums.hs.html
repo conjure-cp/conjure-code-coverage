@@ -146,7 +146,7 @@ span.spaces    { background: white }
 <span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff">= DomainReference nm (Just d)</span>
 <span class="lineno">  129 </span><span class="spaces">                </span><span class="istickedoff">onD (DomainReference nm Nothing)</span>
-<span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup nm enumDomainNames</span>
+<span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff">| Just d &lt;- lookup <span class="nottickedoff">nm</span> enumDomainNames</span>
 <span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff">= <span class="nottickedoff">DomainReference nm (Just d)</span></span>
 <span class="lineno">  132 </span><span class="spaces">                </span><span class="istickedoff">onD p = p</span>
 <span class="lineno">  133 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -312,7 +312,7 @@ span.spaces    { background: white }
 <span class="lineno">  293 </span>-- first Name is the value, the second Name is the name of the enum domain
 <span class="lineno">  294 </span>nameToX :: MonadFailDoc m =&gt; M.HashMap Name (Name, Integer) -&gt; Expression -&gt; m Expression
 <span class="lineno">  295 </span><span class="decl"><span class="istickedoff">nameToX nameToIntMapping (Reference nm _) = case M.lookup nm nameToIntMapping of</span>
-<span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; failDoc (pretty nm &lt;+&gt; &quot;is used in a domain, but it isn't a member of the enum domain.&quot;)</span>
+<span class="lineno">  296 </span><span class="spaces">    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc (pretty nm &lt;+&gt; &quot;is used in a domain, but it isn't a member of the enum domain.&quot;)</span></span>
 <span class="lineno">  297 </span><span class="spaces">    </span><span class="istickedoff">Just (Name ename, i)  -&gt; return (fromIntWithTag i (TagEnum ename))</span>
 <span class="lineno">  298 </span><span class="spaces">    </span><span class="istickedoff">Just (ename, i) -&gt; <span class="nottickedoff">bug $ &quot;nameToX, nm:&quot; &lt;+&gt; vcat [pretty (show ename), pretty i]</span></span>
 <span class="lineno">  299 </span><span class="spaces"></span><span class="istickedoff">nameToX _ x = <span class="nottickedoff">return x</span></span></span>

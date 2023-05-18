@@ -97,11 +97,11 @@ span.spaces    { background: white }
 <span class="lineno">   78 </span>    <span class="decl"><span class="istickedoff">fmap f = UserErrorT . fmap (fmap f) . runUserErrorT</span></span>
 <span class="lineno">   79 </span>
 <span class="lineno">   80 </span>instance (MonadFailDoc m) =&gt; Applicative (UserErrorT m) where
-<span class="lineno">   81 </span>    <span class="decl"><span class="istickedoff">pure = return</span></span>
+<span class="lineno">   81 </span>    <span class="decl"><span class="istickedoff">pure = UserErrorT . return .Right</span></span>
 <span class="lineno">   82 </span>    <span class="decl"><span class="nottickedoff">(&lt;*&gt;) = ap</span></span>
 <span class="lineno">   83 </span>
 <span class="lineno">   84 </span>instance (MonadFailDoc m) =&gt; Monad (UserErrorT m) where
-<span class="lineno">   85 </span>    <span class="decl"><span class="istickedoff">return a = UserErrorT $ return (Right a)</span></span>
+<span class="lineno">   85 </span>    <span class="decl"><span class="istickedoff">return = pure</span></span>
 <span class="lineno">   86 </span>    <span class="decl"><span class="istickedoff">m &gt;&gt;= k = UserErrorT $ do</span>
 <span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">a &lt;- runUserErrorT m</span>
 <span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">case a of</span>

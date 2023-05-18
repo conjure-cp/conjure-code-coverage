@@ -259,7 +259,7 @@ span.spaces    { background: white }
 <span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainIntE x) = do</span>
 <span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">x' &lt;- instantiateE x</span>
 <span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">let vals = case (x', viewConstantMatrix x', <span class="nottickedoff">viewConstantSet x'</span>) of</span>
-<span class="lineno">  243 </span><span class="spaces">                </span><span class="istickedoff">(ConstantInt{}, _, _) -&gt; [x']</span>
+<span class="lineno">  243 </span><span class="spaces">                </span><span class="istickedoff">(ConstantInt{}, _, _) -&gt; <span class="nottickedoff">[x']</span></span>
 <span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff">(_, Just (_, xs), _) -&gt; xs</span>
 <span class="lineno">  245 </span><span class="spaces">                </span><span class="istickedoff">(_, _, Just xs) -&gt; <span class="nottickedoff">xs</span></span>
 <span class="lineno">  246 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">[]</span></span>
