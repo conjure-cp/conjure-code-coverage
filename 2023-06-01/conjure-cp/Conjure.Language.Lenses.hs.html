@@ -1,0 +1,1638 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE KindSignatures #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Lenses where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Conjure.Language.Definition
+<span class="lineno">    7 </span>import Conjure.Language.Constant
+<span class="lineno">    8 </span>import Conjure.Language.Domain
+<span class="lineno">    9 </span>import Conjure.Language.Type
+<span class="lineno">   10 </span>import Conjure.Language.TypeOf
+<span class="lineno">   11 </span>import Conjure.Language.Expression.Op
+<span class="lineno">   12 </span>import Conjure.Language.Pretty
+<span class="lineno">   13 </span>import Conjure.Language.AdHoc
+<span class="lineno">   14 </span>import qualified Data.Kind as T (Type)
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>-- | To use a lens for constructing stuf.
+<span class="lineno">   18 </span>make :: (Proxy Identity -&gt; (a, b)) -&gt; a
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">make  f = fst (f <span class="nottickedoff">(Proxy :: Proxy Identity)</span>)</span></span>
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>-- | To use a lens for deconstructing stuf.
+<span class="lineno">   22 </span>match :: (Proxy (m :: T.Type -&gt; T.Type) -&gt; (a, b -&gt; m c)) -&gt; b -&gt; m c
+<span class="lineno">   23 </span><span class="decl"><span class="istickedoff">match f = snd (f <span class="nottickedoff">Proxy</span>)</span></span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>followAliases :: CanBeAnAlias b =&gt; (b -&gt; c) -&gt; b -&gt; c
+<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">followAliases m (isAlias -&gt; Just x) = followAliases m x</span>
+<span class="lineno">   27 </span><span class="spaces"></span><span class="istickedoff">followAliases m x = m x</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>tryMatch :: (Proxy Maybe -&gt; (a, b -&gt; Maybe c)) -&gt; b -&gt; Maybe c
+<span class="lineno">   30 </span><span class="decl"><span class="istickedoff">tryMatch f = match f</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>matchOr :: c -&gt; (Proxy Maybe -&gt; (a, b -&gt; Maybe c)) -&gt; b -&gt; c
+<span class="lineno">   33 </span><span class="decl"><span class="istickedoff">matchOr defOut f inp = fromMaybe defOut (match f inp)</span></span>
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>matchDef :: (Proxy Maybe -&gt; (a, b -&gt; Maybe b)) -&gt; b -&gt; b
+<span class="lineno">   36 </span><span class="decl"><span class="istickedoff">matchDef f inp = matchOr inp f inp</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>matchDefs :: CanBeAnAlias b =&gt; [Proxy Maybe -&gt; (a, b -&gt; Maybe b)] -&gt; b -&gt; b
+<span class="lineno">   39 </span><span class="decl"><span class="istickedoff">matchDefs fs inp =</span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">case mapMaybe (`match` inp) fs of</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">[]      -&gt; inp</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">(out:_) -&gt; matchDefs fs out</span></span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>--------------------------------------------------------------------------------
+<span class="lineno">   46 </span>-- Lenses (for a weird definition of lens) -------------------------------------
+<span class="lineno">   47 </span>--------------------------------------------------------------------------------
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>opMinus
+<span class="lineno">   51 </span>    :: ( Op x :&lt; x
+<span class="lineno">   52 </span>       , Pretty x
+<span class="lineno">   53 </span>       , MonadFailDoc m
+<span class="lineno">   54 </span>       )
+<span class="lineno">   55 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">   56 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">   57 </span>       , x -&gt; m (x,x)
+<span class="lineno">   58 </span>       )
+<span class="lineno">   59 </span><span class="decl"><span class="istickedoff">opMinus _ =</span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpMinus (OpMinus x y))</span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">   64 </span><span class="spaces">                </span><span class="istickedoff">MkOpMinus (OpMinus x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">   65 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMinus:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>opDiv
+<span class="lineno">   70 </span>    :: ( Op x :&lt; x
+<span class="lineno">   71 </span>       , Pretty x
+<span class="lineno">   72 </span>       , MonadFailDoc m
+<span class="lineno">   73 </span>       )
+<span class="lineno">   74 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">   75 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">   76 </span>       , x -&gt; m (x,x)
+<span class="lineno">   77 </span>       )
+<span class="lineno">   78 </span><span class="decl"><span class="nottickedoff">opDiv _ =</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpDiv (OpDiv x y))</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">   83 </span><span class="spaces">                </span><span class="nottickedoff">MkOpDiv (OpDiv x y) -&gt; return (x,y)</span>
+<span class="lineno">   84 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opDiv:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">   86 </span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>opMod
+<span class="lineno">   89 </span>    :: ( Op x :&lt; x
+<span class="lineno">   90 </span>       , Pretty x
+<span class="lineno">   91 </span>       , MonadFailDoc m
+<span class="lineno">   92 </span>       )
+<span class="lineno">   93 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">   94 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">   95 </span>       , x -&gt; m (x,x)
+<span class="lineno">   96 </span>       )
+<span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">opMod _ =</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpMod (OpMod x y))</span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  102 </span><span class="spaces">                </span><span class="nottickedoff">MkOpMod (OpMod x y) -&gt; return (x,y)</span>
+<span class="lineno">  103 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opMod:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  104 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>
+<span class="lineno">  107 </span>opPow
+<span class="lineno">  108 </span>    :: ( Op x :&lt; x
+<span class="lineno">  109 </span>       , Pretty x
+<span class="lineno">  110 </span>       , MonadFailDoc m
+<span class="lineno">  111 </span>       )
+<span class="lineno">  112 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  113 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  114 </span>       , x -&gt; m (x,x)
+<span class="lineno">  115 </span>       )
+<span class="lineno">  116 </span><span class="decl"><span class="istickedoff">opPow _ =</span>
+<span class="lineno">  117 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpPow (OpPow x y))</span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">\ p -&gt; do</span></span>
+<span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">op &lt;- project p</span></span>
+<span class="lineno">  120 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case op of</span></span>
+<span class="lineno">  121 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MkOpPow (OpPow x y) -&gt; return (x,y)</span></span>
+<span class="lineno">  122 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opPow:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  124 </span>
+<span class="lineno">  125 </span>
+<span class="lineno">  126 </span>opNegate
+<span class="lineno">  127 </span>    :: ( Op x :&lt; x
+<span class="lineno">  128 </span>       , Pretty x
+<span class="lineno">  129 </span>       , MonadFailDoc m
+<span class="lineno">  130 </span>       )
+<span class="lineno">  131 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  132 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  133 </span>       , x -&gt; m x
+<span class="lineno">  134 </span>       )
+<span class="lineno">  135 </span><span class="decl"><span class="nottickedoff">opNegate _ =</span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="nottickedoff">( inject . MkOpNegate . OpNegate</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  138 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="nottickedoff">MkOpNegate (OpNegate x) -&gt; return x</span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opNegate:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  143 </span>
+<span class="lineno">  144 </span>
+<span class="lineno">  145 </span>opDontCare
+<span class="lineno">  146 </span>    :: ( Op x :&lt; x
+<span class="lineno">  147 </span>       , Pretty x
+<span class="lineno">  148 </span>       , MonadFailDoc m
+<span class="lineno">  149 </span>       )
+<span class="lineno">  150 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  151 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  152 </span>       , x -&gt; m x
+<span class="lineno">  153 </span>       )
+<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">opDontCare _ =</span>
+<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpDontCare . OpDontCare</span>
+<span class="lineno">  156 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  158 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff">MkOpDontCare (OpDontCare x) -&gt; return x</span>
+<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opDontCare:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  161 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>
+<span class="lineno">  164 </span>opDefined
+<span class="lineno">  165 </span>    :: MonadFailDoc m
+<span class="lineno">  166 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  167 </span>    -&gt; ( Expression -&gt; Expression
+<span class="lineno">  168 </span>       , Expression -&gt; m Expression
+<span class="lineno">  169 </span>       )
+<span class="lineno">  170 </span><span class="decl"><span class="istickedoff">opDefined _ =</span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpDefined . OpDefined</span>
+<span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">, followAliases extract</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno">  174 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">extract (Op (MkOpDefined (OpDefined x))) = return x</span>
+<span class="lineno">  176 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.opDefined:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span></span>
+<span class="lineno">  177 </span>
+<span class="lineno">  178 </span>
+<span class="lineno">  179 </span>opRange
+<span class="lineno">  180 </span>    :: MonadFailDoc m
+<span class="lineno">  181 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  182 </span>    -&gt; ( Expression -&gt; Expression
+<span class="lineno">  183 </span>       , Expression -&gt; m Expression
+<span class="lineno">  184 </span>       )
+<span class="lineno">  185 </span><span class="decl"><span class="istickedoff">opRange _ =</span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpRange . OpRange</span></span>
+<span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff">, followAliases extract</span>
+<span class="lineno">  188 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno">  189 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">extract (Op (MkOpRange (OpRange x))) = return x</span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.opRange:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span></span>
+<span class="lineno">  192 </span>
+<span class="lineno">  193 </span>
+<span class="lineno">  194 </span>opDefinedOrRange
+<span class="lineno">  195 </span>    :: ( Op x :&lt; x
+<span class="lineno">  196 </span>       , Pretty x
+<span class="lineno">  197 </span>       , MonadFailDoc m
+<span class="lineno">  198 </span>       )
+<span class="lineno">  199 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  200 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
+<span class="lineno">  201 </span>       , x -&gt; m (x -&gt; x, x)
+<span class="lineno">  202 </span>       )
+<span class="lineno">  203 </span><span class="decl"><span class="istickedoff">opDefinedOrRange _ =</span>
+<span class="lineno">  204 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
+<span class="lineno">  205 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
+<span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpDefined (OpDefined x)) -&gt; return (<span class="nottickedoff">inject . MkOpDefined . OpDefined</span> , x)</span>
+<span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpRange   (OpRange   x)) -&gt; return (<span class="nottickedoff">inject . MkOpRange   . OpRange</span>   , x)</span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">_                                -&gt; na (&quot;Lenses.opDefinedOrRange&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  210 </span>
+<span class="lineno">  211 </span>
+<span class="lineno">  212 </span>opRestrict
+<span class="lineno">  213 </span>    :: MonadFailDoc m
+<span class="lineno">  214 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  215 </span>    -&gt; ( Expression -&gt; Domain () Expression -&gt; Expression
+<span class="lineno">  216 </span>       , Expression -&gt; m (Expression, Domain () Expression)
+<span class="lineno">  217 </span>       )
+<span class="lineno">  218 </span><span class="decl"><span class="istickedoff">opRestrict _ =</span>
+<span class="lineno">  219 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x d -&gt; inject $ MkOpRestrict $ OpRestrict x (Domain d)</span></span>
+<span class="lineno">  220 </span><span class="spaces">    </span><span class="istickedoff">, followAliases extract</span>
+<span class="lineno">  221 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno">  222 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff">extract (Op (MkOpRestrict (OpRestrict x (Domain d)))) = <span class="nottickedoff">return (x, d)</span></span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.opRestrict:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span></span>
+<span class="lineno">  225 </span>
+<span class="lineno">  226 </span>
+<span class="lineno">  227 </span>opToInt
+<span class="lineno">  228 </span>    :: ( Op x :&lt; x
+<span class="lineno">  229 </span>       , Pretty x
+<span class="lineno">  230 </span>       , MonadFailDoc m
+<span class="lineno">  231 </span>       )
+<span class="lineno">  232 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  233 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  234 </span>       , x -&gt; m x
+<span class="lineno">  235 </span>       )
+<span class="lineno">  236 </span><span class="decl"><span class="nottickedoff">opToInt _ =</span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="nottickedoff">( inject . MkOpToInt . OpToInt</span>
+<span class="lineno">  238 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  239 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  240 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  241 </span><span class="spaces">                </span><span class="nottickedoff">MkOpToInt (OpToInt x) -&gt; return x</span>
+<span class="lineno">  242 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opToInt:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  243 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  244 </span>
+<span class="lineno">  245 </span>
+<span class="lineno">  246 </span>opPowerSet
+<span class="lineno">  247 </span>    :: ( Op x :&lt; x
+<span class="lineno">  248 </span>       , Pretty x
+<span class="lineno">  249 </span>       , MonadFailDoc m
+<span class="lineno">  250 </span>       )
+<span class="lineno">  251 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  252 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  253 </span>       , x -&gt; m x
+<span class="lineno">  254 </span>       )
+<span class="lineno">  255 </span><span class="decl"><span class="istickedoff">opPowerSet _ =</span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpPowerSet . OpPowerSet</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  258 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  259 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  260 </span><span class="spaces">                </span><span class="istickedoff">MkOpPowerSet (OpPowerSet x) -&gt; return x</span>
+<span class="lineno">  261 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opPowerSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  262 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  263 </span>
+<span class="lineno">  264 </span>
+<span class="lineno">  265 </span>opToSet
+<span class="lineno">  266 </span>    :: ( Op x :&lt; x
+<span class="lineno">  267 </span>       , Pretty x
+<span class="lineno">  268 </span>       , MonadFailDoc m
+<span class="lineno">  269 </span>       )
+<span class="lineno">  270 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  271 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  272 </span>       , x -&gt; m x
+<span class="lineno">  273 </span>       )
+<span class="lineno">  274 </span><span class="decl"><span class="istickedoff">opToSet _ =</span>
+<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpToSet . OpToSet False</span></span>
+<span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  277 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  278 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">MkOpToSet (OpToSet _ x) -&gt; return x</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opToSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  282 </span>
+<span class="lineno">  283 </span>
+<span class="lineno">  284 </span>opToSetWithFlag
+<span class="lineno">  285 </span>    :: ( Op x :&lt; x
+<span class="lineno">  286 </span>       , Pretty x
+<span class="lineno">  287 </span>       , MonadFailDoc m
+<span class="lineno">  288 </span>       )
+<span class="lineno">  289 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  290 </span>    -&gt; ( Bool -&gt; x -&gt; x
+<span class="lineno">  291 </span>       , x -&gt; m (Bool, x)
+<span class="lineno">  292 </span>       )
+<span class="lineno">  293 </span><span class="decl"><span class="istickedoff">opToSetWithFlag _ =</span>
+<span class="lineno">  294 </span><span class="spaces">    </span><span class="istickedoff">( \ b x -&gt; inject $ MkOpToSet $ OpToSet b x</span>
+<span class="lineno">  295 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  296 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  297 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  298 </span><span class="spaces">                </span><span class="istickedoff">MkOpToSet (OpToSet b x) -&gt; return (b, x)</span>
+<span class="lineno">  299 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opToSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  300 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  301 </span>
+<span class="lineno">  302 </span>
+<span class="lineno">  303 </span>opToMSet
+<span class="lineno">  304 </span>    :: ( Op x :&lt; x
+<span class="lineno">  305 </span>       , Pretty x
+<span class="lineno">  306 </span>       , MonadFailDoc m
+<span class="lineno">  307 </span>       )
+<span class="lineno">  308 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  309 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  310 </span>       , x -&gt; m x
+<span class="lineno">  311 </span>       )
+<span class="lineno">  312 </span><span class="decl"><span class="istickedoff">opToMSet _ =</span>
+<span class="lineno">  313 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpToMSet . OpToMSet</span></span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  315 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  316 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  317 </span><span class="spaces">                </span><span class="istickedoff">MkOpToMSet (OpToMSet x) -&gt; return x</span>
+<span class="lineno">  318 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opToMSet:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno">  319 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  320 </span>
+<span class="lineno">  321 </span>
+<span class="lineno">  322 </span>opToRelation
+<span class="lineno">  323 </span>    :: ( Op x :&lt; x
+<span class="lineno">  324 </span>       , Pretty x
+<span class="lineno">  325 </span>       , MonadFailDoc m
+<span class="lineno">  326 </span>       )
+<span class="lineno">  327 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  328 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  329 </span>       , x -&gt; m x
+<span class="lineno">  330 </span>       )
+<span class="lineno">  331 </span><span class="decl"><span class="istickedoff">opToRelation _ =</span>
+<span class="lineno">  332 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpToRelation . OpToRelation</span></span>
+<span class="lineno">  333 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  334 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  335 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  336 </span><span class="spaces">                </span><span class="istickedoff">MkOpToRelation (OpToRelation x) -&gt; return x</span>
+<span class="lineno">  337 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opToRelation:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno">  338 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  339 </span>
+<span class="lineno">  340 </span>
+<span class="lineno">  341 </span>opParts
+<span class="lineno">  342 </span>    :: ( Op x :&lt; x
+<span class="lineno">  343 </span>       , Pretty x
+<span class="lineno">  344 </span>       , MonadFailDoc m
+<span class="lineno">  345 </span>       )
+<span class="lineno">  346 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  347 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  348 </span>       , x -&gt; m x
+<span class="lineno">  349 </span>       )
+<span class="lineno">  350 </span><span class="decl"><span class="istickedoff">opParts _ =</span>
+<span class="lineno">  351 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpParts . OpParts</span>
+<span class="lineno">  352 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  353 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  354 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  355 </span><span class="spaces">                </span><span class="istickedoff">MkOpParts (OpParts x) -&gt; return x</span>
+<span class="lineno">  356 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParts:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  357 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  358 </span>
+<span class="lineno">  359 </span>
+<span class="lineno">  360 </span>opParty
+<span class="lineno">  361 </span>    :: ( Op x :&lt; x
+<span class="lineno">  362 </span>       , Pretty x
+<span class="lineno">  363 </span>       , MonadFailDoc m
+<span class="lineno">  364 </span>       )
+<span class="lineno">  365 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  366 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  367 </span>       , x -&gt; m (x, x)
+<span class="lineno">  368 </span>       )
+<span class="lineno">  369 </span><span class="decl"><span class="istickedoff">opParty _ =</span>
+<span class="lineno">  370 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpParty $ OpParty x y</span></span>
+<span class="lineno">  371 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  372 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  373 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  374 </span><span class="spaces">                </span><span class="istickedoff">MkOpParty (OpParty x y) -&gt; return (x,y)</span>
+<span class="lineno">  375 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParty:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  376 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  377 </span>
+<span class="lineno">  378 </span>
+<span class="lineno">  379 </span>opParticipants
+<span class="lineno">  380 </span>    :: ( Op x :&lt; x
+<span class="lineno">  381 </span>       , Pretty x
+<span class="lineno">  382 </span>       , MonadFailDoc m
+<span class="lineno">  383 </span>       )
+<span class="lineno">  384 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  385 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  386 </span>       , x -&gt; m x
+<span class="lineno">  387 </span>       )
+<span class="lineno">  388 </span><span class="decl"><span class="istickedoff">opParticipants _ =</span>
+<span class="lineno">  389 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpParticipants . OpParticipants</span></span>
+<span class="lineno">  390 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  391 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  392 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  393 </span><span class="spaces">                </span><span class="istickedoff">MkOpParticipants (OpParticipants x) -&gt; return x</span>
+<span class="lineno">  394 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opParticipants:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  396 </span>
+<span class="lineno">  397 </span>
+<span class="lineno">  398 </span>opImage
+<span class="lineno">  399 </span>    :: ( Op x :&lt; x
+<span class="lineno">  400 </span>       , Pretty x
+<span class="lineno">  401 </span>       , MonadFailDoc m
+<span class="lineno">  402 </span>       )
+<span class="lineno">  403 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  404 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  405 </span>       , x -&gt; m (x, x)
+<span class="lineno">  406 </span>       )
+<span class="lineno">  407 </span><span class="decl"><span class="istickedoff">opImage _ =</span>
+<span class="lineno">  408 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject $ MkOpImage $ OpImage x y</span>
+<span class="lineno">  409 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  410 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  411 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  412 </span><span class="spaces">                </span><span class="istickedoff">MkOpImage (OpImage x y) -&gt; return (x,y)</span>
+<span class="lineno">  413 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opImage:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  414 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  415 </span>
+<span class="lineno">  416 </span>
+<span class="lineno">  417 </span>opImageSet
+<span class="lineno">  418 </span>    :: ( Op x :&lt; x
+<span class="lineno">  419 </span>       , Pretty x
+<span class="lineno">  420 </span>       , MonadFailDoc m
+<span class="lineno">  421 </span>       )
+<span class="lineno">  422 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  423 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  424 </span>       , x -&gt; m (x, x)
+<span class="lineno">  425 </span>       )
+<span class="lineno">  426 </span><span class="decl"><span class="istickedoff">opImageSet _ =</span>
+<span class="lineno">  427 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpImageSet $ OpImageSet x y</span></span>
+<span class="lineno">  428 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  429 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  430 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  431 </span><span class="spaces">                </span><span class="istickedoff">MkOpImageSet (OpImageSet x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  432 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opImageSet:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  433 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  434 </span>
+<span class="lineno">  435 </span>opTransform
+<span class="lineno">  436 </span>    :: ( Op x :&lt; x
+<span class="lineno">  437 </span>       , Pretty x
+<span class="lineno">  438 </span>       , MonadFailDoc m
+<span class="lineno">  439 </span>       )
+<span class="lineno">  440 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  441 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  442 </span>       , x -&gt; m (x, x)
+<span class="lineno">  443 </span>       )
+<span class="lineno">  444 </span><span class="decl"><span class="istickedoff">opTransform _ =</span>
+<span class="lineno">  445 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpTransform $ OpTransform x y</span></span>
+<span class="lineno">  446 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  447 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  448 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  449 </span><span class="spaces">                </span><span class="istickedoff">MkOpTransform (OpTransform x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  450 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opTransform:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  451 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  452 </span>
+<span class="lineno">  453 </span>
+<span class="lineno">  454 </span>opRelationProj
+<span class="lineno">  455 </span>    :: ( Op x :&lt; x
+<span class="lineno">  456 </span>       , Pretty x
+<span class="lineno">  457 </span>       , MonadFailDoc m
+<span class="lineno">  458 </span>       )
+<span class="lineno">  459 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  460 </span>    -&gt; ( x -&gt; [Maybe x] -&gt; x
+<span class="lineno">  461 </span>       , x -&gt; m (x, [Maybe x])
+<span class="lineno">  462 </span>       )
+<span class="lineno">  463 </span><span class="decl"><span class="istickedoff">opRelationProj _ =</span>
+<span class="lineno">  464 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x ys -&gt; inject $ MkOpRelationProj $ OpRelationProj x ys</span></span>
+<span class="lineno">  465 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  466 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  467 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  468 </span><span class="spaces">                </span><span class="istickedoff">MkOpRelationProj (OpRelationProj x ys) -&gt; return (x,ys)</span>
+<span class="lineno">  469 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opRelationProj:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  470 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  471 </span>
+<span class="lineno">  472 </span>
+<span class="lineno">  473 </span>opRelationImage
+<span class="lineno">  474 </span>    :: ( Op x :&lt; x
+<span class="lineno">  475 </span>       , Pretty x
+<span class="lineno">  476 </span>       , MonadFailDoc m
+<span class="lineno">  477 </span>       )
+<span class="lineno">  478 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  479 </span>    -&gt; ( x -&gt; [x] -&gt; x
+<span class="lineno">  480 </span>       , x -&gt; m (x, [x])
+<span class="lineno">  481 </span>       )
+<span class="lineno">  482 </span><span class="decl"><span class="istickedoff">opRelationImage _ =</span>
+<span class="lineno">  483 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x ys -&gt; inject $ MkOpRelationProj $ OpRelationProj x (map Just ys)</span></span>
+<span class="lineno">  484 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  486 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  487 </span><span class="spaces">                </span><span class="istickedoff">MkOpRelationProj (OpRelationProj x ys)</span>
+<span class="lineno">  488 </span><span class="spaces">                    </span><span class="istickedoff">| let ys' = catMaybes ys</span>
+<span class="lineno">  489 </span><span class="spaces">                    </span><span class="istickedoff">, <span class="tickonlytrue">length ys' == length ys</span>           -- they were all Just's</span>
+<span class="lineno">  490 </span><span class="spaces">                    </span><span class="istickedoff">-&gt; return (x,ys')</span>
+<span class="lineno">  491 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opRelationProj:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  492 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  493 </span>
+<span class="lineno">  494 </span>
+<span class="lineno">  495 </span>opIndexing
+<span class="lineno">  496 </span>    :: ( Op x :&lt; x
+<span class="lineno">  497 </span>       , Pretty x
+<span class="lineno">  498 </span>       , MonadFailDoc m
+<span class="lineno">  499 </span>       )
+<span class="lineno">  500 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  501 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  502 </span>       , x -&gt; m (x,x)
+<span class="lineno">  503 </span>       )
+<span class="lineno">  504 </span><span class="decl"><span class="istickedoff">opIndexing _ =</span>
+<span class="lineno">  505 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpIndexing (OpIndexing x y))</span>
+<span class="lineno">  506 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  507 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  508 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  509 </span><span class="spaces">                </span><span class="istickedoff">MkOpIndexing (OpIndexing x y) -&gt; return (x,y)</span>
+<span class="lineno">  510 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opIndexing:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  511 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  512 </span>
+<span class="lineno">  513 </span>
+<span class="lineno">  514 </span>opMatrixIndexing
+<span class="lineno">  515 </span>    :: ( Op x :&lt; x
+<span class="lineno">  516 </span>       , Pretty x
+<span class="lineno">  517 </span>       , TypeOf x
+<span class="lineno">  518 </span>       , MonadFailDoc m
+<span class="lineno">  519 </span>       , ?typeCheckerMode :: TypeCheckerMode
+<span class="lineno">  520 </span>       )
+<span class="lineno">  521 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  522 </span>    -&gt; ( x -&gt; [x] -&gt; x
+<span class="lineno">  523 </span>       , x -&gt; m (x,[x])
+<span class="lineno">  524 </span>       )
+<span class="lineno">  525 </span><span class="decl"><span class="istickedoff">opMatrixIndexing _ =</span>
+<span class="lineno">  526 </span><span class="spaces">    </span><span class="istickedoff">( foldl (make opIndexing)</span>
+<span class="lineno">  527 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  528 </span><span class="spaces">        </span><span class="istickedoff">(m, is) &lt;- go p</span>
+<span class="lineno">  529 </span><span class="spaces">        </span><span class="istickedoff">if null is</span>
+<span class="lineno">  530 </span><span class="spaces">            </span><span class="istickedoff">then na (&quot;Lenses.opMatrixIndexing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  531 </span><span class="spaces">            </span><span class="istickedoff">else return (m, is)</span>
+<span class="lineno">  532 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno">  533 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  534 </span><span class="spaces">        </span><span class="istickedoff">go p = case project p of</span>
+<span class="lineno">  535 </span><span class="spaces">            </span><span class="istickedoff">Just (MkOpIndexing (OpIndexing x i)) -&gt; do</span>
+<span class="lineno">  536 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  537 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  538 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  539 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  540 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMatrixIndexing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  541 </span><span class="spaces">                </span><span class="istickedoff">(m,is) &lt;- go x</span>
+<span class="lineno">  542 </span><span class="spaces">                </span><span class="istickedoff">return (m, is ++ [i])</span>
+<span class="lineno">  543 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return (p, [])</span></span>
+<span class="lineno">  544 </span>
+<span class="lineno">  545 </span>
+<span class="lineno">  546 </span>opMatrixIndexingSlicing
+<span class="lineno">  547 </span>    :: ( Op x :&lt; x
+<span class="lineno">  548 </span>       , Pretty x
+<span class="lineno">  549 </span>       , MonadFailDoc m
+<span class="lineno">  550 </span>       , TypeOf x
+<span class="lineno">  551 </span>       , ?typeCheckerMode :: TypeCheckerMode
+<span class="lineno">  552 </span>       )
+<span class="lineno">  553 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  554 </span>    -&gt; ( x -&gt; [Either x (Maybe x, Maybe x)] -&gt; x
+<span class="lineno">  555 </span>       , x -&gt; m (x, [Either x (Maybe x, Maybe x)])           -- either an index or a slice
+<span class="lineno">  556 </span>       )
+<span class="lineno">  557 </span><span class="decl"><span class="istickedoff">opMatrixIndexingSlicing _ =</span>
+<span class="lineno">  558 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">mk</span></span>
+<span class="lineno">  559 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  560 </span><span class="spaces">        </span><span class="istickedoff">(m, is, wasThereAnySlicing) &lt;- go p</span>
+<span class="lineno">  561 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlyfalse">not (null is) &amp;&amp; wasThereAnySlicing</span></span>
+<span class="lineno">  562 </span><span class="spaces">            </span><span class="istickedoff">then <span class="nottickedoff">return (m, is)</span></span>
+<span class="lineno">  563 </span><span class="spaces">            </span><span class="istickedoff">else na (&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  564 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno">  565 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  566 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">mk m [] = m</span></span>
+<span class="lineno">  567 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">mk m (Left i:is) = mk (make opIndexing m i) is</span></span>
+<span class="lineno">  568 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">mk m (Right (lb, ub):is) = mk (make opSlicing m lb ub) is</span></span>
+<span class="lineno">  569 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  570 </span><span class="spaces">        </span><span class="istickedoff">go p = case project p of</span>
+<span class="lineno">  571 </span><span class="spaces">            </span><span class="istickedoff">Just (MkOpIndexing (OpIndexing x i)) -&gt; do</span>
+<span class="lineno">  572 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  573 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  574 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  575 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  576 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  577 </span><span class="spaces">                </span><span class="istickedoff">(m, is, wasThereAnySlicing) &lt;- go x</span>
+<span class="lineno">  578 </span><span class="spaces">                </span><span class="istickedoff">return (<span class="nottickedoff">m</span>, is ++ [<span class="nottickedoff">Left i</span>], wasThereAnySlicing)</span>
+<span class="lineno">  579 </span><span class="spaces">            </span><span class="istickedoff">Just (MkOpSlicing (OpSlicing x lb ub)) -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno">  580 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ty &lt;- typeOf x</span></span>
+<span class="lineno">  581 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case ty of</span></span>
+<span class="lineno">  582 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">TypeMatrix{} -&gt; return ()</span></span>
+<span class="lineno">  583 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">TypeList{} -&gt; return ()</span></span>
+<span class="lineno">  584 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno">  585 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(m, is, _) &lt;- go x</span></span>
+<span class="lineno">  586 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return (m, is ++ [Right (lb, ub)], True)</span></span>
+<span class="lineno">  587 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return (<span class="nottickedoff">p</span>, [], False)</span></span>
+<span class="lineno">  588 </span>
+<span class="lineno">  589 </span>
+<span class="lineno">  590 </span>opSlicing
+<span class="lineno">  591 </span>    :: ( Op x :&lt; x
+<span class="lineno">  592 </span>       , Pretty x
+<span class="lineno">  593 </span>       , MonadFailDoc m
+<span class="lineno">  594 </span>       )
+<span class="lineno">  595 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  596 </span>    -&gt; ( x -&gt; Maybe x -&gt; Maybe x -&gt; x
+<span class="lineno">  597 </span>       , x -&gt; m (x, Maybe x, Maybe x)
+<span class="lineno">  598 </span>       )
+<span class="lineno">  599 </span><span class="decl"><span class="istickedoff">opSlicing _ =</span>
+<span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff">( \ x y z -&gt; inject (MkOpSlicing (OpSlicing x y z))</span>
+<span class="lineno">  601 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  602 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  603 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  604 </span><span class="spaces">                </span><span class="istickedoff">MkOpSlicing (OpSlicing x y z) -&gt; return (x,<span class="nottickedoff">y</span>,<span class="nottickedoff">z</span>)</span>
+<span class="lineno">  605 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opSlicing:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno">  606 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  607 </span>
+<span class="lineno">  608 </span>
+<span class="lineno">  609 </span>opFlatten
+<span class="lineno">  610 </span>    :: ( Op x :&lt; x
+<span class="lineno">  611 </span>       , Pretty x
+<span class="lineno">  612 </span>       , MonadFailDoc m
+<span class="lineno">  613 </span>       )
+<span class="lineno">  614 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  615 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  616 </span>       , x -&gt; m x
+<span class="lineno">  617 </span>       )
+<span class="lineno">  618 </span><span class="decl"><span class="istickedoff">opFlatten _ =</span>
+<span class="lineno">  619 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpFlatten . OpFlatten Nothing</span>
+<span class="lineno">  620 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  621 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  622 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  623 </span><span class="spaces">                </span><span class="istickedoff">MkOpFlatten (OpFlatten Nothing x) -&gt; return x</span>
+<span class="lineno">  624 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opFlatten:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  625 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  626 </span>
+<span class="lineno">  627 </span>
+<span class="lineno">  628 </span>flattenIfNeeded ::
+<span class="lineno">  629 </span>    Int -&gt;
+<span class="lineno">  630 </span>    Expression -&gt;
+<span class="lineno">  631 </span>    Expression
+<span class="lineno">  632 </span><span class="decl"><span class="istickedoff">flattenIfNeeded dims m =</span>
+<span class="lineno">  633 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlyfalse">dims &gt; 1</span></span>
+<span class="lineno">  634 </span><span class="spaces">        </span><span class="istickedoff">then <span class="nottickedoff">make opFlatten m</span></span>
+<span class="lineno">  635 </span><span class="spaces">        </span><span class="istickedoff">else m</span></span>
+<span class="lineno">  636 </span>
+<span class="lineno">  637 </span>
+<span class="lineno">  638 </span>oneDimensionaliser ::
+<span class="lineno">  639 </span>    Int -&gt; -- current number of dimensions
+<span class="lineno">  640 </span>    Expression -&gt;
+<span class="lineno">  641 </span>    Expression
+<span class="lineno">  642 </span><span class="decl"><span class="nottickedoff">oneDimensionaliser dims x =</span>
+<span class="lineno">  643 </span><span class="spaces">    </span><span class="nottickedoff">case dims of</span>
+<span class="lineno">  644 </span><span class="spaces">        </span><span class="nottickedoff">0 -&gt; fromList [x]</span>
+<span class="lineno">  645 </span><span class="spaces">        </span><span class="nottickedoff">1 -&gt; x</span>
+<span class="lineno">  646 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; make opFlatten x</span></span>
+<span class="lineno">  647 </span>
+<span class="lineno">  648 </span>
+<span class="lineno">  649 </span>opConcatenate
+<span class="lineno">  650 </span>    :: ( Op x :&lt; x
+<span class="lineno">  651 </span>       , Pretty x
+<span class="lineno">  652 </span>       , MonadFailDoc m
+<span class="lineno">  653 </span>       )
+<span class="lineno">  654 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  655 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  656 </span>       , x -&gt; m x
+<span class="lineno">  657 </span>       )
+<span class="lineno">  658 </span><span class="decl"><span class="istickedoff">opConcatenate _ =</span>
+<span class="lineno">  659 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpFlatten . OpFlatten (Just 1)</span>
+<span class="lineno">  660 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  661 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  662 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  663 </span><span class="spaces">                </span><span class="istickedoff">MkOpFlatten (OpFlatten (Just 1) x) -&gt; return x</span>
+<span class="lineno">  664 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opConcatenate:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  665 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  666 </span>
+<span class="lineno">  667 </span>
+<span class="lineno">  668 </span>opIn
+<span class="lineno">  669 </span>    :: ( Op x :&lt; x
+<span class="lineno">  670 </span>       , Pretty x
+<span class="lineno">  671 </span>       , MonadFailDoc m
+<span class="lineno">  672 </span>       )
+<span class="lineno">  673 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  674 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  675 </span>       , x -&gt; m (x,x)
+<span class="lineno">  676 </span>       )
+<span class="lineno">  677 </span><span class="decl"><span class="istickedoff">opIn _ =</span>
+<span class="lineno">  678 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpIn (OpIn x y))</span></span>
+<span class="lineno">  679 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  680 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  681 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  682 </span><span class="spaces">                </span><span class="istickedoff">MkOpIn (OpIn x y) -&gt; return (x,y)</span>
+<span class="lineno">  683 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opIn:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  684 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  685 </span>
+<span class="lineno">  686 </span>
+<span class="lineno">  687 </span>opFreq
+<span class="lineno">  688 </span>    :: ( Op x :&lt; x
+<span class="lineno">  689 </span>       , Pretty x
+<span class="lineno">  690 </span>       , MonadFailDoc m
+<span class="lineno">  691 </span>       )
+<span class="lineno">  692 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  693 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  694 </span>       , x -&gt; m (x,x)
+<span class="lineno">  695 </span>       )
+<span class="lineno">  696 </span><span class="decl"><span class="istickedoff">opFreq _ =</span>
+<span class="lineno">  697 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpFreq (OpFreq x y))</span></span>
+<span class="lineno">  698 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  699 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  700 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  701 </span><span class="spaces">                </span><span class="istickedoff">MkOpFreq (OpFreq x y) -&gt; return (x,y)</span>
+<span class="lineno">  702 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opFreq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  703 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  704 </span>
+<span class="lineno">  705 </span>
+<span class="lineno">  706 </span>opHist
+<span class="lineno">  707 </span>    :: ( Op x :&lt; x
+<span class="lineno">  708 </span>       , Pretty x
+<span class="lineno">  709 </span>       , MonadFailDoc m
+<span class="lineno">  710 </span>       )
+<span class="lineno">  711 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  712 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  713 </span>       , x -&gt; m x
+<span class="lineno">  714 </span>       )
+<span class="lineno">  715 </span><span class="decl"><span class="istickedoff">opHist _ =</span>
+<span class="lineno">  716 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpHist . OpHist</span></span>
+<span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  718 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  719 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  720 </span><span class="spaces">                </span><span class="istickedoff">MkOpHist (OpHist x) -&gt; <span class="nottickedoff">return x</span></span>
+<span class="lineno">  721 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opHist:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  722 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  723 </span>
+<span class="lineno">  724 </span>
+<span class="lineno">  725 </span>opIntersect
+<span class="lineno">  726 </span>    :: ( Op x :&lt; x
+<span class="lineno">  727 </span>       , Pretty x
+<span class="lineno">  728 </span>       , MonadFailDoc m
+<span class="lineno">  729 </span>       )
+<span class="lineno">  730 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  731 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  732 </span>       , x -&gt; m (x,x)
+<span class="lineno">  733 </span>       )
+<span class="lineno">  734 </span><span class="decl"><span class="istickedoff">opIntersect _ =</span>
+<span class="lineno">  735 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpIntersect (OpIntersect x y))</span></span>
+<span class="lineno">  736 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  737 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  738 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  739 </span><span class="spaces">                </span><span class="istickedoff">MkOpIntersect (OpIntersect x y) -&gt; return (x,y)</span>
+<span class="lineno">  740 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opIntersect:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  741 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  742 </span>
+<span class="lineno">  743 </span>
+<span class="lineno">  744 </span>opUnion
+<span class="lineno">  745 </span>    :: ( Op x :&lt; x
+<span class="lineno">  746 </span>       , Pretty x
+<span class="lineno">  747 </span>       , MonadFailDoc m
+<span class="lineno">  748 </span>       )
+<span class="lineno">  749 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  750 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  751 </span>       , x -&gt; m (x,x)
+<span class="lineno">  752 </span>       )
+<span class="lineno">  753 </span><span class="decl"><span class="istickedoff">opUnion _ =</span>
+<span class="lineno">  754 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpUnion (OpUnion x y))</span></span>
+<span class="lineno">  755 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  756 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  757 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  758 </span><span class="spaces">                </span><span class="istickedoff">MkOpUnion (OpUnion x y) -&gt; return (x,y)</span>
+<span class="lineno">  759 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opUnion:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  760 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  761 </span>
+<span class="lineno">  762 </span>
+<span class="lineno">  763 </span>opSubsetEq
+<span class="lineno">  764 </span>    :: ( Op x :&lt; x
+<span class="lineno">  765 </span>       , Pretty x
+<span class="lineno">  766 </span>       , MonadFailDoc m
+<span class="lineno">  767 </span>       )
+<span class="lineno">  768 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  769 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  770 </span>       , x -&gt; m (x,x)
+<span class="lineno">  771 </span>       )
+<span class="lineno">  772 </span><span class="decl"><span class="istickedoff">opSubsetEq _ =</span>
+<span class="lineno">  773 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpSubsetEq (OpSubsetEq x y))</span>
+<span class="lineno">  774 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  775 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  776 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  777 </span><span class="spaces">                </span><span class="istickedoff">MkOpSubsetEq (OpSubsetEq x y) -&gt; return (x,y)</span>
+<span class="lineno">  778 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opSubsetEq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  779 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  780 </span>
+<span class="lineno">  781 </span>
+<span class="lineno">  782 </span>opEq
+<span class="lineno">  783 </span>    :: ( Op x :&lt; x
+<span class="lineno">  784 </span>       , Pretty x
+<span class="lineno">  785 </span>       , MonadFailDoc m
+<span class="lineno">  786 </span>       )
+<span class="lineno">  787 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  788 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  789 </span>       , x -&gt; m (x,x)
+<span class="lineno">  790 </span>       )
+<span class="lineno">  791 </span><span class="decl"><span class="istickedoff">opEq _ =</span>
+<span class="lineno">  792 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpEq (OpEq x y))</span>
+<span class="lineno">  793 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  794 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  795 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  796 </span><span class="spaces">                </span><span class="istickedoff">MkOpEq (OpEq x y) -&gt; return (x,y)</span>
+<span class="lineno">  797 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opEq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  798 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  799 </span>
+<span class="lineno">  800 </span>
+<span class="lineno">  801 </span>opNeq
+<span class="lineno">  802 </span>    :: ( Op x :&lt; x
+<span class="lineno">  803 </span>       , Pretty x
+<span class="lineno">  804 </span>       , MonadFailDoc m
+<span class="lineno">  805 </span>       )
+<span class="lineno">  806 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  807 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  808 </span>       , x -&gt; m (x,x)
+<span class="lineno">  809 </span>       )
+<span class="lineno">  810 </span><span class="decl"><span class="istickedoff">opNeq _ =</span>
+<span class="lineno">  811 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpNeq (OpNeq x y))</span></span>
+<span class="lineno">  812 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  813 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  814 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  815 </span><span class="spaces">                </span><span class="istickedoff">MkOpNeq (OpNeq x y) -&gt; return (x,y)</span>
+<span class="lineno">  816 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opNeq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  817 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  818 </span>
+<span class="lineno">  819 </span>
+<span class="lineno">  820 </span>opLt
+<span class="lineno">  821 </span>    :: ( Op x :&lt; x
+<span class="lineno">  822 </span>       , Pretty x
+<span class="lineno">  823 </span>       , MonadFailDoc m
+<span class="lineno">  824 </span>       )
+<span class="lineno">  825 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  826 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  827 </span>       , x -&gt; m (x,x)
+<span class="lineno">  828 </span>       )
+<span class="lineno">  829 </span><span class="decl"><span class="istickedoff">opLt _ =</span>
+<span class="lineno">  830 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpLt (OpLt x y))</span></span>
+<span class="lineno">  831 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  832 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  833 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  834 </span><span class="spaces">                </span><span class="istickedoff">MkOpLt (OpLt x y) -&gt; return (x,y)</span>
+<span class="lineno">  835 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opLt:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  836 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  837 </span>
+<span class="lineno">  838 </span>
+<span class="lineno">  839 </span>opLeq
+<span class="lineno">  840 </span>    :: ( Op x :&lt; x
+<span class="lineno">  841 </span>       , Pretty x
+<span class="lineno">  842 </span>       , MonadFailDoc m
+<span class="lineno">  843 </span>       )
+<span class="lineno">  844 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  845 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  846 </span>       , x -&gt; m (x,x)
+<span class="lineno">  847 </span>       )
+<span class="lineno">  848 </span><span class="decl"><span class="istickedoff">opLeq _ =</span>
+<span class="lineno">  849 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpLeq (OpLeq x y))</span></span>
+<span class="lineno">  850 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  851 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  852 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  853 </span><span class="spaces">                </span><span class="istickedoff">MkOpLeq (OpLeq x y) -&gt; return (x,y)</span>
+<span class="lineno">  854 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opLeq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  855 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  856 </span>
+<span class="lineno">  857 </span>
+<span class="lineno">  858 </span>opGt
+<span class="lineno">  859 </span>    :: ( Op x :&lt; x
+<span class="lineno">  860 </span>       , Pretty x
+<span class="lineno">  861 </span>       , MonadFailDoc m
+<span class="lineno">  862 </span>       )
+<span class="lineno">  863 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  864 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  865 </span>       , x -&gt; m (x,x)
+<span class="lineno">  866 </span>       )
+<span class="lineno">  867 </span><span class="decl"><span class="nottickedoff">opGt _ =</span>
+<span class="lineno">  868 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpGt (OpGt x y))</span>
+<span class="lineno">  869 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  870 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  871 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  872 </span><span class="spaces">                </span><span class="nottickedoff">MkOpGt (OpGt x y) -&gt; return (x,y)</span>
+<span class="lineno">  873 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opGt:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  874 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  875 </span>
+<span class="lineno">  876 </span>
+<span class="lineno">  877 </span>opGeq
+<span class="lineno">  878 </span>    :: ( Op x :&lt; x
+<span class="lineno">  879 </span>       , Pretty x
+<span class="lineno">  880 </span>       , MonadFailDoc m
+<span class="lineno">  881 </span>       )
+<span class="lineno">  882 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  883 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  884 </span>       , x -&gt; m (x,x)
+<span class="lineno">  885 </span>       )
+<span class="lineno">  886 </span><span class="decl"><span class="nottickedoff">opGeq _ =</span>
+<span class="lineno">  887 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpGeq (OpGeq x y))</span>
+<span class="lineno">  888 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  889 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  890 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  891 </span><span class="spaces">                </span><span class="nottickedoff">MkOpGeq (OpGeq x y) -&gt; return (x,y)</span>
+<span class="lineno">  892 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opGeq:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  893 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  894 </span>
+<span class="lineno">  895 </span>
+<span class="lineno">  896 </span>opDotLt
+<span class="lineno">  897 </span>    :: ( Op x :&lt; x
+<span class="lineno">  898 </span>       , Pretty x
+<span class="lineno">  899 </span>       , MonadFailDoc m
+<span class="lineno">  900 </span>       )
+<span class="lineno">  901 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  902 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  903 </span>       , x -&gt; m (x,x)
+<span class="lineno">  904 </span>       )
+<span class="lineno">  905 </span><span class="decl"><span class="nottickedoff">opDotLt _ =</span>
+<span class="lineno">  906 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpDotLt (OpDotLt x y))</span>
+<span class="lineno">  907 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  908 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  909 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  910 </span><span class="spaces">                </span><span class="nottickedoff">MkOpDotLt (OpDotLt x y) -&gt; return (x,y)</span>
+<span class="lineno">  911 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opDotLt:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  912 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  913 </span>
+<span class="lineno">  914 </span>
+<span class="lineno">  915 </span>opDotLeq
+<span class="lineno">  916 </span>    :: ( Op x :&lt; x
+<span class="lineno">  917 </span>       , Pretty x
+<span class="lineno">  918 </span>       , MonadFailDoc m
+<span class="lineno">  919 </span>       )
+<span class="lineno">  920 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  921 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  922 </span>       , x -&gt; m (x,x)
+<span class="lineno">  923 </span>       )
+<span class="lineno">  924 </span><span class="decl"><span class="nottickedoff">opDotLeq _ =</span>
+<span class="lineno">  925 </span><span class="spaces">    </span><span class="nottickedoff">( \ x y -&gt; inject (MkOpDotLeq (OpDotLeq x y))</span>
+<span class="lineno">  926 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno">  927 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno">  928 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno">  929 </span><span class="spaces">                </span><span class="nottickedoff">MkOpDotLeq (OpDotLeq x y) -&gt; return (x,y)</span>
+<span class="lineno">  930 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opDotLeq:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno">  931 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno">  932 </span>
+<span class="lineno">  933 </span>
+<span class="lineno">  934 </span>opTildeLt
+<span class="lineno">  935 </span>    :: ( Op x :&lt; x
+<span class="lineno">  936 </span>       , Pretty x
+<span class="lineno">  937 </span>       , MonadFailDoc m
+<span class="lineno">  938 </span>       )
+<span class="lineno">  939 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  940 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  941 </span>       , x -&gt; m (x,x)
+<span class="lineno">  942 </span>       )
+<span class="lineno">  943 </span><span class="decl"><span class="istickedoff">opTildeLt _ =</span>
+<span class="lineno">  944 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpTildeLt (OpTildeLt x y))</span></span>
+<span class="lineno">  945 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  946 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  947 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  948 </span><span class="spaces">                </span><span class="istickedoff">MkOpTildeLt (OpTildeLt x y) -&gt; return (x,y)</span>
+<span class="lineno">  949 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opTildeLt:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  950 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  951 </span>
+<span class="lineno">  952 </span>
+<span class="lineno">  953 </span>opTildeLeq
+<span class="lineno">  954 </span>    :: ( Op x :&lt; x
+<span class="lineno">  955 </span>       , Pretty x
+<span class="lineno">  956 </span>       , MonadFailDoc m
+<span class="lineno">  957 </span>       )
+<span class="lineno">  958 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  959 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno">  960 </span>       , x -&gt; m (x,x)
+<span class="lineno">  961 </span>       )
+<span class="lineno">  962 </span><span class="decl"><span class="istickedoff">opTildeLeq _ =</span>
+<span class="lineno">  963 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpTildeLeq (OpTildeLeq x y))</span></span>
+<span class="lineno">  964 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  965 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  966 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  967 </span><span class="spaces">                </span><span class="istickedoff">MkOpTildeLeq (OpTildeLeq x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  968 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opTildeLeq:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno">  969 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  970 </span>
+<span class="lineno">  971 </span>
+<span class="lineno">  972 </span>opOr
+<span class="lineno">  973 </span>    :: ( Op x :&lt; x
+<span class="lineno">  974 </span>       , Pretty x
+<span class="lineno">  975 </span>       , MonadFailDoc m
+<span class="lineno">  976 </span>       )
+<span class="lineno">  977 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  978 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  979 </span>       , x -&gt; m x
+<span class="lineno">  980 </span>       )
+<span class="lineno">  981 </span><span class="decl"><span class="istickedoff">opOr _ =</span>
+<span class="lineno">  982 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpOr . OpOr</span>
+<span class="lineno">  983 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno">  984 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno">  985 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno">  986 </span><span class="spaces">                </span><span class="istickedoff">MkOpOr (OpOr xs) -&gt; return <span class="nottickedoff">xs</span></span>
+<span class="lineno">  987 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opOr:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno">  988 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno">  989 </span>
+<span class="lineno">  990 </span>
+<span class="lineno">  991 </span>opAnd
+<span class="lineno">  992 </span>    :: ( Op x :&lt; x
+<span class="lineno">  993 </span>       , Pretty x
+<span class="lineno">  994 </span>       , MonadFailDoc m
+<span class="lineno">  995 </span>       )
+<span class="lineno">  996 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno">  997 </span>    -&gt; ( x -&gt; x
+<span class="lineno">  998 </span>       , x -&gt; m x
+<span class="lineno">  999 </span>       )
+<span class="lineno"> 1000 </span><span class="decl"><span class="istickedoff">opAnd _ =</span>
+<span class="lineno"> 1001 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpAnd . OpAnd</span>
+<span class="lineno"> 1002 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1003 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1004 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1005 </span><span class="spaces">                </span><span class="istickedoff">MkOpAnd (OpAnd xs) -&gt; return <span class="nottickedoff">xs</span></span>
+<span class="lineno"> 1006 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opAnd:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1007 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1008 </span>
+<span class="lineno"> 1009 </span>
+<span class="lineno"> 1010 </span>opMax
+<span class="lineno"> 1011 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1012 </span>       , Pretty x
+<span class="lineno"> 1013 </span>       , MonadFailDoc m
+<span class="lineno"> 1014 </span>       )
+<span class="lineno"> 1015 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1016 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1017 </span>       , x -&gt; m x
+<span class="lineno"> 1018 </span>       )
+<span class="lineno"> 1019 </span><span class="decl"><span class="istickedoff">opMax _ =</span>
+<span class="lineno"> 1020 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpMax . OpMax</span>
+<span class="lineno"> 1021 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1022 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1023 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1024 </span><span class="spaces">                </span><span class="istickedoff">MkOpMax (OpMax xs) -&gt; return xs</span>
+<span class="lineno"> 1025 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMax:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1026 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1027 </span>
+<span class="lineno"> 1028 </span>
+<span class="lineno"> 1029 </span>opMin
+<span class="lineno"> 1030 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1031 </span>       , Pretty x
+<span class="lineno"> 1032 </span>       , MonadFailDoc m
+<span class="lineno"> 1033 </span>       )
+<span class="lineno"> 1034 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1035 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1036 </span>       , x -&gt; m x
+<span class="lineno"> 1037 </span>       )
+<span class="lineno"> 1038 </span><span class="decl"><span class="istickedoff">opMin _ =</span>
+<span class="lineno"> 1039 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpMin . OpMin</span>
+<span class="lineno"> 1040 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1041 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1042 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1043 </span><span class="spaces">                </span><span class="istickedoff">MkOpMin (OpMin xs) -&gt; return xs</span>
+<span class="lineno"> 1044 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMin:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1045 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1046 </span>
+<span class="lineno"> 1047 </span>
+<span class="lineno"> 1048 </span>opImply
+<span class="lineno"> 1049 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1050 </span>       , Pretty x
+<span class="lineno"> 1051 </span>       , MonadFailDoc m
+<span class="lineno"> 1052 </span>       )
+<span class="lineno"> 1053 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1054 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno"> 1055 </span>       , x -&gt; m (x,x)
+<span class="lineno"> 1056 </span>       )
+<span class="lineno"> 1057 </span><span class="decl"><span class="istickedoff">opImply _ =</span>
+<span class="lineno"> 1058 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject (MkOpImply (OpImply x y))</span>
+<span class="lineno"> 1059 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1060 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1061 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1062 </span><span class="spaces">                </span><span class="istickedoff">MkOpImply (OpImply x y) -&gt; return (<span class="nottickedoff">x</span>,y)</span>
+<span class="lineno"> 1063 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opImply:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1064 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1065 </span>
+<span class="lineno"> 1066 </span>
+<span class="lineno"> 1067 </span>opNot
+<span class="lineno"> 1068 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1069 </span>       , Pretty x
+<span class="lineno"> 1070 </span>       , MonadFailDoc m
+<span class="lineno"> 1071 </span>       )
+<span class="lineno"> 1072 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1073 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1074 </span>       , x -&gt; m x
+<span class="lineno"> 1075 </span>       )
+<span class="lineno"> 1076 </span><span class="decl"><span class="nottickedoff">opNot _ =</span>
+<span class="lineno"> 1077 </span><span class="spaces">    </span><span class="nottickedoff">( inject . MkOpNot . OpNot</span>
+<span class="lineno"> 1078 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1079 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno"> 1080 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno"> 1081 </span><span class="spaces">                </span><span class="nottickedoff">MkOpNot (OpNot x) -&gt; return x</span>
+<span class="lineno"> 1082 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opNot:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno"> 1083 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno"> 1084 </span>
+<span class="lineno"> 1085 </span>
+<span class="lineno"> 1086 </span>opProduct
+<span class="lineno"> 1087 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1088 </span>       , Pretty x
+<span class="lineno"> 1089 </span>       , MonadFailDoc m
+<span class="lineno"> 1090 </span>       )
+<span class="lineno"> 1091 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1092 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1093 </span>       , x -&gt; m x
+<span class="lineno"> 1094 </span>       )
+<span class="lineno"> 1095 </span><span class="decl"><span class="istickedoff">opProduct _ =</span>
+<span class="lineno"> 1096 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpProduct . OpProduct</span>
+<span class="lineno"> 1097 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1098 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1099 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1100 </span><span class="spaces">                </span><span class="istickedoff">MkOpProduct (OpProduct x) -&gt; return <span class="nottickedoff">x</span></span>
+<span class="lineno"> 1101 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opProduct:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1102 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1103 </span>
+<span class="lineno"> 1104 </span>
+<span class="lineno"> 1105 </span>opSum
+<span class="lineno"> 1106 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1107 </span>       , Pretty x
+<span class="lineno"> 1108 </span>       , MonadFailDoc m
+<span class="lineno"> 1109 </span>       )
+<span class="lineno"> 1110 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1111 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1112 </span>       , x -&gt; m x
+<span class="lineno"> 1113 </span>       )
+<span class="lineno"> 1114 </span><span class="decl"><span class="istickedoff">opSum _ =</span>
+<span class="lineno"> 1115 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpSum . OpSum</span>
+<span class="lineno"> 1116 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1117 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1118 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1119 </span><span class="spaces">                </span><span class="istickedoff">MkOpSum (OpSum x) -&gt; return <span class="nottickedoff">x</span></span>
+<span class="lineno"> 1120 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opSum:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1121 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1122 </span>
+<span class="lineno"> 1123 </span>
+<span class="lineno"> 1124 </span>data ReducerType = RepetitionIsNotSignificant | RepetitionIsSignificant
+<span class="lineno"> 1125 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno"> 1126 </span>
+<span class="lineno"> 1127 </span>opReducer
+<span class="lineno"> 1128 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1129 </span>       , Pretty x
+<span class="lineno"> 1130 </span>       , MonadFailDoc m
+<span class="lineno"> 1131 </span>       )
+<span class="lineno"> 1132 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1133 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
+<span class="lineno"> 1134 </span>       , x -&gt; m ( ReducerType
+<span class="lineno"> 1135 </span>                , Bool              -- defined on []
+<span class="lineno"> 1136 </span>                , x -&gt; x
+<span class="lineno"> 1137 </span>                , x
+<span class="lineno"> 1138 </span>                )
+<span class="lineno"> 1139 </span>       )
+<span class="lineno"> 1140 </span><span class="decl"><span class="istickedoff">opReducer _ =</span>
+<span class="lineno"> 1141 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
+<span class="lineno"> 1142 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1143 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1144 </span><span class="spaces">            </span><span class="istickedoff">let <span class="nottickedoff">is = RepetitionIsSignificant</span></span>
+<span class="lineno"> 1145 </span><span class="spaces">            </span><span class="istickedoff">let <span class="nottickedoff">isn't = RepetitionIsNotSignificant</span></span>
+<span class="lineno"> 1146 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1147 </span><span class="spaces">                </span><span class="istickedoff">MkOpAnd     (OpAnd     x) -&gt; return (<span class="nottickedoff">isn't</span>, True , inject . MkOpAnd     . OpAnd     , x)</span>
+<span class="lineno"> 1148 </span><span class="spaces">                </span><span class="istickedoff">MkOpOr      (OpOr      x) -&gt; return (<span class="nottickedoff">isn't</span>, True , inject . MkOpOr      . OpOr      , x)</span>
+<span class="lineno"> 1149 </span><span class="spaces">                </span><span class="istickedoff">MkOpXor     (OpXor     x) -&gt; <span class="nottickedoff">return (is   , False, inject . MkOpXor     . OpXor     , x)</span></span>
+<span class="lineno"> 1150 </span><span class="spaces">                </span><span class="istickedoff">MkOpSum     (OpSum     x) -&gt; return (<span class="nottickedoff">is</span>   , True , inject . MkOpSum     . OpSum     , x)</span>
+<span class="lineno"> 1151 </span><span class="spaces">                </span><span class="istickedoff">MkOpProduct (OpProduct x) -&gt; return (<span class="nottickedoff">is</span>   , True , inject . MkOpProduct . OpProduct , x)</span>
+<span class="lineno"> 1152 </span><span class="spaces">                </span><span class="istickedoff">MkOpMax     (OpMax     x) -&gt; return (<span class="nottickedoff">isn't</span>, False, <span class="nottickedoff">inject . MkOpMax     . OpMax</span>     , x)</span>
+<span class="lineno"> 1153 </span><span class="spaces">                </span><span class="istickedoff">MkOpMin     (OpMin     x) -&gt; return (<span class="nottickedoff">isn't</span>, False, <span class="nottickedoff">inject . MkOpMin     . OpMin</span>     , x)</span>
+<span class="lineno"> 1154 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opReducer:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1155 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1156 </span>
+<span class="lineno"> 1157 </span>
+<span class="lineno"> 1158 </span>opModifier
+<span class="lineno"> 1159 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1160 </span>       , MonadFailDoc m
+<span class="lineno"> 1161 </span>       )
+<span class="lineno"> 1162 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1163 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
+<span class="lineno"> 1164 </span>       , x -&gt; m (x -&gt; x, x)
+<span class="lineno"> 1165 </span>       )
+<span class="lineno"> 1166 </span><span class="decl"><span class="istickedoff">opModifier _ =</span>
+<span class="lineno"> 1167 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
+<span class="lineno"> 1168 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
+<span class="lineno"> 1169 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; return (<span class="nottickedoff">inject . MkOpToSet      . OpToSet False</span> , x)</span>
+<span class="lineno"> 1170 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (<span class="nottickedoff">inject . MkOpToMSet     . OpToMSet</span>      , x)</span>
+<span class="lineno"> 1171 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; return (<span class="nottickedoff">inject . MkOpToRelation . OpToRelation</span>  , x)</span>
+<span class="lineno"> 1172 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpParts      (OpParts      x)) -&gt; return (inject . MkOpParts      . OpParts       , x)</span>
+<span class="lineno"> 1173 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (id                                      , p)</span>
+<span class="lineno"> 1174 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1175 </span>
+<span class="lineno"> 1176 </span>
+<span class="lineno"> 1177 </span>opModifierNoP
+<span class="lineno"> 1178 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1179 </span>       , MonadFailDoc m
+<span class="lineno"> 1180 </span>       )
+<span class="lineno"> 1181 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1182 </span>    -&gt; ( (x -&gt; x, x) -&gt; x
+<span class="lineno"> 1183 </span>       , x -&gt; m (x -&gt; x, x)
+<span class="lineno"> 1184 </span>       )
+<span class="lineno"> 1185 </span><span class="decl"><span class="istickedoff">opModifierNoP _ =</span>
+<span class="lineno"> 1186 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, x) -&gt; mk x</span></span>
+<span class="lineno"> 1187 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
+<span class="lineno"> 1188 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToSet      (OpToSet    _ x)) -&gt; <span class="nottickedoff">return (inject . MkOpToSet      . OpToSet False , x)</span></span>
+<span class="lineno"> 1189 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToMSet     (OpToMSet     x)) -&gt; return (<span class="nottickedoff">inject . MkOpToMSet     . OpToMSet</span>      , x)</span>
+<span class="lineno"> 1190 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpToRelation (OpToRelation x)) -&gt; <span class="nottickedoff">return (inject . MkOpToRelation . OpToRelation  , x)</span></span>
+<span class="lineno"> 1191 </span><span class="spaces">        </span><span class="istickedoff">_                                      -&gt; return (<span class="nottickedoff">id</span>                                      , p)</span>
+<span class="lineno"> 1192 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1193 </span>
+<span class="lineno"> 1194 </span>
+<span class="lineno"> 1195 </span>opAllDiff
+<span class="lineno"> 1196 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1197 </span>       , Pretty x
+<span class="lineno"> 1198 </span>       , MonadFailDoc m
+<span class="lineno"> 1199 </span>       )
+<span class="lineno"> 1200 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1201 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1202 </span>       , x -&gt; m x
+<span class="lineno"> 1203 </span>       )
+<span class="lineno"> 1204 </span><span class="decl"><span class="nottickedoff">opAllDiff _ =</span>
+<span class="lineno"> 1205 </span><span class="spaces">    </span><span class="nottickedoff">( inject . MkOpAllDiff . OpAllDiff</span>
+<span class="lineno"> 1206 </span><span class="spaces">    </span><span class="nottickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1207 </span><span class="spaces">            </span><span class="nottickedoff">op &lt;- project p</span>
+<span class="lineno"> 1208 </span><span class="spaces">            </span><span class="nottickedoff">case op of</span>
+<span class="lineno"> 1209 </span><span class="spaces">                </span><span class="nottickedoff">MkOpAllDiff (OpAllDiff x) -&gt; return x</span>
+<span class="lineno"> 1210 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opAllDiff:&quot; &lt;++&gt; pretty p)</span>
+<span class="lineno"> 1211 </span><span class="spaces">    </span><span class="nottickedoff">)</span></span>
+<span class="lineno"> 1212 </span>
+<span class="lineno"> 1213 </span>
+<span class="lineno"> 1214 </span>opAllDiffExcept
+<span class="lineno"> 1215 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1216 </span>       , Pretty x
+<span class="lineno"> 1217 </span>       , MonadFailDoc m
+<span class="lineno"> 1218 </span>       )
+<span class="lineno"> 1219 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1220 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno"> 1221 </span>       , x -&gt; m (x, x)
+<span class="lineno"> 1222 </span>       )
+<span class="lineno"> 1223 </span><span class="decl"><span class="istickedoff">opAllDiffExcept _ =</span>
+<span class="lineno"> 1224 </span><span class="spaces">    </span><span class="istickedoff">( \ x y -&gt; inject $ MkOpAllDiffExcept $ OpAllDiffExcept x y</span>
+<span class="lineno"> 1225 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">\ p -&gt; do</span></span>
+<span class="lineno"> 1226 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">op &lt;- project p</span></span>
+<span class="lineno"> 1227 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case op of</span></span>
+<span class="lineno"> 1228 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MkOpAllDiffExcept (OpAllDiffExcept x y) -&gt; return (x, y)</span></span>
+<span class="lineno"> 1229 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opAllDiffExcept:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1230 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1231 </span>
+<span class="lineno"> 1232 </span>
+<span class="lineno"> 1233 </span>constantInt
+<span class="lineno"> 1234 </span>    :: MonadFailDoc m
+<span class="lineno"> 1235 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1236 </span>    -&gt; ( Integer -&gt; Expression
+<span class="lineno"> 1237 </span>       , Expression -&gt; m Integer
+<span class="lineno"> 1238 </span>       )
+<span class="lineno"> 1239 </span><span class="decl"><span class="istickedoff">constantInt _ =</span>
+<span class="lineno"> 1240 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">Constant . ConstantInt TagInt</span></span>
+<span class="lineno"> 1241 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case p of</span>
+<span class="lineno"> 1242 </span><span class="spaces">            </span><span class="istickedoff">(Constant (ConstantInt TagInt i)) -&gt; return i</span>
+<span class="lineno"> 1243 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na (&quot;Lenses.constantInt:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1244 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1245 </span>
+<span class="lineno"> 1246 </span>
+<span class="lineno"> 1247 </span>matrixLiteral
+<span class="lineno"> 1248 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1249 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1250 </span>    -&gt; ( Type -&gt; Domain () Expression -&gt; [Expression] -&gt; Expression
+<span class="lineno"> 1251 </span>       , Expression -&gt; m (Type, Domain () Expression, [Expression])
+<span class="lineno"> 1252 </span>       )
+<span class="lineno"> 1253 </span><span class="decl"><span class="istickedoff">matrixLiteral _ =</span>
+<span class="lineno"> 1254 </span><span class="spaces">    </span><span class="istickedoff">( \ ty index elems -&gt;</span>
+<span class="lineno"> 1255 </span><span class="spaces">        </span><span class="istickedoff">if null elems</span>
+<span class="lineno"> 1256 </span><span class="spaces">            </span><span class="istickedoff">then Typed (AbstractLiteral (AbsLitMatrix index elems)) ty</span>
+<span class="lineno"> 1257 </span><span class="spaces">            </span><span class="istickedoff">else        AbstractLiteral (AbsLitMatrix index elems)</span>
+<span class="lineno"> 1258 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1259 </span><span class="spaces">        </span><span class="istickedoff">ty          &lt;- typeOf p</span>
+<span class="lineno"> 1260 </span><span class="spaces">        </span><span class="istickedoff">(index, xs) &lt;- followAliases extract p</span>
+<span class="lineno"> 1261 </span><span class="spaces">        </span><span class="istickedoff">return (ty, index, xs)</span>
+<span class="lineno"> 1262 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1263 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1264 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (ConstantAbstract (AbsLitMatrix index xs))) = return (fmap Constant index, map Constant xs)</span>
+<span class="lineno"> 1265 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitMatrix index xs)) = return (index, xs)</span>
+<span class="lineno"> 1266 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1267 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1268 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.matrixLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1269 </span>
+<span class="lineno"> 1270 </span>
+<span class="lineno"> 1271 </span>onMatrixLiteral
+<span class="lineno"> 1272 </span>    :: (Functor m, Applicative m, Monad m, NameGen m)
+<span class="lineno"> 1273 </span>    =&gt; Maybe Int                                    -- how many levels to go down. all the way if Nothing.
+<span class="lineno"> 1274 </span>    -&gt; (Expression -&gt; m Expression)
+<span class="lineno"> 1275 </span>    -&gt;  Expression -&gt; m Expression
+<span class="lineno"> 1276 </span><span class="decl"><span class="istickedoff">onMatrixLiteral mlvl f = case mlvl of</span>
+<span class="lineno"> 1277 </span><span class="spaces">                            </span><span class="istickedoff">Nothing  -&gt; followAliases go</span>
+<span class="lineno"> 1278 </span><span class="spaces">                            </span><span class="istickedoff">Just lvl -&gt; <span class="nottickedoff">followAliases (goL lvl)</span></span>
+<span class="lineno"> 1279 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1280 </span><span class="spaces">        </span><span class="istickedoff">go (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span>
+<span class="lineno"> 1281 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (go . Constant) xs</span></span>
+<span class="lineno"> 1282 </span><span class="spaces">        </span><span class="istickedoff">go (AbstractLiteral (AbsLitMatrix index xs)) =</span>
+<span class="lineno"> 1283 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM go xs</span>
+<span class="lineno"> 1284 </span><span class="spaces">        </span><span class="istickedoff">go (Typed x _) = <span class="nottickedoff">go x</span></span>
+<span class="lineno"> 1285 </span><span class="spaces">        </span><span class="istickedoff">go (Constant (TypedConstant x _)) = <span class="nottickedoff">go (Constant x)</span></span>
+<span class="lineno"> 1286 </span><span class="spaces">        </span><span class="istickedoff">go p = f p</span>
+<span class="lineno"> 1287 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1288 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL 0 p = f p</span></span>
+<span class="lineno"> 1289 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Constant (ConstantAbstract (AbsLitMatrix index xs))) =</span></span>
+<span class="lineno"> 1290 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix (fmap Constant index) &lt;$&gt; mapM (goL (lvl-1) . Constant) xs</span></span>
+<span class="lineno"> 1291 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (AbstractLiteral (AbsLitMatrix index xs)) =</span></span>
+<span class="lineno"> 1292 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral . AbsLitMatrix index &lt;$&gt; mapM (goL (lvl-1)) xs</span></span>
+<span class="lineno"> 1293 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Typed x _) = goL lvl x</span></span>
+<span class="lineno"> 1294 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl (Constant (TypedConstant x _)) = goL lvl (Constant x)</span></span>
+<span class="lineno"> 1295 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">goL lvl p = do</span></span>
+<span class="lineno"> 1296 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 1297 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">body &lt;- goL (lvl-1) i</span></span>
+<span class="lineno"> 1298 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension body [Generator (GenInExpr iPat p)]</span></span></span>
+<span class="lineno"> 1299 </span>
+<span class="lineno"> 1300 </span>
+<span class="lineno"> 1301 </span>setLiteral
+<span class="lineno"> 1302 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1303 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1304 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
+<span class="lineno"> 1305 </span>       , Expression -&gt; m (Type, [Expression])
+<span class="lineno"> 1306 </span>       )
+<span class="lineno"> 1307 </span><span class="decl"><span class="istickedoff">setLiteral _ =</span>
+<span class="lineno"> 1308 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1309 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1310 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitSet elems)) ty</span></span>
+<span class="lineno"> 1311 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitSet elems)</span></span>
+<span class="lineno"> 1312 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1313 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1314 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1315 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1316 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1317 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1318 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantSet -&gt; Just xs)) = return (map Constant xs)</span>
+<span class="lineno"> 1319 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitSet xs)) = return xs</span>
+<span class="lineno"> 1320 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1321 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = <span class="nottickedoff">extract (Constant x)</span></span>
+<span class="lineno"> 1322 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.setLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1323 </span>
+<span class="lineno"> 1324 </span>
+<span class="lineno"> 1325 </span>msetLiteral
+<span class="lineno"> 1326 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1327 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1328 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
+<span class="lineno"> 1329 </span>       , Expression -&gt; m (Type, [Expression])
+<span class="lineno"> 1330 </span>       )
+<span class="lineno"> 1331 </span><span class="decl"><span class="istickedoff">msetLiteral _ =</span>
+<span class="lineno"> 1332 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1333 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1334 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitMSet elems)) ty</span></span>
+<span class="lineno"> 1335 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitMSet elems)</span></span>
+<span class="lineno"> 1336 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1337 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1338 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1339 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1340 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1341 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1342 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantMSet -&gt; Just xs)) = <span class="nottickedoff">return (map Constant xs)</span></span>
+<span class="lineno"> 1343 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitMSet xs)) = return xs</span>
+<span class="lineno"> 1344 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1345 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1346 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.msetLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1347 </span>
+<span class="lineno"> 1348 </span>
+<span class="lineno"> 1349 </span>functionLiteral
+<span class="lineno"> 1350 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1351 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1352 </span>    -&gt; ( Type -&gt; [(Expression,Expression)] -&gt; Expression
+<span class="lineno"> 1353 </span>       , Expression -&gt; m (Type, [(Expression,Expression)])
+<span class="lineno"> 1354 </span>       )
+<span class="lineno"> 1355 </span><span class="decl"><span class="istickedoff">functionLiteral _ =</span>
+<span class="lineno"> 1356 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1357 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1358 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitFunction elems)) ty</span></span>
+<span class="lineno"> 1359 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitFunction elems)</span></span>
+<span class="lineno"> 1360 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1361 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1362 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1363 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1364 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1365 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1366 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantFunction -&gt; Just xs)) = return [ (Constant a, Constant b) | (a,b) &lt;- xs ]</span>
+<span class="lineno"> 1367 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitFunction xs)) = return xs</span>
+<span class="lineno"> 1368 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1369 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1370 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.functionLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1371 </span>
+<span class="lineno"> 1372 </span>
+<span class="lineno"> 1373 </span>sequenceLiteral
+<span class="lineno"> 1374 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1375 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1376 </span>    -&gt; ( Type -&gt; [Expression] -&gt; Expression
+<span class="lineno"> 1377 </span>       , Expression -&gt; m (Type, [Expression])
+<span class="lineno"> 1378 </span>       )
+<span class="lineno"> 1379 </span><span class="decl"><span class="istickedoff">sequenceLiteral _ =</span>
+<span class="lineno"> 1380 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1381 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1382 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitSequence elems)) ty</span></span>
+<span class="lineno"> 1383 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitSequence elems)</span></span>
+<span class="lineno"> 1384 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1385 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1386 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1387 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1388 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1389 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1390 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantSequence -&gt; Just xs)) = return (map Constant xs)</span>
+<span class="lineno"> 1391 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitSequence xs)) = return xs</span>
+<span class="lineno"> 1392 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1393 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1394 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.sequenceLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1395 </span>
+<span class="lineno"> 1396 </span>
+<span class="lineno"> 1397 </span>relationLiteral
+<span class="lineno"> 1398 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1399 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1400 </span>    -&gt; ( Type -&gt; [[Expression]] -&gt; Expression
+<span class="lineno"> 1401 </span>       , Expression -&gt; m (Type, [[Expression]])
+<span class="lineno"> 1402 </span>       )
+<span class="lineno"> 1403 </span><span class="decl"><span class="istickedoff">relationLiteral _ =</span>
+<span class="lineno"> 1404 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1405 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1406 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitRelation elems)) ty</span></span>
+<span class="lineno"> 1407 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitRelation elems)</span></span>
+<span class="lineno"> 1408 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1409 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1410 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1411 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1412 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1413 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1414 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantRelation -&gt; Just xs)) = return (map (map Constant) xs)</span>
+<span class="lineno"> 1415 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitRelation xs)) = <span class="nottickedoff">return xs</span></span>
+<span class="lineno"> 1416 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1417 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1418 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.relationLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1419 </span>
+<span class="lineno"> 1420 </span>
+<span class="lineno"> 1421 </span>partitionLiteral
+<span class="lineno"> 1422 </span>    :: (MonadFailDoc m, ?typeCheckerMode :: TypeCheckerMode)
+<span class="lineno"> 1423 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1424 </span>    -&gt; ( Type -&gt; [[Expression]] -&gt; Expression
+<span class="lineno"> 1425 </span>       , Expression -&gt; m (Type, [[Expression]])
+<span class="lineno"> 1426 </span>       )
+<span class="lineno"> 1427 </span><span class="decl"><span class="istickedoff">partitionLiteral _ =</span>
+<span class="lineno"> 1428 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ ty elems -&gt;</span></span>
+<span class="lineno"> 1429 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">if null elems</span></span>
+<span class="lineno"> 1430 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">then Typed (AbstractLiteral (AbsLitPartition elems)) ty</span></span>
+<span class="lineno"> 1431 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">else        AbstractLiteral (AbsLitPartition elems)</span></span>
+<span class="lineno"> 1432 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1433 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf p</span>
+<span class="lineno"> 1434 </span><span class="spaces">        </span><span class="istickedoff">xs &lt;- followAliases extract p</span>
+<span class="lineno"> 1435 </span><span class="spaces">        </span><span class="istickedoff">return (ty, xs)</span>
+<span class="lineno"> 1436 </span><span class="spaces">    </span><span class="istickedoff">)</span>
+<span class="lineno"> 1437 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1438 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (viewConstantPartition -&gt; Just xs)) = return (map (map Constant) xs)</span>
+<span class="lineno"> 1439 </span><span class="spaces">        </span><span class="istickedoff">extract (AbstractLiteral (AbsLitPartition xs)) = <span class="nottickedoff">return xs</span></span>
+<span class="lineno"> 1440 </span><span class="spaces">        </span><span class="istickedoff">extract (Typed x _) = <span class="nottickedoff">extract x</span></span>
+<span class="lineno"> 1441 </span><span class="spaces">        </span><span class="istickedoff">extract (Constant (TypedConstant x _)) = extract (Constant x)</span>
+<span class="lineno"> 1442 </span><span class="spaces">        </span><span class="istickedoff">extract p = na (&quot;Lenses.partitionLiteral:&quot; &lt;+&gt; pretty p)</span></span>
+<span class="lineno"> 1443 </span>
+<span class="lineno"> 1444 </span>
+<span class="lineno"> 1445 </span>opTwoBars
+<span class="lineno"> 1446 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1447 </span>       , Pretty x
+<span class="lineno"> 1448 </span>       , MonadFailDoc m
+<span class="lineno"> 1449 </span>       )
+<span class="lineno"> 1450 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1451 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1452 </span>       , x -&gt; m x
+<span class="lineno"> 1453 </span>       )
+<span class="lineno"> 1454 </span><span class="decl"><span class="istickedoff">opTwoBars _ =</span>
+<span class="lineno"> 1455 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">inject . MkOpTwoBars . OpTwoBars</span></span>
+<span class="lineno"> 1456 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1457 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1458 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1459 </span><span class="spaces">                </span><span class="istickedoff">MkOpTwoBars (OpTwoBars x) -&gt; return x</span>
+<span class="lineno"> 1460 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opTwoBars:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1461 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1462 </span>
+<span class="lineno"> 1463 </span>
+<span class="lineno"> 1464 </span>opPreImage
+<span class="lineno"> 1465 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1466 </span>       , Pretty x
+<span class="lineno"> 1467 </span>       , MonadFailDoc m
+<span class="lineno"> 1468 </span>       )
+<span class="lineno"> 1469 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1470 </span>    -&gt; ( x -&gt; x -&gt; x
+<span class="lineno"> 1471 </span>       , x -&gt; m (x,x)
+<span class="lineno"> 1472 </span>       )
+<span class="lineno"> 1473 </span><span class="decl"><span class="istickedoff">opPreImage _ =</span>
+<span class="lineno"> 1474 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpPreImage (OpPreImage x y))</span></span>
+<span class="lineno"> 1475 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1476 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1477 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1478 </span><span class="spaces">                </span><span class="istickedoff">MkOpPreImage (OpPreImage x y) -&gt; return (x,y)</span>
+<span class="lineno"> 1479 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opPreImage:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1480 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1481 </span>
+<span class="lineno"> 1482 </span>
+<span class="lineno"> 1483 </span>opActive
+<span class="lineno"> 1484 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1485 </span>       , Pretty x
+<span class="lineno"> 1486 </span>       , MonadFailDoc m
+<span class="lineno"> 1487 </span>       )
+<span class="lineno"> 1488 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1489 </span>    -&gt; ( x -&gt; Name -&gt; x
+<span class="lineno"> 1490 </span>       , x -&gt; m (x,Name)
+<span class="lineno"> 1491 </span>       )
+<span class="lineno"> 1492 </span><span class="decl"><span class="istickedoff">opActive _ =</span>
+<span class="lineno"> 1493 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject (MkOpActive (OpActive x y))</span></span>
+<span class="lineno"> 1494 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
+<span class="lineno"> 1495 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
+<span class="lineno"> 1496 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
+<span class="lineno"> 1497 </span><span class="spaces">                </span><span class="istickedoff">MkOpActive (OpActive x y) -&gt; return (x,y)</span>
+<span class="lineno"> 1498 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opActive:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1499 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1500 </span>
+<span class="lineno"> 1501 </span>
+<span class="lineno"> 1502 </span>opFactorial
+<span class="lineno"> 1503 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1504 </span>       , Pretty x
+<span class="lineno"> 1505 </span>       , MonadFailDoc m
+<span class="lineno"> 1506 </span>       )
+<span class="lineno"> 1507 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1508 </span>    -&gt; ( x -&gt; x
+<span class="lineno"> 1509 </span>       , x -&gt; m x
+<span class="lineno"> 1510 </span>       )
+<span class="lineno"> 1511 </span><span class="decl"><span class="istickedoff">opFactorial _ =</span>
+<span class="lineno"> 1512 </span><span class="spaces">    </span><span class="istickedoff">( inject . MkOpFactorial . OpFactorial</span>
+<span class="lineno"> 1513 </span><span class="spaces">    </span><span class="istickedoff">, <span class="nottickedoff">\ p -&gt; do</span></span>
+<span class="lineno"> 1514 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">op &lt;- project p</span></span>
+<span class="lineno"> 1515 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case op of</span></span>
+<span class="lineno"> 1516 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">MkOpFactorial (OpFactorial x) -&gt; return x</span></span>
+<span class="lineno"> 1517 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na (&quot;Lenses.opFactorial:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1518 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1519 </span>
+<span class="lineno"> 1520 </span>
+<span class="lineno"> 1521 </span>opLex
+<span class="lineno"> 1522 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1523 </span>       , Pretty x
+<span class="lineno"> 1524 </span>       , MonadFailDoc m
+<span class="lineno"> 1525 </span>       )
+<span class="lineno"> 1526 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1527 </span>    -&gt; ( (x -&gt; x -&gt; x, (x,x)) -&gt; x
+<span class="lineno"> 1528 </span>       , x -&gt; m (x -&gt; x -&gt; x, (x,x))
+<span class="lineno"> 1529 </span>       )
+<span class="lineno"> 1530 </span><span class="decl"><span class="istickedoff">opLex _ =</span>
+<span class="lineno"> 1531 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, (x,y)) -&gt; mk x y</span></span>
+<span class="lineno"> 1532 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
+<span class="lineno"> 1533 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLexLt  (OpLexLt  x y)) -&gt; return (<span class="nottickedoff">\ x' y' -&gt; inject (MkOpLexLt  (OpLexLt  x' y'))</span>, (x,y) )</span>
+<span class="lineno"> 1534 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLexLeq (OpLexLeq x y)) -&gt; return (<span class="nottickedoff">\ x' y' -&gt; inject (MkOpLexLeq (OpLexLeq x' y'))</span>, (x,y) )</span>
+<span class="lineno"> 1535 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opLex:&quot; &lt;++&gt; <span class="nottickedoff">pretty p</span>)</span>
+<span class="lineno"> 1536 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1537 </span>
+<span class="lineno"> 1538 </span>
+<span class="lineno"> 1539 </span>opOrdering
+<span class="lineno"> 1540 </span>    :: ( Op x :&lt; x
+<span class="lineno"> 1541 </span>       , Pretty x
+<span class="lineno"> 1542 </span>       , MonadFailDoc m
+<span class="lineno"> 1543 </span>       )
+<span class="lineno"> 1544 </span>    =&gt; Proxy (m :: T.Type -&gt; T.Type)
+<span class="lineno"> 1545 </span>    -&gt; ( (x -&gt; x -&gt; x, (x,x)) -&gt; x
+<span class="lineno"> 1546 </span>       , x -&gt; m (x -&gt; x -&gt; x, (x,x))
+<span class="lineno"> 1547 </span>       )
+<span class="lineno"> 1548 </span><span class="decl"><span class="istickedoff">opOrdering _ =</span>
+<span class="lineno"> 1549 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ (mk, (x,y)) -&gt; mk x y</span></span>
+<span class="lineno"> 1550 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; case project p of</span>
+<span class="lineno"> 1551 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLt       (OpLt       x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpLt       (OpLt       x' y')), (x,y) )</span></span>
+<span class="lineno"> 1552 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLeq      (OpLeq      x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpLeq      (OpLeq      x' y')), (x,y) )</span></span>
+<span class="lineno"> 1553 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpTildeLt  (OpTildeLt  x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpTildeLt  (OpTildeLt  x' y')), (x,y) )</span></span>
+<span class="lineno"> 1554 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpTildeLeq (OpTildeLeq x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpTildeLeq (OpTildeLeq x' y')), (x,y) )</span></span>
+<span class="lineno"> 1555 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLexLt    (OpLexLt    x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpLexLt    (OpLexLt    x' y')), (x,y) )</span></span>
+<span class="lineno"> 1556 </span><span class="spaces">        </span><span class="istickedoff">Just (MkOpLexLeq   (OpLexLeq   x y)) -&gt; <span class="nottickedoff">return (\ x' y' -&gt; inject (MkOpLexLeq   (OpLexLeq   x' y')), (x,y) )</span></span>
+<span class="lineno"> 1557 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opOrdering:&quot; &lt;++&gt; pretty p)</span></span>
+<span class="lineno"> 1558 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
+<span class="lineno"> 1559 </span>
+<span class="lineno"> 1560 </span>
+<span class="lineno"> 1561 </span>fixTHParsing :: Data a =&gt; a -&gt; a
+<span class="lineno"> 1562 </span><span class="decl"><span class="istickedoff">fixTHParsing p =</span>
+<span class="lineno"> 1563 </span><span class="spaces">    </span><span class="istickedoff">let ?typeCheckerMode = RelaxedIntegerTags</span>
+<span class="lineno"> 1564 </span><span class="spaces">    </span><span class="istickedoff">in  fixRelationProj p</span></span>
+<span class="lineno"> 1565 </span>
+<span class="lineno"> 1566 </span>
+<span class="lineno"> 1567 </span>fixRelationProj :: (Data a, ?typeCheckerMode :: TypeCheckerMode) =&gt; a -&gt; a
+<span class="lineno"> 1568 </span><span class="decl"><span class="istickedoff">fixRelationProj= transformBi f</span>
+<span class="lineno"> 1569 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno"> 1570 </span><span class="spaces">        </span><span class="istickedoff">f :: Expression -&gt; Expression</span>
+<span class="lineno"> 1571 </span><span class="spaces">        </span><span class="istickedoff">f p =</span>
+<span class="lineno"> 1572 </span><span class="spaces">            </span><span class="istickedoff">case match opRelationProj p of</span>
+<span class="lineno"> 1573 </span><span class="spaces">                </span><span class="istickedoff">Just (func, [Just arg]) -&gt;</span>
+<span class="lineno"> 1574 </span><span class="spaces">                    </span><span class="istickedoff">case typeOf func of</span>
+<span class="lineno"> 1575 </span><span class="spaces">                        </span><span class="istickedoff">Just TypeFunction{} -&gt; make opImage func arg</span>
+<span class="lineno"> 1576 </span><span class="spaces">                        </span><span class="istickedoff">Just TypeSequence{} -&gt; <span class="nottickedoff">make opImage func arg</span></span>
+<span class="lineno"> 1577 </span><span class="spaces">                        </span><span class="istickedoff">_                   -&gt; <span class="nottickedoff">p</span></span>
+<span class="lineno"> 1578 </span><span class="spaces">                </span><span class="istickedoff">Just (func, args) | arg &lt;- catMaybes args, <span class="tickonlytrue">length arg == length args</span> -&gt;</span>
+<span class="lineno"> 1579 </span><span class="spaces">                    </span><span class="istickedoff">case typeOf func of</span>
+<span class="lineno"> 1580 </span><span class="spaces">                        </span><span class="istickedoff">Just TypeFunction{} -&gt; <span class="nottickedoff">make opImage func $ AbstractLiteral $ AbsLitTuple arg</span></span>
+<span class="lineno"> 1581 </span><span class="spaces">                        </span><span class="istickedoff">Just TypeSequence{} -&gt; <span class="nottickedoff">make opImage func $ AbstractLiteral $ AbsLitTuple arg</span></span>
+<span class="lineno"> 1582 </span><span class="spaces">                        </span><span class="istickedoff">_                   -&gt; p</span>
+<span class="lineno"> 1583 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; p</span></span>
+<span class="lineno"> 1584 </span>
+<span class="lineno"> 1585 </span>
+<span class="lineno"> 1586 </span>
+<span class="lineno"> 1587 </span>maxOfDomain :: (MonadFailDoc m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
+<span class="lineno"> 1588 </span><span class="decl"><span class="istickedoff">maxOfDomain (DomainInt _ [] ) = <span class="nottickedoff">failDoc &quot;rule_DomainMinMax.maxOfDomain []&quot;</span></span>
+<span class="lineno"> 1589 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainInt _ [r]) = maxOfRange r</span>
+<span class="lineno"> 1590 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainInt _ rs ) = do</span>
+<span class="lineno"> 1591 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- mapM maxOfRange rs</span>
+<span class="lineno"> 1592 </span><span class="spaces">    </span><span class="istickedoff">return (make opMax (fromList xs))</span>
+<span class="lineno"> 1593 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain (DomainReference _ (Just d)) = <span class="nottickedoff">maxOfDomain d</span></span>
+<span class="lineno"> 1594 </span><span class="spaces"></span><span class="istickedoff">maxOfDomain d = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.maxOfDomain&quot; &lt;+&gt; pretty d)</span></span></span>
+<span class="lineno"> 1595 </span>
+<span class="lineno"> 1596 </span>maxOfRange :: MonadFailDoc m =&gt; Range Expression -&gt; m Expression
+<span class="lineno"> 1597 </span><span class="decl"><span class="istickedoff">maxOfRange (RangeSingle x) = return x</span>
+<span class="lineno"> 1598 </span><span class="spaces"></span><span class="istickedoff">maxOfRange (RangeBounded _ x) = return x</span>
+<span class="lineno"> 1599 </span><span class="spaces"></span><span class="istickedoff">maxOfRange (RangeUpperBounded x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 1600 </span><span class="spaces"></span><span class="istickedoff">maxOfRange r = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.maxOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
+<span class="lineno"> 1601 </span>
+<span class="lineno"> 1602 </span>minOfDomain :: (MonadFailDoc m, Pretty r) =&gt; Domain r Expression -&gt; m Expression
+<span class="lineno"> 1603 </span><span class="decl"><span class="istickedoff">minOfDomain (DomainInt _ [] ) = <span class="nottickedoff">failDoc &quot;rule_DomainMinMax.minOfDomain []&quot;</span></span>
+<span class="lineno"> 1604 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainInt _ [r]) = minOfRange r</span>
+<span class="lineno"> 1605 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainInt _ rs ) = do</span>
+<span class="lineno"> 1606 </span><span class="spaces">    </span><span class="istickedoff">xs &lt;- mapM minOfRange rs</span>
+<span class="lineno"> 1607 </span><span class="spaces">    </span><span class="istickedoff">return (make opMin (fromList xs))</span>
+<span class="lineno"> 1608 </span><span class="spaces"></span><span class="istickedoff">minOfDomain (DomainReference _ (Just d)) = <span class="nottickedoff">minOfDomain d</span></span>
+<span class="lineno"> 1609 </span><span class="spaces"></span><span class="istickedoff">minOfDomain d = failDoc (&quot;rule_DomainMinMax.minOfDomain&quot; &lt;+&gt; pretty d)</span></span>
+<span class="lineno"> 1610 </span>
+<span class="lineno"> 1611 </span>minOfRange :: MonadFailDoc m =&gt; Range Expression -&gt; m Expression
+<span class="lineno"> 1612 </span><span class="decl"><span class="istickedoff">minOfRange (RangeSingle x) = return x</span>
+<span class="lineno"> 1613 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeBounded x _) = return x</span>
+<span class="lineno"> 1614 </span><span class="spaces"></span><span class="istickedoff">minOfRange (RangeLowerBounded x) = <span class="nottickedoff">return x</span></span>
+<span class="lineno"> 1615 </span><span class="spaces"></span><span class="istickedoff">minOfRange r = <span class="nottickedoff">failDoc (&quot;rule_DomainMinMax.minOfRange&quot; &lt;+&gt; pretty (show r))</span></span></span>
+
+</pre>
+</body>
+</html>
