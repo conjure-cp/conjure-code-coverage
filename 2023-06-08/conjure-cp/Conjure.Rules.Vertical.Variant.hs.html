@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.Vertical.Variant where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_Variant_Eq :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Variant_Eq = &quot;variant-eq&quot; `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">(x,y)         &lt;- match opEq p</span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf y</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:xs)   &lt;- downX1 x</span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">(yWhich:ys)   &lt;- downX1 y</span>
+<span class="lineno">   16 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   17 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for variant equality&quot;</span></span>
+<span class="lineno">   18 </span><span class="spaces">            </span><span class="istickedoff">, return $ make opAnd $ fromList</span>
+<span class="lineno">   19 </span><span class="spaces">                </span><span class="istickedoff">[ [essence| &amp;xWhich = &amp;yWhich |]                        -- the tags are eq</span>
+<span class="lineno">   20 </span><span class="spaces">                </span><span class="istickedoff">, onTagged (make opEq) xWhich xs ys                     -- and the tagged values are eq</span>
+<span class="lineno">   21 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   22 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>rule_Variant_Neq :: Rule
+<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">rule_Variant_Neq = <span class="nottickedoff">&quot;variant-neq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">(x,y)         &lt;- match opNeq p</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:xs)   &lt;- <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff">(yWhich:ys)   &lt;- <span class="nottickedoff">downX1 y</span></span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for variant !=&quot;</span></span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opOr $ fromList</span></span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich != &amp;yWhich |]                       -- either the tags are diff</span></span>
+<span class="lineno">   37 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $ fromList</span></span>
+<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich = &amp;yWhich |]                    -- or the tags are eq</span></span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, onTagged (make opNeq) xWhich xs ys                -- and the tagged values are diff</span></span>
+<span class="lineno">   40 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   41 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>rule_Variant_Lt :: Rule
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">rule_Variant_Lt = <span class="nottickedoff">&quot;variant-Lt&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">(x,y)         &lt;- match opLt p</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:xs)   &lt;- <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">(yWhich:ys)   &lt;- <span class="nottickedoff">downX1 y</span></span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for variant &lt;&quot;</span></span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opOr $ fromList</span></span>
+<span class="lineno">   56 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich &lt; &amp;yWhich |]                        -- either the tags are &lt;</span></span>
+<span class="lineno">   57 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $ fromList</span></span>
+<span class="lineno">   58 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich = &amp;yWhich |]                    -- or the tags are eq</span></span>
+<span class="lineno">   59 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, onTagged (make opLt) xWhich xs ys                 -- and the tagged values are &lt;</span></span>
+<span class="lineno">   60 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>
+<span class="lineno">   65 </span>rule_Variant_Leq :: Rule
+<span class="lineno">   66 </span><span class="decl"><span class="istickedoff">rule_Variant_Leq = <span class="nottickedoff">&quot;variant-Leq&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">(x,y)         &lt;- match opLeq p</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:xs)   &lt;- <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">(yWhich:ys)   &lt;- <span class="nottickedoff">downX1 y</span></span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   74 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for variant &lt;=&quot;</span></span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ make opOr $ fromList</span></span>
+<span class="lineno">   76 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich &lt; &amp;yWhich |]                        -- either the tags are &lt;</span></span>
+<span class="lineno">   77 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, make opAnd $ fromList</span></span>
+<span class="lineno">   78 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ [essence| &amp;xWhich = &amp;yWhich |]                    -- or the tags are eq</span></span>
+<span class="lineno">   79 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, onTagged (make opLeq) xWhich xs ys                -- and the tagged values are &lt;=</span></span>
+<span class="lineno">   80 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   81 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   82 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>rule_Variant_Index :: Rule
+<span class="lineno">   86 </span><span class="decl"><span class="istickedoff">rule_Variant_Index = &quot;variant-index&quot; `namedRule` theRule where</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">(x,arg)        &lt;- match opIndexing p</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant ds &lt;- typeOf x</span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:xs)    &lt;- downX1 x</span>
+<span class="lineno">   91 </span><span class="spaces">        </span><span class="istickedoff">name           &lt;- nameOut arg</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">argInt         &lt;- case elemIndex name (map fst ds) of</span>
+<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">Nothing     -&gt; <span class="nottickedoff">failDoc &quot;Variant indexing, not a member of the type.&quot;</span></span>
+<span class="lineno">   94 </span><span class="spaces">                            </span><span class="istickedoff">Just argInt -&gt; return argInt</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Variant indexing on:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals</span>
+<span class="lineno">   98 </span><span class="spaces">                </span><span class="istickedoff">(atNote <span class="nottickedoff">&quot;Variant indexing&quot;</span> xs argInt)                   -- the value is projected</span>
+<span class="lineno">   99 </span><span class="spaces">                </span><span class="istickedoff">(DefinednessConstraints</span>
+<span class="lineno">  100 </span><span class="spaces">                    </span><span class="istickedoff">[ [essence| &amp;xWhich = &amp;argInt2 |]                   -- the tag is equal to i</span>
+<span class="lineno">  101 </span><span class="spaces">                    </span><span class="istickedoff">| let argInt2 = fromInt (fromIntegral (argInt + 1))</span>
+<span class="lineno">  102 </span><span class="spaces">                    </span><span class="istickedoff">])</span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>
+<span class="lineno">  106 </span>rule_Variant_Active :: Rule
+<span class="lineno">  107 </span><span class="decl"><span class="istickedoff">rule_Variant_Active = &quot;variant-active&quot; `namedRule` theRule where</span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">(x,name)       &lt;- match opActive p</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">TypeVariant ds &lt;- typeOf x</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">(xWhich:_)     &lt;- downX1 x</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">argInt         &lt;- case elemIndex name (map fst ds) of</span>
+<span class="lineno">  113 </span><span class="spaces">                            </span><span class="istickedoff">Nothing     -&gt; <span class="nottickedoff">failDoc &quot;Variant indexing, not a member of the type.&quot;</span></span>
+<span class="lineno">  114 </span><span class="spaces">                            </span><span class="istickedoff">Just argInt -&gt; return $ fromInt $ fromIntegral $ argInt + 1</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  116 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Variant active on:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno">  117 </span><span class="spaces">            </span><span class="istickedoff">, return $ [essence| &amp;xWhich = &amp;argInt |]</span>
+<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  119 </span>
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>-- | puts a constraint on the pair of tagged values
+<span class="lineno">  122 </span>--   NOTICE: you might want to check if the tags are same before calling this!
+<span class="lineno">  123 </span>onTagged
+<span class="lineno">  124 </span>    :: (Expression -&gt; Expression -&gt; Expression)         -- the constraint generator
+<span class="lineno">  125 </span>    -&gt; Expression                                       -- tag
+<span class="lineno">  126 </span>    -&gt; [Expression]                                     -- first bunch of options
+<span class="lineno">  127 </span>    -&gt; [Expression]                                     -- second bunch of options
+<span class="lineno">  128 </span>    -&gt; Expression                                       -- the constraint
+<span class="lineno">  129 </span><span class="decl"><span class="istickedoff">onTagged f which xs ys = make opAnd $ fromList</span>
+<span class="lineno">  130 </span><span class="spaces">    </span><span class="istickedoff">[ [essence| &amp;i = &amp;which -&gt; &amp;cons |]                 -- and the tagged values are eq</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">| (i',x,y) &lt;- zip3 [1..] xs ys</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">, let i = fromInt i'</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">, let cons = f x y</span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="istickedoff">, let zero = ExpressionMetaVar &quot;zeroVal for variant&quot;</span>
+<span class="lineno">  135 </span><span class="spaces">    </span><span class="istickedoff">, <span class="tickonlytrue">x /= zero</span></span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="istickedoff">, y /= zero</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+
+</pre>
+</body>
+</html>
