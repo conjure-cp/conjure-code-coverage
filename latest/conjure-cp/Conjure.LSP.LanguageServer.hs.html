@@ -24,7 +24,7 @@ span.spaces    { background: white }
 <span class="lineno">    5 </span>import Language.LSP.Server
 <span class="lineno">    6 </span>import qualified Language.LSP.Types as J
 <span class="lineno">    7 </span>
-<span class="lineno">    8 </span>import Conjure.LSP.Handlers.File (fileHandlers)
+<span class="lineno">    8 </span>import Conjure.LSP.Handlers.File (unhandled, fileHandlers)
 <span class="lineno">    9 </span>import Conjure.LSP.Handlers.Initialize (handleInitialized)
 <span class="lineno">   10 </span>import Conjure.Prelude
 <span class="lineno">   11 </span>import Conjure.LSP.Handlers.Hover (hoverHandler)
@@ -54,7 +54,7 @@ span.spaces    { background: white }
 <span class="lineno">   35 </span>
 <span class="lineno">   36 </span>handlers :: Handlers (LspM ())
 <span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">handlers =</span>
-<span class="lineno">   38 </span><span class="spaces">    </span><span class="nottickedoff">mconcat</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="nottickedoff">mconcat $ unhandled ++</span>
 <span class="lineno">   39 </span><span class="spaces">        </span><span class="nottickedoff">[ fileHandlers</span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="nottickedoff">, handleInitialized</span>
 <span class="lineno">   41 </span><span class="spaces">        </span><span class="nottickedoff">, hoverHandler</span>

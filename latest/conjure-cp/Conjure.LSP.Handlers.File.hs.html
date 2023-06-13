@@ -24,51 +24,53 @@ span.spaces    { background: white }
 <span class="lineno">    5 </span>module Conjure.LSP.Handlers.File where
 <span class="lineno">    6 </span>import Conjure.Prelude
 <span class="lineno">    7 </span>import Language.LSP.Server (notificationHandler, Handlers, LspM,  publishDiagnostics, getVirtualFile)
-<span class="lineno">    8 </span>import Language.LSP.Types (
-<span class="lineno">    9 </span>    SMethod (STextDocumentDidOpen, STextDocumentDidChange, STextDocumentDidClose)
-<span class="lineno">   10 </span>    , toNormalizedUri
-<span class="lineno">   11 </span>    ,Uri)
-<span class="lineno">   12 </span>import Data.Text (pack)
-<span class="lineno">   13 </span>import Control.Lens
-<span class="lineno">   14 </span>import Language.LSP.VFS
-<span class="lineno">   15 </span>import Language.LSP.Types.Lens (HasTextDocument(textDocument), HasParams (..), HasUri (uri))
-<span class="lineno">   16 </span>import Conjure.LSP.Util (getErrorsFromText,sendErrorMessage, getDiagnostics)
-<span class="lineno">   17 </span>import Language.LSP.Diagnostics (partitionBySource)
-<span class="lineno">   18 </span>import Prettyprinter
-<span class="lineno">   19 </span>fileHandlers :: Handlers (LspM ())
-<span class="lineno">   20 </span><span class="decl"><span class="nottickedoff">fileHandlers = mconcat [fileOpenedHandler,fileChangedHandler,fileClosedHandler]</span></span>
-<span class="lineno">   21 </span>
-<span class="lineno">   22 </span>fileOpenedHandler :: Handlers (LspM ())
-<span class="lineno">   23 </span><span class="decl"><span class="nottickedoff">fileOpenedHandler = notificationHandler STextDocumentDidOpen $ \ req -&gt; do</span>
-<span class="lineno">   24 </span><span class="spaces">    </span><span class="nottickedoff">let td = req^.params.textDocument</span>
-<span class="lineno">   25 </span><span class="spaces">    </span><span class="nottickedoff">doDiagForDocument td</span>
-<span class="lineno">   26 </span><span class="spaces">    </span><span class="nottickedoff">pure ()</span></span>
-<span class="lineno">   27 </span>
-<span class="lineno">   28 </span>
+<span class="lineno">    8 </span>import Language.LSP.Types (SMethod (..), toNormalizedUri, Uri)
+<span class="lineno">    9 </span>import Data.Text (pack)
+<span class="lineno">   10 </span>import Control.Lens
+<span class="lineno">   11 </span>import Language.LSP.VFS
+<span class="lineno">   12 </span>import Language.LSP.Types.Lens (HasTextDocument(textDocument), HasParams (..), HasUri (uri))
+<span class="lineno">   13 </span>import Conjure.LSP.Util (getErrorsFromText,sendErrorMessage, getDiagnostics)
+<span class="lineno">   14 </span>import Language.LSP.Diagnostics (partitionBySource)
+<span class="lineno">   15 </span>import Prettyprinter
+<span class="lineno">   16 </span>fileHandlers :: Handlers (LspM ())
+<span class="lineno">   17 </span><span class="decl"><span class="nottickedoff">fileHandlers = mconcat [fileOpenedHandler,fileChangedHandler,fileClosedHandler]</span></span>
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>unhandled :: [Handlers (LspM ())]
+<span class="lineno">   20 </span><span class="decl"><span class="nottickedoff">unhandled = [ notificationHandler SCancelRequest $ \ _ -&gt; pure ()</span>
+<span class="lineno">   21 </span><span class="spaces">            </span><span class="nottickedoff">, notificationHandler STextDocumentDidSave $ \ _ -&gt; pure ()</span>
+<span class="lineno">   22 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>fileOpenedHandler :: Handlers (LspM ())
+<span class="lineno">   25 </span><span class="decl"><span class="nottickedoff">fileOpenedHandler = notificationHandler STextDocumentDidOpen $ \ req -&gt; do</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="nottickedoff">let td = req^.params.textDocument</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="nottickedoff">doDiagForDocument td</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">pure ()</span></span>
 <span class="lineno">   29 </span>
-<span class="lineno">   30 </span>fileChangedHandler :: Handlers (LspM ())
-<span class="lineno">   31 </span><span class="decl"><span class="nottickedoff">fileChangedHandler = notificationHandler STextDocumentDidChange $ \ req -&gt; do</span>
-<span class="lineno">   32 </span><span class="spaces">    </span><span class="nottickedoff">let td = req^.params.textDocument</span>
-<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">doDiagForDocument td</span>
-<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">pure ()</span></span>
-<span class="lineno">   35 </span> --handle this only to suppress not implemented message
-<span class="lineno">   36 </span>fileClosedHandler :: Handlers (LspM ())
-<span class="lineno">   37 </span><span class="decl"><span class="nottickedoff">fileClosedHandler = notificationHandler STextDocumentDidClose $ \ _ -&gt;  pure ()</span></span>
-<span class="lineno">   38 </span>
-<span class="lineno">   39 </span>
+<span class="lineno">   30 </span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>fileChangedHandler :: Handlers (LspM ())
+<span class="lineno">   33 </span><span class="decl"><span class="nottickedoff">fileChangedHandler = notificationHandler STextDocumentDidChange $ \ req -&gt; do</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">let td = req^.params.textDocument</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">doDiagForDocument td</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="nottickedoff">pure ()</span></span>
+<span class="lineno">   37 </span> --handle this only to suppress not implemented message
+<span class="lineno">   38 </span>fileClosedHandler :: Handlers (LspM ())
+<span class="lineno">   39 </span><span class="decl"><span class="nottickedoff">fileClosedHandler = notificationHandler STextDocumentDidClose $ \ _ -&gt;  pure ()</span></span>
 <span class="lineno">   40 </span>
-<span class="lineno">   41 </span>doDiagForDocument ::( HasUri a Uri,Show a) =&gt; a -&gt; LspM () ()
-<span class="lineno">   42 </span><span class="decl"><span class="nottickedoff">doDiagForDocument d = do</span>
-<span class="lineno">   43 </span><span class="spaces">    </span><span class="nottickedoff">let td = d^.uri</span>
-<span class="lineno">   44 </span><span class="spaces">    </span><span class="nottickedoff">let doc = toNormalizedUri td</span>
-<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">mdoc &lt;- getVirtualFile doc</span>
-<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">case mdoc of</span>
-<span class="lineno">   47 </span><span class="spaces">          </span><span class="nottickedoff">Just vf@(VirtualFile _ version _rope) -&gt; do</span>
-<span class="lineno">   48 </span><span class="spaces">            </span><span class="nottickedoff">errs &lt;- getErrorsFromText $ virtualFileText vf</span>
-<span class="lineno">   49 </span><span class="spaces">            </span><span class="nottickedoff">case errs of</span>
-<span class="lineno">   50 </span><span class="spaces">                </span><span class="nottickedoff">Left msg -&gt; sendErrorMessage &quot;An error occured:details incoming&quot; &gt;&gt;sendErrorMessage msg</span>
-<span class="lineno">   51 </span><span class="spaces">                </span><span class="nottickedoff">Right file -&gt; publishDiagnostics 10000 doc (Just $ fromIntegral version) $ partitionBySource $ getDiagnostics file</span>
-<span class="lineno">   52 </span><span class="spaces">          </span><span class="nottickedoff">_ -&gt; sendErrorMessage $ pack. show $ &quot;No virtual file found for: &quot; &lt;&gt; stringToDoc (show d)</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>doDiagForDocument ::( HasUri a Uri,Show a) =&gt; a -&gt; LspM () ()
+<span class="lineno">   44 </span><span class="decl"><span class="nottickedoff">doDiagForDocument d = do</span>
+<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">let td = d^.uri</span>
+<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">let doc = toNormalizedUri td</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="nottickedoff">mdoc &lt;- getVirtualFile doc</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">case mdoc of</span>
+<span class="lineno">   49 </span><span class="spaces">          </span><span class="nottickedoff">Just vf@(VirtualFile _ version _rope) -&gt; do</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">errs &lt;- getErrorsFromText $ virtualFileText vf</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="nottickedoff">case errs of</span>
+<span class="lineno">   52 </span><span class="spaces">                </span><span class="nottickedoff">Left msg -&gt; sendErrorMessage &quot;An error occured:details incoming&quot; &gt;&gt;sendErrorMessage msg</span>
+<span class="lineno">   53 </span><span class="spaces">                </span><span class="nottickedoff">Right file -&gt; publishDiagnostics 10000 doc (Just $ fromIntegral version) $ partitionBySource $ getDiagnostics file</span>
+<span class="lineno">   54 </span><span class="spaces">          </span><span class="nottickedoff">_ -&gt; sendErrorMessage $ pack. show $ &quot;No virtual file found for: &quot; &lt;&gt; stringToDoc (show d)</span></span>
 
 </pre>
 </body>
