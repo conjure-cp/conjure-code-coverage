@@ -73,7 +73,7 @@ span.spaces    { background: white }
 <span class="lineno">   54 </span>                    Lexeme          -- the lexeme
 <span class="lineno">   55 </span>                    SourcePos       -- source position, the beginning of this lexeme
 <span class="lineno">   56 </span>                    SourcePos       -- source position, just after this lexeme, including whitespace after the lexeme
-<span class="lineno">   57 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>,<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">   57 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
 <span class="lineno">   58 </span>
 <span class="lineno">   59 </span>sourcePos0 :: SourcePos
 <span class="lineno">   60 </span><span class="decl"><span class="istickedoff">sourcePos0 = SourcePos &quot;&quot; (mkPos  1) (mkPos 1)</span></span>
@@ -110,13 +110,13 @@ span.spaces    { background: white }
 <span class="lineno">   91 </span><span class="decl"><span class="istickedoff">isIdentifierLetter ch = isAlphaNum ch || ch `elem` (&quot;_'&quot; :: String) || ch `elem` emojis</span></span>
 <span class="lineno">   92 </span>
 <span class="lineno">   93 </span>data Offsets =Offsets {<span class="nottickedoff"><span class="decl"><span class="nottickedoff">oStart</span></span></span>::Int,<span class="nottickedoff"><span class="decl"><span class="nottickedoff">oTrueStart</span></span></span> :: Int,<span class="istickedoff"><span class="decl"><span class="istickedoff">oTLength</span></span></span>::Int,<span class="istickedoff"><span class="decl"><span class="istickedoff">oSourcePos</span></span></span>::SourcePos}
-<span class="lineno">   94 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">   94 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
 <span class="lineno">   95 </span>type Lexer = Parsec Void Text
 <span class="lineno">   96 </span>
 <span class="lineno">   97 </span>-- type Lexer = Parsec Void Text ETokenStream
 <span class="lineno">   98 </span>
 <span class="lineno">   99 </span>data Trivia = WhiteSpace Text | LineComment Text | BlockComment Text
-<span class="lineno">  100 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>, <span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  100 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
 <span class="lineno">  101 </span>
 <span class="lineno">  102 </span>data ETok = ETok
 <span class="lineno">  103 </span>    { <span class="istickedoff"><span class="decl"><span class="istickedoff">offsets</span></span></span> :: Offsets
@@ -124,9 +124,9 @@ span.spaces    { background: white }
 <span class="lineno">  105 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">lexeme</span></span></span> :: Lexeme
 <span class="lineno">  106 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">capture</span></span></span> :: Text
 <span class="lineno">  107 </span>    }
-<span class="lineno">  108 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  108 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
 <span class="lineno">  109 </span>
-<span class="lineno">  110 </span>instance Pr.Pretty ETok where
+<span class="lineno">  110 </span>instance <span class="decl"><span class="nottickedoff">Pr.Pretty ETok</span></span> where
 <span class="lineno">  111 </span>    <span class="decl"><span class="nottickedoff">pretty = Pr.unAnnotate . uncurry (Pr.&lt;&gt;) .  prettySplitComments</span></span>
 <span class="lineno">  112 </span>
 <span class="lineno">  113 </span>prettySplitComments :: ETok -&gt; (Pr.Doc ann, Pr.Doc ann)
@@ -151,7 +151,7 @@ span.spaces    { background: white }
 <span class="lineno">  132 </span><span class="decl"><span class="istickedoff">makeToken = ETok</span></span>
 <span class="lineno">  133 </span>
 <span class="lineno">  134 </span>data LexerError = LexerError String
-<span class="lineno">  135 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno">  135 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>)
 <span class="lineno">  136 </span>
 <span class="lineno">  137 </span>runLexer :: Text -&gt; Either LexerError ETokenStream
 <span class="lineno">  138 </span><span class="decl"><span class="istickedoff">runLexer txt = case runParser eLex &quot;Lexer&quot; txt of</span>
@@ -313,7 +313,7 @@ span.spaces    { background: white }
 <span class="lineno">  294 </span>    <span class="decl"><span class="nottickedoff">tokensLength _ = sum . fmap ( oTLength . offsets )</span></span>
 <span class="lineno">  295 </span>
 <span class="lineno">  296 </span>-- https://markkarpov.com/tutorial/megaparsec.html#working-with-custom-input-streams
-<span class="lineno">  297 </span>instance TraversableStream ETokenStream where
+<span class="lineno">  297 </span>instance <span class="decl"><span class="istickedoff">TraversableStream ETokenStream</span></span> where
 <span class="lineno">  298 </span>    <span class="decl"><span class="istickedoff">reachOffset o PosState{..} =</span>
 <span class="lineno">  299 </span><span class="spaces">        </span><span class="istickedoff">( <span class="nottickedoff">Just (prefix ++ restOfLine)</span></span>
 <span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff">, PosState</span>
@@ -344,7 +344,7 @@ span.spaces    { background: white }
 <span class="lineno">  325 </span>
 <span class="lineno">  326 </span>
 <span class="lineno">  327 </span>
-<span class="lineno">  328 </span>instance Show ETok where
+<span class="lineno">  328 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show ETok</span></span></span></span> where
 <span class="lineno">  329 </span>    <span class="decl"><span class="nottickedoff">show (ETok _ _ _ q) = show q</span></span>
 <span class="lineno">  330 </span>
 <span class="lineno">  331 </span>

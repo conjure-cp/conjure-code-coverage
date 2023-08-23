@@ -63,25 +63,25 @@ span.spaces    { background: white }
 <span class="lineno">   44 </span>
 <span class="lineno">   45 </span>-- | Use this if you don't want to allow a (EnumerateDomain m =&gt; m a) computation actually do IO.
 <span class="lineno">   46 </span>data EnumerateDomainNoIO a = Done a | TriedIO | Failed Doc
-<span class="lineno">   47 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno">   47 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>)
 <span class="lineno">   48 </span>
-<span class="lineno">   49 </span>instance Eq a =&gt; Eq (EnumerateDomainNoIO a) where
+<span class="lineno">   49 </span>instance <span class="decl"><span class="nottickedoff">Eq a =&gt; Eq (EnumerateDomainNoIO a)</span></span> where
 <span class="lineno">   50 </span>     <span class="decl"><span class="nottickedoff">(Done a) == (Done b) = a ==b</span>
 <span class="lineno">   51 </span><span class="spaces">     </span><span class="nottickedoff">TriedIO == TriedIO = True</span>
 <span class="lineno">   52 </span><span class="spaces">     </span><span class="nottickedoff">(Failed _) == (Failed _) = True</span>
 <span class="lineno">   53 </span><span class="spaces">     </span><span class="nottickedoff">_ == _ = False</span></span>
 <span class="lineno">   54 </span>
 <span class="lineno">   55 </span>
-<span class="lineno">   56 </span>instance Functor EnumerateDomainNoIO where
+<span class="lineno">   56 </span>instance <span class="decl"><span class="nottickedoff">Functor EnumerateDomainNoIO</span></span> where
 <span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">fmap _ (Failed msg) = <span class="nottickedoff">Failed msg</span></span>
 <span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">fmap _ TriedIO      = <span class="nottickedoff">TriedIO</span></span>
 <span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">fmap f (Done x)     = Done (f x)</span></span>
 <span class="lineno">   60 </span>
-<span class="lineno">   61 </span>instance Applicative EnumerateDomainNoIO where
+<span class="lineno">   61 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Applicative EnumerateDomainNoIO</span></span></span></span></span></span> where
 <span class="lineno">   62 </span>    <span class="decl"><span class="istickedoff">pure = Done</span></span>
 <span class="lineno">   63 </span>    <span class="decl"><span class="istickedoff">(&lt;*&gt;) = ap</span></span>
 <span class="lineno">   64 </span>
-<span class="lineno">   65 </span>instance Monad EnumerateDomainNoIO where
+<span class="lineno">   65 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Monad EnumerateDomainNoIO</span></span></span></span> where
 <span class="lineno">   66 </span>    <span class="decl"><span class="istickedoff">Failed msg &gt;&gt;= _ = <span class="nottickedoff">Failed msg</span></span>
 <span class="lineno">   67 </span><span class="spaces">    </span><span class="istickedoff">TriedIO    &gt;&gt;= _ = <span class="nottickedoff">TriedIO</span></span>
 <span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">Done x     &gt;&gt;= f = f x</span></span>

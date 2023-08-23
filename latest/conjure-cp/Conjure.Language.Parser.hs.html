@@ -70,9 +70,9 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span>
 <span class="lineno">   52 </span>
 <span class="lineno">   53 </span>data PipelineError = LexErr LexerError | ParserError ParserError | ValidatorError Doc
-<span class="lineno">   54 </span>      deriving <span class="decl"><span class="nottickedoff">Show</span></span>
+<span class="lineno">   54 </span>      deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>
 <span class="lineno">   55 </span>
-<span class="lineno">   56 </span>instance Pretty PipelineError where
+<span class="lineno">   56 </span>instance <span class="decl"><span class="nottickedoff">Pretty PipelineError</span></span> where
 <span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">pretty (ValidatorError d) = d</span>
 <span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">pretty e  = <span class="nottickedoff">pretty $ show e</span></span></span>
 <span class="lineno">   59 </span>

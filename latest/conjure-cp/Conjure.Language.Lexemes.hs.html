@@ -309,9 +309,9 @@ span.spaces    { background: white }
 <span class="lineno">  290 </span>    | L_EOF
 <span class="lineno">  291 </span>    | L_SpecialCase
 <span class="lineno">  292 </span>
-<span class="lineno">  293 </span>    deriving (<span class="decl"><span class="istickedoff">Eq</span></span>, <span class="decl"><span class="istickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>,Generic) --Generic
+<span class="lineno">  293 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>,<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>) --Generic
 <span class="lineno">  294 </span>
-<span class="lineno">  295 </span>instance Hashable Lexeme
+<span class="lineno">  295 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Hashable Lexeme</span></span></span></span>
 <span class="lineno">  296 </span>
 <span class="lineno">  297 </span>lexemes :: [(T.Text, Lexeme)]
 <span class="lineno">  298 </span><span class="decl"><span class="istickedoff">lexemes = sortBy (flip (comparing (T.length . fst))) $ map swap</span>

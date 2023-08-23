@@ -72,22 +72,22 @@ span.spaces    { background: white }
 <span class="lineno">   53 </span>    <span class="decl"><span class="istickedoff">pretty = prettyPrec 0</span></span>
 <span class="lineno">   54 </span>    <span class="decl"><span class="nottickedoff">prettyPrec _ = pretty</span></span>
 <span class="lineno">   55 </span>
-<span class="lineno">   56 </span>instance Pretty Doc     where <span class="decl"><span class="istickedoff">pretty = id</span></span>
-<span class="lineno">   57 </span>instance Pretty T.Text  where <span class="decl"><span class="istickedoff">pretty = pretty . T.unpack</span></span>
-<span class="lineno">   58 </span>instance Pretty String  where <span class="decl"><span class="istickedoff">pretty = text</span></span>
-<span class="lineno">   59 </span>instance Pretty ()      where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
-<span class="lineno">   60 </span>instance Pretty Bool    where <span class="decl"><span class="nottickedoff">pretty = pretty . show</span></span>
-<span class="lineno">   61 </span>instance Pretty Int     where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
-<span class="lineno">   62 </span>instance Pretty Integer where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
-<span class="lineno">   63 </span>instance Pretty Double  where <span class="decl"><span class="nottickedoff">pretty x = pretty (printf &quot;%.2f&quot; x :: String)</span></span>
+<span class="lineno">   56 </span>instance <span class="decl"><span class="nottickedoff">Pretty Doc</span></span>     where <span class="decl"><span class="istickedoff">pretty = id</span></span>
+<span class="lineno">   57 </span>instance <span class="decl"><span class="nottickedoff">Pretty T.Text</span></span>  where <span class="decl"><span class="istickedoff">pretty = pretty . T.unpack</span></span>
+<span class="lineno">   58 </span>instance <span class="decl"><span class="nottickedoff">Pretty String</span></span>  where <span class="decl"><span class="istickedoff">pretty = text</span></span>
+<span class="lineno">   59 </span>instance <span class="decl"><span class="nottickedoff">Pretty ()</span></span>      where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   60 </span>instance <span class="decl"><span class="nottickedoff">Pretty Bool</span></span>    where <span class="decl"><span class="nottickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   61 </span>instance <span class="decl"><span class="nottickedoff">Pretty Int</span></span>     where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   62 </span>instance <span class="decl"><span class="nottickedoff">Pretty Integer</span></span> where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
+<span class="lineno">   63 </span>instance <span class="decl"><span class="nottickedoff">Pretty Double</span></span>  where <span class="decl"><span class="nottickedoff">pretty x = pretty (printf &quot;%.2f&quot; x :: String)</span></span>
 <span class="lineno">   64 </span>
-<span class="lineno">   65 </span>instance (Pretty a, Pretty b) =&gt; Pretty (a, b) where
+<span class="lineno">   65 </span>instance <span class="decl"><span class="nottickedoff">(Pretty a, Pretty b) =&gt; Pretty (a, b)</span></span> where
 <span class="lineno">   66 </span>    <span class="decl"><span class="nottickedoff">pretty (a, b) = prettyListDoc parens &quot;,&quot; [pretty a, pretty b]</span></span>
 <span class="lineno">   67 </span>
-<span class="lineno">   68 </span>instance (Pretty a, Pretty b, Pretty c) =&gt; Pretty (a, b, c) where
+<span class="lineno">   68 </span>instance <span class="decl"><span class="nottickedoff">(Pretty a, Pretty b, Pretty c) =&gt; Pretty (a, b, c)</span></span> where
 <span class="lineno">   69 </span>    <span class="decl"><span class="nottickedoff">pretty (a, b, c) = prettyListDoc parens &quot;,&quot; [pretty a, pretty b, pretty c]</span></span>
 <span class="lineno">   70 </span>
-<span class="lineno">   71 </span>instance Pretty a =&gt; Pretty (Maybe a) where
+<span class="lineno">   71 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (Maybe a)</span></span> where
 <span class="lineno">   72 </span>    <span class="decl"><span class="nottickedoff">pretty Nothing  = &quot;Nothing&quot;</span>
 <span class="lineno">   73 </span><span class="spaces">    </span><span class="nottickedoff">pretty (Just x) = &quot;Just&quot; &lt;+&gt; parens (pretty x)</span></span>
 <span class="lineno">   74 </span>
@@ -154,7 +154,7 @@ span.spaces    { background: white }
 <span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff">jsonEsc '\n' = <span class="nottickedoff">&quot;\\n&quot;</span></span>
 <span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff">jsonEsc c = T.singleton c</span></span>
 <span class="lineno">  137 </span>
-<span class="lineno">  138 </span>instance Pretty JSON.Value where
+<span class="lineno">  138 </span>instance <span class="decl"><span class="nottickedoff">Pretty JSON.Value</span></span> where
 <span class="lineno">  139 </span>    <span class="decl"><span class="istickedoff">pretty (Object x) = pretty x</span>
 <span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">pretty (Array x) = pretty x</span>
 <span class="lineno">  141 </span><span class="spaces">    </span><span class="istickedoff">pretty (String x) = &quot;\&quot;&quot; &lt;&gt; pretty (T.unpack (T.concatMap jsonEsc x)) &lt;&gt; &quot;\&quot;&quot;</span>
@@ -163,7 +163,7 @@ span.spaces    { background: white }
 <span class="lineno">  144 </span><span class="spaces">    </span><span class="istickedoff">pretty (Bool True) = &quot;true&quot;</span>
 <span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">pretty Null = &quot;null&quot;</span></span>
 <span class="lineno">  146 </span>
-<span class="lineno">  147 </span>instance Pretty JSON.Object where
+<span class="lineno">  147 </span>instance <span class="decl"><span class="nottickedoff">Pretty JSON.Object</span></span> where
 <span class="lineno">  148 </span>    <span class="decl"><span class="istickedoff">pretty = prBraces . fsep . Pr.punctuate &quot;,&quot; . map f . sortBy (comp `on` fst) . KM.toList</span>
 <span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">where</span>
 <span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">f (key, Array value)</span>
@@ -187,13 +187,13 @@ span.spaces    { background: white }
 <span class="lineno">  168 </span><span class="spaces">                                        </span><span class="istickedoff">&lt;*&gt; M.lookup b keyOrder</span>
 <span class="lineno">  169 </span><span class="spaces">                </span><span class="istickedoff">in  fromMaybe (compare a b) preferred</span></span>
 <span class="lineno">  170 </span>
-<span class="lineno">  171 </span>instance Pretty JSON.Array where
+<span class="lineno">  171 </span>instance <span class="decl"><span class="nottickedoff">Pretty JSON.Array</span></span> where
 <span class="lineno">  172 </span>    <span class="decl"><span class="istickedoff">pretty = prBrackets . fsep . Pr.punctuate &quot;,&quot; . map pretty . V.toList</span></span>
 <span class="lineno">  173 </span>
 <span class="lineno">  174 </span>prettyArrayVCat :: V.Vector Value -&gt; Doc
 <span class="lineno">  175 </span><span class="decl"><span class="istickedoff">prettyArrayVCat = prBrackets . Pr.vcat . Pr.punctuate <span class="nottickedoff">&quot;,&quot;</span> . map <span class="nottickedoff">pretty</span> . V.toList</span></span>
 <span class="lineno">  176 </span>
-<span class="lineno">  177 </span>instance Pretty Scientific where
+<span class="lineno">  177 </span>instance <span class="decl"><span class="nottickedoff">Pretty Scientific</span></span> where
 <span class="lineno">  178 </span>    <span class="decl"><span class="istickedoff">pretty = either <span class="nottickedoff">pretty</span> pretty . (floatingOrInteger :: Scientific -&gt; Either Double Integer)</span></span>
 <span class="lineno">  179 </span>
 <span class="lineno">  180 </span>logDebugId :: (MonadLog m, Pretty a) =&gt; Doc -&gt; a -&gt; m a

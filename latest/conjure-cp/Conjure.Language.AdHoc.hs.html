@@ -70,9 +70,9 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span>                  | MZNArray (Maybe String) [MiniZincData] -- index if any, then data
 <span class="lineno">   52 </span>                  | MZNSet [MiniZincData]
 <span class="lineno">   53 </span>                  | MZNNamed [(Name, MiniZincData)]
-<span class="lineno">   54 </span>    deriving (<span class="decl"><span class="nottickedoff">Eq</span></span>, <span class="decl"><span class="nottickedoff">Ord</span></span>, <span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno">   54 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>)
 <span class="lineno">   55 </span>
-<span class="lineno">   56 </span>instance Pretty MiniZincData where
+<span class="lineno">   56 </span>instance <span class="decl"><span class="nottickedoff">Pretty MiniZincData</span></span> where
 <span class="lineno">   57 </span>    <span class="decl"><span class="nottickedoff">pretty (MZNBool x) = pretty x</span>
 <span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">pretty (MZNInt x) = pretty x</span>
 <span class="lineno">   59 </span><span class="spaces">    </span><span class="nottickedoff">pretty (MZNArray index xs) =</span>

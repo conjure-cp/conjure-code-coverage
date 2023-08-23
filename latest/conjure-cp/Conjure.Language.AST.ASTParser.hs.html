@@ -48,7 +48,7 @@ span.spaces    { background: white }
 <span class="lineno">   29 </span>import qualified Data.Text as T
 <span class="lineno">   30 </span>
 <span class="lineno">   31 </span>newtype ParserError = ParserError (Doc)
-<span class="lineno">   32 </span>    deriving (<span class="decl"><span class="nottickedoff">Show</span></span>)
+<span class="lineno">   32 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>)
 <span class="lineno">   33 </span>
 <span class="lineno">   34 </span>
 <span class="lineno">   35 </span>runASTParser ::Flattenable a =&gt; Parser a -&gt; ETokenStream -&gt; Either ParserError a
