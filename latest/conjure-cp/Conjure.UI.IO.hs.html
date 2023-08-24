@@ -71,7 +71,7 @@ span.spaces    { background: white }
 <span class="lineno">   52 </span><span class="spaces">      </span><span class="nottickedoff">Right pt -&gt; return pt</span>
 <span class="lineno">   53 </span><span class="spaces">    </span><span class="nottickedoff">case</span>
 <span class="lineno">   54 </span><span class="spaces">        </span><span class="nottickedoff">runValidator</span>
-<span class="lineno">   55 </span><span class="spaces">          </span><span class="nottickedoff">(validateModel v) (initialState v) {typeChecking = False}</span>
+<span class="lineno">   55 </span><span class="spaces">          </span><span class="nottickedoff">(validateModel v) (initialState v (Just $ T.pack fp)) {typeChecking = False}</span>
 <span class="lineno">   56 </span><span class="spaces">            </span><span class="nottickedoff">of </span>
 <span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">(_, vds, _) | any isError vds -&gt; pure v</span>
 <span class="lineno">   58 </span><span class="spaces">        </span><span class="nottickedoff">(_,vds,_) -&gt; failDoc $ &quot;Cannot pretty print a model with errors&quot; &lt;+&gt; pretty (showDiagnosticsForConsole vds (Just fp) contents)</span></span>

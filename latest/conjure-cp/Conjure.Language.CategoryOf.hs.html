@@ -86,28 +86,28 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return []</span>
 <span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">errors2 &lt;- fmap concat $ forM (universeBi (mStatements m) :: [Domain () Expression]) $ \ domain -&gt; do</span>
 <span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">let category = categoryOf domain</span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">return [ (domain, category)</span>
-<span class="lineno">   71 </span><span class="spaces">               </span><span class="istickedoff">| category &gt; CatQuantified</span>
-<span class="lineno">   72 </span><span class="spaces">               </span><span class="istickedoff">, <span class="tickonlytrue"><span class="nottickedoff">domain</span> `notElem` map <span class="nottickedoff">fst</span> errors1</span>        -- only if this is a new error</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">return [ <span class="nottickedoff">(domain, category)</span></span>
+<span class="lineno">   71 </span><span class="spaces">               </span><span class="istickedoff">| <span class="tickonlyfalse">category &gt; CatQuantified</span></span>
+<span class="lineno">   72 </span><span class="spaces">               </span><span class="istickedoff">, <span class="nottickedoff">domain `notElem` map fst errors1</span>        -- only if this is a new error</span>
 <span class="lineno">   73 </span><span class="spaces">               </span><span class="istickedoff">]</span>
 <span class="lineno">   74 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">if null errors1 &amp;&amp; null errors2</span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlytrue">null errors1 &amp;&amp; null errors2</span></span>
 <span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">then return m</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">else userErr1 $ vcat</span>
-<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff">$  [ &quot;Category checking failed.&quot; ]</span>
-<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff">++ concat ( [ <span class="nottickedoff">[ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">else <span class="nottickedoff">userErr1 $ vcat</span></span>
+<span class="lineno">   78 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">$  [ &quot;Category checking failed.&quot; ]</span></span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">++ concat ( [ [ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">   80 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its category :&quot; &lt;+&gt; pretty category</span></span>
 <span class="lineno">   81 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;In the definition of:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">   82 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;&quot;</span></span>
 <span class="lineno">   83 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   84 </span><span class="spaces">                            </span><span class="istickedoff">| (domain, (name, category)) &lt;- nub errors1</span>
-<span class="lineno">   85 </span><span class="spaces">                            </span><span class="istickedoff">] )</span>
-<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">++ concat ( [ [ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span>
-<span class="lineno">   87 </span><span class="spaces">                              </span><span class="istickedoff">, &quot;Its category :&quot; &lt;+&gt; pretty category</span>
-<span class="lineno">   88 </span><span class="spaces">                              </span><span class="istickedoff">, &quot;&quot;</span>
-<span class="lineno">   89 </span><span class="spaces">                              </span><span class="istickedoff">]</span>
-<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff">| (domain, category) &lt;- nub errors2</span>
-<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff">] )</span></span>
+<span class="lineno">   84 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| (domain, (name, category)) &lt;- nub errors1</span></span>
+<span class="lineno">   85 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">] )</span></span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">++ concat ( [ [ &quot;The domain   :&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">   87 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;Its category :&quot; &lt;+&gt; pretty category</span></span>
+<span class="lineno">   88 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">, &quot;&quot;</span></span>
+<span class="lineno">   89 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   90 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">| (domain, category) &lt;- nub errors2</span></span>
+<span class="lineno">   91 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">] )</span></span></span>
 <span class="lineno">   92 </span>
 <span class="lineno">   93 </span>initInfo_Lettings :: Model -&gt; Model
 <span class="lineno">   94 </span><span class="decl"><span class="istickedoff">initInfo_Lettings model = model { mInfo = info }</span>

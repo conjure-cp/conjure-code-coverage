@@ -17,281 +17,398 @@ span.spaces    { background: white }
 <span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
 </pre>
 <pre>
-<span class="lineno">    1 </span>module Conjure.Language.AST.Reformer (Flattenable(..)) where
-<span class="lineno">    2 </span>
-<span class="lineno">    3 </span>import Conjure.Language.AST.Syntax
-<span class="lineno">    4 </span>import Conjure.Language.Lexer (ETok (..))
-<span class="lineno">    5 </span>import Conjure.Prelude
-<span class="lineno">    6 </span>import Data.Sequence ((&gt;&lt;))
-<span class="lineno">    7 </span>import qualified Data.Sequence as S
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>module Conjure.Language.AST.Reformer (HighLevelTree(..),HLTree(..),flatten,flattenSeq,contains,filterContaining,TreeItemLinks(..),ListItemClasses(..)) where
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>import Conjure.Language.AST.Syntax
+<span class="lineno">    5 </span>import Conjure.Language.Lexer (ETok (..), trueStart, sourcePosAfter)
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>
 <span class="lineno">    8 </span>
-<span class="lineno">    9 </span>
-<span class="lineno">   10 </span>
-<span class="lineno">   11 </span>
-<span class="lineno">   12 </span>class Flattenable a where
-<span class="lineno">   13 </span>    flatten :: Flattenable a =&gt; a -&gt; S.Seq ETok
+<span class="lineno">    9 </span>import Data.Semigroup ((&lt;&gt;))
+<span class="lineno">   10 </span>import qualified Data.Sequence as S
+<span class="lineno">   11 </span>import Text.Megaparsec (SourcePos (SourcePos))
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>
 <span class="lineno">   14 </span>
-<span class="lineno">   15 </span>instance Flattenable (S.Seq ETok) where
-<span class="lineno">   16 </span>    <span class="decl"><span class="nottickedoff">flatten = id</span></span>
-<span class="lineno">   17 </span>instance Flattenable ProgramTree where
-<span class="lineno">   18 </span>    <span class="decl"><span class="istickedoff">flatten (ProgramTree lv sts end) = mconcat [flatten lv , mconcat $ map flatten sts , flatten end]</span></span>
-<span class="lineno">   19 </span>
-<span class="lineno">   20 </span>instance Flattenable LangVersionNode where
-<span class="lineno">   21 </span>    <span class="decl"><span class="istickedoff">flatten (LangVersionNode l1 l2 l3) = flatten l1 &gt;&lt; flatten l2 &gt;&lt; flatten l3</span></span>
-<span class="lineno">   22 </span>instance Flattenable StatementNode where
-<span class="lineno">   23 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">DeclarationStatement dsn -&gt; flatten dsn</span>
-<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">BranchingStatement bsn -&gt; flatten bsn</span>
-<span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">SuchThatStatement stsn -&gt; flatten stsn</span>
-<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">WhereStatement wsn -&gt; flatten wsn</span>
-<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveStatement osn -&gt; flatten osn</span>
-<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">HeuristicStatement l1 ex -&gt; flatten l1 &gt;&lt; flatten ex</span>
-<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">UnexpectedToken tok -&gt; flatten tok</span></span>
-<span class="lineno">   31 </span>
-<span class="lineno">   32 </span>instance Flattenable DeclarationStatementNode where
-<span class="lineno">   33 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">FindStatement f fsn -&gt; flatten f &gt;&lt; flatten fsn</span>
-<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">GivenStatement g gsn -&gt; flatten g &gt;&lt; flatten gsn</span>
-<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">LettingStatement t lsn -&gt; flatten t &gt;&lt; flatten lsn</span></span>
-<span class="lineno">   37 </span>
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>-- class HighLevelTree a where
+<span class="lineno">   17 </span>--     makeTree :: HighLevelTree a =&gt; a -&gt; S.Seq ETok
+<span class="lineno">   18 </span>flatten :: HighLevelTree a =&gt; a -&gt; [ETok]
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">flatten x = case makeTree x of</span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">HLNone -&gt; []</span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">HLTagged _ xs -&gt; concatMap flatten xs</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">HLLeaf t -&gt; [t]</span></span>
+<span class="lineno">   23 </span>flattenSeq :: HighLevelTree a =&gt; a -&gt; S.Seq ETok
+<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">flattenSeq = S.fromList . flatten</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>instance HighLevelTree HLTree where
+<span class="lineno">   27 </span>    <span class="decl"><span class="istickedoff">makeTree = id</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>instance HighLevelTree StatementNode where
+<span class="lineno">   30 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">DeclarationStatement dsn -&gt; makeTree dsn</span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff">BranchingStatement bsn -&gt; makeTree bsn</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">SuchThatStatement stsn -&gt; makeTree stsn</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">WhereStatement wsn -&gt; makeTree wsn</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveStatement osn -&gt; makeTree osn</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">HeuristicStatement l1 ex -&gt; makeTree l1 &lt;&gt; makeTree ex</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">UnexpectedToken tok -&gt; makeTree tok</span></span>
 <span class="lineno">   38 </span>
-<span class="lineno">   39 </span>instance Flattenable LettingStatementNode where 
-<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">flatten (LettingStatementNode a b c) = mconcat[ flatten a, flatten b, flatten c]</span></span>
-<span class="lineno">   41 </span>
-<span class="lineno">   42 </span>instance Flattenable LettingAssignmentNode where
-<span class="lineno">   43 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">LettingExpr d -&gt;  flatten d</span>
-<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">LettingDomain d e -&gt; flatten d &gt;&lt; flatten e</span>
-<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">LettingEnum d e f g -&gt; mconcat [flatten d, flatten e, flatten f, flatten g]</span>
-<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">LettingAnon d e f g h -&gt; mconcat [flatten d, flatten e, flatten f, flatten g, flatten h]</span></span>
+<span class="lineno">   39 </span>instance HighLevelTree DeclarationStatementNode where
+<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">FindStatement f fsn -&gt; makeTree f &lt;&gt; makeTree fsn</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">GivenStatement g gsn -&gt; makeTree g &lt;&gt; makeTree gsn</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">LettingStatement t lsn -&gt; makeTree t &lt;&gt; makeTree lsn</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>instance HighLevelTree LettingStatementNode where 
+<span class="lineno">   47 </span>    <span class="decl"><span class="istickedoff">makeTree (LettingStatementNode a b c) = mconcat[ makeTree a, makeTree b, makeTree c]</span></span>
 <span class="lineno">   48 </span>
-<span class="lineno">   49 </span>instance Flattenable FindStatementNode where
-<span class="lineno">   50 </span>    <span class="decl"><span class="istickedoff">flatten (FindStatementNode a b c) = mconcat  [flatten a, flatten b, flatten c]</span></span>
-<span class="lineno">   51 </span>
-<span class="lineno">   52 </span>instance Flattenable GivenStatementNode where
-<span class="lineno">   53 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">GivenStatementNode a b c -&gt; mconcat [flatten a, flatten b, flatten c]</span>
-<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff">GivenEnumNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span></span>
-<span class="lineno">   56 </span>
-<span class="lineno">   57 </span>
+<span class="lineno">   49 </span>instance HighLevelTree LettingAssignmentNode where
+<span class="lineno">   50 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">LettingExpr d -&gt;  makeTree d</span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">LettingDomain d e -&gt; makeTree d &lt;&gt; makeTree e</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">LettingEnum d e f g -&gt; mconcat [makeTree d, makeTree e, makeTree f, makeTree g]</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">LettingAnon d e f g h -&gt; mconcat [makeTree d, makeTree e, makeTree f, makeTree g, makeTree h]</span></span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>instance HighLevelTree FindStatementNode where
+<span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">makeTree (FindStatementNode a b c) = mconcat  [makeTree a, makeTree b, makeTree c]</span></span>
 <span class="lineno">   58 </span>
-<span class="lineno">   59 </span>instance Flattenable BranchingStatementNode where
-<span class="lineno">   60 </span>    <span class="decl"><span class="istickedoff">flatten (BranchingStatementNode lt lt' ln) = mconcat [flatten lt, flatten lt', flatten ln]</span></span>
-<span class="lineno">   61 </span>
-<span class="lineno">   62 </span>
-<span class="lineno">   63 </span>instance Flattenable SuchThatStatementNode where
-<span class="lineno">   64 </span>    <span class="decl"><span class="istickedoff">flatten (SuchThatStatementNode l1 l2 l3) =  flatten l1 &gt;&lt; flatten l2 &gt;&lt; flatten l3</span></span>
-<span class="lineno">   65 </span>instance Flattenable WhereStatementNode where
-<span class="lineno">   66 </span>    <span class="decl"><span class="istickedoff">flatten (WhereStatementNode l1 l2) =  flatten l1 &gt;&lt; flatten l2</span></span>
-<span class="lineno">   67 </span>instance Flattenable ObjectiveStatementNode where
-<span class="lineno">   68 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMin lt en -&gt; flatten lt &gt;&lt; flatten en</span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMax lt en -&gt; flatten lt &gt;&lt; flatten en</span></span>
-<span class="lineno">   71 </span>
-<span class="lineno">   72 </span>instance Flattenable LToken where
-<span class="lineno">   73 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff">RealToken st -&gt; flatten st</span>
-<span class="lineno">   75 </span><span class="spaces">        </span><span class="istickedoff">MissingToken et -&gt;  flatten et</span>
-<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">SkippedToken et -&gt;  flatten et</span></span>
-<span class="lineno">   77 </span>
-<span class="lineno">   78 </span>instance Flattenable SToken where
-<span class="lineno">   79 </span>    <span class="decl"><span class="istickedoff">flatten (StrictToken xs e) = flatten xs &gt;&lt; flatten e</span></span>
-<span class="lineno">   80 </span>instance Flattenable ETok where
-<span class="lineno">   81 </span>    <span class="decl"><span class="istickedoff">flatten = pure</span></span>
-<span class="lineno">   82 </span>
-<span class="lineno">   83 </span>instance Flattenable ExpressionNode where
-<span class="lineno">   84 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">Literal ln -&gt; flatten ln</span>
-<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">IdentifierNode nn -&gt; flatten nn</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">MetaVarExpr tk -&gt; flatten tk</span>
-<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">QuantificationExpr qen -&gt; flatten qen</span>
-<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">OperatorExpressionNode oen -&gt; flatten oen</span>
-<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff">ParenExpression pen -&gt;flatten pen</span>
-<span class="lineno">   91 </span><span class="spaces">        </span><span class="istickedoff">AbsExpression pen -&gt;  flatten pen</span>
-<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">DomainExpression dex -&gt; flatten dex</span>
-<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">FunctionalApplicationNode lt ln -&gt;  flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">SpecialCase nd -&gt; flatten nd</span>
-<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">AttributeAsConstriant l1 exprs -&gt; flatten l1 &gt;&lt; flatten exprs</span>
-<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">MissingExpressionNode e -&gt;  flatten e</span></span>
-<span class="lineno">   97 </span>
-<span class="lineno">   98 </span>instance Flattenable SpecialCaseNode where 
-<span class="lineno">   99 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of </span>
-<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">ExprWithDecls l1 en l2 sns l3 -&gt; mconcat [flatten l1,flatten en,flatten l2, flatten sns , flatten l3]</span></span>
+<span class="lineno">   59 </span>instance HighLevelTree GivenStatementNode where
+<span class="lineno">   60 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">GivenStatementNode a b c -&gt; mconcat [makeTree a, makeTree b, makeTree c]</span>
+<span class="lineno">   62 </span><span class="spaces">        </span><span class="istickedoff">GivenEnumNode a b c d -&gt; mconcat [makeTree a, makeTree b, makeTree c, makeTree d]</span></span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>instance HighLevelTree BranchingStatementNode where
+<span class="lineno">   67 </span>    <span class="decl"><span class="istickedoff">makeTree (BranchingStatementNode lt lt' ln) = mconcat [makeTree lt, makeTree lt', makeTree ln]</span></span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>
+<span class="lineno">   70 </span>instance HighLevelTree SuchThatStatementNode where
+<span class="lineno">   71 </span>    <span class="decl"><span class="istickedoff">makeTree (SuchThatStatementNode l1 l2 l3) =  makeTree l1 &lt;&gt; makeTree l2 &lt;&gt; makeTree l3</span></span>
+<span class="lineno">   72 </span>instance HighLevelTree WhereStatementNode where
+<span class="lineno">   73 </span>    <span class="decl"><span class="istickedoff">makeTree (WhereStatementNode l1 l2) =  makeTree l1 &lt;&gt; makeTree l2</span></span>
+<span class="lineno">   74 </span>instance HighLevelTree ObjectiveStatementNode where
+<span class="lineno">   75 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMin lt en -&gt; makeTree lt &lt;&gt; makeTree en</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">ObjectiveMax lt en -&gt; makeTree lt &lt;&gt; makeTree en</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>
+<span class="lineno">   81 </span>
+<span class="lineno">   82 </span>instance HighLevelTree ExpressionNode where
+<span class="lineno">   83 </span>    <span class="decl"><span class="istickedoff">makeTree x = HLTagged (TIExpression <span class="nottickedoff">x</span>) $ case x of</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">Literal ln -&gt; [makeTree ln]</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">IdentifierNode nn -&gt; [makeTree nn]</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">MetaVarExpr tk -&gt; [makeTree tk]</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">QuantificationExpr qen -&gt; [makeTree qen]</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">OperatorExpressionNode oen -&gt; [makeTree oen]</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">ParenExpression pen -&gt;[makeTree pen]</span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff">AbsExpression pen -&gt;  [makeTree pen]</span>
+<span class="lineno">   91 </span><span class="spaces">        </span><span class="istickedoff">DomainExpression dex -&gt; [makeTree dex]</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">FunctionalApplicationNode lt ln -&gt;  [makeTree lt ,makeTree ln]</span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">SpecialCase nd -&gt; [makeTree nd]</span>
+<span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">AttributeAsConstriant l1 exprs -&gt; [makeTree l1 , makeTree exprs]</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">MissingExpressionNode e -&gt;  [makeTree e]</span></span>
+<span class="lineno">   96 </span>
+<span class="lineno">   97 </span>instance HighLevelTree SpecialCaseNode where 
+<span class="lineno">   98 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of </span>
+<span class="lineno">   99 </span><span class="spaces">        </span><span class="istickedoff">ExprWithDecls l1 en l2 sns l3 -&gt; mconcat [makeTree l1,makeTree en,makeTree l2, makeTree sns , makeTree l3]</span></span>
+<span class="lineno">  100 </span>
 <span class="lineno">  101 </span>
-<span class="lineno">  102 </span>instance Flattenable DomainExpressionNode where
-<span class="lineno">  103 </span>    <span class="decl"><span class="istickedoff">flatten (DomainExpressionNode a b c) = flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span></span>
-<span class="lineno">  104 </span>instance Flattenable QuantificationExpressionNode where
-<span class="lineno">  105 </span>    <span class="decl"><span class="istickedoff">flatten (QuantificationExpressionNode a b c d e f) = mconcat [</span>
-<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">flatten a, flatten b, flatten c, flatten d, flatten e, flatten f]</span></span>
-<span class="lineno">  107 </span>instance Flattenable QuantificationOverNode where
-<span class="lineno">  108 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">  109 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedSubsetOfNode a b -&gt; flatten a &gt;&lt; flatten b</span>
-<span class="lineno">  110 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedMemberOfNode a b -&gt; flatten a &gt;&lt; flatten b</span>
-<span class="lineno">  111 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedDomainNode a -&gt; flatten a</span></span>
-<span class="lineno">  112 </span>
-<span class="lineno">  113 </span>instance Flattenable OverDomainNode where
-<span class="lineno">  114 </span>    <span class="decl"><span class="istickedoff">flatten (OverDomainNode a b) = flatten a &gt;&lt; flatten b</span></span>
-<span class="lineno">  115 </span>
-<span class="lineno">  116 </span>instance Flattenable QuanticationGuard where
-<span class="lineno">  117 </span>    <span class="decl"><span class="istickedoff">flatten (QuanticationGuard a b ) = flatten a &gt;&lt; flatten b</span></span>
-<span class="lineno">  118 </span>
-<span class="lineno">  119 </span>instance Flattenable AbstractPatternNode where
-<span class="lineno">  120 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">  121 </span><span class="spaces">      </span><span class="istickedoff">AbstractIdentifier nn -&gt; flatten nn</span>
-<span class="lineno">  122 </span><span class="spaces">      </span><span class="istickedoff">AbstractMetaVar lt -&gt; <span class="nottickedoff">flatten lt</span></span>
-<span class="lineno">  123 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternTuple a b -&gt; flatten a &gt;&lt; flatten b</span>
-<span class="lineno">  124 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternMatrix ln -&gt; flatten ln</span>
-<span class="lineno">  125 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternSet ln -&gt; flatten ln</span></span>
-<span class="lineno">  126 </span>instance Flattenable QuantificationPattern where
-<span class="lineno">  127 </span>    <span class="decl"><span class="nottickedoff">flatten (QuantificationPattern en) = flatten en</span></span>
-<span class="lineno">  128 </span>
-<span class="lineno">  129 </span>instance Flattenable LiteralNode where
-<span class="lineno">  130 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">IntLiteral lt -&gt; flatten lt</span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">BoolLiteral lt -&gt; flatten lt</span>
-<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">MatrixLiteral mln -&gt; flatten mln</span>
-<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNode lt -&gt; flatten lt</span>
-<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNodeShort st -&gt; flatten st</span>
-<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">RecordLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">VariantLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">SetLiteral ln -&gt; flatten ln</span>
-<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">MSetLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">FunctionLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">SequenceLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">RelationLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">PartitionLiteral lt ln -&gt; flatten lt &gt;&lt; flatten ln</span></span>
-<span class="lineno">  144 </span>
-<span class="lineno">  145 </span>instance Flattenable PartitionElemNode where
-<span class="lineno">  146 </span>    <span class="decl"><span class="istickedoff">flatten (PartitionElemNode ln) = flatten ln</span></span>
-<span class="lineno">  147 </span>
-<span class="lineno">  148 </span>instance Flattenable RelationElemNode where
-<span class="lineno">  149 </span>    <span class="decl"><span class="istickedoff">flatten x = case x of</span>
-<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeLabeled lt -&gt; flatten lt</span>
-<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeShort st -&gt; flatten st</span></span>
-<span class="lineno">  152 </span>
-<span class="lineno">  153 </span>instance Flattenable ArrowPairNode where
-<span class="lineno">  154 </span>    <span class="decl"><span class="istickedoff">flatten (ArrowPairNode a b c) = mconcat [flatten a, flatten b, flatten c]</span></span>
-<span class="lineno">  155 </span>
-<span class="lineno">  156 </span>instance Flattenable RecordMemberNode where
-<span class="lineno">  157 </span>    <span class="decl"><span class="istickedoff">flatten (RecordMemberNode nn lt en) =  mconcat [flatten nn, flatten lt, flatten en]</span></span>
-<span class="lineno">  158 </span>instance Flattenable LongTuple where
-<span class="lineno">  159 </span>    <span class="decl"><span class="istickedoff">flatten (LongTuple a b) =  flatten a &gt;&lt; flatten b</span></span>
-<span class="lineno">  160 </span>
-<span class="lineno">  161 </span>instance Flattenable ShortTuple where
-<span class="lineno">  162 </span>    <span class="decl"><span class="istickedoff">flatten (ShortTuple a) = flatten a</span></span>
-<span class="lineno">  163 </span>
-<span class="lineno">  164 </span>instance Flattenable MatrixLiteralNode where
-<span class="lineno">  165 </span>    <span class="decl"><span class="istickedoff">flatten ( MatrixLiteralNode a b c d e) = mconcat</span>
-<span class="lineno">  166 </span><span class="spaces">            </span><span class="istickedoff">[ flatten a</span>
-<span class="lineno">  167 </span><span class="spaces">            </span><span class="istickedoff">, flatten b</span>
-<span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">, flatten c</span>
-<span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">, flatten d</span>
-<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">, flatten e</span>
-<span class="lineno">  171 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
-<span class="lineno">  172 </span>
-<span class="lineno">  173 </span>instance Flattenable ComprehensionNode where
-<span class="lineno">  174 </span>    <span class="decl"><span class="istickedoff">flatten (ComprehensionNode a b) = flatten a &gt;&lt; flatten b</span></span>
-<span class="lineno">  175 </span>instance Flattenable ComprehensionExpressionNode where
-<span class="lineno">  176 </span>    <span class="decl"><span class="nottickedoff">flatten (ComprehensionExpressionNode a b c d e) =</span>
-<span class="lineno">  177 </span><span class="spaces">        </span><span class="nottickedoff">mconcat</span>
-<span class="lineno">  178 </span><span class="spaces">            </span><span class="nottickedoff">[ flatten a</span>
-<span class="lineno">  179 </span><span class="spaces">            </span><span class="nottickedoff">, flatten b</span>
-<span class="lineno">  180 </span><span class="spaces">            </span><span class="nottickedoff">, flatten c</span>
-<span class="lineno">  181 </span><span class="spaces">            </span><span class="nottickedoff">, flatten d</span>
-<span class="lineno">  182 </span><span class="spaces">            </span><span class="nottickedoff">, flatten e</span>
-<span class="lineno">  183 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  184 </span>
-<span class="lineno">  185 </span>instance Flattenable ComprehensionBodyNode where
-<span class="lineno">  186 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff">CompBodyCondition en -&gt; flatten en</span>
-<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">CompBodyDomain a b c -&gt; flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span>
-<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">CompBodyGenExpr a b c -&gt; flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span>
-<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">CompBodyLettingNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span></span>
-<span class="lineno">  191 </span>
-<span class="lineno">  192 </span>instance Flattenable OperatorExpressionNode where
-<span class="lineno">  193 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  194 </span><span class="spaces">        </span><span class="istickedoff">PostfixOpNode en pon -&gt; flatten en &gt;&lt; flatten pon</span>
-<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">PrefixOpNode lt en -&gt; flatten lt &gt;&lt; flatten en</span>
-<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">BinaryOpNode en lt en' -&gt; mconcat [flatten en, flatten lt, flatten en']</span></span>
-<span class="lineno">  197 </span>
-<span class="lineno">  198 </span>instance Flattenable PostfixOpNode where
-<span class="lineno">  199 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff">IndexedNode l -&gt; flatten l</span>
-<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">OpFactorial lt -&gt; flatten lt</span>
-<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff">ApplicationNode ln -&gt; flatten ln</span>
-<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff">ExplicitDomain l1 l2 dom l3 -&gt; mconcat  [flatten l1,flatten l2,flatten dom,flatten l3]</span></span>
-<span class="lineno">  204 </span>
-<span class="lineno">  205 </span>instance Flattenable DomainNode where
-<span class="lineno">  206 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff">ParenDomainNode a b c -&gt; mconcat [flatten a, flatten b, flatten c]</span>
-<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff">BoolDomainNode lt -&gt; flatten lt</span>
-<span class="lineno">  209 </span><span class="spaces">        </span><span class="istickedoff">RangedIntDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff">MetaVarDomain a -&gt; flatten a</span>
-<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">RangedEnumNode nn ln -&gt; flatten nn &gt;&lt; flatten ln</span>
-<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">-- EnumDomainNode nn -&gt; flatten nn</span>
-<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">ShortTupleDomainNode ln -&gt; flatten ln</span>
-<span class="lineno">  214 </span><span class="spaces">        </span><span class="istickedoff">TupleDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">RecordDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff">VariantDomainNode lt ln -&gt; flatten lt &gt;&lt; flatten ln</span>
-<span class="lineno">  217 </span><span class="spaces">        </span><span class="istickedoff">MatrixDomainNode a m_ib b c d -&gt; mconcat [flatten a, flatten m_ib, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff">SetDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  219 </span><span class="spaces">        </span><span class="istickedoff">MSetDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff">FunctionDomainNode a b c d e -&gt; mconcat [flatten a, flatten b, flatten c, flatten d, flatten e]</span>
-<span class="lineno">  221 </span><span class="spaces">        </span><span class="istickedoff">SequenceDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">RelationDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff">PartitionDomainNode a b c d -&gt; mconcat [flatten a, flatten b, flatten c, flatten d]</span>
-<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff">MissingDomainNode m -&gt; flatten m</span></span>
-<span class="lineno">  225 </span>
-<span class="lineno">  226 </span>instance Flattenable IndexedByNode where
-<span class="lineno">  227 </span>    <span class="decl"><span class="istickedoff">flatten (IndexedByNode a b ) = flatten a &gt;&lt; flatten b</span></span>
-<span class="lineno">  228 </span>
-<span class="lineno">  229 </span>instance (Flattenable a) =&gt; Flattenable (Maybe a) where
-<span class="lineno">  230 </span>    <span class="decl"><span class="istickedoff">flatten (Just x) = flatten x</span>
-<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff">flatten Nothing = S.empty</span></span>
-<span class="lineno">  232 </span>instance Flattenable AttributeNode where
-<span class="lineno">  233 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff">NamedAttributeNode nn m_e -&gt; flatten nn &gt;&lt; flatten m_e</span></span>
-<span class="lineno">  235 </span>        -- NamedExpressionAttribute nn en -&gt; flatten nn &gt;&lt; flatten en
+<span class="lineno">  102 </span>instance HighLevelTree DomainExpressionNode where
+<span class="lineno">  103 </span>    <span class="decl"><span class="istickedoff">makeTree (DomainExpressionNode a b c) = makeTree a &lt;&gt; makeTree b &lt;&gt; makeTree c</span></span>
+<span class="lineno">  104 </span>instance HighLevelTree QuantificationExpressionNode where
+<span class="lineno">  105 </span>    <span class="decl"><span class="istickedoff">makeTree (QuantificationExpressionNode a b c d e f) = mconcat [</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">makeTree a, makeTree b, makeTree c, makeTree d, makeTree e, makeTree f]</span></span>
+<span class="lineno">  107 </span>
+<span class="lineno">  108 </span>instance HighLevelTree QuantificationOverNode where
+<span class="lineno">  109 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">  110 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedSubsetOfNode a b -&gt; makeTree a &lt;&gt; makeTree b</span>
+<span class="lineno">  111 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedMemberOfNode a b -&gt; makeTree a &lt;&gt; makeTree b</span>
+<span class="lineno">  112 </span><span class="spaces">      </span><span class="istickedoff">QuantifiedDomainNode a -&gt; makeTree a</span></span>
+<span class="lineno">  113 </span>
+<span class="lineno">  114 </span>instance HighLevelTree OverDomainNode where
+<span class="lineno">  115 </span>    <span class="decl"><span class="istickedoff">makeTree (OverDomainNode a b) = makeTree a &lt;&gt; makeTree b</span></span>
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>instance HighLevelTree QuanticationGuard where
+<span class="lineno">  118 </span>    <span class="decl"><span class="istickedoff">makeTree (QuanticationGuard a b ) = makeTree a &lt;&gt; makeTree b</span></span>
+<span class="lineno">  119 </span>
+<span class="lineno">  120 </span>instance HighLevelTree AbstractPatternNode where
+<span class="lineno">  121 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">  122 </span><span class="spaces">      </span><span class="istickedoff">AbstractIdentifier nn -&gt; makeTree nn</span>
+<span class="lineno">  123 </span><span class="spaces">      </span><span class="istickedoff">AbstractMetaVar lt -&gt; <span class="nottickedoff">makeTree lt</span></span>
+<span class="lineno">  124 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternTuple a b -&gt; makeTree a &lt;&gt; makeTree b</span>
+<span class="lineno">  125 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternMatrix ln -&gt; makeTree ln</span>
+<span class="lineno">  126 </span><span class="spaces">      </span><span class="istickedoff">AbstractPatternSet ln -&gt; makeTree ln</span></span>
+<span class="lineno">  127 </span>instance HighLevelTree QuantificationPattern where
+<span class="lineno">  128 </span>    <span class="decl"><span class="nottickedoff">makeTree (QuantificationPattern en) = makeTree en</span></span>
+<span class="lineno">  129 </span>
+<span class="lineno">  130 </span>instance HighLevelTree LiteralNode where
+<span class="lineno">  131 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">IntLiteral lt -&gt; makeTree lt</span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">BoolLiteral lt -&gt; makeTree lt</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">MatrixLiteral mln -&gt; makeTree mln</span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNode lt -&gt; makeTree lt</span>
+<span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">TupleLiteralNodeShort st -&gt; makeTree st</span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">RecordLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">VariantLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">SetLiteral ln -&gt; makeTree ln</span>
+<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">MSetLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">FunctionLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">SequenceLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">RelationLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span>
+<span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">PartitionLiteral lt ln -&gt; makeTree lt &lt;&gt; makeTree ln</span></span>
+<span class="lineno">  145 </span>
+<span class="lineno">  146 </span>instance HighLevelTree PartitionElemNode where
+<span class="lineno">  147 </span>    <span class="decl"><span class="istickedoff">makeTree (PartitionElemNode ln) = makeTree ln</span></span>
+<span class="lineno">  148 </span>
+<span class="lineno">  149 </span>instance HighLevelTree RelationElemNode where
+<span class="lineno">  150 </span>    <span class="decl"><span class="istickedoff">makeTree x = case x of</span>
+<span class="lineno">  151 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeLabeled lt -&gt; makeTree lt</span>
+<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff">RelationElemNodeShort st -&gt; makeTree st</span></span>
+<span class="lineno">  153 </span>
+<span class="lineno">  154 </span>instance HighLevelTree ArrowPairNode where
+<span class="lineno">  155 </span>    <span class="decl"><span class="istickedoff">makeTree (ArrowPairNode a b c) = mconcat [makeTree a, makeTree b, makeTree c]</span></span>
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>instance HighLevelTree RecordMemberNode where
+<span class="lineno">  158 </span>    <span class="decl"><span class="istickedoff">makeTree (RecordMemberNode nn lt en) =  mconcat [makeTree nn, makeTree lt, makeTree en]</span></span>
+<span class="lineno">  159 </span>instance HighLevelTree LongTuple where
+<span class="lineno">  160 </span>    <span class="decl"><span class="istickedoff">makeTree (LongTuple a b) =  makeTree a &lt;&gt; makeTree b</span></span>
+<span class="lineno">  161 </span>
+<span class="lineno">  162 </span>instance HighLevelTree ShortTuple where
+<span class="lineno">  163 </span>    <span class="decl"><span class="istickedoff">makeTree (ShortTuple a) = makeTree a</span></span>
+<span class="lineno">  164 </span>
+<span class="lineno">  165 </span>instance HighLevelTree MatrixLiteralNode where
+<span class="lineno">  166 </span>    <span class="decl"><span class="istickedoff">makeTree ( MatrixLiteralNode a b c d e) = mconcat</span>
+<span class="lineno">  167 </span><span class="spaces">            </span><span class="istickedoff">[ makeTree a</span>
+<span class="lineno">  168 </span><span class="spaces">            </span><span class="istickedoff">, makeTree b</span>
+<span class="lineno">  169 </span><span class="spaces">            </span><span class="istickedoff">, makeTree c</span>
+<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">, makeTree d</span>
+<span class="lineno">  171 </span><span class="spaces">            </span><span class="istickedoff">, makeTree e</span>
+<span class="lineno">  172 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
+<span class="lineno">  173 </span>
+<span class="lineno">  174 </span>instance HighLevelTree ComprehensionNode where
+<span class="lineno">  175 </span>    <span class="decl"><span class="istickedoff">makeTree (ComprehensionNode a b) = makeTree a &lt;&gt; makeTree b</span></span>
+<span class="lineno">  176 </span>instance HighLevelTree ComprehensionExpressionNode where
+<span class="lineno">  177 </span>    <span class="decl"><span class="nottickedoff">makeTree (ComprehensionExpressionNode a b c d e) =</span>
+<span class="lineno">  178 </span><span class="spaces">        </span><span class="nottickedoff">mconcat</span>
+<span class="lineno">  179 </span><span class="spaces">            </span><span class="nottickedoff">[ makeTree a</span>
+<span class="lineno">  180 </span><span class="spaces">            </span><span class="nottickedoff">, makeTree b</span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="nottickedoff">, makeTree c</span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="nottickedoff">, makeTree d</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="nottickedoff">, makeTree e</span>
+<span class="lineno">  184 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  185 </span>
+<span class="lineno">  186 </span>instance HighLevelTree ComprehensionBodyNode where
+<span class="lineno">  187 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff">CompBodyCondition en -&gt; makeTree en</span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">CompBodyDomain a b c -&gt; makeTree a &lt;&gt; makeTree b &lt;&gt; makeTree c</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">CompBodyGenExpr a b c -&gt; makeTree a &lt;&gt; makeTree b &lt;&gt; makeTree c</span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff">CompBodyLettingNode a b c d -&gt; mconcat [makeTree a, makeTree b, makeTree c, makeTree d]</span></span>
+<span class="lineno">  192 </span>
+<span class="lineno">  193 </span>instance HighLevelTree OperatorExpressionNode where
+<span class="lineno">  194 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">PostfixOpNode en pon -&gt; makeTree en &lt;&gt; makeTree pon</span>
+<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">PrefixOpNode lt en -&gt; makeTree lt &lt;&gt; makeTree en</span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff">BinaryOpNode en lt en' -&gt; mconcat [makeTree en, makeTree lt, makeTree en']</span></span>
+<span class="lineno">  198 </span>
+<span class="lineno">  199 </span>instance HighLevelTree PostfixOpNode where
+<span class="lineno">  200 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">IndexedNode l -&gt; makeTree l</span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff">OpFactorial lt -&gt; makeTree lt</span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff">ApplicationNode ln -&gt; makeTree ln</span>
+<span class="lineno">  204 </span><span class="spaces">        </span><span class="istickedoff">ExplicitDomain l1 l2 dom l3 -&gt; mconcat  [makeTree l1,makeTree l2,makeTree dom,makeTree l3]</span></span>
+<span class="lineno">  205 </span>
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>
+<span class="lineno">  208 </span>
+<span class="lineno">  209 </span>instance HighLevelTree DomainNode where
+<span class="lineno">  210 </span>    <span class="decl"><span class="istickedoff">makeTree x = HLTagged (TIDomain <span class="nottickedoff">x</span>) $ case x of</span>
+<span class="lineno">  211 </span><span class="spaces">        </span><span class="istickedoff">ParenDomainNode a b c -&gt; [makeTree a, makeTree b, makeTree c]</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">BoolDomainNode lt -&gt; [makeTree lt]</span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">RangedIntDomainNode lt ln -&gt; [makeTree lt,makeTree ln]</span>
+<span class="lineno">  214 </span><span class="spaces">        </span><span class="istickedoff">MetaVarDomain a -&gt; [makeTree a]</span>
+<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">RangedEnumNode nn ln -&gt; [makeTree nn ,  makeTree ln]</span>
+<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff">-- EnumDomainNode nn -&gt; makeTree nn</span>
+<span class="lineno">  217 </span><span class="spaces">        </span><span class="istickedoff">ShortTupleDomainNode ln -&gt; [makeTree ln]</span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff">TupleDomainNode lt ln -&gt; [makeTree lt , makeTree ln]</span>
+<span class="lineno">  219 </span><span class="spaces">        </span><span class="istickedoff">RecordDomainNode lt ln -&gt; [makeTree lt , makeTree ln]</span>
+<span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff">VariantDomainNode lt ln -&gt; [makeTree lt , makeTree ln]</span>
+<span class="lineno">  221 </span><span class="spaces">        </span><span class="istickedoff">MatrixDomainNode a m_ib b c d -&gt; [makeTree a ,makeTree m_ib, makeTree b , makeTree c , makeTree d]</span>
+<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff">SetDomainNode a b c d -&gt; [makeTree a , makeTree  b , makeTree c , makeTree d]</span>
+<span class="lineno">  223 </span><span class="spaces">        </span><span class="istickedoff">MSetDomainNode a b c d -&gt; [makeTree a , makeTree  b, makeTree c , makeTree d]</span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff">FunctionDomainNode a b c d e -&gt; [makeTree a , makeTree  b , makeTree c , makeTree d,makeTree e]</span>
+<span class="lineno">  225 </span><span class="spaces">        </span><span class="istickedoff">SequenceDomainNode a b c d -&gt; [makeTree a , makeTree  b , makeTree c , makeTree d]</span>
+<span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff">RelationDomainNode a b c d -&gt; [makeTree a , makeTree b , makeTree c , makeTree d]</span>
+<span class="lineno">  227 </span><span class="spaces">        </span><span class="istickedoff">PartitionDomainNode a b c d -&gt; [makeTree a , makeTree b , makeTree c , makeTree d]</span>
+<span class="lineno">  228 </span><span class="spaces">        </span><span class="istickedoff">MissingDomainNode m -&gt; [makeTree m]</span></span>
+<span class="lineno">  229 </span>
+<span class="lineno">  230 </span>instance HighLevelTree IndexedByNode where
+<span class="lineno">  231 </span>    <span class="decl"><span class="istickedoff">makeTree (IndexedByNode a b ) = makeTree a &lt;&gt; makeTree b</span></span>
+<span class="lineno">  232 </span>
+<span class="lineno">  233 </span>
+<span class="lineno">  234 </span>instance HighLevelTree a =&gt; HighLevelTree (Maybe a) where
+<span class="lineno">  235 </span>  <span class="decl"><span class="istickedoff">makeTree = maybe mempty makeTree</span></span> 
 <span class="lineno">  236 </span>
-<span class="lineno">  237 </span>instance Flattenable RangeNode where
-<span class="lineno">  238 </span>    <span class="decl"><span class="istickedoff">flatten x =  case x of</span>
-<span class="lineno">  239 </span><span class="spaces">        </span><span class="istickedoff">SingleRangeNode en -&gt; flatten en</span>
-<span class="lineno">  240 </span><span class="spaces">        </span><span class="istickedoff">OpenRangeNode ddn -&gt; flatten ddn</span>
-<span class="lineno">  241 </span><span class="spaces">        </span><span class="istickedoff">RightUnboundedRangeNode en ddn -&gt; flatten en &gt;&lt; flatten ddn</span>
-<span class="lineno">  242 </span><span class="spaces">        </span><span class="istickedoff">LeftUnboundedRangeNode ddn en -&gt; flatten ddn &gt;&lt; flatten en</span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">BoundedRangeNode en ddn en' -&gt; mconcat [flatten en, flatten ddn, flatten en']</span></span>
-<span class="lineno">  244 </span>
-<span class="lineno">  245 </span>-- instance Flattenable DoubleDotNode where
-<span class="lineno">  246 </span>--     flatten (DoubleDotNode a b) =  flatten a &gt;&lt; flatten b
-<span class="lineno">  247 </span>
-<span class="lineno">  248 </span>instance Flattenable NamedDomainNode where
-<span class="lineno">  249 </span>    <span class="decl"><span class="istickedoff">flatten (NameDomainNode a Nothing) = flatten a</span>
-<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">flatten (NameDomainNode a (Just (b,c))) = mconcat [flatten a,flatten b,flatten c]</span></span>
-<span class="lineno">  251 </span>
-<span class="lineno">  252 </span>instance Flattenable NameNode where
-<span class="lineno">  253 </span>    <span class="decl"><span class="istickedoff">flatten (NameNode n) =  flatten n</span>
-<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">flatten (MissingNameNode n) =  flatten n</span></span>
-<span class="lineno">  255 </span>instance Flattenable NameNodeS where
-<span class="lineno">  256 </span>    <span class="decl"><span class="istickedoff">flatten (NameNodeS n) =  flatten n</span></span>
-<span class="lineno">  257 </span>
-<span class="lineno">  258 </span>instance Flattenable ParenExpressionNode where
-<span class="lineno">  259 </span>    <span class="decl"><span class="istickedoff">flatten (ParenExpressionNode a b c) =  flatten a &gt;&lt; flatten b &gt;&lt; flatten c</span></span>
+<span class="lineno">  237 </span>instance HighLevelTree AttributeNode where
+<span class="lineno">  238 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">  239 </span><span class="spaces">        </span><span class="istickedoff">NamedAttributeNode nn m_e -&gt; makeTree nn &lt;&gt; makeTree m_e</span></span>
+<span class="lineno">  240 </span>        -- NamedExpressionAttribute nn en -&gt; makeTree nn &lt;&gt; makeTree en
+<span class="lineno">  241 </span>
+<span class="lineno">  242 </span>instance HighLevelTree RangeNode where
+<span class="lineno">  243 </span>    <span class="decl"><span class="istickedoff">makeTree x =  case x of</span>
+<span class="lineno">  244 </span><span class="spaces">        </span><span class="istickedoff">SingleRangeNode en -&gt; makeTree en</span>
+<span class="lineno">  245 </span><span class="spaces">        </span><span class="istickedoff">OpenRangeNode ddn -&gt; makeTree ddn</span>
+<span class="lineno">  246 </span><span class="spaces">        </span><span class="istickedoff">RightUnboundedRangeNode en ddn -&gt; makeTree en &lt;&gt; makeTree ddn</span>
+<span class="lineno">  247 </span><span class="spaces">        </span><span class="istickedoff">LeftUnboundedRangeNode ddn en -&gt; makeTree ddn &lt;&gt; makeTree en</span>
+<span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff">BoundedRangeNode en ddn en' -&gt; mconcat [makeTree en, makeTree ddn, makeTree en']</span></span>
+<span class="lineno">  249 </span>
+<span class="lineno">  250 </span>-- instance HighLevelTree DoubleDotNode where
+<span class="lineno">  251 </span>--     makeTree (DoubleDotNode a b) =  makeTree a &lt;&gt; makeTree b
+<span class="lineno">  252 </span>
+<span class="lineno">  253 </span>instance HighLevelTree NamedDomainNode where
+<span class="lineno">  254 </span>    <span class="decl"><span class="istickedoff">makeTree (NameDomainNode a Nothing) = makeTree a</span>
+<span class="lineno">  255 </span><span class="spaces">    </span><span class="istickedoff">makeTree (NameDomainNode a (Just (b,c))) = mconcat [makeTree a,makeTree b,makeTree c]</span></span>
+<span class="lineno">  256 </span>
+<span class="lineno">  257 </span>instance HighLevelTree NameNode where
+<span class="lineno">  258 </span>    <span class="decl"><span class="istickedoff">makeTree (NameNode n) =  makeTree n</span>
+<span class="lineno">  259 </span><span class="spaces">    </span><span class="istickedoff">makeTree (MissingNameNode n) =  makeTree n</span></span>
 <span class="lineno">  260 </span>
-<span class="lineno">  261 </span>instance Flattenable b =&gt; Flattenable (ListNode b) where
-<span class="lineno">  262 </span>    <span class="decl"><span class="istickedoff">flatten (ListNode l1 seq l2) =  mconcat [flatten l1, flatten seq, flatten l2]</span></span>
-<span class="lineno">  263 </span>
-<span class="lineno">  264 </span>instance Flattenable b =&gt; Flattenable (Sequence b) where
-<span class="lineno">  265 </span>    <span class="decl"><span class="istickedoff">flatten (Seq es) = mconcat $ map flatten es</span></span>
+<span class="lineno">  261 </span>instance HighLevelTree NameNodeS where
+<span class="lineno">  262 </span>    <span class="decl"><span class="istickedoff">makeTree (NameNodeS n) =  makeTree n</span></span>
+<span class="lineno">  263 </span>instance HighLevelTree ParenExpressionNode where
+<span class="lineno">  264 </span>    <span class="decl"><span class="istickedoff">makeTree (ParenExpressionNode a b c) =  makeTree a &lt;&gt; makeTree b &lt;&gt; makeTree c</span></span>
+<span class="lineno">  265 </span>
 <span class="lineno">  266 </span>
-<span class="lineno">  267 </span>instance Flattenable b =&gt; Flattenable (SeqElem b) where
-<span class="lineno">  268 </span>    <span class="decl"><span class="istickedoff">flatten (SeqElem v s) =  flatten v &gt;&lt; flatten s</span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">flatten (MissingSeqElem v s) =  flatten v &gt;&lt; flatten s</span></span>
-<span class="lineno">  270 </span>instance Flattenable b =&gt; Flattenable [b] where
-<span class="lineno">  271 </span>    <span class="decl"><span class="istickedoff">flatten = mconcat . map flatten</span></span> 
+<span class="lineno">  267 </span>
+<span class="lineno">  268 </span>
+<span class="lineno">  269 </span>
+<span class="lineno">  270 </span>instance HighLevelTree b =&gt; HighLevelTree (Sequence b) where
+<span class="lineno">  271 </span>    <span class="decl"><span class="istickedoff">makeTree (Seq es) = mconcat $ map makeTree es</span></span>
 <span class="lineno">  272 </span>
-<span class="lineno">  273 </span>
-<span class="lineno">  274 </span>
-<span class="lineno">  275 </span>
+<span class="lineno">  273 </span>instance HighLevelTree b =&gt; HighLevelTree (SeqElem b) where
+<span class="lineno">  274 </span>    <span class="decl"><span class="istickedoff">makeTree (SeqElem v s) =  makeTree v &lt;&gt; makeTree s</span>
+<span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">makeTree (MissingSeqElem v s) =  makeTree v &lt;&gt; makeTree s</span></span>
+<span class="lineno">  276 </span>instance HighLevelTree b =&gt; HighLevelTree [b] where
+<span class="lineno">  277 </span>    <span class="decl"><span class="istickedoff">makeTree = HLTagged TIGeneral . map makeTree</span></span> 
+<span class="lineno">  278 </span>
+<span class="lineno">  279 </span>type TreeTag = ListItemClasses
+<span class="lineno">  280 </span>data HLTree 
+<span class="lineno">  281 </span>    = HLTagged TreeItemLinks [HLTree]
+<span class="lineno">  282 </span>    | HLLeaf ETok
+<span class="lineno">  283 </span>    | HLNone
+<span class="lineno">  284 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>,Typeable)
+<span class="lineno">  285 </span>
+<span class="lineno">  286 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Semigroup HLTree</span></span></span></span> where
+<span class="lineno">  287 </span>    <span class="decl"><span class="istickedoff">HLNone &lt;&gt; a = a</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">a &lt;&gt; HLNone = a</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">HLTagged TIGeneral xs &lt;&gt; a = HLTagged TIGeneral (xs++[a])</span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="istickedoff">a &lt;&gt; HLTagged TIGeneral xs = HLTagged TIGeneral $ a:xs</span>
+<span class="lineno">  291 </span><span class="spaces">    </span><span class="istickedoff">a &lt;&gt; b = HLTagged TIGeneral [a,b]</span></span>
+<span class="lineno">  292 </span>
+<span class="lineno">  293 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Monoid HLTree</span></span></span></span> where
+<span class="lineno">  294 </span>    <span class="decl"><span class="istickedoff">mempty = HLNone</span></span>
+<span class="lineno">  295 </span>
+<span class="lineno">  296 </span>taggedSeq :: HighLevelTree a =&gt; TreeTag -&gt; Sequence a -&gt; HLTree
+<span class="lineno">  297 </span><span class="decl"><span class="istickedoff">taggedSeq s (Seq els) = HLTagged <span class="nottickedoff">(TIList s)</span> $ makeTree &lt;$&gt; els</span></span> 
+<span class="lineno">  298 </span>taggedList :: HighLevelTree a =&gt; TreeTag -&gt; ListNode a -&gt; HLTree
+<span class="lineno">  299 </span><span class="decl"><span class="istickedoff">taggedList s (ListNode a b c) = HLTagged TIGeneral $ makeTree a : taggedSeq <span class="nottickedoff">s</span> b  : [makeTree c]</span></span>
+<span class="lineno">  300 </span>
+<span class="lineno">  301 </span>-- Tag types for nodes, mainly used to guide completions
+<span class="lineno">  302 </span>data ListItemClasses 
+<span class="lineno">  303 </span>    = ICAttribute
+<span class="lineno">  304 </span>    | ICExpression
+<span class="lineno">  305 </span>    | ICDomain
+<span class="lineno">  306 </span>    | ICRange
+<span class="lineno">  307 </span>    | ICIdentifier
+<span class="lineno">  308 </span>    | ICStatement
+<span class="lineno">  309 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>)
+<span class="lineno">  310 </span>
+<span class="lineno">  311 </span>-- Embed the actual syntax portion into the tree, in case needed
+<span class="lineno">  312 </span>data TreeItemLinks
+<span class="lineno">  313 </span>    = TIExpression ExpressionNode
+<span class="lineno">  314 </span>    | TIDomain DomainNode
+<span class="lineno">  315 </span>    | TIList ListItemClasses
+<span class="lineno">  316 </span>    | TIGeneral
+<span class="lineno">  317 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>,<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  318 </span>instance <span class="decl"><span class="nottickedoff">Eq TreeItemLinks</span></span> where
+<span class="lineno">  319 </span>    <span class="decl"><span class="nottickedoff">TIGeneral == TIGeneral = True</span>
+<span class="lineno">  320 </span><span class="spaces">    </span><span class="nottickedoff">_ == _ = False</span></span>
+<span class="lineno">  321 </span>instance HighLevelTree (ListNode ExpressionNode) where
+<span class="lineno">  322 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICExpression</span></span></span>
+<span class="lineno">  323 </span>instance HighLevelTree (ListNode NameNode) where
+<span class="lineno">  324 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  325 </span>instance HighLevelTree (ListNode DomainNode) where
+<span class="lineno">  326 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICDomain</span></span></span>
+<span class="lineno">  327 </span>
+<span class="lineno">  328 </span>instance HighLevelTree (ListNode RangeNode) where
+<span class="lineno">  329 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICRange</span></span></span>
+<span class="lineno">  330 </span>
+<span class="lineno">  331 </span>instance HighLevelTree (ListNode AttributeNode) where
+<span class="lineno">  332 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICAttribute</span></span></span>
+<span class="lineno">  333 </span>instance HighLevelTree (ListNode RecordMemberNode) where
+<span class="lineno">  334 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  335 </span>instance HighLevelTree (ListNode ArrowPairNode) where
+<span class="lineno">  336 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  337 </span>instance HighLevelTree (ListNode RelationElemNode) where
+<span class="lineno">  338 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  339 </span>instance HighLevelTree (ListNode PartitionElemNode) where
+<span class="lineno">  340 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  341 </span>instance HighLevelTree (ListNode NamedDomainNode) where
+<span class="lineno">  342 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  343 </span>
+<span class="lineno">  344 </span>instance HighLevelTree (ListNode AbstractPatternNode) where
+<span class="lineno">  345 </span>    <span class="decl"><span class="istickedoff">makeTree = taggedList <span class="nottickedoff">ICIdentifier</span></span></span>
+<span class="lineno">  346 </span>class HighLevelTree a where
+<span class="lineno">  347 </span>    makeTree :: a -&gt; HLTree
+<span class="lineno">  348 </span>
+<span class="lineno">  349 </span>instance HighLevelTree LToken where
+<span class="lineno">  350 </span>    <span class="decl"><span class="istickedoff">makeTree (RealToken a) = makeTree a</span>
+<span class="lineno">  351 </span><span class="spaces">    </span><span class="istickedoff">makeTree (SkippedToken t) = HLLeaf t</span>
+<span class="lineno">  352 </span><span class="spaces">    </span><span class="istickedoff">makeTree (MissingToken m) = HLLeaf m</span></span>
+<span class="lineno">  353 </span>instance HighLevelTree SToken where
+<span class="lineno">  354 </span>    <span class="decl"><span class="istickedoff">makeTree (StrictToken ts t) =  HLTagged TIGeneral $ (<span class="nottickedoff">HLLeaf</span> &lt;$&gt; ts) ++ [HLLeaf t]</span></span> 
+<span class="lineno">  355 </span>
+<span class="lineno">  356 </span>instance HighLevelTree ProgramTree where
+<span class="lineno">  357 </span>  <span class="decl"><span class="istickedoff">makeTree (ProgramTree Nothing sts cln) = HLTagged <span class="nottickedoff">TIGeneral</span> $ (HLTagged <span class="nottickedoff">(TIList ICStatement)</span> $ makeTree &lt;$&gt; sts) : [makeTree cln] </span>
+<span class="lineno">  358 </span><span class="spaces">  </span><span class="istickedoff">makeTree (ProgramTree (Just lv) sts cln) = HLTagged <span class="nottickedoff">TIGeneral</span> $ [makeTree lv] ++ (makeTree &lt;$&gt; sts) ++ [makeTree cln]</span></span> 
+<span class="lineno">  359 </span>
+<span class="lineno">  360 </span>instance HighLevelTree LangVersionNode where
+<span class="lineno">  361 </span>    <span class="decl"><span class="istickedoff">makeTree (LangVersionNode a b c) = HLTagged <span class="nottickedoff">TIGeneral</span> $ makeTree a : makeTree b : [makeTree c]</span></span>
+<span class="lineno">  362 </span>
+<span class="lineno">  363 </span>
+<span class="lineno">  364 </span>-- getContainers :: HLTree -&gt; Int -&gt; Int -&gt; HLTree
+<span class="lineno">  365 </span>-- getContainers HLNone r c = HLNone
+<span class="lineno">  366 </span>
+<span class="lineno">  367 </span>
+<span class="lineno">  368 </span>bounds :: ETok -&gt; SourcePos -&gt; Bool
+<span class="lineno">  369 </span><span class="decl"><span class="nottickedoff">bounds t (SourcePos _ r c)= let</span>
+<span class="lineno">  370 </span><span class="spaces">    </span><span class="nottickedoff">(SourcePos _ rl cl,SourcePos _ rr cr) = (trueStart t,sourcePosAfter  t)</span>
+<span class="lineno">  371 </span><span class="spaces">        </span><span class="nottickedoff">in r &gt;= rl &amp;&amp; c &gt;= cl &amp;&amp; r &lt;= rr &amp;&amp; c &lt;= cr</span></span>
+<span class="lineno">  372 </span>
+<span class="lineno">  373 </span>-- inBounds :: SourcePos -&gt; HLTree -&gt; Bool
+<span class="lineno">  374 </span>-- inBounds (SourcePos _ r c) t 
+<span class="lineno">  375 </span>--     | null $ flatten t = False
+<span class="lineno">  376 </span>--     | otherwise = let 
+<span class="lineno">  377 </span>--         (SourcePos _ rl cl,SourcePos _ rr cr) = bounds t
+<span class="lineno">  378 </span>--         in r &gt;= rl &amp;&amp; c &gt;= cl &amp;&amp; r &lt;= rr &amp;&amp; c &lt;= cr
+<span class="lineno">  379 </span>
+<span class="lineno">  380 </span>contains :: SourcePos -&gt; HLTree -&gt; Bool
+<span class="lineno">  381 </span><span class="decl"><span class="nottickedoff">contains p t = case t of </span>
+<span class="lineno">  382 </span><span class="spaces">    </span><span class="nottickedoff">HLNone -&gt; False</span>
+<span class="lineno">  383 </span><span class="spaces">    </span><span class="nottickedoff">HLLeaf e -&gt; bounds e p</span>
+<span class="lineno">  384 </span><span class="spaces">    </span><span class="nottickedoff">HLTagged _ xs -&gt; any (contains p) xs</span></span>
+<span class="lineno">  385 </span>    -- HLGeneral xs -&gt; any (contains p) xs
+<span class="lineno">  386 </span>    -- HLList _ xs -&gt; any (contains p ) xs
+<span class="lineno">  387 </span>
+<span class="lineno">  388 </span>filterContaining :: SourcePos -&gt; HLTree -&gt; [HLTree]
+<span class="lineno">  389 </span><span class="decl"><span class="nottickedoff">filterContaining _ HLNone = []</span>
+<span class="lineno">  390 </span><span class="spaces"></span><span class="nottickedoff">filterContaining p n@(HLLeaf _) = [n |contains p n]</span>
+<span class="lineno">  391 </span><span class="spaces"></span><span class="nottickedoff">filterContaining p (HLTagged t xs) = let cs = [x | x &lt;-xs,contains p x]</span>
+<span class="lineno">  392 </span><span class="spaces">                                        </span><span class="nottickedoff">in HLTagged t cs : concatMap (filterContaining p) cs</span></span>
 
 </pre>
 </body>

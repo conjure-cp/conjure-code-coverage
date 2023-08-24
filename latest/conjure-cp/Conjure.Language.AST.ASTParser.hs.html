@@ -37,11 +37,11 @@ span.spaces    { background: white }
 <span class="lineno">   18 </span>import Conjure.Language.AST.Helpers
 <span class="lineno">   19 </span>import Conjure.Language.AST.Syntax
 <span class="lineno">   20 </span>import Conjure.Language.Lexer
-<span class="lineno">   21 </span>
+<span class="lineno">   21 </span>import Conjure.Language.Lexemes
 <span class="lineno">   22 </span>
 <span class="lineno">   23 </span>import Text.Megaparsec
 <span class="lineno">   24 </span>
-<span class="lineno">   25 </span>import Conjure.Language.AST.Reformer (Flattenable(..))
+<span class="lineno">   25 </span>import Conjure.Language.AST.Reformer (HighLevelTree(..),flattenSeq)
 <span class="lineno">   26 </span>import Conjure.Language.Expression.Op.Internal.Common
 <span class="lineno">   27 </span>import Control.Monad.Combinators.Expr
 <span class="lineno">   28 </span>import qualified Data.Text.Lazy as L
@@ -51,7 +51,7 @@ span.spaces    { background: white }
 <span class="lineno">   32 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>)
 <span class="lineno">   33 </span>
 <span class="lineno">   34 </span>
-<span class="lineno">   35 </span>runASTParser ::Flattenable a =&gt; Parser a -&gt; ETokenStream -&gt; Either ParserError a
+<span class="lineno">   35 </span>runASTParser ::HighLevelTree a =&gt; Parser a -&gt; ETokenStream -&gt; Either ParserError a
 <span class="lineno">   36 </span><span class="decl"><span class="istickedoff">runASTParser p str =</span>
 <span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">case runParser p <span class="nottickedoff">&quot;parser&quot;</span> str of</span>
 <span class="lineno">   38 </span><span class="spaces">        </span><span class="istickedoff">Left peb -&gt; <span class="nottickedoff">Left $ ParserError . pretty $ errorBundlePretty peb</span></span>
@@ -222,7 +222,7 @@ span.spaces    { background: white }
 <span class="lineno">  203 </span><span class="decl"><span class="istickedoff">parseExpression = try $ do</span>
 <span class="lineno">  204 </span><span class="spaces">    </span><span class="istickedoff">parseOperator</span>
 <span class="lineno">  205 </span><span class="spaces">        </span><span class="istickedoff">&lt;|&gt; <span class="nottickedoff">parseAtomicExpression</span> </span>
-<span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">&lt;|&gt; <span class="nottickedoff">(MissingExpressionNode &lt;$&gt; makeMissing (L_Missing &quot;expression&quot;))</span></span></span>
+<span class="lineno">  206 </span><span class="spaces">        </span><span class="istickedoff">&lt;|&gt; <span class="nottickedoff">(MissingExpressionNode &lt;$&gt; makeMissing (L_Missing MissingExpression))</span></span></span>
 <span class="lineno">  207 </span>
 <span class="lineno">  208 </span>parseExpressionStrict :: Parser ExpressionNode -- can fail
 <span class="lineno">  209 </span><span class="decl"><span class="istickedoff">parseExpressionStrict = try $ do</span>
@@ -246,7 +246,7 @@ span.spaces    { background: white }
 <span class="lineno">  227 </span><span class="spaces">            </span><span class="istickedoff">,  AbsExpression &lt;$&gt; parseAbsExpression</span>
 <span class="lineno">  228 </span><span class="spaces">            </span><span class="istickedoff">,  QuantificationExpr &lt;$&gt; parseQuantificationStatement</span>
 <span class="lineno">  229 </span><span class="spaces">            </span><span class="istickedoff">,  DomainExpression &lt;$&gt; parseDomainExpression</span>
-<span class="lineno">  230 </span><span class="spaces">            </span><span class="istickedoff">,  MissingExpressionNode &lt;$&gt; makeMissing (L_Missing &quot;Expr&quot;)</span>
+<span class="lineno">  230 </span><span class="spaces">            </span><span class="istickedoff">,  MissingExpressionNode &lt;$&gt; makeMissing (L_Missing MissingExpression)</span>
 <span class="lineno">  231 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
 <span class="lineno">  232 </span>
 <span class="lineno">  233 </span>
@@ -813,7 +813,7 @@ span.spaces    { background: white }
 <span class="lineno">  794 </span>parseMissingDomain :: Parser DomainNode
 <span class="lineno">  795 </span><span class="decl"><span class="istickedoff">parseMissingDomain =</span>
 <span class="lineno">  796 </span><span class="spaces">    </span><span class="istickedoff">do</span>
-<span class="lineno">  797 </span><span class="spaces">        </span><span class="istickedoff">m &lt;- makeMissing (L_Missing &quot;Domain&quot;)</span>
+<span class="lineno">  797 </span><span class="spaces">        </span><span class="istickedoff">m &lt;- makeMissing (L_Missing MissingDomain)</span>
 <span class="lineno">  798 </span><span class="spaces">        </span><span class="istickedoff">return $ MissingDomainNode m</span>
 <span class="lineno">  799 </span><span class="spaces">        </span><span class="istickedoff">&lt;?&gt; <span class="nottickedoff">&quot;Anything&quot;</span></span></span>
 <span class="lineno">  800 </span>
@@ -840,7 +840,7 @@ span.spaces    { background: white }
 <span class="lineno">  821 </span><span class="spaces">          </span><span class="nottickedoff">Right pt -&gt; do</span>
 <span class="lineno">  822 </span><span class="spaces">            </span><span class="nottickedoff">print $  show pt</span>
 <span class="lineno">  823 </span><span class="spaces">            </span><span class="nottickedoff">putStrLn &quot;Reforming&quot;</span>
-<span class="lineno">  824 </span><span class="spaces">            </span><span class="nottickedoff">print $ reformList (flatten pt) == L.fromStrict txt</span>
+<span class="lineno">  824 </span><span class="spaces">            </span><span class="nottickedoff">print $ reformList (flattenSeq pt) == L.fromStrict txt</span>
 <span class="lineno">  825 </span><span class="spaces"></span><span class="nottickedoff"></span>
 <span class="lineno">  826 </span><span class="spaces">            </span><span class="nottickedoff">putStrLn &quot;Pretty:&quot;</span>
 <span class="lineno">  827 </span><span class="spaces">            </span><span class="nottickedoff">let pp = renderAST 80 pt</span>
