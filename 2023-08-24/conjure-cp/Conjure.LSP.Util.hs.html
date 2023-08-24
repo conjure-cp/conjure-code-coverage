@@ -1,0 +1,193 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE OverloadedStrings #-}
+<span class="lineno">    2 </span>module Conjure.LSP.Util where
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import qualified Conjure.Language.Validator as V (ValidatorDiagnostic (..), Diagnostic (..))
+<span class="lineno">    6 </span>import Conjure.Language
+<span class="lineno">    7 </span>import Conjure.Prelude
+<span class="lineno">    8 </span>import Language.LSP.Server
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>import Conjure.Language.Parser (PipelineError(..), lexAndParse)
+<span class="lineno">   11 </span>import Language.LSP.VFS (virtualFileText, VirtualFile)
+<span class="lineno">   12 </span>import Text.Megaparsec (SourcePos(..), unPos, mkPos)
+<span class="lineno">   13 </span>import Data.Text (pack)
+<span class="lineno">   14 </span>import Data.Foldable (find)
+<span class="lineno">   15 </span>import Language.LSP.Types as L
+<span class="lineno">   16 </span>import Conjure.Language.Validator (DiagnosticRegion(..), ValidatorState (ValidatorState, regionInfo), runValidator,  ValidatorDiagnostic, RegionInfo (..), initialState, validateModel)
+<span class="lineno">   17 </span>import Conjure.UI.ErrorDisplay (displayError, displayWarning)
+<span class="lineno">   18 </span>import Conjure.Language.AST.ASTParser (parseProgram)
+<span class="lineno">   19 </span>import Language.LSP.Types.Lens (HasUri (uri))
+<span class="lineno">   20 </span>import Control.Lens ((^.))
+<span class="lineno">   21 </span>import Conjure.Language.AST.Syntax (ProgramTree)
+<span class="lineno">   22 </span>import Conjure.Language.Lexer
+<span class="lineno">   23 </span>import Conjure.Language.AST.Reformer
+<span class="lineno">   24 </span>import qualified Data.Sequence as Seq
+<span class="lineno">   25 </span>import Conjure.Language.Lexer (Offsets(oSourcePos))
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>
+<span class="lineno">   28 </span>data ProcessedFile = ProcessedFile {
+<span class="lineno">   29 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">model</span></span></span>:: Model,
+<span class="lineno">   30 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">diagnostics</span></span></span>::[ValidatorDiagnostic],
+<span class="lineno">   31 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">state</span></span></span>:: ValidatorState,
+<span class="lineno">   32 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">parseTree</span></span></span> :: ProgramTree
+<span class="lineno">   33 </span>}
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>processFile :: Text -&gt; Either PipelineError ProcessedFile
+<span class="lineno">   36 </span><span class="decl"><span class="nottickedoff">processFile t = do</span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="nottickedoff">parsed &lt;- lexAndParse parseProgram t</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="nottickedoff">let (m,d,s) = runValidator (validateModel parsed) (initialState  parsed Nothing) --TODO: wire up</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="nottickedoff">return $ ProcessedFile m d s parsed</span></span>
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>getErrorsForURI :: NormalizedUri -&gt; LspM () (Either Text ProcessedFile)
+<span class="lineno">   43 </span><span class="decl"><span class="nottickedoff">getErrorsForURI furi = do</span>
+<span class="lineno">   44 </span><span class="spaces">    </span><span class="nottickedoff">r &lt;- getVirtualFile furi</span>
+<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">let f = maybe &quot;&quot; virtualFileText r</span>
+<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">getErrorsFromText f</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>getErrorsFromText :: Text -&gt; LspM () (Either Text ProcessedFile)
+<span class="lineno">   49 </span><span class="decl"><span class="nottickedoff">getErrorsFromText t = return $ either (Left . pack.show) Right $ processFile t</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>getDiagnostics :: ProcessedFile -&gt; [Diagnostic]
+<span class="lineno">   52 </span><span class="decl"><span class="nottickedoff">getDiagnostics (ProcessedFile{diagnostics=ds}) = mapMaybe valErrToDiagnostic ds</span></span>
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>valErrToDiagnostic :: V.ValidatorDiagnostic -&gt; Maybe Diagnostic
+<span class="lineno">   55 </span><span class="decl"><span class="nottickedoff">valErrToDiagnostic (V.ValidatorDiagnostic region message) = do</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">let range = getRangeFromRegion region</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">let (severity,msg) = getDiagnosticDetails message</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">Just $ Diagnostic range (Just severity) Nothing Nothing msg Nothing Nothing</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>getRangeFromRegion :: DiagnosticRegion -&gt; L.Range
+<span class="lineno">   63 </span><span class="decl"><span class="nottickedoff">getRangeFromRegion (DiagnosticRegion {drSourcePos=(SourcePos _ r c),drLength=l}) =</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">let row = unPos r</span>
+<span class="lineno">   65 </span><span class="spaces">        </span><span class="nottickedoff">col = unPos c</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">in</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">Range (fixPosition row col)  (fixPosition row (col+max 1 l))</span></span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>getDiagnosticDetails :: V.Diagnostic -&gt; (DiagnosticSeverity,Text)
+<span class="lineno">   70 </span><span class="decl"><span class="nottickedoff">getDiagnosticDetails x = case x of</span>
+<span class="lineno">   71 </span><span class="spaces">  </span><span class="nottickedoff">V.Error et -&gt; (DsError,pack $ displayError et)</span>
+<span class="lineno">   72 </span><span class="spaces">  </span><span class="nottickedoff">V.Warning wt -&gt; (DsWarning , pack $ displayWarning wt)</span>
+<span class="lineno">   73 </span><span class="spaces">  </span><span class="nottickedoff">V.Info it -&gt; (DsHint,pack $ show it)</span></span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>sendInfoMessage :: Text -&gt; LspM () ()
+<span class="lineno">   78 </span><span class="decl"><span class="nottickedoff">sendInfoMessage t = sendNotification SWindowShowMessage (ShowMessageParams MtInfo t)</span></span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>sendErrorMessage :: Text -&gt; LspM () ()
+<span class="lineno">   81 </span><span class="decl"><span class="nottickedoff">sendErrorMessage t = sendNotification SWindowShowMessage (ShowMessageParams MtError t)</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>-- 0 index rows and cols as well as type coercion
+<span class="lineno">   84 </span>fixPosition :: (Integral a) =&gt; a -&gt; a -&gt; Position
+<span class="lineno">   85 </span><span class="decl"><span class="nottickedoff">fixPosition r c = Position (fromIntegral r-1) (fromIntegral c-1)</span></span>
+<span class="lineno">   86 </span>
+<span class="lineno">   87 </span>withFile :: (HasUri a Uri,Show a) =&gt; a -&gt; (VirtualFile -&gt; LspM () n) -&gt; LspM () ()
+<span class="lineno">   88 </span><span class="decl"><span class="nottickedoff">withFile fp f = do</span>
+<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">let td = fp^.uri</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">let doc = toNormalizedUri td</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">mdoc &lt;- getVirtualFile doc</span>
+<span class="lineno">   92 </span><span class="spaces">    </span><span class="nottickedoff">case mdoc of</span>
+<span class="lineno">   93 </span><span class="spaces">          </span><span class="nottickedoff">Just vf -&gt;void $ f vf</span>
+<span class="lineno">   94 </span><span class="spaces">          </span><span class="nottickedoff">_ -&gt; sendErrorMessage (pack. show $ &quot;No virtual file found for: &quot; &lt;&gt; pretty (show fp))</span></span>
+<span class="lineno">   95 </span>
+<span class="lineno">   96 </span>getProcessedDoc ::( HasUri a Uri,Show a) =&gt; a -&gt; LspM () (Maybe ProcessedFile)
+<span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">getProcessedDoc d = do</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">let td = d^.uri</span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">let doc = toNormalizedUri td</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">mdoc &lt;- getVirtualFile doc</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="nottickedoff">case mdoc of</span>
+<span class="lineno">  102 </span><span class="spaces">          </span><span class="nottickedoff">Just vf -&gt; do</span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">case processFile $ virtualFileText vf of</span>
+<span class="lineno">  104 </span><span class="spaces">                </span><span class="nottickedoff">Left msg -&gt; sendErrorMessage (pack $ show msg) &gt;&gt; return Nothing</span>
+<span class="lineno">  105 </span><span class="spaces">                </span><span class="nottickedoff">Right file -&gt; return . pure $ file</span>
+<span class="lineno">  106 </span><span class="spaces">          </span><span class="nottickedoff">_ -&gt; Nothing &lt;$ sendErrorMessage (pack. show $ &quot;No virtual file found for: &quot; &lt;&gt; stringToDoc (show d))</span></span>
+<span class="lineno">  107 </span>
+<span class="lineno">  108 </span>withProcessedDoc :: ( HasUri a Uri,Show a) =&gt; a -&gt; (ProcessedFile -&gt; LspM () n) -&gt; LspM () ()
+<span class="lineno">  109 </span><span class="decl"><span class="nottickedoff">withProcessedDoc d f = do</span>
+<span class="lineno">  110 </span><span class="spaces">    </span><span class="nottickedoff">a &lt;- getProcessedDoc d</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">case a of</span>
+<span class="lineno">  112 </span><span class="spaces">      </span><span class="nottickedoff">Nothing -&gt; return ()</span>
+<span class="lineno">  113 </span><span class="spaces">      </span><span class="nottickedoff">Just pf -&gt; void $ f pf</span></span>
+<span class="lineno">  114 </span>
+<span class="lineno">  115 </span>
+<span class="lineno">  116 </span>getRelevantRegions :: ValidatorState -&gt; Position -&gt; [RegionInfo]
+<span class="lineno">  117 </span><span class="decl"><span class="nottickedoff">getRelevantRegions (ValidatorState {regionInfo=info}) pos = sortOn rRegion $ concatMap filteredFlatten info</span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="nottickedoff">p::RegionInfo -&gt; Bool</span>
+<span class="lineno">  120 </span><span class="spaces">        </span><span class="nottickedoff">p (RegionInfo {rRegion=reg}) = case reg of</span>
+<span class="lineno">  121 </span><span class="spaces">          </span><span class="nottickedoff">DiagnosticRegion sp sp' _ _ -&gt;  sourcePosToPosition sp &lt;= pos</span>
+<span class="lineno">  122 </span><span class="spaces">                                            </span><span class="nottickedoff">&amp;&amp;</span>
+<span class="lineno">  123 </span><span class="spaces">                                          </span><span class="nottickedoff">sourcePosToPosition sp' &gt;= pos</span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="nottickedoff">filteredFlatten :: RegionInfo -&gt; [RegionInfo]</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="nottickedoff">filteredFlatten r@RegionInfo{rChildren=c} | p r = r : concatMap filteredFlatten c</span>
+<span class="lineno">  126 </span><span class="spaces">        </span><span class="nottickedoff">filteredFlatten _ = []</span></span>
+<span class="lineno">  127 </span>
+<span class="lineno">  128 </span>
+<span class="lineno">  129 </span>sourcePosToPosition :: SourcePos -&gt; Position
+<span class="lineno">  130 </span><span class="decl"><span class="nottickedoff">sourcePosToPosition (SourcePos _ r c) = Position</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="nottickedoff">(fromInteger $ -1 + toInteger (unPos r))</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="nottickedoff">(fromInteger $ -1 + toInteger (unPos c))</span></span>
+<span class="lineno">  133 </span>
+<span class="lineno">  134 </span>positionToSourcePos :: Position -&gt; SourcePos
+<span class="lineno">  135 </span><span class="decl"><span class="nottickedoff">positionToSourcePos (Position r c) = SourcePos</span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="nottickedoff">&quot;&quot;</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="nottickedoff">(mkPos ri)</span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="nottickedoff">( mkPos  ci)</span>
+<span class="lineno">  139 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  140 </span><span class="spaces">        </span><span class="nottickedoff">ri = fromIntegral r + 1</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="nottickedoff">ci = fromIntegral c + 1</span></span>
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>
+<span class="lineno">  144 </span>regionToRange :: DiagnosticRegion -&gt; L.Range
+<span class="lineno">  145 </span><span class="decl"><span class="nottickedoff">regionToRange (DiagnosticRegion sp ep _ _) = L.Range (sourcePosToPosition sp) (sourcePosToPosition ep)</span></span>
+<span class="lineno">  146 </span>
+<span class="lineno">  147 </span>regionToLocation :: DiagnosticRegion -&gt; L.Location
+<span class="lineno">  148 </span><span class="decl"><span class="nottickedoff">regionToLocation reg@(DiagnosticRegion (SourcePos f _ _) _ _ _) = L.Location</span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="nottickedoff">(filePathToUri f)</span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="nottickedoff">(regionToRange reg)</span></span>
+<span class="lineno">  151 </span>
+<span class="lineno">  152 </span>snippet :: Text -&gt; MarkupContent
+<span class="lineno">  153 </span><span class="decl"><span class="nottickedoff">snippet = markedUpContent &quot;essence&quot;</span></span>
+<span class="lineno">  154 </span>
+<span class="lineno">  155 </span>prettyPos :: Position -&gt; Doc
+<span class="lineno">  156 </span><span class="decl"><span class="nottickedoff">prettyPos (Position (pretty . show-&gt;r) (pretty . show-&gt;c)) =  r &lt;&gt; &quot;:&quot; &lt;&gt; c</span></span>
+<span class="lineno">  157 </span>
+<span class="lineno">  158 </span>getNextTokenStart :: Position -&gt; ProgramTree -&gt; Position
+<span class="lineno">  159 </span><span class="decl"><span class="nottickedoff">getNextTokenStart ref tree = let</span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="nottickedoff">toks = flatten tree</span>
+<span class="lineno">  161 </span><span class="spaces">    </span><span class="nottickedoff">tokSp = map (sourcePosToPosition . oSourcePos . offsets) (toList toks)</span>
+<span class="lineno">  162 </span><span class="spaces">    </span><span class="nottickedoff">in fromMaybe posInf $ find (ref &lt;=) tokSp</span></span> 
+<span class="lineno">  163 </span>
+<span class="lineno">  164 </span>posInf :: Position 
+<span class="lineno">  165 </span><span class="decl"><span class="nottickedoff">posInf = Position (negate 1) (negate 1)</span></span>
+<span class="lineno">  166 </span>
+<span class="lineno">  167 </span>tokensAtPosition :: Position -&gt; Seq.Seq ETok -&gt; [ETok]
+<span class="lineno">  168 </span><span class="decl"><span class="nottickedoff">tokensAtPosition p s = maybeToList (find (posAfter p ) s)</span>
+<span class="lineno">  169 </span><span class="spaces">    </span><span class="nottickedoff">where </span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="nottickedoff">posAfter p t = p &lt; sourcePosToPosition (oSourcePos $ offsets t)</span></span> 
+
+</pre>
+</body>
+</html>
