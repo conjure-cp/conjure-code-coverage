@@ -197,12 +197,12 @@ span.spaces    { background: white }
 <span class="lineno">  178 </span><span class="spaces">    </span><span class="istickedoff">start &lt;- getOffset</span>
 <span class="lineno">  179 </span><span class="spaces">    </span><span class="istickedoff">startPos &lt;- getSourcePos</span>
 <span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">whitespace &lt;- pTrivia</span>
-<span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff">tokenOffset &lt;- getOffset</span>
+<span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff">tokenOffset_ &lt;- getOffset</span>
 <span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">tokenStart &lt;- getSourcePos</span>
 <span class="lineno">  183 </span><span class="spaces">    </span><span class="istickedoff">(tok,cap) &lt;- aLexeme</span>
 <span class="lineno">  184 </span><span class="spaces">    </span><span class="istickedoff">tokenEnd &lt;- getOffset</span>
 <span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">endPos &lt;- getSourcePos</span>
-<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">return $ makeToken (Offsets start (tokenEnd - start) (tokenEnd - tokenOffset) <span class="nottickedoff">startPos</span> tokenStart endPos) whitespace tok cap</span></span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">return $ makeToken (Offsets start (tokenEnd - start) (tokenEnd - tokenOffset_) <span class="nottickedoff">startPos</span> tokenStart endPos) whitespace tok cap</span></span>
 <span class="lineno">  187 </span>
 <span class="lineno">  188 </span>pEOF :: Lexer ETok
 <span class="lineno">  189 </span><span class="decl"><span class="istickedoff">pEOF = do</span>
