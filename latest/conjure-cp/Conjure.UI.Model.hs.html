@@ -380,7 +380,7 @@ span.spaces    { background: white }
 <span class="lineno">  361 </span><span class="spaces">    </span><span class="istickedoff">| Just modelZipper &lt;- mkModelZipper model = do</span>
 <span class="lineno">  362 </span><span class="spaces">        </span><span class="istickedoff">qs &lt;- remaining config modelZipper (mInfo model)</span>
 <span class="lineno">  363 </span><span class="spaces">        </span><span class="istickedoff">return qs</span>
-<span class="lineno">  364 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = return []</span>
+<span class="lineno">  364 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">return []</span></span>
 <span class="lineno">  365 </span><span class="spaces"></span><span class="istickedoff">remainingWIP config wip@(TryThisFirst modelZipper info) = do</span>
 <span class="lineno">  366 </span><span class="spaces">    </span><span class="istickedoff">qs &lt;- remaining config modelZipper info</span>
 <span class="lineno">  367 </span><span class="spaces">    </span><span class="istickedoff">case (null qs, Zipper.right modelZipper, Zipper.up modelZipper) of</span>

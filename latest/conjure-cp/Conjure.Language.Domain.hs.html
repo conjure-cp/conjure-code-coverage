@@ -285,9 +285,9 @@ span.spaces    { background: white }
 <span class="lineno">  266 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainTuple as  ) (Tree Nothing asRepr) =</span>
 <span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">DomainTuple &lt;$&gt; zipWithM applyReprTree as asRepr</span>
 <span class="lineno">  268 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainRecord as ) (Tree Nothing asRepr) =</span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">(DomainRecord  . zip (map <span class="nottickedoff">fst</span> as)) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">DomainRecord  . zip (map <span class="nottickedoff">fst</span> as) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
 <span class="lineno">  270 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainVariant as) (Tree Nothing asRepr) =</span>
-<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">(DomainVariant . zip (map <span class="nottickedoff">fst</span> as)) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
+<span class="lineno">  271 </span><span class="spaces">    </span><span class="istickedoff">DomainVariant . zip (map <span class="nottickedoff">fst</span> as) &lt;$&gt; zipWithM applyReprTree (map snd as) asRepr</span>
 <span class="lineno">  272 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainMatrix b a) (Tree Nothing [aRepr]) = DomainMatrix b &lt;$&gt; applyReprTree a aRepr</span>
 <span class="lineno">  273 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainSet       _ attr a  ) (Tree (Just r) [aRepr]) = DomainSet r attr &lt;$&gt; applyReprTree a aRepr</span>
 <span class="lineno">  274 </span><span class="spaces"></span><span class="istickedoff">applyReprTree (DomainMSet      _ attr a  ) (Tree (Just r) [aRepr]) = DomainMSet r attr &lt;$&gt; applyReprTree a aRepr</span>

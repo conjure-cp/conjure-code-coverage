@@ -274,7 +274,7 @@ span.spaces    { background: white }
 <span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm rs0 _) = do</span>
 <span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">let fmap4 = fmap . fmap . fmap . fmap</span>
 <span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">let e2c' x = either <span class="nottickedoff">bug</span> id (e2c x)</span>
-<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">rs &lt;- transformBiM (\ x -&gt; Constant &lt;$&gt; instantiateE x ) (rs0 :: Maybe [Range Expression])</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">rs &lt;- transformBiM (fmap Constant . instantiateE ) (rs0 :: Maybe [Range Expression])</span>
 <span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff">|&gt; fmap4 e2c'</span>
 <span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets <span class="nottickedoff">id</span></span>
 <span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">mp &lt;- forM (universeBi rs :: [Name]) $ <span class="nottickedoff">\ n -&gt; case lookup n st of</span></span>
