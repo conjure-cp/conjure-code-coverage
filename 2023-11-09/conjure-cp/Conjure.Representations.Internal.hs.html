@@ -1,0 +1,132 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE Rank2Types #-}
+<span class="lineno">    2 </span>{-# LANGUAGE KindSignatures #-}
+<span class="lineno">    3 </span>{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+<span class="lineno">    4 </span>{-# HLINT ignore &quot;Use camelCase&quot; #-}
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>module Conjure.Representations.Internal
+<span class="lineno">    7 </span>    ( Representation(..)
+<span class="lineno">    8 </span>    , TypeOf_ReprCheck, TypeOf_DownD, TypeOf_SymmetryOrdering, TypeOf_Structural, TypeOf_DownC, TypeOf_Up
+<span class="lineno">    9 </span>    , DomainX, DomainC
+<span class="lineno">   10 </span>    , DispatchFunction, ReprOptionsFunction
+<span class="lineno">   11 </span>    , rDownToX
+<span class="lineno">   12 </span>    , mkOutName
+<span class="lineno">   13 </span>    ) where
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>-- conjure
+<span class="lineno">   16 </span>import Conjure.Prelude
+<span class="lineno">   17 </span>import Conjure.Language.Definition
+<span class="lineno">   18 </span>import Conjure.Language.Domain
+<span class="lineno">   19 </span>import Conjure.Language.Pretty
+<span class="lineno">   20 </span>import qualified Data.Kind  as T (Type)
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>type DomainX x = Domain HasRepresentation x
+<span class="lineno">   23 </span>type DomainC = Domain HasRepresentation Constant
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>-- | This data type represents a representation selection rule.
+<span class="lineno">   26 </span>-- The 3 functions -- rDownD, rDownC, and rUp -- all work one level at a time.
+<span class="lineno">   27 </span>-- The maybe for rDownD and rDownC is Nothing when representation doesn't change anything.
+<span class="lineno">   28 </span>-- Like for primitives.
+<span class="lineno">   29 </span>-- * rDownD is for refining a class level domain.
+<span class="lineno">   30 </span>-- * rDownC is for refining constants, together with an instance level domain.
+<span class="lineno">   31 </span>-- * rUp is for translating low level constants upwards
+<span class="lineno">   32 </span>--   It takes in a instance level domain for the high level object.
+<span class="lineno">   33 </span>-- * rCheck is for calculating all representation options.
+<span class="lineno">   34 </span>--   It take a function to be used as a &quot;checker&quot; for inner domains, if any.
+<span class="lineno">   35 </span>data Representation (m :: T.Type -&gt; T.Type) = Representation
+<span class="lineno">   36 </span>    { <span class="istickedoff"><span class="decl"><span class="istickedoff">rCheck</span></span></span>            :: TypeOf_ReprCheck        m
+<span class="lineno">   37 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rDownD</span></span></span>            :: TypeOf_DownD            m
+<span class="lineno">   38 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rStructural</span></span></span>       :: TypeOf_Structural       m
+<span class="lineno">   39 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rDownC</span></span></span>            :: TypeOf_DownC            m
+<span class="lineno">   40 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rUp</span></span></span>               :: TypeOf_Up               m
+<span class="lineno">   41 </span>    , <span class="istickedoff"><span class="decl"><span class="istickedoff">rSymmetryOrdering</span></span></span> :: TypeOf_SymmetryOrdering m
+<span class="lineno">   42 </span>    }
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>type TypeOf_ReprCheck (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   45 </span>       forall x . (Data x, Pretty x, ExpressionLike x)
+<span class="lineno">   46 </span>    =&gt; (Domain () x -&gt; m [DomainX x])               -- other checkers for inner domains
+<span class="lineno">   47 </span>    -&gt; Domain () x                                  -- this domain
+<span class="lineno">   48 </span>    -&gt; m [DomainX x]                                -- with all repr options
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>type TypeOf_DownD (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   51 </span>                (Name, DomainX Expression)
+<span class="lineno">   52 </span>    -&gt; m (Maybe [(Name, DomainX Expression)])
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>type TypeOf_SymmetryOrdering (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   55 </span>       ((Expression -&gt; m [Expression]) -&gt; Expression -&gt; DomainX Expression -&gt; m Expression) -- inner S.O.
+<span class="lineno">   56 </span>    -&gt; (Expression -&gt; m [Expression])               -- general downX1
+<span class="lineno">   57 </span>    -&gt; Expression                                   -- this as an expression
+<span class="lineno">   58 </span>    -&gt; DomainX Expression                           -- name and domain
+<span class="lineno">   59 </span>    -&gt; m Expression                                 -- output, of type [int]
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>type TypeOf_Structural (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   62 </span>       (DomainX Expression -&gt; m (Expression -&gt; m [Expression]))
+<span class="lineno">   63 </span>                                                    -- other structural constraints for inner domains
+<span class="lineno">   64 </span>    -&gt; (Expression -&gt; m [Expression])               -- general downX1
+<span class="lineno">   65 </span>    -&gt; DomainX Expression                           -- this domain
+<span class="lineno">   66 </span>    -&gt; m (      Expression                          -- the original variable, before refinement
+<span class="lineno">   67 </span>          -&gt; m [Expression]                         -- structural constraints
+<span class="lineno">   68 </span>         )
+<span class="lineno">   69 </span>
+<span class="lineno">   70 </span>type TypeOf_DownC (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   71 </span>                 (Name, DomainC, Constant)          -- the input name, domain and constant
+<span class="lineno">   72 </span>    -&gt; m (Maybe [(Name, DomainC, Constant)])        -- the outputs names, domains, and constants
+<span class="lineno">   73 </span>
+<span class="lineno">   74 </span>type TypeOf_Up (m :: T.Type -&gt; T.Type) = 
+<span class="lineno">   75 </span>        [(Name, Constant)] -&gt;                       -- all known constants, representing a solution at the low level
+<span class="lineno">   76 </span>        (Name, DomainC) -&gt;                          -- the name and domain we are working on
+<span class="lineno">   77 </span>        m (Name, Constant)                          -- the output constant, at the high level
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>type DispatchFunction m x =
+<span class="lineno">   81 </span>        Data x =&gt;
+<span class="lineno">   82 </span>        Pretty x =&gt;
+<span class="lineno">   83 </span>        Domain HasRepresentation x -&gt;
+<span class="lineno">   84 </span>        Representation m
+<span class="lineno">   85 </span>
+<span class="lineno">   86 </span>type ReprOptionsFunction m r x =
+<span class="lineno">   87 </span>        Data x =&gt;
+<span class="lineno">   88 </span>        Pretty x =&gt;
+<span class="lineno">   89 </span>        ExpressionLike x =&gt;
+<span class="lineno">   90 </span>        Domain () x -&gt;
+<span class="lineno">   91 </span>        m [Domain HasRepresentation x]
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>rDownToX ::
+<span class="lineno">   95 </span>    (Monad m,MonadFail m) =&gt;
+<span class="lineno">   96 </span>    Representation m -&gt;                             -- for a given representation
+<span class="lineno">   97 </span>    FindOrGiven -&gt;                                  -- and a declaration: forg
+<span class="lineno">   98 </span>    Name -&gt;                                         --                  : name
+<span class="lineno">   99 </span>    Domain HasRepresentation Expression -&gt;          --                  : domain
+<span class="lineno">  100 </span>    m [Expression]                                  -- expressions referring to the representation
+<span class="lineno">  101 </span><span class="decl"><span class="istickedoff">rDownToX repr forg name domain = do</span>
+<span class="lineno">  102 </span><span class="spaces">    </span><span class="istickedoff">pairs &lt;- rDownD repr (name, domain)</span>
+<span class="lineno">  103 </span><span class="spaces">    </span><span class="istickedoff">return [ Reference n (Just (DeclHasRepr forg n d))</span>
+<span class="lineno">  104 </span><span class="spaces">           </span><span class="istickedoff">| (n,d) &lt;- concat pairs</span>
+<span class="lineno">  105 </span><span class="spaces">           </span><span class="istickedoff">]</span></span>
+<span class="lineno">  106 </span>
+<span class="lineno">  107 </span>mkOutName :: Maybe Name -&gt; Domain HasRepresentation x -&gt; Name -&gt; Name
+<span class="lineno">  108 </span><span class="decl"><span class="istickedoff">mkOutName Nothing       domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain)]</span>
+<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff">mkOutName (Just suffix) domain origName = mconcat [origName, &quot;_&quot;, Name (reprTreeEncoded domain), &quot;_&quot;, suffix]</span></span>
+
+</pre>
+</body>
+</html>
