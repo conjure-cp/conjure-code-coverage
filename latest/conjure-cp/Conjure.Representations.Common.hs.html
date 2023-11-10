@@ -73,31 +73,70 @@ span.spaces    { background: white }
 <span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">return $ concatMap one (S.toList binRelAttrs)</span></span>
 <span class="lineno">   55 </span>
 <span class="lineno">   56 </span>
-<span class="lineno">   57 </span>-- reflexive, the diagonal is full
-<span class="lineno">   58 </span>-- irreflexive, the diagonal is empty
-<span class="lineno">   59 </span>-- coreflexive, only the diagonal is full
-<span class="lineno">   60 </span>-- symmetric, if R(x,y) then R(y,x)
-<span class="lineno">   61 </span>-- anti-symmetric, both R(x,y) and R(y,x) are never full at the same time (we say nothing about the the diagonal)
-<span class="lineno">   62 </span>-- a-symmetric, anti-symmetric + irreflexive
-<span class="lineno">   63 </span>-- transitive xy + yz -&gt; xz
-<span class="lineno">   64 </span>-- total: either R(x,y) or R(y,x). implies reflexive
-<span class="lineno">   65 </span>-- connex: total, but doesn't imply reflexive (we say nothing about the diagonal)
-<span class="lineno">   66 </span>-- left-total: every x is related to some y  -- R(x,y)
-<span class="lineno">   67 </span>-- right-total: every y is related to some x -- R(x,y)
-<span class="lineno">   68 </span>-- Euclidean: xy + xz -&gt; yz
-<span class="lineno">   69 </span>
-<span class="lineno">   70 </span>-- some properties
-<span class="lineno">   71 </span>-- total implies reflexive. connex doesn't.
-<span class="lineno">   72 </span>-- aSymmetric implies irreflexive and antiSymmetric
-<span class="lineno">   73 </span>
-<span class="lineno">   74 </span>-- derived definitions
-<span class="lineno">   75 </span>-- serial: left-total
-<span class="lineno">   76 </span>-- equivalance: reflexive + symmetric + transitive
-<span class="lineno">   77 </span>-- linearOrder: antiSymmetric + total + transitive
-<span class="lineno">   78 </span>-- weakOrder; total + transitive
-<span class="lineno">   79 </span>-- preOrder: reflexive + transitive
-<span class="lineno">   80 </span>-- partialOrder: reflexive + antiSymmetric + transitive
-<span class="lineno">   81 </span>-- strictPartialOrder: irreflexive + transitive (implied aSymmetric)
+<span class="lineno">   57 </span>mkBinRelConsSoft :: NameGen m =&gt; Expression -&gt; Expression -&gt; BinaryRelationAttrs -&gt; Domain r Expression -&gt; Expression -&gt; m [Expression]
+<span class="lineno">   58 </span><span class="decl"><span class="nottickedoff">mkBinRelConsSoft maxNum divisor (BinaryRelationAttrs binRelAttrs) dom rel = do</span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="nottickedoff">-- maxNum: if the property holds this many times, we perfectly satisfy this condition</span>
+<span class="lineno">   60 </span><span class="spaces">    </span><span class="nottickedoff">-- divisor: 2,4,8</span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="nottickedoff">--          2: satisfy the property at least half the time</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="nottickedoff">--          4: satisfy the property at least one quarter of the time</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="nottickedoff">--          8: satisfy the property at least 1/8th of the time</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">(xP, x) &lt;- quantifiedVar</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">(yP, y) &lt;- quantifiedVar</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">(zP, z) &lt;- quantifiedVar</span>
+<span class="lineno">   67 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Reflexive     = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP           : &amp;dom . toInt(&amp;rel(&amp;x,&amp;x)) |]</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Irreflexive   = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP           : &amp;dom . toInt(!(&amp;rel(&amp;x,&amp;x))) |]</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Coreflexive   = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) -&gt; &amp;x=&amp;y) |]</span>
+<span class="lineno">   72 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Symmetric     = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) -&gt; &amp;rel(&amp;y,&amp;x)) |]</span>
+<span class="lineno">   73 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_AntiSymmetric = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;x) -&gt; &amp;x=&amp;y) |]</span>
+<span class="lineno">   74 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_ASymmetric    = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) -&gt; !(&amp;rel(&amp;y,&amp;x))) |]</span>
+<span class="lineno">   75 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Transitive    = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP, &amp;zP : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;y,&amp;z) -&gt; &amp;rel(&amp;x,&amp;z)) |]</span>
+<span class="lineno">   76 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Total         = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) \/ &amp;rel(&amp;y,&amp;x)) |]</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Connex        = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP      : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) \/ &amp;rel(&amp;y,&amp;x) \/ (&amp;x = &amp;y)) |]</span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Euclidean     = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP, &amp;yP, &amp;zP : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y) /\ &amp;rel(&amp;x,&amp;z) -&gt; &amp;rel(&amp;y,&amp;z)) |]</span>
+<span class="lineno">   79 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_LeftTotal     = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;xP : &amp;dom . sum &amp;yP : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y)) |]</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_RightTotal    = return [essence| &amp;maxNum / &amp;divisor &lt;= sum &amp;yP : &amp;dom . sum &amp;xP : &amp;dom . toInt(&amp;rel(&amp;x,&amp;y)) |]</span>
+<span class="lineno">   81 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Serial             = one BinRelAttr_LeftTotal</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_Equivalence        = one BinRelAttr_Reflexive ++ one BinRelAttr_Symmetric     ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_LinearOrder        = one BinRelAttr_Total ++ one BinRelAttr_AntiSymmetric ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_WeakOrder          = one BinRelAttr_Total ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_PreOrder           = one BinRelAttr_Reflexive ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_PartialOrder       = one BinRelAttr_Reflexive ++ one BinRelAttr_AntiSymmetric ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="nottickedoff">one BinRelAttr_StrictPartialOrder = one BinRelAttr_Irreflexive ++ one BinRelAttr_ASymmetric ++ one BinRelAttr_Transitive</span>
+<span class="lineno">   89 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   90 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   91 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   92 </span><span class="spaces">    </span><span class="nottickedoff">return $ concatMap one (S.toList binRelAttrs)</span></span>
+<span class="lineno">   93 </span>
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>-- reflexive, the diagonal is full
+<span class="lineno">   96 </span>-- irreflexive, the diagonal is empty
+<span class="lineno">   97 </span>-- coreflexive, only the diagonal is full
+<span class="lineno">   98 </span>-- symmetric, if R(x,y) then R(y,x)
+<span class="lineno">   99 </span>-- anti-symmetric, both R(x,y) and R(y,x) are never full at the same time (we say nothing about the the diagonal)
+<span class="lineno">  100 </span>-- a-symmetric, anti-symmetric + irreflexive
+<span class="lineno">  101 </span>-- transitive xy + yz -&gt; xz
+<span class="lineno">  102 </span>-- total: either R(x,y) or R(y,x). implies reflexive
+<span class="lineno">  103 </span>-- connex: total, but doesn't imply reflexive (we say nothing about the diagonal)
+<span class="lineno">  104 </span>-- left-total: every x is related to some y  -- R(x,y)
+<span class="lineno">  105 </span>-- right-total: every y is related to some x -- R(x,y)
+<span class="lineno">  106 </span>-- Euclidean: xy + xz -&gt; yz
+<span class="lineno">  107 </span>
+<span class="lineno">  108 </span>-- some properties
+<span class="lineno">  109 </span>-- total implies reflexive. connex doesn't.
+<span class="lineno">  110 </span>-- aSymmetric implies irreflexive and antiSymmetric
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>-- derived definitions
+<span class="lineno">  113 </span>-- serial: left-total
+<span class="lineno">  114 </span>-- equivalance: reflexive + symmetric + transitive
+<span class="lineno">  115 </span>-- linearOrder: antiSymmetric + total + transitive
+<span class="lineno">  116 </span>-- weakOrder; total + transitive
+<span class="lineno">  117 </span>-- preOrder: reflexive + transitive
+<span class="lineno">  118 </span>-- partialOrder: reflexive + antiSymmetric + transitive
+<span class="lineno">  119 </span>-- strictPartialOrder: irreflexive + transitive (implied aSymmetric)
+<span class="lineno">  120 </span>
 
 </pre>
 </body>
