@@ -181,7 +181,7 @@ span.spaces    { background: white }
 <span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|&gt; (if normaliseQuantified then normaliseQuantifiedVariables else id)</span></span>
 <span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">|&gt; (if removeUnused then removeUnusedDecls else id)</span></span>
 <span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">writeModel lineWidth outputFormat Nothing model1</span></span>
-<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff"></span>
+<span class="lineno">  165 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  166 </span><span class="spaces"></span><span class="istickedoff">mainWithArgs Diff{..} =</span>
 <span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">join $ modelDiffIO</span></span>
 <span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">&lt;$&gt; readModelFromFile file1</span></span>
@@ -292,7 +292,7 @@ span.spaces    { background: white }
 <span class="lineno">  273 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Was given:&quot; &lt;+&gt; pretty nbSolutions</span></span>
 <span class="lineno">  274 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
 <span class="lineno">  275 </span><span class="spaces">    </span><span class="istickedoff">when (solver `elem` [&quot;bc_minisat_all&quot;, &quot;nbc_minisat_all&quot;] &amp;&amp; <span class="nottickedoff">nbSolutions /= &quot;all&quot;</span>) $</span>
-<span class="lineno">  276 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">userErr1 $ &quot;The solvers bc_minisat_all and nbc_minisat_all only work with --number-of-solutions=all&quot;</span></span>
+<span class="lineno">  276 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">userErr1 &quot;The solvers bc_minisat_all and nbc_minisat_all only work with --number-of-solutions=all&quot;</span></span>
 <span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">essenceM_beforeNR &lt;- readModelFromFile essence</span>
 <span class="lineno">  278 </span><span class="spaces">    </span><span class="istickedoff">essenceM &lt;- prologue essenceM_beforeNR</span>
 <span class="lineno">  279 </span><span class="spaces">    </span><span class="istickedoff">unless (null [ <span class="nottickedoff">()</span> | Objective{} &lt;- mStatements essenceM ]) $ <span class="nottickedoff">do -- this is an optimisation problem</span></span>
