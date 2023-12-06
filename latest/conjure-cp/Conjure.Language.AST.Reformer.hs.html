@@ -70,7 +70,7 @@ span.spaces    { background: white }
 <span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">LettingExpr d -&gt;  makeTree d</span>
 <span class="lineno">   52 </span><span class="spaces">        </span><span class="istickedoff">LettingDomain d e -&gt; makeTree d &lt;&gt; makeTree e</span>
 <span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">LettingEnum d e f g -&gt; mconcat [makeTree d, makeTree e, makeTree f, makeTree g]</span>
-<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">LettingAnon d e f g h -&gt; mconcat [makeTree d, makeTree e, makeTree f, makeTree g, makeTree h]</span></span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">LettingUnnamed d e f g h -&gt; mconcat [makeTree d, makeTree e, makeTree f, makeTree g, makeTree h]</span></span>
 <span class="lineno">   55 </span>
 <span class="lineno">   56 </span>instance HighLevelTree FindStatementNode where
 <span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">makeTree (FindStatementNode a b c) = mconcat  [makeTree a, makeTree b, makeTree c]</span></span>

@@ -157,7 +157,7 @@ span.spaces    { background: white }
 <span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">lSize &lt;- want L_size</span>
 <span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">guard (not $ all isMissing [lOf,lSize])</span>
 <span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">expr &lt;- parseExpression</span>
-<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">return $ LettingAnon lNew lType lOf lSize expr</span>
+<span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">return $ LettingUnnamed lNew lType lOf lSize expr</span>
 <span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">finishEnum = do</span>
 <span class="lineno">  143 </span><span class="spaces">        </span><span class="istickedoff">lNew &lt;- want L_new</span>
 <span class="lineno">  144 </span><span class="spaces">        </span><span class="istickedoff">lType &lt;- want L_type</span>

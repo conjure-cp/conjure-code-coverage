@@ -184,7 +184,7 @@ span.spaces    { background: white }
 <span class="lineno">  165 </span>        LToken -- lType
 <span class="lineno">  166 </span>        LToken -- lEnum
 <span class="lineno">  167 </span>        (ListNode NameNode) -- nameList
-<span class="lineno">  168 </span>    | LettingAnon
+<span class="lineno">  168 </span>    | LettingUnnamed
 <span class="lineno">  169 </span>        LToken -- lNew
 <span class="lineno">  170 </span>        LToken -- lType
 <span class="lineno">  171 </span>        LToken -- lOf
@@ -197,13 +197,13 @@ span.spaces    { background: white }
 <span class="lineno">  178 </span><span class="spaces">        </span><span class="nottickedoff">LettingExpr en -&gt; pretty en</span>
 <span class="lineno">  179 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomain lt dn -&gt; pretty lt &lt;+&gt; pretty dn</span>
 <span class="lineno">  180 </span><span class="spaces">        </span><span class="nottickedoff">LettingEnum lt lt' lt2 ln -&gt; pretty lt &lt;+&gt; pretty lt' &lt;+&gt; pretty lt2 &lt;+&gt; pretty ln</span>
-<span class="lineno">  181 </span><span class="spaces">        </span><span class="nottickedoff">LettingAnon lt lt' lt2 lt3 en -&gt; pretty lt &lt;+&gt; pretty lt' &lt;+&gt; pretty lt2 &lt;+&gt; pretty lt3 &lt;+&gt; pretty en</span></span>
+<span class="lineno">  181 </span><span class="spaces">        </span><span class="nottickedoff">LettingUnnamed lt lt' lt2 lt3 en -&gt; pretty lt &lt;+&gt; pretty lt' &lt;+&gt; pretty lt2 &lt;+&gt; pretty lt3 &lt;+&gt; pretty en</span></span>
 <span class="lineno">  182 </span>instance Null LettingAssignmentNode where
 <span class="lineno">  183 </span>    <span class="decl"><span class="nottickedoff">isMissing x = case x of</span>
 <span class="lineno">  184 </span><span class="spaces">        </span><span class="nottickedoff">LettingExpr en -&gt; isMissing en</span>
 <span class="lineno">  185 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomain lt dn -&gt; isMissing lt &amp;&amp; isMissing dn</span>
 <span class="lineno">  186 </span><span class="spaces">        </span><span class="nottickedoff">LettingEnum l1 l2 l3 ln -&gt; all isMissing [l1, l2, l3] &amp;&amp; isMissing ln</span>
-<span class="lineno">  187 </span><span class="spaces">        </span><span class="nottickedoff">LettingAnon l1 l2 l3 l4 en -&gt; all isMissing [l1, l2, l3, l4] &amp;&amp; isMissing en</span></span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="nottickedoff">LettingUnnamed l1 l2 l3 l4 en -&gt; all isMissing [l1, l2, l3, l4] &amp;&amp; isMissing en</span></span>
 <span class="lineno">  188 </span>
 <span class="lineno">  189 </span>-- Branching on
 <span class="lineno">  190 </span>
