@@ -1386,112 +1386,110 @@ span.spaces    { background: white }
 <span class="lineno"> 1367 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Line width for pretty printing.\nDefault: 120&quot;</span></span>
 <span class="lineno"> 1368 </span><span class="spaces">        </span><span class="istickedoff">}   &amp;= name &quot;autoig&quot;</span>
 <span class="lineno"> 1369 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1370 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Generate an Essence model describing the instances of the problem class \</span></span>
-<span class="lineno"> 1371 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\defined in the input Essence model.\n\</span></span>
-<span class="lineno"> 1372 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\An error will be printed if the model has infinitely many instances.&quot;</span></span>
-<span class="lineno"> 1373 </span><span class="spaces">    </span><span class="istickedoff">, Boost</span>
-<span class="lineno"> 1374 </span><span class="spaces">        </span><span class="istickedoff">{ essence</span>
-<span class="lineno"> 1375 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1376 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;ESSENCE_FILE&quot;</span></span>
-<span class="lineno"> 1377 </span><span class="spaces">            </span><span class="istickedoff">&amp;= argPos <span class="nottickedoff">0</span></span>
-<span class="lineno"> 1378 </span><span class="spaces">        </span><span class="istickedoff">, logLevel</span>
-<span class="lineno"> 1379 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1380 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-level&quot;</span>
-<span class="lineno"> 1381 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1382 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1383 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Log level.&quot;</span></span>
-<span class="lineno"> 1384 </span><span class="spaces">        </span><span class="istickedoff">, logRuleSuccesses</span>
-<span class="lineno"> 1385 </span><span class="spaces">            </span><span class="istickedoff">= False</span>
-<span class="lineno"> 1386 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-rule-successes&quot;</span>
-<span class="lineno"> 1387 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1388 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1389 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Generate logs for rule applications.&quot;</span></span>
-<span class="lineno"> 1390 </span><span class="spaces">        </span><span class="istickedoff">, limitTime</span>
-<span class="lineno"> 1391 </span><span class="spaces">            </span><span class="istickedoff">= Nothing</span>
-<span class="lineno"> 1392 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;limit-time&quot;</span>
-<span class="lineno"> 1393 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;General&quot;</span></span>
-<span class="lineno"> 1394 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1395 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Time limit in seconds (real time).&quot;</span></span>
-<span class="lineno"> 1396 </span><span class="spaces">        </span><span class="istickedoff">, outputFormat</span>
-<span class="lineno"> 1397 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1398 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;output-format&quot;</span>
-<span class="lineno"> 1399 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1400 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1401 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;FORMAT&quot;</span></span>
-<span class="lineno"> 1402 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Format to use for output. All output formats can also be used for input.\n\</span></span>
-<span class="lineno"> 1403 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    plain: default\n\</span></span>
-<span class="lineno"> 1404 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    binary: a binary encoding\n\</span></span>
-<span class="lineno"> 1405 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    astjson: a JSON dump of the internal data structures, quite verbose\n\</span></span>
-<span class="lineno"> 1406 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    json: a simplified JSON format, only used for parameters and solutions\n\</span></span>
-<span class="lineno"> 1407 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    jsonstream: same as JSON, except in one special case. when multiple solutions are saved in a single file as json, this mode prints one solution per line\n\</span></span>
-<span class="lineno"> 1408 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    minizinc: minizinc format for data files, only used for solutions\n&quot;</span></span>
-<span class="lineno"> 1409 </span><span class="spaces">        </span><span class="istickedoff">, lineWidth</span>
-<span class="lineno"> 1410 </span><span class="spaces">            </span><span class="istickedoff">= 120</span>
-<span class="lineno"> 1411 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;line-width&quot;</span>
-<span class="lineno"> 1412 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1413 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1414 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Line width to use during pretty printing.\nDefault: 120&quot;</span></span>
-<span class="lineno"> 1415 </span><span class="spaces">        </span><span class="istickedoff">}   &amp;= name &quot;boost&quot;</span>
-<span class="lineno"> 1416 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1417 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Strengthen an Essence model as described in \&quot;Reformulating \</span></span>
-<span class="lineno"> 1418 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\Essence Specifications for Robustness\&quot;,\n\</span></span>
-<span class="lineno"> 1419 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\which aims to make search faster.&quot;</span></span>
-<span class="lineno"> 1420 </span><span class="spaces">    </span><span class="istickedoff">, Streamlining</span>
-<span class="lineno"> 1421 </span><span class="spaces">        </span><span class="istickedoff">{ essence</span>
-<span class="lineno"> 1422 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1423 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;ESSENCE_FILE&quot;</span></span>
-<span class="lineno"> 1424 </span><span class="spaces">            </span><span class="istickedoff">&amp;= argPos <span class="nottickedoff">0</span></span>
-<span class="lineno"> 1425 </span><span class="spaces">        </span><span class="istickedoff">, logLevel</span>
-<span class="lineno"> 1426 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1427 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-level&quot;</span>
-<span class="lineno"> 1428 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1429 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1430 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Log level.&quot;</span></span>
-<span class="lineno"> 1431 </span><span class="spaces">        </span><span class="istickedoff">, limitTime</span>
-<span class="lineno"> 1432 </span><span class="spaces">            </span><span class="istickedoff">= Nothing</span>
-<span class="lineno"> 1433 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;limit-time&quot;</span>
-<span class="lineno"> 1434 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;General&quot;</span></span>
-<span class="lineno"> 1435 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1436 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Time limit in seconds (real time).&quot;</span></span>
-<span class="lineno"> 1437 </span><span class="spaces">        </span><span class="istickedoff">, outputFormat</span>
-<span class="lineno"> 1438 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
-<span class="lineno"> 1439 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;output-format&quot;</span>
-<span class="lineno"> 1440 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1441 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1442 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;FORMAT&quot;</span></span>
-<span class="lineno"> 1443 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Conjure's output can be in multiple formats.\n\</span></span>
-<span class="lineno"> 1444 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    plain : The default\n\</span></span>
-<span class="lineno"> 1445 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    binary: A binary encoding of the Essence output.\n\</span></span>
-<span class="lineno"> 1446 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            It can be read back in by Conjure.\n\</span></span>
-<span class="lineno"> 1447 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    json  : A json encoding of the Essence output.\n\</span></span>
-<span class="lineno"> 1448 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            It can be used by other tools integrating with Conjure\n\</span></span>
-<span class="lineno"> 1449 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            in order to avoid having to parse textual Essence.&quot;</span></span>
-<span class="lineno"> 1450 </span><span class="spaces">        </span><span class="istickedoff">, lineWidth</span>
-<span class="lineno"> 1451 </span><span class="spaces">            </span><span class="istickedoff">= 120</span>
-<span class="lineno"> 1452 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;line-width&quot;</span>
-<span class="lineno"> 1453 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
-<span class="lineno"> 1454 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1455 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Line width to use during pretty printing.\nDefault: 120&quot;</span></span>
-<span class="lineno"> 1456 </span><span class="spaces">        </span><span class="istickedoff">}   &amp;= name &quot;streamlining&quot;</span>
-<span class="lineno"> 1457 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
-<span class="lineno"> 1458 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Generate streamlined Essence models.&quot;</span></span>
-<span class="lineno"> 1459 </span><span class="spaces">    </span><span class="istickedoff">, LSP {</span>
-<span class="lineno"> 1460 </span><span class="spaces">        </span><span class="istickedoff">logLevel = def,</span>
-<span class="lineno"> 1461 </span><span class="spaces">        </span><span class="istickedoff">limitTime = Nothing</span>
-<span class="lineno"> 1462 </span><span class="spaces">    </span><span class="istickedoff">} &amp;= name &quot;lsp&quot;</span>
-<span class="lineno"> 1463 </span><span class="spaces">    </span><span class="istickedoff">]      &amp;= program <span class="nottickedoff">&quot;conjure&quot;</span></span>
-<span class="lineno"> 1464 </span><span class="spaces">           </span><span class="istickedoff">&amp;= helpArg [explicit, name &quot;help&quot;]</span>
-<span class="lineno"> 1465 </span><span class="spaces">           </span><span class="istickedoff">&amp;= versionArg [explicit, name &quot;version&quot;]</span>
-<span class="lineno"> 1466 </span><span class="spaces">           </span><span class="istickedoff">&amp;= summary (unlines [ &quot;Conjure: The Automated Constraint Modelling Tool&quot;</span>
-<span class="lineno"> 1467 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Release version &quot; ++ showVersion version</span></span>
-<span class="lineno"> 1468 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Repository version &quot; ++ repositoryVersion</span></span>
-<span class="lineno"> 1469 </span><span class="spaces">                               </span><span class="istickedoff">])</span>
-<span class="lineno"> 1470 </span><span class="spaces">           </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;The command line interface of Conjure takes a command name as the first argument \</span></span>
-<span class="lineno"> 1471 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\followed by more arguments depending on the command.\n\</span></span>
-<span class="lineno"> 1472 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\This help text gives a list of the available commands.\n\</span></span>
-<span class="lineno"> 1473 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For details of a command, pass the --help flag after the command name.\n\</span></span>
-<span class="lineno"> 1474 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For example: 'conjure translate-solution --help'&quot;</span></span></span>
-<span class="lineno"> 1475 </span>
+<span class="lineno"> 1370 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Functionality to support the AutoIG workflow.&quot;</span></span>
+<span class="lineno"> 1371 </span><span class="spaces">    </span><span class="istickedoff">, Boost</span>
+<span class="lineno"> 1372 </span><span class="spaces">        </span><span class="istickedoff">{ essence</span>
+<span class="lineno"> 1373 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1374 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;ESSENCE_FILE&quot;</span></span>
+<span class="lineno"> 1375 </span><span class="spaces">            </span><span class="istickedoff">&amp;= argPos <span class="nottickedoff">0</span></span>
+<span class="lineno"> 1376 </span><span class="spaces">        </span><span class="istickedoff">, logLevel</span>
+<span class="lineno"> 1377 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1378 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-level&quot;</span>
+<span class="lineno"> 1379 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1380 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1381 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Log level.&quot;</span></span>
+<span class="lineno"> 1382 </span><span class="spaces">        </span><span class="istickedoff">, logRuleSuccesses</span>
+<span class="lineno"> 1383 </span><span class="spaces">            </span><span class="istickedoff">= False</span>
+<span class="lineno"> 1384 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-rule-successes&quot;</span>
+<span class="lineno"> 1385 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1386 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1387 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Generate logs for rule applications.&quot;</span></span>
+<span class="lineno"> 1388 </span><span class="spaces">        </span><span class="istickedoff">, limitTime</span>
+<span class="lineno"> 1389 </span><span class="spaces">            </span><span class="istickedoff">= Nothing</span>
+<span class="lineno"> 1390 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;limit-time&quot;</span>
+<span class="lineno"> 1391 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;General&quot;</span></span>
+<span class="lineno"> 1392 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1393 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Time limit in seconds (real time).&quot;</span></span>
+<span class="lineno"> 1394 </span><span class="spaces">        </span><span class="istickedoff">, outputFormat</span>
+<span class="lineno"> 1395 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1396 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;output-format&quot;</span>
+<span class="lineno"> 1397 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1398 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1399 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;FORMAT&quot;</span></span>
+<span class="lineno"> 1400 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Format to use for output. All output formats can also be used for input.\n\</span></span>
+<span class="lineno"> 1401 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    plain: default\n\</span></span>
+<span class="lineno"> 1402 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    binary: a binary encoding\n\</span></span>
+<span class="lineno"> 1403 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    astjson: a JSON dump of the internal data structures, quite verbose\n\</span></span>
+<span class="lineno"> 1404 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    json: a simplified JSON format, only used for parameters and solutions\n\</span></span>
+<span class="lineno"> 1405 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    jsonstream: same as JSON, except in one special case. when multiple solutions are saved in a single file as json, this mode prints one solution per line\n\</span></span>
+<span class="lineno"> 1406 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    minizinc: minizinc format for data files, only used for solutions\n&quot;</span></span>
+<span class="lineno"> 1407 </span><span class="spaces">        </span><span class="istickedoff">, lineWidth</span>
+<span class="lineno"> 1408 </span><span class="spaces">            </span><span class="istickedoff">= 120</span>
+<span class="lineno"> 1409 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;line-width&quot;</span>
+<span class="lineno"> 1410 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1411 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1412 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Line width to use during pretty printing.\nDefault: 120&quot;</span></span>
+<span class="lineno"> 1413 </span><span class="spaces">        </span><span class="istickedoff">}   &amp;= name &quot;boost&quot;</span>
+<span class="lineno"> 1414 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1415 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Strengthen an Essence model as described in \&quot;Reformulating \</span></span>
+<span class="lineno"> 1416 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\Essence Specifications for Robustness\&quot;,\n\</span></span>
+<span class="lineno"> 1417 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\which aims to make search faster.&quot;</span></span>
+<span class="lineno"> 1418 </span><span class="spaces">    </span><span class="istickedoff">, Streamlining</span>
+<span class="lineno"> 1419 </span><span class="spaces">        </span><span class="istickedoff">{ essence</span>
+<span class="lineno"> 1420 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1421 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;ESSENCE_FILE&quot;</span></span>
+<span class="lineno"> 1422 </span><span class="spaces">            </span><span class="istickedoff">&amp;= argPos <span class="nottickedoff">0</span></span>
+<span class="lineno"> 1423 </span><span class="spaces">        </span><span class="istickedoff">, logLevel</span>
+<span class="lineno"> 1424 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1425 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;log-level&quot;</span>
+<span class="lineno"> 1426 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1427 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1428 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Log level.&quot;</span></span>
+<span class="lineno"> 1429 </span><span class="spaces">        </span><span class="istickedoff">, limitTime</span>
+<span class="lineno"> 1430 </span><span class="spaces">            </span><span class="istickedoff">= Nothing</span>
+<span class="lineno"> 1431 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;limit-time&quot;</span>
+<span class="lineno"> 1432 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;General&quot;</span></span>
+<span class="lineno"> 1433 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1434 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Time limit in seconds (real time).&quot;</span></span>
+<span class="lineno"> 1435 </span><span class="spaces">        </span><span class="istickedoff">, outputFormat</span>
+<span class="lineno"> 1436 </span><span class="spaces">            </span><span class="istickedoff">= def</span>
+<span class="lineno"> 1437 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;output-format&quot;</span>
+<span class="lineno"> 1438 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1439 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1440 </span><span class="spaces">            </span><span class="istickedoff">&amp;= typ <span class="nottickedoff">&quot;FORMAT&quot;</span></span>
+<span class="lineno"> 1441 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Conjure's output can be in multiple formats.\n\</span></span>
+<span class="lineno"> 1442 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    plain : The default\n\</span></span>
+<span class="lineno"> 1443 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    binary: A binary encoding of the Essence output.\n\</span></span>
+<span class="lineno"> 1444 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            It can be read back in by Conjure.\n\</span></span>
+<span class="lineno"> 1445 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\    json  : A json encoding of the Essence output.\n\</span></span>
+<span class="lineno"> 1446 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            It can be used by other tools integrating with Conjure\n\</span></span>
+<span class="lineno"> 1447 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">\            in order to avoid having to parse textual Essence.&quot;</span></span>
+<span class="lineno"> 1448 </span><span class="spaces">        </span><span class="istickedoff">, lineWidth</span>
+<span class="lineno"> 1449 </span><span class="spaces">            </span><span class="istickedoff">= 120</span>
+<span class="lineno"> 1450 </span><span class="spaces">            </span><span class="istickedoff">&amp;= name &quot;line-width&quot;</span>
+<span class="lineno"> 1451 </span><span class="spaces">            </span><span class="istickedoff">&amp;= groupname <span class="nottickedoff">&quot;Logging &amp; Output&quot;</span></span>
+<span class="lineno"> 1452 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1453 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Line width to use during pretty printing.\nDefault: 120&quot;</span></span>
+<span class="lineno"> 1454 </span><span class="spaces">        </span><span class="istickedoff">}   &amp;= name &quot;streamlining&quot;</span>
+<span class="lineno"> 1455 </span><span class="spaces">            </span><span class="istickedoff">&amp;= explicit</span>
+<span class="lineno"> 1456 </span><span class="spaces">            </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;Generate streamlined Essence models.&quot;</span></span>
+<span class="lineno"> 1457 </span><span class="spaces">    </span><span class="istickedoff">, LSP {</span>
+<span class="lineno"> 1458 </span><span class="spaces">        </span><span class="istickedoff">logLevel = def,</span>
+<span class="lineno"> 1459 </span><span class="spaces">        </span><span class="istickedoff">limitTime = Nothing</span>
+<span class="lineno"> 1460 </span><span class="spaces">    </span><span class="istickedoff">} &amp;= name &quot;lsp&quot;</span>
+<span class="lineno"> 1461 </span><span class="spaces">    </span><span class="istickedoff">]      &amp;= program <span class="nottickedoff">&quot;conjure&quot;</span></span>
+<span class="lineno"> 1462 </span><span class="spaces">           </span><span class="istickedoff">&amp;= helpArg [explicit, name &quot;help&quot;]</span>
+<span class="lineno"> 1463 </span><span class="spaces">           </span><span class="istickedoff">&amp;= versionArg [explicit, name &quot;version&quot;]</span>
+<span class="lineno"> 1464 </span><span class="spaces">           </span><span class="istickedoff">&amp;= summary (unlines [ &quot;Conjure: The Automated Constraint Modelling Tool&quot;</span>
+<span class="lineno"> 1465 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Release version &quot; ++ showVersion version</span></span>
+<span class="lineno"> 1466 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Repository version &quot; ++ repositoryVersion</span></span>
+<span class="lineno"> 1467 </span><span class="spaces">                               </span><span class="istickedoff">])</span>
+<span class="lineno"> 1468 </span><span class="spaces">           </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;The command line interface of Conjure takes a command name as the first argument \</span></span>
+<span class="lineno"> 1469 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\followed by more arguments depending on the command.\n\</span></span>
+<span class="lineno"> 1470 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\This help text gives a list of the available commands.\n\</span></span>
+<span class="lineno"> 1471 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For details of a command, pass the --help flag after the command name.\n\</span></span>
+<span class="lineno"> 1472 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For example: 'conjure translate-solution --help'&quot;</span></span></span>
+<span class="lineno"> 1473 </span>
 
 </pre>
 </body>
