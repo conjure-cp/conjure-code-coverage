@@ -19,24 +19,20 @@ span.spaces    { background: white }
 <pre>
 <span class="lineno">    1 </span>{-# LANGUAGE RecordWildCards #-}
 <span class="lineno">    2 </span>
-<span class="lineno">    3 </span>module Conjure.Language.ParserC (   
-<span class="lineno">    4 </span>    parseModel ) where
-<span class="lineno">    5 </span>
-<span class="lineno">    6 </span>-- conjure
-<span class="lineno">    7 </span>import Conjure.Prelude
-<span class="lineno">    8 </span>import Conjure.Language.Definition
-<span class="lineno">    9 </span>
-<span class="lineno">   10 </span>import qualified Conjure.Language.Validator as V
-<span class="lineno">   11 </span>import Conjure.Language.AST.Syntax (ProgramTree)
-<span class="lineno">   12 </span>import Conjure.Language.Parser (Pipeline)
-<span class="lineno">   13 </span>import Conjure.Language.AST.ASTParser (parseProgram)
+<span class="lineno">    3 </span>module Conjure.Language.ParserC
+<span class="lineno">    4 </span>  ( parseModel,
+<span class="lineno">    5 </span>  )
+<span class="lineno">    6 </span>where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>import Conjure.Language.AST.ASTParser (parseProgram)
+<span class="lineno">    9 </span>import Conjure.Language.AST.Syntax (ProgramTree)
+<span class="lineno">   10 </span>import Conjure.Language.Definition
+<span class="lineno">   11 </span>import Conjure.Language.Parser (Pipeline)
+<span class="lineno">   12 </span>import Conjure.Language.Validator qualified as V
+<span class="lineno">   13 </span>import Conjure.Prelude
 <span class="lineno">   14 </span>
-<span class="lineno">   15 </span>
-<span class="lineno">   16 </span>
-<span class="lineno">   17 </span>
-<span class="lineno">   18 </span>
-<span class="lineno">   19 </span>parseModel :: Pipeline ProgramTree Model
-<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">parseModel = (parseProgram,V.validateModel,False)</span></span>
+<span class="lineno">   15 </span>parseModel :: Pipeline ProgramTree Model
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">parseModel = (parseProgram, V.validateModel, False)</span></span>
 
 </pre>
 </body>
