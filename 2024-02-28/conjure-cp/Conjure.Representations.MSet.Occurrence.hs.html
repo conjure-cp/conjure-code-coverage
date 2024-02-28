@@ -29,7 +29,7 @@ span.spaces    { background: white }
 <span class="lineno">   10 </span>
 <span class="lineno">   11 </span>
 <span class="lineno">   12 </span>msetOccurrence :: forall m . (MonadFailDoc m, NameGen m) =&gt; Representation m
-<span class="lineno">   13 </span><span class="decl"><span class="istickedoff">msetOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> <span class="nottickedoff">up</span> <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   13 </span><span class="decl"><span class="istickedoff">msetOccurrence = Representation chck downD structuralCons <span class="nottickedoff">downC</span> up <span class="nottickedoff">symmetryOrdering</span></span>
 <span class="lineno">   14 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   15 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -103,32 +103,32 @@ span.spaces    { background: white }
 <span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">downC _ = na &quot;{downC} Occurrence&quot;</span></span>
 <span class="lineno">   85 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, domain@(DomainMSet _ _ (DomainInt t intRanges)))=</span></span>
-<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case lookup (outName domain name) ctxt of</span></span>
-<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just constantMatrix -&gt;</span></span>
-<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case viewConstantMatrix constantMatrix of</span></span>
-<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">Just (_, vals) -&gt; do</span></span>
-<span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">innerDomainVals &lt;- valuesInIntDomain intRanges</span></span>
-<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">return (name, ConstantAbstract $ AbsLitMSet $ concat</span></span>
-<span class="lineno">   94 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">[ case viewConstantInt x of</span></span>
-<span class="lineno">   95 </span><span class="spaces">                                                </span><span class="istickedoff"><span class="nottickedoff">Just n -&gt; replicate (fromInteger n) (ConstantInt t v)</span></span>
-<span class="lineno">   96 </span><span class="spaces">                                                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; []</span></span>
-<span class="lineno">   97 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">| (v,x) &lt;- zip innerDomainVals vals</span></span>
-<span class="lineno">   98 </span><span class="spaces">                                            </span><span class="istickedoff"><span class="nottickedoff">] )</span></span>
-<span class="lineno">   99 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc $ vcat</span></span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainMSet _ _ (DomainInt t intRanges)))=</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
+<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">Just constantMatrix -&gt;</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constantMatrix of</span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt; do</span>
+<span class="lineno">   92 </span><span class="spaces">                            </span><span class="istickedoff">innerDomainVals &lt;- valuesInIntDomain intRanges</span>
+<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract $ AbsLitMSet $ concat</span>
+<span class="lineno">   94 </span><span class="spaces">                                            </span><span class="istickedoff">[ case viewConstantInt x of</span>
+<span class="lineno">   95 </span><span class="spaces">                                                </span><span class="istickedoff">Just n -&gt; replicate (fromInteger n) (ConstantInt <span class="nottickedoff">t</span> v)</span>
+<span class="lineno">   96 </span><span class="spaces">                                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">[]</span></span>
+<span class="lineno">   97 </span><span class="spaces">                                            </span><span class="istickedoff">| (v,x) &lt;- zip innerDomainVals vals</span>
+<span class="lineno">   98 </span><span class="spaces">                                            </span><span class="istickedoff">] )</span>
+<span class="lineno">   99 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  100 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  101 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constantMatrix</span></span>
 <span class="lineno">  102 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  103 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  104 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  105 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ vcat $</span></span>
+<span class="lineno">  105 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
 <span class="lineno">  106 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in MSet Occurrence up)&quot;</span></span>
 <span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  109 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  110 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  111 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up _ _ = na &quot;{up} Occurrence&quot;</span></span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} Occurrence&quot;</span></span>
 <span class="lineno">  113 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
 <span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do </span></span>
