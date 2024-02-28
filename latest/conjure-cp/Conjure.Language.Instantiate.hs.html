@@ -130,9 +130,9 @@ span.spaces    { background: white }
 <span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff">concatMapM</span>
 <span class="lineno">  112 </span><span class="spaces">                </span><span class="istickedoff">(\ val -&gt; scope $ do</span>
 <span class="lineno">  113 </span><span class="spaces">                    </span><span class="istickedoff">valid &lt;- bind pat val</span>
-<span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">if valid</span>
+<span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">if <span class="tickonlytrue">valid</span></span>
 <span class="lineno">  115 </span><span class="spaces">                        </span><span class="istickedoff">then loop rest</span>
-<span class="lineno">  116 </span><span class="spaces">                        </span><span class="istickedoff">else return [] )</span>
+<span class="lineno">  116 </span><span class="spaces">                        </span><span class="istickedoff">else <span class="nottickedoff">return []</span> )</span>
 <span class="lineno">  117 </span><span class="spaces">                </span><span class="istickedoff">enumeration</span>
 <span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">loop (Condition expr : rest) = do</span>
 <span class="lineno">  119 </span><span class="spaces">            </span><span class="istickedoff">constant &lt;- instantiateE expr</span>
@@ -256,36 +256,36 @@ span.spaces    { background: white }
 <span class="lineno">  237 </span>    Domain r Expression -&gt; m (Domain r Constant)
 <span class="lineno">  238 </span><span class="decl"><span class="istickedoff">instantiateD (DomainAny t ty) = <span class="nottickedoff">return (DomainAny t ty)</span></span>
 <span class="lineno">  239 </span><span class="spaces"></span><span class="istickedoff">instantiateD DomainBool = return DomainBool</span>
-<span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainIntE x) = do</span>
-<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff">x' &lt;- instantiateE x</span>
-<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff">let vals = case (x', viewConstantMatrix x', <span class="nottickedoff">viewConstantSet x'</span>) of</span>
-<span class="lineno">  243 </span><span class="spaces">                </span><span class="istickedoff">(ConstantInt{}, _, _) -&gt; <span class="nottickedoff">[x']</span></span>
-<span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff">(_, Just (_, xs), _) -&gt; xs</span>
-<span class="lineno">  245 </span><span class="spaces">                </span><span class="istickedoff">(_, _, Just xs) -&gt; <span class="nottickedoff">xs</span></span>
-<span class="lineno">  246 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">[]</span></span>
-<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">return (DomainInt TagInt (map RangeSingle vals))</span>
+<span class="lineno">  240 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainIntE x) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">x' &lt;- instantiateE x</span></span>
+<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let vals = case (x', viewConstantMatrix x', viewConstantSet x') of</span></span>
+<span class="lineno">  243 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(ConstantInt{}, _, _) -&gt; [x']</span></span>
+<span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(_, Just (_, xs), _) -&gt; xs</span></span>
+<span class="lineno">  245 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(_, _, Just xs) -&gt; xs</span></span>
+<span class="lineno">  246 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; []</span></span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return (DomainInt TagInt (map RangeSingle vals))</span></span>
 <span class="lineno">  248 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainInt t ranges) = DomainInt t &lt;$&gt; mapM instantiateR ranges</span>
-<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm Nothing _) = do</span>
-<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets id</span>
-<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">case lookup nm st of</span>
-<span class="lineno">  252 </span><span class="spaces">        </span><span class="istickedoff">Just (Domain dom) -&gt; instantiateD (defRepr dom)</span>
-<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff">Just _  -&gt; <span class="nottickedoff">failDoc $ (&quot;DomainEnum not found in state, Just:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
-<span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ (&quot;DomainEnum not found in state, Nothing:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
-<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm rs0 _) = do</span>
-<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">let fmap4 = fmap . fmap . fmap . fmap</span>
-<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">let e2c' x = either <span class="nottickedoff">bug</span> id (e2c x)</span>
-<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">rs &lt;- transformBiM (fmap Constant . instantiateE ) (rs0 :: Maybe [Range Expression])</span>
-<span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff">|&gt; fmap4 e2c'</span>
-<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff">st &lt;- gets <span class="nottickedoff">id</span></span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">mp &lt;- forM (universeBi rs :: [Name]) $ <span class="nottickedoff">\ n -&gt; case lookup n st of</span></span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm Nothing _) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">st &lt;- gets id</span></span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">case lookup nm st of</span></span>
+<span class="lineno">  252 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Just (Domain dom) -&gt; instantiateD (defRepr dom)</span></span>
+<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Just _  -&gt; failDoc $ (&quot;DomainEnum not found in state, Just:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
+<span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ (&quot;DomainEnum not found in state, Nothing:&quot; &lt;+&gt; pretty nm) &lt;++&gt; vcat (map pretty st)</span></span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainEnum nm rs0 _) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let fmap4 = fmap . fmap . fmap . fmap</span></span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let e2c' x = either bug id (e2c x)</span></span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">rs &lt;- transformBiM (fmap Constant . instantiateE ) (rs0 :: Maybe [Range Expression])</span></span>
+<span class="lineno">  259 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">|&gt; fmap4 e2c'</span></span>
+<span class="lineno">  260 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">st &lt;- gets id</span></span>
+<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">mp &lt;- forM (universeBi rs :: [Name]) $ \ n -&gt; case lookup n st of</span></span>
 <span class="lineno">  262 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just (Constant (ConstantInt _ i)) -&gt; return (n, i)</span></span>
 <span class="lineno">  263 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ &quot;No value for member of enum domain:&quot; &lt;+&gt; pretty n</span></span>
 <span class="lineno">  264 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just c  -&gt; failDoc $ vcat [ &quot;Incompatible value for member of enum domain:&quot; &lt;+&gt; pretty nm</span></span>
 <span class="lineno">  265 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;    Looking up for member:&quot; &lt;+&gt; pretty n</span></span>
 <span class="lineno">  266 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">, &quot;    Expected an integer, but got:&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  267 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">return (DomainEnum <span class="nottickedoff">nm</span> (rs :: Maybe [Range Constant]) (Just <span class="nottickedoff">mp</span>))</span>
-<span class="lineno">  269 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainUnnamed nm s) = DomainUnnamed <span class="nottickedoff">nm</span> &lt;$&gt; instantiateE s</span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">return (DomainEnum nm (rs :: Maybe [Range Constant]) (Just mp))</span></span>
+<span class="lineno">  269 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainUnnamed nm s) = <span class="nottickedoff">DomainUnnamed nm &lt;$&gt; instantiateE s</span></span>
 <span class="lineno">  270 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainTuple inners) = DomainTuple &lt;$&gt; mapM instantiateD inners</span>
 <span class="lineno">  271 </span><span class="spaces"></span><span class="istickedoff">instantiateD (DomainRecord  inners) = DomainRecord  &lt;$&gt; sequence [ do d' &lt;- instantiateD d ; return (n,d')</span>
 <span class="lineno">  272 </span><span class="spaces">                                                                 </span><span class="istickedoff">| (n,d) &lt;- inners ]</span>
@@ -352,10 +352,10 @@ span.spaces    { background: white }
 <span class="lineno">  333 </span>    NameGen m =&gt;
 <span class="lineno">  334 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
 <span class="lineno">  335 </span>    OccurAttr Expression -&gt; m (OccurAttr Constant)
-<span class="lineno">  336 </span><span class="decl"><span class="istickedoff">instantiateOccurAttr OccurAttr_None = return OccurAttr_None</span>
-<span class="lineno">  337 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinOccur x) = OccurAttr_MinOccur &lt;$&gt; instantiateE x</span>
+<span class="lineno">  336 </span><span class="decl"><span class="istickedoff">instantiateOccurAttr OccurAttr_None = <span class="nottickedoff">return OccurAttr_None</span></span>
+<span class="lineno">  337 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinOccur x) = <span class="nottickedoff">OccurAttr_MinOccur &lt;$&gt; instantiateE x</span></span>
 <span class="lineno">  338 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MaxOccur x) = OccurAttr_MaxOccur &lt;$&gt; instantiateE x</span>
-<span class="lineno">  339 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinMaxOccur x y) = OccurAttr_MinMaxOccur &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span>
+<span class="lineno">  339 </span><span class="spaces"></span><span class="istickedoff">instantiateOccurAttr (OccurAttr_MinMaxOccur x y) = <span class="nottickedoff">OccurAttr_MinMaxOccur &lt;$&gt; instantiateE x &lt;*&gt; instantiateE y</span></span></span>
 <span class="lineno">  340 </span>
 <span class="lineno">  341 </span>
 <span class="lineno">  342 </span>instantiateFunctionAttr ::
@@ -433,8 +433,8 @@ span.spaces    { background: white }
 <span class="lineno">  414 </span><span class="spaces"></span><span class="istickedoff">bind (AbsPatMatrix pats) (viewConstantMatrix -&gt; Just (_, vals))</span>
 <span class="lineno">  415 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">length pats == length vals</span> = <span class="nottickedoff">and &lt;$&gt; zipWithM bind pats vals</span></span>
 <span class="lineno">  416 </span><span class="spaces"></span><span class="istickedoff">bind (AbsPatSet pats) (viewConstantSet -&gt; Just vals)</span>
-<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">| length pats == length vals = and &lt;$&gt; zipWithM bind pats vals</span>
-<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>                  = return False</span>
+<span class="lineno">  417 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">length pats == length vals</span> = <span class="nottickedoff">and &lt;$&gt; zipWithM bind pats vals</span></span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span>                  = <span class="nottickedoff">return False</span></span>
 <span class="lineno">  419 </span><span class="spaces"></span><span class="istickedoff">bind pat val = <span class="nottickedoff">bug $ &quot;Instantiate.bind:&quot; &lt;++&gt; vcat [&quot;pat:&quot; &lt;+&gt; pretty pat, &quot;val:&quot; &lt;+&gt; pretty val]</span></span></span>
 <span class="lineno">  420 </span>
 <span class="lineno">  421 </span>

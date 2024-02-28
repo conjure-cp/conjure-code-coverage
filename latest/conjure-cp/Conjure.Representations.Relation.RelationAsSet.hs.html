@@ -36,7 +36,7 @@ span.spaces    { background: white }
 <span class="lineno">   17 </span>    -&gt; (forall r x . ReprOptionsFunction m r x)
 <span class="lineno">   18 </span>    -&gt; Bool
 <span class="lineno">   19 </span>    -&gt; Representation m
-<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">relationAsSet dispatch reprOptions useLevels = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   20 </span><span class="decl"><span class="istickedoff">relationAsSet dispatch reprOptions useLevels = Representation chck downD structuralCons downC <span class="nottickedoff">up</span> <span class="nottickedoff">symmetryOrdering</span></span>
 <span class="lineno">   21 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   23 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -129,26 +129,26 @@ span.spaces    { background: white }
 <span class="lineno">  110 </span><span class="spaces">                                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  111 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainRelation Relation_AsSet{} _ _)) =</span>
-<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
-<span class="lineno">  115 </span><span class="spaces">                </span><span class="istickedoff">Just (viewConstantSet -&gt; Just tuples) -&gt; do</span>
-<span class="lineno">  116 </span><span class="spaces">                    </span><span class="istickedoff">vals &lt;- mapM viewConstantTuple tuples</span>
-<span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff">return (name, ConstantAbstract (AbsLitRelation vals))</span>
-<span class="lineno">  118 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, domain@(DomainRelation Relation_AsSet{} _ _)) =</span></span>
+<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case lookup (outName domain name) ctxt of</span></span>
+<span class="lineno">  115 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just (viewConstantSet -&gt; Just tuples) -&gt; do</span></span>
+<span class="lineno">  116 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">vals &lt;- mapM viewConstantTuple tuples</span></span>
+<span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return (name, ConstantAbstract (AbsLitRelation vals))</span></span>
+<span class="lineno">  118 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ vcat $</span></span>
 <span class="lineno">  119 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in RelationAsSet up)&quot;</span></span>
 <span class="lineno">  120 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  121 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  122 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  123 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  124 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  125 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
+<span class="lineno">  125 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just constant -&gt; failDoc $ vcat $</span></span>
 <span class="lineno">  126 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Incompatible value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
 <span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected a set value, but got:&quot; &lt;++&gt; pretty constant</span></span>
 <span class="lineno">  130 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  131 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">up _ (name, domain) = <span class="nottickedoff">na $ vcat [ &quot;{up} RelationAsSet&quot;</span></span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up _ (name, domain) = na $ vcat [ &quot;{up} RelationAsSet&quot;</span></span>
 <span class="lineno">  133 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;name:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  134 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  135 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>

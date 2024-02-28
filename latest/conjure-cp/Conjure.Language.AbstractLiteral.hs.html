@@ -186,7 +186,7 @@ span.spaces    { background: white }
 <span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitSet         [] ) = return (TypeSet TypeAny)</span>
 <span class="lineno">  168 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitSet         xs ) = TypeSet      &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
 <span class="lineno">  169 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMSet        [] ) = return (TypeMSet TypeAny)</span>
+<span class="lineno">  170 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitMSet        [] ) = return <span class="nottickedoff">(TypeMSet TypeAny)</span></span>
 <span class="lineno">  171 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(AbsLitMSet        xs ) = TypeMSet     &lt;$&gt; (homoType <span class="nottickedoff">(pretty p)</span> =&lt;&lt; mapM typeOf xs)</span>
 <span class="lineno">  172 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">typeOf   (AbsLitFunction    [] ) = return (TypeFunction TypeAny TypeAny)</span>

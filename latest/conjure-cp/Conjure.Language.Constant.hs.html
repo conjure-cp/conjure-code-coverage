@@ -96,7 +96,7 @@ span.spaces    { background: white }
 <span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantBool a) (ConstantBool b) = compare a b</span>
 <span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantInt _ a) (ConstantInt _ b) = compare a b</span>
 <span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantEnum _ aVals aVal) (ConstantEnum _ bVals bVal) =</span>
-<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">compare (elemIndex aVal aVals, aVal) (elemIndex bVal bVals, bVal)</span>
+<span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">compare (elemIndex aVal aVals, aVal) (elemIndex bVal bVals, bVal)</span></span>
 <span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantField a1 a2) (ConstantField b1 b2) = <span class="nottickedoff">compare (a1,a2) (b1,b2)</span></span>
 <span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">compare (ConstantAbstract a) (ConstantAbstract b) = compare a b</span>
 <span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">compare (DomainInConstant a) (DomainInConstant b) = <span class="nottickedoff">compare a b</span></span>
@@ -108,7 +108,7 @@ span.spaces    { background: white }
 <span class="lineno">   89 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Constant</span></span></span></span>
 <span class="lineno">   90 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Hashable  Constant</span></span></span></span>
 <span class="lineno">   91 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Constant</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">   92 </span>instance <span class="decl"><span class="istickedoff">FromJSON  Constant</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   92 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  Constant</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   93 </span>
 <span class="lineno">   94 </span>instance SimpleJSON Constant where
 <span class="lineno">   95 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON c =</span>
@@ -316,7 +316,7 @@ span.spaces    { background: white }
 <span class="lineno">  297 </span><span class="decl"><span class="istickedoff">domainSizeOfRanges = fmap genericLength . valuesInIntDomain</span></span>
 <span class="lineno">  298 </span>
 <span class="lineno">  299 </span>instance DomainSizeOf Constant Constant where
-<span class="lineno">  300 </span>    <span class="decl"><span class="istickedoff">domainSizeOf = fmap (ConstantInt <span class="nottickedoff">TagInt</span>) . domainSizeOf</span></span>
+<span class="lineno">  300 </span>    <span class="decl"><span class="nottickedoff">domainSizeOf = fmap (ConstantInt TagInt) . domainSizeOf</span></span>
 <span class="lineno">  301 </span>
 <span class="lineno">  302 </span>instance <span class="decl"><span class="nottickedoff">Pretty Constant</span></span> where
 <span class="lineno">  303 </span>
@@ -343,7 +343,7 @@ span.spaces    { background: white }
 <span class="lineno">  324 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantBool False)          = &quot;false&quot;</span>
 <span class="lineno">  325 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantBool True )          = &quot;true&quot;</span>
 <span class="lineno">  326 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantInt _ x   )          = pretty x</span>
-<span class="lineno">  327 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantEnum _ _ x)          = pretty x</span>
+<span class="lineno">  327 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantEnum _ _ x)          = <span class="nottickedoff">pretty x</span></span>
 <span class="lineno">  328 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantField n _)           = pretty n</span>
 <span class="lineno">  329 </span><span class="spaces">    </span><span class="istickedoff">pretty (ConstantAbstract x)          = pretty x</span>
 <span class="lineno">  330 </span><span class="spaces">    </span><span class="istickedoff">pretty (DomainInConstant d)          = <span class="nottickedoff">&quot;`&quot; &lt;&gt; pretty d &lt;&gt; &quot;`&quot;</span></span>
@@ -363,7 +363,7 @@ span.spaces    { background: white }
 <span class="lineno">  344 </span><span class="spaces">    </span><span class="istickedoff">boolOut ConstantUndefined{} = return False</span>
 <span class="lineno">  345 </span><span class="spaces">    </span><span class="istickedoff">boolOut c = <span class="nottickedoff">failDoc  (&quot;Expecting a boolean, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  346 </span>
-<span class="lineno">  347 </span>    <span class="decl"><span class="istickedoff">fromList xs = ConstantAbstract $ AbsLitMatrix <span class="nottickedoff">(mkDomainIntB 1 (fromInt $ genericLength xs))</span> xs</span></span>
+<span class="lineno">  347 </span>    <span class="decl"><span class="nottickedoff">fromList xs = ConstantAbstract $ AbsLitMatrix (mkDomainIntB 1 (fromInt $ genericLength xs)) xs</span></span>
 <span class="lineno">  348 </span>    <span class="decl"><span class="istickedoff">listOut (ConstantAbstract (AbsLitMatrix _ xs)) = return xs</span>
 <span class="lineno">  349 </span><span class="spaces">    </span><span class="istickedoff">listOut c = failDoc  <span class="nottickedoff">(&quot;Expecting a matrix literal, but found:&quot; &lt;+&gt; pretty c)</span></span></span>
 <span class="lineno">  350 </span>
@@ -388,7 +388,7 @@ span.spaces    { background: white }
 <span class="lineno">  369 </span>normaliseConstant :: Constant -&gt; Constant
 <span class="lineno">  370 </span><span class="decl"><span class="istickedoff">normaliseConstant x@ConstantBool{} = x</span>
 <span class="lineno">  371 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantInt{}  = x</span>
-<span class="lineno">  372 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantEnum{} = x</span>
+<span class="lineno">  372 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantEnum{} = <span class="nottickedoff">x</span></span>
 <span class="lineno">  373 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant x@ConstantField{} = x</span>
 <span class="lineno">  374 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant (ConstantAbstract x) = ConstantAbstract (normaliseAbsLit normaliseConstant x)</span>
 <span class="lineno">  375 </span><span class="spaces"></span><span class="istickedoff">normaliseConstant (DomainInConstant d) = DomainInConstant (normaliseDomain normaliseConstant d)</span>
@@ -459,7 +459,7 @@ span.spaces    { background: white }
 <span class="lineno">  440 </span><span class="spaces"></span><span class="istickedoff">viewConstantRecord constant = failDoc  <span class="nottickedoff">(&quot;Expecting a record, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  441 </span>
 <span class="lineno">  442 </span>viewConstantVariant :: MonadFailDoc m =&gt; Constant -&gt; m (Maybe [(Name, Domain () Constant)], Name, Constant)
-<span class="lineno">  443 </span><span class="decl"><span class="istickedoff">viewConstantVariant (ConstantAbstract (AbsLitVariant lu nm x)) = return (lu, nm, x)</span>
+<span class="lineno">  443 </span><span class="decl"><span class="istickedoff">viewConstantVariant (ConstantAbstract (AbsLitVariant lu nm x)) = return (<span class="nottickedoff">lu</span>, nm, x)</span>
 <span class="lineno">  444 </span><span class="spaces"></span><span class="istickedoff">viewConstantVariant (TypedConstant c _) = viewConstantVariant c</span>
 <span class="lineno">  445 </span><span class="spaces"></span><span class="istickedoff">viewConstantVariant constant = failDoc  <span class="nottickedoff">(&quot;Expecting a variant, but got:&quot; &lt;++&gt; pretty constant)</span></span></span>
 <span class="lineno">  446 </span>

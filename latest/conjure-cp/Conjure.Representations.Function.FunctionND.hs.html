@@ -37,7 +37,7 @@ span.spaces    { background: white }
 <span class="lineno">   18 </span>
 <span class="lineno">   19 </span>
 <span class="lineno">   20 </span>functionND :: forall m . (MonadFailDoc  m, NameGen m, ?typeCheckerMode :: TypeCheckerMode) =&gt; Representation m
-<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">functionND = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">functionND = Representation chck downD structuralCons downC <span class="nottickedoff">up</span> <span class="nottickedoff">symmetryOrdering</span></span>
 <span class="lineno">   22 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">   24 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -232,42 +232,42 @@ span.spaces    { background: white }
 <span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">downC _ = <span class="nottickedoff">na &quot;{downC} FunctionND&quot;</span></span>
 <span class="lineno">  214 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
-<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainFunction Function_ND</span>
-<span class="lineno">  217 </span><span class="spaces">                                </span><span class="istickedoff">(FunctionAttr _ PartialityAttr_Total _)</span>
-<span class="lineno">  218 </span><span class="spaces">                                </span><span class="istickedoff">innerDomainFr@(viewAsDomainTuple -&gt; Just innerDomainFrs) _))</span>
-<span class="lineno">  219 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff">| Just (mk, _inspect) &lt;- mkLensAsDomainTuple innerDomainFr =</span>
-<span class="lineno">  221 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  222 </span><span class="spaces">            </span><span class="istickedoff">case lookup (nameValues domain name) ctxt of</span>
-<span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff">Just valuesMatrix -&gt; do</span>
-<span class="lineno">  224 </span><span class="spaces">                    </span><span class="istickedoff">let</span>
-<span class="lineno">  225 </span><span class="spaces">                        </span><span class="istickedoff">allIndices :: (MonadFailDoc  m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span>
-<span class="lineno">  226 </span><span class="spaces">                        </span><span class="istickedoff">allIndices = fmap sequence . mapM domainValues</span>
-<span class="lineno">  227 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  228 </span><span class="spaces">                        </span><span class="istickedoff">index :: MonadFailDoc  m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span>
-<span class="lineno">  229 </span><span class="spaces">                        </span><span class="istickedoff">index m [] = return m</span>
-<span class="lineno">  230 </span><span class="spaces">                        </span><span class="istickedoff">index (ConstantAbstract (AbsLitMatrix indexDomain vals)) (i:is) = do</span>
-<span class="lineno">  231 </span><span class="spaces">                            </span><span class="istickedoff">froms &lt;- domainValues indexDomain</span>
-<span class="lineno">  232 </span><span class="spaces">                            </span><span class="istickedoff">case lookup i (zip froms vals) of</span>
-<span class="lineno">  233 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc &quot;Value not found. FunctionND.up.index&quot;</span></span>
-<span class="lineno">  234 </span><span class="spaces">                                </span><span class="istickedoff">Just v  -&gt; index v is</span>
-<span class="lineno">  235 </span><span class="spaces">                        </span><span class="istickedoff">index m is = <span class="nottickedoff">bug (&quot;FunctionND.up.index&quot; &lt;+&gt; pretty m &lt;+&gt; pretty (show is))</span></span>
-<span class="lineno">  236 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  237 </span><span class="spaces">                    </span><span class="istickedoff">indices  &lt;- allIndices innerDomainFrs</span>
-<span class="lineno">  238 </span><span class="spaces">                    </span><span class="istickedoff">vals     &lt;- forM indices $ \ these -&gt; do</span>
-<span class="lineno">  239 </span><span class="spaces">                        </span><span class="istickedoff">value &lt;- index valuesMatrix these</span>
-<span class="lineno">  240 </span><span class="spaces">                        </span><span class="istickedoff">return (mk these, value)</span>
-<span class="lineno">  241 </span><span class="spaces">                    </span><span class="istickedoff">return ( <span class="nottickedoff">name</span></span>
-<span class="lineno">  242 </span><span class="spaces">                           </span><span class="istickedoff">, ConstantAbstract $ AbsLitFunction vals</span>
-<span class="lineno">  243 </span><span class="spaces">                           </span><span class="istickedoff">)</span>
-<span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
+<span class="lineno">  216 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up ctxt (name, domain@(DomainFunction Function_ND</span></span>
+<span class="lineno">  217 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">(FunctionAttr _ PartialityAttr_Total _)</span></span>
+<span class="lineno">  218 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">innerDomainFr@(viewAsDomainTuple -&gt; Just innerDomainFrs) _))</span></span>
+<span class="lineno">  219 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| Just (mk, _inspect) &lt;- mkLensAsDomainTuple innerDomainFr =</span></span>
+<span class="lineno">  221 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  222 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case lookup (nameValues domain name) ctxt of</span></span>
+<span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just valuesMatrix -&gt; do</span></span>
+<span class="lineno">  224 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">  225 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">allIndices :: (MonadFailDoc  m, Pretty r) =&gt; [Domain r Constant] -&gt; m [[Constant]]</span></span>
+<span class="lineno">  226 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">allIndices = fmap sequence . mapM domainValues</span></span>
+<span class="lineno">  227 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  228 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index :: MonadFailDoc  m =&gt; Constant -&gt; [Constant] -&gt; m Constant</span></span>
+<span class="lineno">  229 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index m [] = return m</span></span>
+<span class="lineno">  230 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index (ConstantAbstract (AbsLitMatrix indexDomain vals)) (i:is) = do</span></span>
+<span class="lineno">  231 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">froms &lt;- domainValues indexDomain</span></span>
+<span class="lineno">  232 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">case lookup i (zip froms vals) of</span></span>
+<span class="lineno">  233 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc &quot;Value not found. FunctionND.up.index&quot;</span></span>
+<span class="lineno">  234 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">Just v  -&gt; index v is</span></span>
+<span class="lineno">  235 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">index m is = bug (&quot;FunctionND.up.index&quot; &lt;+&gt; pretty m &lt;+&gt; pretty (show is))</span></span>
+<span class="lineno">  236 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  237 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">indices  &lt;- allIndices innerDomainFrs</span></span>
+<span class="lineno">  238 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">vals     &lt;- forM indices $ \ these -&gt; do</span></span>
+<span class="lineno">  239 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">value &lt;- index valuesMatrix these</span></span>
+<span class="lineno">  240 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">return (mk these, value)</span></span>
+<span class="lineno">  241 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return ( name</span></span>
+<span class="lineno">  242 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">, ConstantAbstract $ AbsLitFunction vals</span></span>
+<span class="lineno">  243 </span><span class="spaces">                           </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  244 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ vcat $</span></span>
 <span class="lineno">  245 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in FunctionND up)&quot;</span></span>
 <span class="lineno">  246 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (nameValues domain name)</span></span>
 <span class="lineno">  247 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
 <span class="lineno">  248 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
 <span class="lineno">  249 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
 <span class="lineno">  250 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
-<span class="lineno">  251 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} FunctionND&quot;</span></span>
+<span class="lineno">  251 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">up _ _ = na &quot;{up} FunctionND&quot;</span></span>
 <span class="lineno">  252 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
 <span class="lineno">  254 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
@@ -293,19 +293,19 @@ span.spaces    { background: white }
 <span class="lineno">  274 </span>                                           )
 <span class="lineno">  275 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTuple (DomainTuple _) =</span>
 <span class="lineno">  276 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  277 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
+<span class="lineno">  277 </span><span class="spaces">        </span><span class="istickedoff">( <span class="nottickedoff">\ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span></span>
 <span class="lineno">  278 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
 <span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span>
 <span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
 <span class="lineno">  281 </span><span class="spaces">        </span><span class="istickedoff">)</span>
 <span class="lineno">  282 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple (DomainRecord doms) =</span>
-<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
-<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
-<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
-<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span>
-<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span></span>
+<span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">in  Just</span></span>
+<span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span></span>
+<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ val -&gt; case val of</span></span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
+<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple _ = <span class="nottickedoff">Nothing</span></span></span>
 <span class="lineno">  291 </span>
 <span class="lineno">  292 </span>
@@ -314,28 +314,28 @@ span.spaces    { background: white }
 <span class="lineno">  295 </span>mkLensAsDomainTupleS :: Domain r x -&gt; Maybe ( [Constant] -&gt; Constant             -- how to make a literal
 <span class="lineno">  296 </span>                                            , Constant -&gt; Maybe [Constant]       -- how to inspect a literal
 <span class="lineno">  297 </span>                                            )
-<span class="lineno">  298 </span><span class="decl"><span class="istickedoff">mkLensAsDomainTupleS (DomainTuple _) =</span>
-<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  300 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
-<span class="lineno">  301 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
-<span class="lineno">  302 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span></span>
-<span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
-<span class="lineno">  304 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  305 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS (DomainRecord doms) =</span>
-<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
-<span class="lineno">  307 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
-<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
-<span class="lineno">  309 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
-<span class="lineno">  310 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
-<span class="lineno">  311 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
-<span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">)</span>
-<span class="lineno">  313 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS _ =</span>
-<span class="lineno">  314 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
-<span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; case vals of</span>
-<span class="lineno">  316 </span><span class="spaces">                        </span><span class="istickedoff">[v] -&gt; v</span>
-<span class="lineno">  317 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;mkLensAsDomainTupleS&quot;</span></span>
-<span class="lineno">  318 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ v -&gt; Just [v]</span></span>
-<span class="lineno">  319 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
+<span class="lineno">  298 </span><span class="decl"><span class="nottickedoff">mkLensAsDomainTupleS (DomainTuple _) =</span>
+<span class="lineno">  299 </span><span class="spaces">    </span><span class="nottickedoff">Just</span>
+<span class="lineno">  300 </span><span class="spaces">        </span><span class="nottickedoff">( \ vals -&gt; ConstantAbstract (AbsLitTuple vals)</span>
+<span class="lineno">  301 </span><span class="spaces">        </span><span class="nottickedoff">, \ val -&gt; case val of</span>
+<span class="lineno">  302 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract (AbsLitTuple vals) -&gt; Just vals</span>
+<span class="lineno">  303 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  304 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
+<span class="lineno">  305 </span><span class="spaces"></span><span class="nottickedoff">mkLensAsDomainTupleS (DomainRecord doms) =</span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="nottickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
+<span class="lineno">  307 </span><span class="spaces">    </span><span class="nottickedoff">in  Just</span>
+<span class="lineno">  308 </span><span class="spaces">        </span><span class="nottickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
+<span class="lineno">  309 </span><span class="spaces">        </span><span class="nottickedoff">, \ val -&gt; case val of</span>
+<span class="lineno">  310 </span><span class="spaces">                </span><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span>
+<span class="lineno">  311 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  312 </span><span class="spaces">        </span><span class="nottickedoff">)</span>
+<span class="lineno">  313 </span><span class="spaces"></span><span class="nottickedoff">mkLensAsDomainTupleS _ =</span>
+<span class="lineno">  314 </span><span class="spaces">    </span><span class="nottickedoff">Just</span>
+<span class="lineno">  315 </span><span class="spaces">        </span><span class="nottickedoff">( \ vals -&gt; case vals of</span>
+<span class="lineno">  316 </span><span class="spaces">                        </span><span class="nottickedoff">[v] -&gt; v</span>
+<span class="lineno">  317 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; bug &quot;mkLensAsDomainTupleS&quot;</span>
+<span class="lineno">  318 </span><span class="spaces">        </span><span class="nottickedoff">, \ v -&gt; Just [v]</span>
+<span class="lineno">  319 </span><span class="spaces">        </span><span class="nottickedoff">)</span></span>
 
 </pre>
 </body>

@@ -86,14 +86,14 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(viewConstantIntWithTag -&gt; Just (cTag, i)) d@(DomainInt dTag rs) | <span class="tickonlytrue">cTag == dTag</span> =</span>
 <span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">let</span>
 <span class="lineno">   69 </span><span class="spaces">        </span><span class="istickedoff">intInRange RangeOpen                                          = <span class="nottickedoff">True</span></span>
-<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeSingle (ConstantInt _ a))                    = i == a</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeSingle (ConstantInt _ a))                    = <span class="nottickedoff">i == a</span></span>
 <span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeLowerBounded (ConstantInt _ a))              = i &gt;= a</span>
 <span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeUpperBounded (ConstantInt _ a))              = <span class="nottickedoff">i &lt;= a</span></span>
 <span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">intInRange (RangeBounded (ConstantInt _ a) (ConstantInt _ b)) = i &gt;= a &amp;&amp; i &lt;= b</span>
 <span class="lineno">   74 </span><span class="spaces">        </span><span class="istickedoff">intInRange _                                                   = <span class="nottickedoff">False</span></span>
 <span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">in  unless (any intInRange rs) <span class="nottickedoff">(constantNotInDomain name c d)</span></span>
 <span class="lineno">   76 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ (viewConstantIntWithTag -&gt; Just (_, i)) (DomainUnnamed _ (ConstantInt _ a)) | <span class="tickonlytrue">i &gt;= 1 &amp;&amp; i &lt;= a</span> = return <span class="nottickedoff">()</span></span>
+<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ (viewConstantIntWithTag -&gt; Just (_, i)) (DomainUnnamed _ (ConstantInt _ a)) | <span class="nottickedoff">i &gt;= 1 &amp;&amp; i &lt;= a</span> = <span class="nottickedoff">return ()</span></span>
 <span class="lineno">   78 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">   79 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain _ _ (DomainEnum _ Nothing _) = <span class="nottickedoff">return ()</span>    -- no restrictions</span>
 <span class="lineno">   80 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c d@(DomainEnum _ _ Nothing) =</span>
@@ -104,21 +104,21 @@ span.spaces    { background: white }
 <span class="lineno">   85 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">   86 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
 <span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantIntWithTag -&gt; Just (cTag, _))</span>
-<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainEnum _ (Just ranges) (Just mp)) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $ do</span>
-<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">let</span>
-<span class="lineno">   90 </span><span class="spaces">            </span><span class="istickedoff">-- lu :: MonadFailDoc m =&gt;  Name -&gt; m Constant</span>
-<span class="lineno">   91 </span><span class="spaces">            </span><span class="istickedoff">lu (ConstantEnum _ _ nm) =</span>
+<span class="lineno">   88 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainEnum _ (Just ranges) (Just mp)) = <span class="nottickedoff">nested c d $ do</span></span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">   90 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lu :: MonadFailDoc m =&gt;  Name -&gt; m Constant</span></span>
+<span class="lineno">   91 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lu (ConstantEnum _ _ nm) =</span></span>
 <span class="lineno">   92 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case lookup nm mp of</span></span>
 <span class="lineno">   93 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; failDoc $ &quot;No value for:&quot; &lt;+&gt; pretty nm</span></span>
 <span class="lineno">   94 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">Just v  -&gt; return (ConstantInt cTag v)</span></span>
-<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff">lu (ConstantInt t v) = return (ConstantInt <span class="nottickedoff">t</span> v)</span>
-<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff">lu x = <span class="nottickedoff">failDoc $ &quot;validateConstantForDomain.lu&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">   97 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff">-- lu2 :: MonadFailDoc m =&gt;  Range Name -&gt; m (Range Constant)</span>
-<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff">lu2 = mapM lu</span>
-<span class="lineno">  100 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  101 </span><span class="spaces">        </span><span class="istickedoff">rs &lt;- mapM lu2 ranges</span>
-<span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff">validateConstantForDomain <span class="nottickedoff">name</span> c (DomainInt cTag rs :: Domain r Constant)</span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lu (ConstantInt t v) = return (ConstantInt t v)</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lu x = failDoc $ &quot;validateConstantForDomain.lu&quot; &lt;+&gt; pretty x</span></span>
+<span class="lineno">   97 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- lu2 :: MonadFailDoc m =&gt;  Range Name -&gt; m (Range Constant)</span></span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">lu2 = mapM lu</span></span>
+<span class="lineno">  100 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  101 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">rs &lt;- mapM lu2 ranges</span></span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">validateConstantForDomain name c (DomainInt cTag rs :: Domain r Constant)</span></span>
 <span class="lineno">  103 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  104 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
 <span class="lineno">  105 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantTuple -&gt; Just cs)</span>
@@ -158,12 +158,12 @@ span.spaces    { background: white }
 <span class="lineno">  139 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantSet -&gt; Just vals)</span>
 <span class="lineno">  140 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainSet _ (SetAttr sizeAttr) dInner) = do</span>
 <span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
-<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; True</span>
+<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; <span class="nottickedoff">True</span></span>
 <span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_Size (ConstantInt _ s) -&gt; s == genericLength vals</span>
-<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; s &lt;= genericLength vals</span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; <span class="nottickedoff">s &lt;= genericLength vals</span></span>
 <span class="lineno">  145 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize (ConstantInt _ s) -&gt; genericLength vals &lt;= s</span>
 <span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinMaxSize (ConstantInt _ smin) (ConstantInt _ smax) -&gt;</span>
-<span class="lineno">  147 </span><span class="spaces">                    </span><span class="istickedoff">smin &lt;= genericLength vals &amp;&amp; genericLength vals &lt;= smax</span>
+<span class="lineno">  147 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">smin &lt;= genericLength vals &amp;&amp; genericLength vals &lt;= smax</span></span>
 <span class="lineno">  148 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">False</span></span>
 <span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">unless cardinalityOK $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
@@ -178,12 +178,12 @@ span.spaces    { background: white }
 <span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantMSet -&gt; Just vals)</span>
 <span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainMSet _ (MSetAttr sizeAttr occurAttr) dInner) = do</span>
 <span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
-<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; True</span>
+<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; <span class="nottickedoff">True</span></span>
 <span class="lineno">  163 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_Size (ConstantInt _ s) -&gt; s == genericLength vals</span>
-<span class="lineno">  164 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; s &lt;= genericLength vals</span>
-<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize (ConstantInt _ s) -&gt; genericLength vals &lt;= s</span>
+<span class="lineno">  164 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; <span class="nottickedoff">s &lt;= genericLength vals</span></span>
+<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize (ConstantInt _ s) -&gt; <span class="nottickedoff">genericLength vals &lt;= s</span></span>
 <span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinMaxSize (ConstantInt _ smin) (ConstantInt _ smax) -&gt;</span>
-<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff">smin &lt;= genericLength vals &amp;&amp; genericLength vals &lt;= smax</span>
+<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">smin &lt;= genericLength vals &amp;&amp; genericLength vals &lt;= smax</span></span>
 <span class="lineno">  168 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">False</span></span>
 <span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff">unless cardinalityOK $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
@@ -193,11 +193,11 @@ span.spaces    { background: white }
 <span class="lineno">  174 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Specifically:&quot; &lt;+&gt; pretty sizeAttr</span></span>
 <span class="lineno">  175 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  176 </span><span class="spaces">        </span><span class="istickedoff">let occurOK = case occurAttr of</span>
-<span class="lineno">  177 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_None -&gt; True</span>
-<span class="lineno">  178 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinOccur (ConstantInt _ s) -&gt; and [ s &lt;= occ | (_, occ) &lt;- histogram vals ]</span>
+<span class="lineno">  177 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_None -&gt; <span class="nottickedoff">True</span></span>
+<span class="lineno">  178 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinOccur (ConstantInt _ s) -&gt; <span class="nottickedoff">and [ s &lt;= occ | (_, occ) &lt;- histogram vals ]</span></span>
 <span class="lineno">  179 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MaxOccur (ConstantInt _ s) -&gt; and [ occ &lt;= s | (_, occ) &lt;- histogram vals ]</span>
 <span class="lineno">  180 </span><span class="spaces">                </span><span class="istickedoff">OccurAttr_MinMaxOccur (ConstantInt _ smin) (ConstantInt _ smax) -&gt;</span>
-<span class="lineno">  181 </span><span class="spaces">                    </span><span class="istickedoff">and [ smin &lt;= occ &amp;&amp; occ &lt;= smax | (_, occ) &lt;- histogram vals ]</span>
+<span class="lineno">  181 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">and [ smin &lt;= occ &amp;&amp; occ &lt;= smax | (_, occ) &lt;- histogram vals ]</span></span>
 <span class="lineno">  182 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">False</span></span>
 <span class="lineno">  183 </span><span class="spaces">        </span><span class="istickedoff">unless occurOK $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  184 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
@@ -218,7 +218,7 @@ span.spaces    { background: white }
 <span class="lineno">  199 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantSequence -&gt; Just vals)</span>
 <span class="lineno">  200 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainSequence _ attr dInner) = do</span>
 <span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff">case attr of</span>
-<span class="lineno">  202 </span><span class="spaces">            </span><span class="istickedoff">SequenceAttr sizeAttr@(SizeAttr_Size (ConstantInt _ s)) _ | <span class="tickonlyfalse">s /= genericLength vals</span> -&gt;</span>
+<span class="lineno">  202 </span><span class="spaces">            </span><span class="istickedoff">SequenceAttr sizeAttr@(SizeAttr_Size (ConstantInt _ s)) _ | <span class="nottickedoff">s /= genericLength vals</span> -&gt;</span>
 <span class="lineno">  203 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  204 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
 <span class="lineno">  205 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
@@ -245,12 +245,12 @@ span.spaces    { background: white }
 <span class="lineno">  226 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainRelation _ (RelationAttr sizeAttr (BinaryRelationAttrs binRelAttrs)) dInners) = do</span>
 <span class="lineno">  227 </span><span class="spaces">        </span><span class="istickedoff">let numValss = genericLength valss</span>
 <span class="lineno">  228 </span><span class="spaces">        </span><span class="istickedoff">let cardinalityOK = case sizeAttr of</span>
-<span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; True</span>
+<span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_None -&gt; <span class="nottickedoff">True</span></span>
 <span class="lineno">  230 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_Size (ConstantInt _ s) -&gt; s == numValss</span>
-<span class="lineno">  231 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; s &lt;= numValss</span>
-<span class="lineno">  232 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize (ConstantInt _ s) -&gt; numValss &lt;= s</span>
+<span class="lineno">  231 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinSize (ConstantInt _ s) -&gt; <span class="nottickedoff">s &lt;= numValss</span></span>
+<span class="lineno">  232 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MaxSize (ConstantInt _ s) -&gt; <span class="nottickedoff">numValss &lt;= s</span></span>
 <span class="lineno">  233 </span><span class="spaces">                </span><span class="istickedoff">SizeAttr_MinMaxSize (ConstantInt _ smin) (ConstantInt _ smax) -&gt;</span>
-<span class="lineno">  234 </span><span class="spaces">                    </span><span class="istickedoff">smin &lt;= numValss &amp;&amp; numValss &lt;= smax</span>
+<span class="lineno">  234 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">smin &lt;= numValss &amp;&amp; numValss &lt;= smax</span></span>
 <span class="lineno">  235 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">False</span></span>
 <span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff">unless cardinalityOK $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  237 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
@@ -259,26 +259,26 @@ span.spaces    { background: white }
 <span class="lineno">  240 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Reason: Domain attributes are not satisfied.&quot;</span></span>
 <span class="lineno">  241 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Specifically:&quot; &lt;+&gt; pretty sizeAttr</span></span>
 <span class="lineno">  242 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">when (S.size binRelAttrs &gt; 0 &amp;&amp; length dInners /= 2) $ <span class="nottickedoff">failDoc $ vcat</span></span>
+<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff">when (S.size binRelAttrs &gt; 0 &amp;&amp; <span class="nottickedoff">length dInners /= 2</span>) $ <span class="nottickedoff">failDoc $ vcat</span></span>
 <span class="lineno">  244 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
 <span class="lineno">  245 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  246 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
 <span class="lineno">  247 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Reason: Binary relation attributes cannot be used for this domain.&quot;</span></span>
 <span class="lineno">  248 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, &quot;Specifically:&quot; &lt;+&gt; prettyList id &quot;,&quot; (S.toList binRelAttrs)</span></span>
 <span class="lineno">  249 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff">forM_ (S.toList binRelAttrs) $ \ a -&gt; do</span>
-<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff">constraint &lt;- mkAttributeToConstraint (fmap Constant d) (binRelToAttrName a) Nothing (Constant c)</span>
-<span class="lineno">  252 </span><span class="spaces">            </span><span class="istickedoff">evaluated &lt;- instantiateExpression <span class="nottickedoff">[]</span> constraint</span>
-<span class="lineno">  253 </span><span class="spaces">            </span><span class="istickedoff">case evaluated of</span>
-<span class="lineno">  254 </span><span class="spaces">                </span><span class="istickedoff">ConstantBool True -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  255 </span><span class="spaces">                </span><span class="istickedoff">ConstantBool False -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
+<span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff">forM_ (S.toList binRelAttrs) $ <span class="nottickedoff">\ a -&gt; do</span></span>
+<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">constraint &lt;- mkAttributeToConstraint (fmap Constant d) (binRelToAttrName a) Nothing (Constant c)</span></span>
+<span class="lineno">  252 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">evaluated &lt;- instantiateExpression [] constraint</span></span>
+<span class="lineno">  253 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">case evaluated of</span></span>
+<span class="lineno">  254 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantBool True -&gt; return ()</span></span>
+<span class="lineno">  255 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantBool False -&gt; failDoc $ vcat</span></span>
 <span class="lineno">  256 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
 <span class="lineno">  257 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  258 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
 <span class="lineno">  259 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Reason: Domain attributes are not satisfied.&quot;</span></span>
 <span class="lineno">  260 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Specifically:&quot; &lt;+&gt; pretty a</span></span>
 <span class="lineno">  261 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  262 </span><span class="spaces">                </span><span class="istickedoff">evaluatedC -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
+<span class="lineno">  262 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">evaluatedC -&gt; failDoc $ vcat</span></span>
 <span class="lineno">  263 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
 <span class="lineno">  264 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
 <span class="lineno">  265 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
