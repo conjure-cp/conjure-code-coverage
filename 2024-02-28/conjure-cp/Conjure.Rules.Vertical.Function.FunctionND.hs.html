@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.Vertical.Function.FunctionND where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_Image :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_Image = &quot;function-image{FunctionND}&quot; `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| image(&amp;f,&amp;x) |] = do</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">Function_ND  &lt;- representationOf f</span>
+<span class="lineno">   12 </span><span class="spaces">        </span><span class="istickedoff">[values]     &lt;- downX1 f</span>
+<span class="lineno">   13 </span><span class="spaces">        </span><span class="istickedoff">toIndex      &lt;- downX1 x</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">let valuesIndexed = make opMatrixIndexing values toIndex</span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   16 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Function image, FunctionND representation&quot;</span></span>
+<span class="lineno">   17 </span><span class="spaces">            </span><span class="istickedoff">, return valuesIndexed</span>
+<span class="lineno">   18 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   19 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Image&quot;</span></span>
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>rule_Comprehension :: Rule
+<span class="lineno">   23 </span><span class="decl"><span class="istickedoff">rule_Comprehension = &quot;function-comprehension{FunctionND}&quot; `namedRule` theRule where</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, func), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (pat, matchDefs [opToSet,opToMSet,opToRelation] expr)</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">Function_ND                      &lt;- representationOf func</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction _ _ indexDomain _ &lt;- domainOf func</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">[values]                         &lt;- downX1 func</span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">let upd val old = lambdaToFunction pat old val</span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Mapping over a function, FunctionND representation&quot;</span></span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">   35 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">   36 </span><span class="spaces">                </span><span class="istickedoff">let kRange = case indexDomain of</span>
+<span class="lineno">   37 </span><span class="spaces">                        </span><span class="istickedoff">DomainTuple ts  -&gt; map fromInt [1 .. genericLength ts]</span>
+<span class="lineno">   38 </span><span class="spaces">                        </span><span class="istickedoff">DomainRecord rs -&gt; map (fromName . fst) rs</span>
+<span class="lineno">   39 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ vcat [ &quot;FunctionND.rule_Comprehension&quot;</span></span>
+<span class="lineno">   40 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;indexDomain:&quot; &lt;+&gt; pretty indexDomain</span></span>
+<span class="lineno">   41 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   42 </span><span class="spaces">                    </span><span class="istickedoff">toIndex       = [ [essence| &amp;j[&amp;k] |] | k &lt;- kRange ]</span>
+<span class="lineno">   43 </span><span class="spaces">                    </span><span class="istickedoff">valuesIndexed = make opMatrixIndexing values toIndex</span>
+<span class="lineno">   44 </span><span class="spaces">                    </span><span class="istickedoff">val  = [essence| (&amp;j, &amp;valuesIndexed) |]</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">return $ Comprehension (upd val body)</span>
+<span class="lineno">   46 </span><span class="spaces">                        </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">   47 </span><span class="spaces">                        </span><span class="istickedoff">++ [ Generator (GenDomainNoRepr jPat (forgetRepr indexDomain)) ]</span>
+<span class="lineno">   48 </span><span class="spaces">                        </span><span class="istickedoff">++ transformBi <span class="nottickedoff">(upd val)</span> gocAfter</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension&quot;</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>
+<span class="lineno">   53 </span>rule_Comprehension_Defined :: Rule
+<span class="lineno">   54 </span><span class="decl"><span class="istickedoff">rule_Comprehension_Defined = <span class="nottickedoff">&quot;function-comprehension_defined{FunctionND}&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (pat, expr), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   57 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenInExpr pat@Single{} expr) -&gt; return (<span class="nottickedoff">pat</span>, expr)</span>
+<span class="lineno">   58 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_Comprehension_Defined&quot;</span></span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">func                             &lt;- match opDefined expr</span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">Function_ND                      &lt;- representationOf func</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">DomainFunction _ _ indexDomain _ &lt;- <span class="nottickedoff">domainOf func</span></span>
+<span class="lineno">   62 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">upd val old = lambdaToFunction pat old val</span></span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Mapping over a function, FunctionND representation&quot;</span></span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
+<span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let val = j</span></span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return $ Comprehension (upd val body)</span></span>
+<span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">$  gocBefore</span></span>
+<span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ [ Generator (GenDomainNoRepr jPat (forgetRepr indexDomain)) ]</span></span>
+<span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">++ transformBi (upd val) gocAfter</span></span>
+<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_Comprehension_Defined&quot;</span></span>
+
+</pre>
+</body>
+</html>

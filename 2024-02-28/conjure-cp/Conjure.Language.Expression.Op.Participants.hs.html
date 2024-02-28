@@ -1,0 +1,64 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, DeriveFunctor, DeriveTraversable, DeriveFoldable #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Language.Expression.Op.Participants where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>import qualified Data.Aeson as JSON             -- aeson
+<span class="lineno">    9 </span>import qualified Data.Aeson.KeyMap as KM
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>import qualified Data.Vector as V               -- vector
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>data OpParticipants x = OpParticipants x
+<span class="lineno">   15 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Traversable</span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize x =&gt; Serialize (OpParticipants x)</span></span></span></span>
+<span class="lineno">   18 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  x =&gt; Hashable  (OpParticipants x)</span></span></span></span>
+<span class="lineno">   19 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    x =&gt; ToJSON    (OpParticipants x)</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   20 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  x =&gt; FromJSON  (OpParticipants x)</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>instance (TypeOf x, Pretty x) =&gt; TypeOf (OpParticipants x) where
+<span class="lineno">   23 </span>    <span class="decl"><span class="istickedoff">typeOf inp@(OpParticipants p) = do</span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">pTy &lt;- typeOf p</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">case pTy of</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">TypePartition pTyInner -&gt; return (TypeSet pTyInner)</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError inp</span></span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>instance SimplifyOp OpParticipants x where
+<span class="lineno">   30 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpParticipants}&quot;</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>instance <span class="decl"><span class="istickedoff">Pretty x =&gt; Pretty (OpParticipants x)</span></span> where
+<span class="lineno">   33 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpParticipants a) = &quot;participants&quot; &lt;&gt; prParens (pretty a)</span></span>
+<span class="lineno">   34 </span>
+<span class="lineno">   35 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpParticipants x) where
+<span class="lineno">   36 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpParticipants a) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpParticipants&quot;)</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>
