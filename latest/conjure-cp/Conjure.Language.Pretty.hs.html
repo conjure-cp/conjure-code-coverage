@@ -79,7 +79,7 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span>instance <span class="decl"><span class="nottickedoff">Pretty Bool</span></span>    where <span class="decl"><span class="nottickedoff">pretty = pretty . show</span></span>
 <span class="lineno">   61 </span>instance <span class="decl"><span class="nottickedoff">Pretty Int</span></span>     where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
 <span class="lineno">   62 </span>instance <span class="decl"><span class="nottickedoff">Pretty Integer</span></span> where <span class="decl"><span class="istickedoff">pretty = pretty . show</span></span>
-<span class="lineno">   63 </span>instance <span class="decl"><span class="nottickedoff">Pretty Double</span></span>  where <span class="decl"><span class="nottickedoff">pretty x = pretty (printf &quot;%.2f&quot; x :: String)</span></span>
+<span class="lineno">   63 </span>instance <span class="decl"><span class="nottickedoff">Pretty Double</span></span>  where <span class="decl"><span class="istickedoff">pretty x = pretty (printf &quot;%.2f&quot; x :: String)</span></span>
 <span class="lineno">   64 </span>
 <span class="lineno">   65 </span>instance <span class="decl"><span class="nottickedoff">(Pretty a, Pretty b) =&gt; Pretty (a, b)</span></span> where
 <span class="lineno">   66 </span>    <span class="decl"><span class="nottickedoff">pretty (a, b) = prettyListDoc parens &quot;,&quot; [pretty a, pretty b]</span></span>
@@ -194,7 +194,7 @@ span.spaces    { background: white }
 <span class="lineno">  175 </span><span class="decl"><span class="istickedoff">prettyArrayVCat = prBrackets . Pr.vcat . Pr.punctuate <span class="nottickedoff">&quot;,&quot;</span> . map <span class="nottickedoff">pretty</span> . V.toList</span></span>
 <span class="lineno">  176 </span>
 <span class="lineno">  177 </span>instance <span class="decl"><span class="nottickedoff">Pretty Scientific</span></span> where
-<span class="lineno">  178 </span>    <span class="decl"><span class="istickedoff">pretty = either <span class="nottickedoff">pretty</span> pretty . (floatingOrInteger :: Scientific -&gt; Either Double Integer)</span></span>
+<span class="lineno">  178 </span>    <span class="decl"><span class="istickedoff">pretty = either pretty pretty . (floatingOrInteger :: Scientific -&gt; Either Double Integer)</span></span>
 <span class="lineno">  179 </span>
 <span class="lineno">  180 </span>logDebugId :: (MonadLog m, Pretty a) =&gt; Doc -&gt; a -&gt; m a
 <span class="lineno">  181 </span><span class="decl"><span class="istickedoff">logDebugId msg a = logDebug <span class="nottickedoff">(msg &lt;++&gt; pretty a)</span> &gt;&gt; return a</span></span>
