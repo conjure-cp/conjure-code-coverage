@@ -1125,16 +1125,16 @@ span.spaces    { background: white }
 <span class="lineno"> 1106 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_  -&gt; liftIO $ appendFile filenameEssenceSolJSON &quot;]\n&quot;</span></span>
 <span class="lineno"> 1107 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno"> 1108 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1109 </span><span class="spaces">    </span><span class="istickedoff">let srInfoFilename = mkFilename &quot;.eprime-info&quot;</span>
-<span class="lineno"> 1110 </span><span class="spaces">    </span><span class="istickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span>
-<span class="lineno"> 1111 </span><span class="spaces">    </span><span class="istickedoff">srInfoContent &lt;- liftIO $ readFileIfExists srInfoFilename</span>
+<span class="lineno"> 1109 </span><span class="spaces">    </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
+<span class="lineno"> 1110 </span><span class="spaces">    </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
+<span class="lineno"> 1111 </span><span class="spaces">    </span><span class="istickedoff">let combinedSR = T.unlines [stdoutSR, stderrSR]</span>
 <span class="lineno"> 1112 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1113 </span><span class="spaces">    </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
-<span class="lineno"> 1114 </span><span class="spaces">    </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
-<span class="lineno"> 1115 </span><span class="spaces">    </span><span class="istickedoff">let combinedSR = T.unlines [stdoutSR, stderrSR]</span>
-<span class="lineno"> 1116 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1117 </span><span class="spaces">    </span><span class="istickedoff">let stats = mkSolveStats ui (fromMaybe <span class="nottickedoff">&quot;&quot;</span> srInfoContent) combinedSR</span>
-<span class="lineno"> 1118 </span><span class="spaces">    </span><span class="istickedoff">liftIO $ writeFile statsFilename (render lineWidth $ toJSON stats)</span>
+<span class="lineno"> 1113 </span><span class="spaces">    </span><span class="istickedoff">liftIO $ do</span>
+<span class="lineno"> 1114 </span><span class="spaces">        </span><span class="istickedoff">let srInfoFilename = mkFilename &quot;.eprime-info&quot;</span>
+<span class="lineno"> 1115 </span><span class="spaces">        </span><span class="istickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span>
+<span class="lineno"> 1116 </span><span class="spaces">        </span><span class="istickedoff">srInfoContent &lt;- liftIO $ readFileIfExists srInfoFilename</span>
+<span class="lineno"> 1117 </span><span class="spaces">        </span><span class="istickedoff">stats &lt;- mkSolveStats ui (fromMaybe <span class="nottickedoff">&quot;&quot;</span> srInfoContent) combinedSR</span>
+<span class="lineno"> 1118 </span><span class="spaces">        </span><span class="istickedoff">writeFile statsFilename (render lineWidth (toJSON stats))</span>
 <span class="lineno"> 1119 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1120 </span><span class="spaces">    </span><span class="istickedoff">if  | <span class="tickonlyfalse">T.isInfixOf &quot;Savile Row timed out.&quot; combinedSR</span> -&gt;</span>
 <span class="lineno"> 1121 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [&quot;Savile Row timed out.&quot;])</span></span>
