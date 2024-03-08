@@ -1133,7 +1133,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1114 </span><span class="spaces">        </span><span class="istickedoff">let srInfoFilename = mkFilename &quot;.eprime-info&quot;</span>
 <span class="lineno"> 1115 </span><span class="spaces">        </span><span class="istickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span>
 <span class="lineno"> 1116 </span><span class="spaces">        </span><span class="istickedoff">srInfoContent &lt;- liftIO $ readFileIfExists srInfoFilename</span>
-<span class="lineno"> 1117 </span><span class="spaces">        </span><span class="istickedoff">stats &lt;- mkSolveStats ui (fromMaybe <span class="nottickedoff">&quot;&quot;</span> srInfoContent) combinedSR</span>
+<span class="lineno"> 1117 </span><span class="spaces">        </span><span class="istickedoff">stats &lt;- mkSolveStats ui exitCodeSR (fromMaybe <span class="nottickedoff">&quot;&quot;</span> srInfoContent) combinedSR</span>
 <span class="lineno"> 1118 </span><span class="spaces">        </span><span class="istickedoff">writeFile statsFilename (render lineWidth (toJSON stats))</span>
 <span class="lineno"> 1119 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 1120 </span><span class="spaces">    </span><span class="istickedoff">if  | <span class="tickonlyfalse">T.isInfixOf &quot;Savile Row timed out.&quot; combinedSR</span> -&gt;</span>
