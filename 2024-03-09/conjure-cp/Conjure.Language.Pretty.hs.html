@@ -151,7 +151,7 @@ span.spaces    { background: white }
 <span class="lineno">  132 </span><span class="decl"><span class="istickedoff">jsonEsc '&quot;' = &quot;\\\&quot;&quot;</span>
 <span class="lineno">  133 </span><span class="spaces"></span><span class="istickedoff">jsonEsc '\\' = <span class="nottickedoff">&quot;\\\\&quot;</span></span>
 <span class="lineno">  134 </span><span class="spaces"></span><span class="istickedoff">jsonEsc '\r' = <span class="nottickedoff">&quot;\\r&quot;</span></span>
-<span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff">jsonEsc '\n' = &quot;\\n&quot;</span>
+<span class="lineno">  135 </span><span class="spaces"></span><span class="istickedoff">jsonEsc '\n' = <span class="nottickedoff">&quot;\\n&quot;</span></span>
 <span class="lineno">  136 </span><span class="spaces"></span><span class="istickedoff">jsonEsc c = T.singleton c</span></span>
 <span class="lineno">  137 </span>
 <span class="lineno">  138 </span>instance <span class="decl"><span class="nottickedoff">Pretty JSON.Value</span></span> where
@@ -191,7 +191,7 @@ span.spaces    { background: white }
 <span class="lineno">  172 </span>    <span class="decl"><span class="istickedoff">pretty = prBrackets . fsep . Pr.punctuate &quot;,&quot; . map pretty . V.toList</span></span>
 <span class="lineno">  173 </span>
 <span class="lineno">  174 </span>prettyArrayVCat :: V.Vector Value -&gt; Doc
-<span class="lineno">  175 </span><span class="decl"><span class="istickedoff">prettyArrayVCat = prBrackets . Pr.vcat . Pr.punctuate <span class="nottickedoff">&quot;,&quot;</span> . map <span class="nottickedoff">pretty</span> . V.toList</span></span>
+<span class="lineno">  175 </span><span class="decl"><span class="istickedoff">prettyArrayVCat = prBrackets . Pr.vcat . Pr.punctuate &quot;,&quot; . map pretty . V.toList</span></span>
 <span class="lineno">  176 </span>
 <span class="lineno">  177 </span>instance <span class="decl"><span class="nottickedoff">Pretty Scientific</span></span> where
 <span class="lineno">  178 </span>    <span class="decl"><span class="istickedoff">pretty = either pretty pretty . (floatingOrInteger :: Scientific -&gt; Either Double Integer)</span></span>
