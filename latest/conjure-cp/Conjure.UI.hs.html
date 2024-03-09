@@ -20,7 +20,7 @@ span.spaces    { background: white }
 <span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable, DeriveGeneric #-}
 <span class="lineno">    2 </span>{-# OPTIONS_GHC -fno-cse #-} -- stupid cmdargs
 <span class="lineno">    3 </span>
-<span class="lineno">    4 </span>module Conjure.UI ( UI(..), OutputFormat(..), ui ) where
+<span class="lineno">    4 </span>module Conjure.UI ( UI(..), OutputFormat(..), ui, versionLine ) where
 <span class="lineno">    5 </span>
 <span class="lineno">    6 </span>-- conjure
 <span class="lineno">    7 </span>import Conjure.Prelude
@@ -1481,15 +1481,16 @@ span.spaces    { background: white }
 <span class="lineno"> 1462 </span><span class="spaces">           </span><span class="istickedoff">&amp;= helpArg [explicit, name &quot;help&quot;]</span>
 <span class="lineno"> 1463 </span><span class="spaces">           </span><span class="istickedoff">&amp;= versionArg [explicit, name &quot;version&quot;]</span>
 <span class="lineno"> 1464 </span><span class="spaces">           </span><span class="istickedoff">&amp;= summary (unlines [ &quot;Conjure: The Automated Constraint Modelling Tool&quot;</span>
-<span class="lineno"> 1465 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Release version &quot; ++ showVersion version</span></span>
-<span class="lineno"> 1466 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">&quot;Repository version &quot; ++ repositoryVersion</span></span>
-<span class="lineno"> 1467 </span><span class="spaces">                               </span><span class="istickedoff">])</span>
-<span class="lineno"> 1468 </span><span class="spaces">           </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;The command line interface of Conjure takes a command name as the first argument \</span></span>
-<span class="lineno"> 1469 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\followed by more arguments depending on the command.\n\</span></span>
-<span class="lineno"> 1470 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\This help text gives a list of the available commands.\n\</span></span>
-<span class="lineno"> 1471 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For details of a command, pass the --help flag after the command name.\n\</span></span>
-<span class="lineno"> 1472 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For example: 'conjure translate-solution --help'&quot;</span></span></span>
-<span class="lineno"> 1473 </span>
+<span class="lineno"> 1465 </span><span class="spaces">                               </span><span class="istickedoff">, <span class="nottickedoff">versionLine</span></span>
+<span class="lineno"> 1466 </span><span class="spaces">                               </span><span class="istickedoff">])</span>
+<span class="lineno"> 1467 </span><span class="spaces">           </span><span class="istickedoff">&amp;= help <span class="nottickedoff">&quot;The command line interface of Conjure takes a command name as the first argument \</span></span>
+<span class="lineno"> 1468 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\followed by more arguments depending on the command.\n\</span></span>
+<span class="lineno"> 1469 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\This help text gives a list of the available commands.\n\</span></span>
+<span class="lineno"> 1470 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For details of a command, pass the --help flag after the command name.\n\</span></span>
+<span class="lineno"> 1471 </span><span class="spaces">                   </span><span class="istickedoff"><span class="nottickedoff">\For example: 'conjure translate-solution --help'&quot;</span></span></span>
+<span class="lineno"> 1472 </span>
+<span class="lineno"> 1473 </span>versionLine :: String
+<span class="lineno"> 1474 </span><span class="decl"><span class="istickedoff">versionLine = &quot;Conjure v&quot; ++ showVersion version ++ &quot; (Repository version &quot; ++ repositoryVersion ++ &quot;)&quot;</span></span>
 
 </pre>
 </body>
