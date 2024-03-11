@@ -33,7 +33,7 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span><span class="spaces">            </span><span class="istickedoff">xTy &lt;- typeOf x</span>
 <span class="lineno">   15 </span><span class="spaces">            </span><span class="istickedoff">case xTy of</span>
 <span class="lineno">   16 </span><span class="spaces">                </span><span class="istickedoff">TypeTuple{} -&gt; downX1 x</span>
-<span class="lineno">   17 </span><span class="spaces">                </span><span class="istickedoff">TypeRecord{} -&gt; <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">   17 </span><span class="spaces">                </span><span class="istickedoff">TypeRecord{} -&gt; downX1 x</span>
 <span class="lineno">   18 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; return [x]</span>
 <span class="lineno">   19 </span><span class="spaces">        </span><span class="istickedoff">let valuesIndexed = make opMatrixIndexing values toIndex</span>
 <span class="lineno">   20 </span><span class="spaces">        </span><span class="istickedoff">return</span>
@@ -81,7 +81,7 @@ span.spaces    { background: white }
 <span class="lineno">   62 </span><span class="spaces">                </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
 <span class="lineno">   63 </span><span class="spaces">                </span><span class="istickedoff">let kRange = case innerDomainFr of</span>
 <span class="lineno">   64 </span><span class="spaces">                        </span><span class="istickedoff">DomainTuple ts  -&gt; Just $ map fromInt [1 .. genericLength ts]</span>
-<span class="lineno">   65 </span><span class="spaces">                        </span><span class="istickedoff">DomainRecord rs -&gt; <span class="nottickedoff">Just $ map (fromName . fst) rs</span></span>
+<span class="lineno">   65 </span><span class="spaces">                        </span><span class="istickedoff">DomainRecord rs -&gt; Just $ map (fromName . fst) rs</span>
 <span class="lineno">   66 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; Nothing</span>
 <span class="lineno">   67 </span><span class="spaces">                    </span><span class="istickedoff">toIndex       = case kRange of</span>
 <span class="lineno">   68 </span><span class="spaces">                                        </span><span class="istickedoff">Just ks -&gt; [ [essence| &amp;j[&amp;k] |] | k &lt;- ks ]</span>

@@ -302,9 +302,9 @@ span.spaces    { background: white }
 <span class="lineno">  283 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
 <span class="lineno">  284 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
 <span class="lineno">  285 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
-<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
-<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
-<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
+<span class="lineno">  286 </span><span class="spaces">        </span><span class="istickedoff">, \ val -&gt; case val of</span>
+<span class="lineno">  287 </span><span class="spaces">                </span><span class="istickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span>
+<span class="lineno">  288 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
 <span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">)</span>
 <span class="lineno">  290 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTuple _ = <span class="nottickedoff">Nothing</span></span></span>
 <span class="lineno">  291 </span>
@@ -322,13 +322,13 @@ span.spaces    { background: white }
 <span class="lineno">  303 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
 <span class="lineno">  304 </span><span class="spaces">        </span><span class="istickedoff">)</span>
 <span class="lineno">  305 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS (DomainRecord doms) =</span>
-<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span></span>
-<span class="lineno">  307 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">in  Just</span></span>
-<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span></span>
-<span class="lineno">  309 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">, \ val -&gt; case val of</span></span>
+<span class="lineno">  306 </span><span class="spaces">    </span><span class="istickedoff">let names = doms |&gt; sortBy (comparing fst) |&gt; map fst</span>
+<span class="lineno">  307 </span><span class="spaces">    </span><span class="istickedoff">in  Just</span>
+<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; ConstantAbstract (AbsLitRecord (zip names vals))</span>
+<span class="lineno">  309 </span><span class="spaces">        </span><span class="istickedoff">, <span class="nottickedoff">\ val -&gt; case val of</span></span>
 <span class="lineno">  310 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">ConstantAbstract (AbsLitRecord vals) -&gt; Just (vals |&gt; sortBy (comparing fst) |&gt; map snd)</span></span>
 <span class="lineno">  311 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
-<span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  312 </span><span class="spaces">        </span><span class="istickedoff">)</span>
 <span class="lineno">  313 </span><span class="spaces"></span><span class="istickedoff">mkLensAsDomainTupleS _ =</span>
 <span class="lineno">  314 </span><span class="spaces">    </span><span class="istickedoff">Just</span>
 <span class="lineno">  315 </span><span class="spaces">        </span><span class="istickedoff">( \ vals -&gt; case vals of</span>
