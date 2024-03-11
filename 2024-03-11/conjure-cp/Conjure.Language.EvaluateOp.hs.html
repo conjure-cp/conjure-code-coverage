@@ -92,14 +92,14 @@ span.spaces    { background: white }
 <span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = na $ &quot;evaluateOp{OpDefined}:&quot; &lt;++&gt; <span class="nottickedoff">pretty (show op)</span></span></span>
 <span class="lineno">   74 </span>
 <span class="lineno">   75 </span>instance EvaluateOp OpDiv where
-<span class="lineno">   76 </span>    <span class="decl"><span class="istickedoff">evaluateOp p | <span class="tickonlyfalse">any isUndef (childrenBi p)</span> =</span>
-<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return $ mkUndef (TypeInt TagInt) $ &quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno">   76 </span>    <span class="decl"><span class="istickedoff">evaluateOp p | any isUndef (childrenBi p) =</span>
+<span class="lineno">   77 </span><span class="spaces">        </span><span class="istickedoff">return $ mkUndef (TypeInt <span class="nottickedoff">TagInt</span>) $ <span class="nottickedoff">&quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp p@(OpDiv x y)</span>
 <span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">| y /= 0    = ConstantInt TagInt &lt;$&gt; (div &lt;$&gt; intOut <span class="nottickedoff">&quot;div x&quot;</span> x &lt;*&gt; intOut <span class="nottickedoff">&quot;div y&quot;</span> y)</span>
 <span class="lineno">   80 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = return $ mkUndef (TypeInt TagInt) $ <span class="nottickedoff">&quot;division by zero:&quot; &lt;+&gt; pretty p</span></span></span>
 <span class="lineno">   81 </span>
 <span class="lineno">   82 </span>instance EvaluateOp OpDontCare where
-<span class="lineno">   83 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpDontcare}:&quot; &lt;++&gt; pretty (show op)</span></span>
+<span class="lineno">   83 </span>    <span class="decl"><span class="istickedoff">evaluateOp op = na $ &quot;evaluateOp{OpDontcare}:&quot; &lt;++&gt; <span class="nottickedoff">pretty (show op)</span></span></span>
 <span class="lineno">   84 </span>
 <span class="lineno">   85 </span>instance EvaluateOp OpDotLeq where
 <span class="lineno">   86 </span>    <span class="decl"><span class="nottickedoff">evaluateOp (OpDotLeq x y) = return $ ConstantBool $ x &lt;= y</span></span>
@@ -502,7 +502,7 @@ span.spaces    { background: white }
 <span class="lineno">  483 </span><span class="spaces">                     </span><span class="istickedoff">]</span>
 <span class="lineno">  484 </span><span class="spaces">        </span><span class="istickedoff">case outSet of</span>
 <span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff">[s] -&gt; return $ ConstantAbstract (AbsLitSet s)</span>
-<span class="lineno">  486 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; <span class="nottickedoff">return $ TypedConstant (ConstantAbstract (AbsLitSet [])) (TypeSet tyInner)</span></span>
+<span class="lineno">  486 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; return $ TypedConstant (ConstantAbstract (AbsLitSet [])) <span class="nottickedoff">(TypeSet tyInner)</span></span>
 <span class="lineno">  487 </span><span class="spaces">            </span><span class="istickedoff">_   -&gt; <span class="nottickedoff">return $ mkUndef (TypeSet tyInner) $ &quot;Element found in multiple parts of the partition:&quot;</span></span>
 <span class="lineno">  488 </span><span class="spaces">                                                                                                </span><span class="istickedoff"><span class="nottickedoff">&lt;++&gt; pretty op</span></span>
 <span class="lineno">  489 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = <span class="nottickedoff">na $ &quot;evaluateOp{OpParty}:&quot; &lt;++&gt; pretty (show op)</span></span></span>
@@ -673,15 +673,15 @@ span.spaces    { background: white }
 <span class="lineno">  654 </span><span class="spaces">            </span><span class="istickedoff">return $ mkUndef (TypeInt <span class="nottickedoff">TagInt</span>) $ <span class="nottickedoff">&quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">  655 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp p@(OpSum x)</span>
 <span class="lineno">  656 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">  657 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlyfalse">any isUndef xs</span> =</span>
-<span class="lineno">  658 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ mkUndef (TypeInt TagInt) $ &quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno">  657 </span><span class="spaces">        </span><span class="istickedoff">, any isUndef xs =</span>
+<span class="lineno">  658 </span><span class="spaces">            </span><span class="istickedoff">return $ mkUndef (TypeInt <span class="nottickedoff">TagInt</span>) $ <span class="nottickedoff">&quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">  659 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpSum x) = ConstantInt TagInt . sum &lt;$&gt; intsOut <span class="nottickedoff">&quot;OpSum&quot;</span> x</span></span>
 <span class="lineno">  660 </span>
 <span class="lineno">  661 </span>instance EvaluateOp OpSupset where
 <span class="lineno">  662 </span>    <span class="decl"><span class="nottickedoff">evaluateOp (OpSupset a b) = evaluateOp (OpSubset b a)</span></span>
 <span class="lineno">  663 </span>
 <span class="lineno">  664 </span>instance EvaluateOp OpSupsetEq where
-<span class="lineno">  665 </span>    <span class="decl"><span class="nottickedoff">evaluateOp (OpSupsetEq a b) = evaluateOp (OpSubsetEq b a)</span></span>
+<span class="lineno">  665 </span>    <span class="decl"><span class="istickedoff">evaluateOp (OpSupsetEq a b) = evaluateOp (OpSubsetEq b a)</span></span>
 <span class="lineno">  666 </span>
 <span class="lineno">  667 </span>instance EvaluateOp OpTable where
 <span class="lineno">  668 </span>    <span class="decl"><span class="nottickedoff">evaluateOp (OpTable rows table) = do</span>
@@ -778,7 +778,7 @@ span.spaces    { background: white }
 <span class="lineno">  759 </span><span class="spaces">            </span><span class="istickedoff">-- cardinality of a constant</span>
 <span class="lineno">  760 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantMatrix    -&gt; Just (_, xs)) -&gt; return $ ConstantInt <span class="nottickedoff">TagInt</span> $ genericLength                    xs</span>
 <span class="lineno">  761 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantSet       -&gt; Just xs)      -&gt; return $ ConstantInt TagInt $ genericLength $ sortNub          xs</span>
-<span class="lineno">  762 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantMSet      -&gt; Just xs)      -&gt; <span class="nottickedoff">return $ ConstantInt TagInt $ genericLength                    xs</span></span>
+<span class="lineno">  762 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantMSet      -&gt; Just xs)      -&gt; return $ ConstantInt <span class="nottickedoff">TagInt</span> $ genericLength                    xs</span>
 <span class="lineno">  763 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantFunction  -&gt; Just xs)      -&gt; <span class="nottickedoff">return $ ConstantInt TagInt $ genericLength $ sortNub          xs</span></span>
 <span class="lineno">  764 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantSequence  -&gt; Just xs)      -&gt; return $ ConstantInt TagInt $ genericLength                    xs</span>
 <span class="lineno">  765 </span><span class="spaces">            </span><span class="istickedoff">(viewConstantRelation  -&gt; Just xs)      -&gt; return $ ConstantInt TagInt $ genericLength $ sortNub          xs</span>
@@ -944,7 +944,7 @@ span.spaces    { background: white }
 <span class="lineno">  925 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpCatchUndef x) = evaluateOp x</span>
 <span class="lineno">  926 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDefined x) = evaluateOp x</span>
 <span class="lineno">  927 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDiv x) = evaluateOp x</span>
-<span class="lineno">  928 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDontCare x) = <span class="nottickedoff">evaluateOp x</span></span>
+<span class="lineno">  928 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDontCare x) = evaluateOp <span class="nottickedoff">x</span></span>
 <span class="lineno">  929 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDotLeq x) = <span class="nottickedoff">evaluateOp x</span></span>
 <span class="lineno">  930 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpDotLt x) = evaluateOp x</span>
 <span class="lineno">  931 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpEq x) = evaluateOp x</span>
@@ -995,7 +995,7 @@ span.spaces    { background: white }
 <span class="lineno">  976 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpSucc x) = <span class="nottickedoff">evaluateOp x</span></span>
 <span class="lineno">  977 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpSum x) = evaluateOp x</span>
 <span class="lineno">  978 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpSupset x) = <span class="nottickedoff">evaluateOp x</span></span>
-<span class="lineno">  979 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpSupsetEq x) = <span class="nottickedoff">evaluateOp x</span></span>
+<span class="lineno">  979 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpSupsetEq x) = evaluateOp x</span>
 <span class="lineno">  980 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpTable x) = <span class="nottickedoff">evaluateOp x</span></span>
 <span class="lineno">  981 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpTildeLeq x) = <span class="nottickedoff">evaluateOp x</span></span>
 <span class="lineno">  982 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpTildeLt x) = evaluateOp x</span>
