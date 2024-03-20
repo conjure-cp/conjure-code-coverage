@@ -1,0 +1,131 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE DeriveGeneric #-}
+<span class="lineno">    3 </span>{-# LANGUAGE RecordWildCards #-}
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>module Conjure.UI.SolveStats (mkSolveStats, SolveStats (..), SolveStatus (..)) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>import Conjure.Bug
+<span class="lineno">    8 </span>import Conjure.Prelude
+<span class="lineno">    9 </span>import Conjure.UI (UI (..), versionLine)
+<span class="lineno">   10 </span>import Data.HashMap.Strict qualified as M -- unordered-containers
+<span class="lineno">   11 </span>import Data.Text qualified as T (isInfixOf, null, unlines) -- text
+<span class="lineno">   12 </span>import Data.Time (UTCTime, getCurrentTime) -- time
+<span class="lineno">   13 </span>import Network.HostName (getHostName) -- hostname
+<span class="lineno">   14 </span>import Shelly (run) -- shelly
+<span class="lineno">   15 </span>
+<span class="lineno">   16 </span>data SolveStats = SolveStats
+<span class="lineno">   17 </span>  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">status</span></span></span> :: SolveStatus,
+<span class="lineno">   18 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">totalTime</span></span></span> :: Maybe Double,
+<span class="lineno">   19 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">savilerowInfo</span></span></span> :: M.HashMap String String,
+<span class="lineno">   20 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">essence</span></span></span> :: FilePath,
+<span class="lineno">   21 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">essenceParams</span></span></span> :: [FilePath],
+<span class="lineno">   22 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">useExistingModels</span></span></span> :: [FilePath],
+<span class="lineno">   23 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">savilerowOptions</span></span></span> :: [String],
+<span class="lineno">   24 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">solverOptions</span></span></span> :: [String],
+<span class="lineno">   25 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">solver</span></span></span> :: String,
+<span class="lineno">   26 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">computer</span></span></span> :: String,
+<span class="lineno">   27 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">timestamp</span></span></span> :: UTCTime,
+<span class="lineno">   28 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">conjureVersion</span></span></span> :: String,
+<span class="lineno">   29 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">savilerowVersion</span></span></span> :: String,
+<span class="lineno">   30 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">savilerowLogs</span></span></span> :: SavileRowLogs
+<span class="lineno">   31 </span>  }
+<span class="lineno">   32 </span>  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SolveStats</span></span></span></span>
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SolveStats</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SolveStats</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>data SolveStatus = OK | TimeOut | MemOut | Error
+<span class="lineno">   41 </span>  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SolveStatus</span></span></span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SolveStatus</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   46 </span>
+<span class="lineno">   47 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SolveStatus</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>data SavileRowLogs = SavileRowLogs
+<span class="lineno">   50 </span>  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">exitCode</span></span></span> :: Int,
+<span class="lineno">   51 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">stderr</span></span></span> :: Maybe [String],
+<span class="lineno">   52 </span>    <span class="nottickedoff"><span class="decl"><span class="nottickedoff">stdout</span></span></span> :: Maybe [String]
+<span class="lineno">   53 </span>  }
+<span class="lineno">   54 </span>  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SavileRowLogs</span></span></span></span>
+<span class="lineno">   57 </span>
+<span class="lineno">   58 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SavileRowLogs</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SavileRowLogs</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>mkSolveStats :: UI -&gt; (Int, Text, Text) -&gt; String -&gt; IO SolveStats
+<span class="lineno">   63 </span><span class="decl"><span class="istickedoff">mkSolveStats Solve {..} (exitCodeSR, stdoutSR, stderrSR) rawInfo = do</span>
+<span class="lineno">   64 </span><span class="spaces">  </span><span class="istickedoff">let combinedSR = T.unlines [stdoutSR, stderrSR]</span>
+<span class="lineno">   65 </span><span class="spaces">  </span><span class="istickedoff">let info = M.fromList [(k, v) | [k, v] &lt;- map (splitOn &quot;:&quot;) (lines rawInfo)]</span>
+<span class="lineno">   66 </span><span class="spaces">      </span><span class="istickedoff">status</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">or</span></span>
+<span class="lineno">   68 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">[ T.isInfixOf msg combinedSR</span></span>
+<span class="lineno">   69 </span><span class="spaces">              </span><span class="istickedoff"><span class="tickonlyfalse">| msg &lt;-</span></span>
+<span class="lineno">   70 </span><span class="spaces">                  </span><span class="istickedoff"><span class="tickonlyfalse">[ &quot;type error: undefined identifier&quot;,</span></span>
+<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;MiniZinc error: Memory violation detected and error message&quot;, -- minizinc</span></span>
+<span class="lineno">   72 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;Check failed: ParseFlatzincFile&quot;,</span></span>
+<span class="lineno">   73 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;parse error: unexpected end-of-file after parsing number of clauses&quot;, -- kissat</span></span>
+<span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;error: Cannot open file&quot;,</span></span>
+<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;kissat: error: can not read&quot;, -- kissat</span></span>
+<span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;kissat: fatal error: maximum arena capacity&quot;, -- kissat</span></span>
+<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;Error: syntax error, unexpected ]]&quot;, -- cplex</span></span>
+<span class="lineno">   78 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;*** Check failure stack trace: ***&quot; -- or-tools</span></span>
+<span class="lineno">   79 </span><span class="spaces">                  </span><span class="istickedoff"><span class="tickonlyfalse">]</span></span>
+<span class="lineno">   80 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">]</span> =</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Error</span></span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;java.lang.OutOfMemoryError&quot; combinedSR</span> = <span class="nottickedoff">MemOut</span></span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;Out of Memory&quot; combinedSR</span> = <span class="nottickedoff">MemOut</span></span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;Savile Row timed out.&quot; combinedSR</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;time out: time limit reached&quot; combinedSR</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowTimeOut&quot; info == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowClauseOut&quot; info == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SolverTimeOut&quot; info == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">exitCodeSR /= 0</span> = <span class="nottickedoff">Error</span></span>
+<span class="lineno">   90 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = OK</span>
+<span class="lineno">   91 </span><span class="spaces">      </span><span class="istickedoff">totalTime</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">| Just srTotalTime &lt;- M.lookup &quot;SavileRowTotalTime&quot; info &gt;&gt;= readMay,</span>
+<span class="lineno">   93 </span><span class="spaces">          </span><span class="istickedoff">Just solverTotalTime &lt;- M.lookup &quot;SolverTotalTime&quot; info &gt;&gt;= readMay =</span>
+<span class="lineno">   94 </span><span class="spaces">            </span><span class="istickedoff">Just (srTotalTime + solverTotalTime)</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">   96 </span><span class="spaces">      </span><span class="istickedoff">savilerowInfo = info</span>
+<span class="lineno">   97 </span><span class="spaces">  </span><span class="istickedoff">computer &lt;- getHostName</span>
+<span class="lineno">   98 </span><span class="spaces">  </span><span class="istickedoff">timestamp &lt;- getCurrentTime</span>
+<span class="lineno">   99 </span><span class="spaces">  </span><span class="istickedoff">let conjureVersion = versionLine</span>
+<span class="lineno">  100 </span><span class="spaces">  </span><span class="istickedoff">savilerowVersion &lt;- head . lines . textToString &lt;$&gt; sh (run &quot;savilerow&quot; [&quot;-help&quot;])</span>
+<span class="lineno">  101 </span><span class="spaces">  </span><span class="istickedoff">let savilerowLogs =</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="istickedoff">SavileRowLogs</span>
+<span class="lineno">  103 </span><span class="spaces">          </span><span class="istickedoff">{ exitCode = exitCodeSR,</span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff">stdout = if <span class="tickonlyfalse">T.null stdoutSR</span> then <span class="nottickedoff">Nothing</span> else Just (lines (textToString stdoutSR)),</span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff">stderr = if <span class="tickonlytrue">T.null stderrSR</span> then Nothing else <span class="nottickedoff">Just (lines (textToString stderrSR))</span></span>
+<span class="lineno">  106 </span><span class="spaces">          </span><span class="istickedoff">}</span>
+<span class="lineno">  107 </span><span class="spaces">  </span><span class="istickedoff">return SolveStats {..}</span>
+<span class="lineno">  108 </span><span class="spaces"></span><span class="istickedoff">mkSolveStats _ _ _ = <span class="nottickedoff">bug &quot;mkSolveStats&quot;</span></span></span>
+
+</pre>
+</body>
+</html>
