@@ -824,7 +824,7 @@ span.spaces    { background: white }
 <span class="lineno">  805 </span><span class="spaces">                    </span><span class="istickedoff">tr (1::Int)</span>
 <span class="lineno">  806 </span><span class="spaces">    </span><span class="istickedoff">let <span class="nottickedoff">runsolverArgs = maybe [] (\ limit -&gt; [&quot;-C&quot;, show limit]) runsolverCPUTimeLimit ++</span></span>
 <span class="lineno">  807 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">maybe [] (\ limit -&gt; [&quot;-R&quot;, show limit]) runsolverMemoryLimit  ++</span></span>
-<span class="lineno">  808 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[&quot;-v&quot;, outputDirectory &lt;/&gt; outBase ++ &quot;.runsolver-info&quot;]</span></span>
+<span class="lineno">  808 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[&quot;--quiet&quot;, &quot;-v&quot;, outputDirectory &lt;/&gt; outBase ++ &quot;.runsolver-info&quot;]</span></span>
 <span class="lineno">  809 </span><span class="spaces">    </span><span class="istickedoff">(stdoutSR, solutions) &lt;- partitionEithers &lt;$&gt;</span>
 <span class="lineno">  810 </span><span class="spaces">        </span><span class="istickedoff">case (runsolverCPUTimeLimit, runsolverMemoryLimit) of</span>
 <span class="lineno">  811 </span><span class="spaces">            </span><span class="istickedoff">(Nothing, Nothing) -&gt; runHandle savilerowScriptName srArgs handler</span>
@@ -874,7 +874,7 @@ span.spaces    { background: white }
 <span class="lineno">  855 </span><span class="spaces">                            </span><span class="nottickedoff">tr (1::Int)</span>
 <span class="lineno">  856 </span><span class="spaces">            </span><span class="nottickedoff">let runsolverArgs = maybe [] (\ limit -&gt; [&quot;-C&quot;, show limit]) runsolverCPUTimeLimit ++</span>
 <span class="lineno">  857 </span><span class="spaces">                                </span><span class="nottickedoff">maybe [] (\ limit -&gt; [&quot;-V&quot;, show limit]) runsolverMemoryLimit  ++</span>
-<span class="lineno">  858 </span><span class="spaces">                        </span><span class="nottickedoff">[&quot;-v&quot;, outputDirectory &lt;/&gt; outBase ++ &quot;.runsolver-info&quot;]</span>
+<span class="lineno">  858 </span><span class="spaces">                        </span><span class="nottickedoff">[&quot;--quiet&quot;, &quot;-v&quot;, outputDirectory &lt;/&gt; outBase ++ &quot;.runsolver-info&quot;]</span>
 <span class="lineno">  859 </span><span class="spaces">            </span><span class="nottickedoff">(stdoutSR, solutions) &lt;- partitionEithers &lt;$&gt;</span>
 <span class="lineno">  860 </span><span class="spaces">                </span><span class="nottickedoff">case (runsolverCPUTimeLimit, runsolverMemoryLimit) of</span>
 <span class="lineno">  861 </span><span class="spaces">                    </span><span class="nottickedoff">(Nothing, Nothing) -&gt; runHandle savilerowScriptName srArgs handler</span>
