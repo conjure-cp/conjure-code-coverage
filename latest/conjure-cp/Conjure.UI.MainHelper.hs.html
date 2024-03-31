@@ -837,7 +837,7 @@ span.spaces    { background: white }
 <span class="lineno">  818 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">when (logLevel &gt;= LogDebug) $ do</span></span>
 <span class="lineno">  819 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn &quot;Using the following options for Savile Row:&quot;</span></span>
 <span class="lineno">  820 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">liftIO $ putStrLn $ &quot;    runsolver &quot; ++ unwords (map quoteMultiWord runsolverArgs)</span></span>
-<span class="lineno">  821 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">++ &quot;savilerow &quot; ++ unwords (map (quoteMultiWord . textToString) srArgs)</span></span>
+<span class="lineno">  821 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">++ &quot; savilerow &quot; ++ unwords (map (quoteMultiWord . textToString) srArgs)</span></span>
 <span class="lineno">  822 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">runHandle &quot;runsolver&quot; (map stringToText runsolverArgs ++ [stringToText savilerowScriptName] ++ srArgs) handler</span></span>
 <span class="lineno">  823 </span><span class="spaces">    </span><span class="istickedoff">srCleanUp outBase ui (stringToText $ unlines stdoutSR) solutions</span>
 <span class="lineno">  824 </span><span class="spaces"></span><span class="istickedoff">savileRowNoParam _ _ = <span class="nottickedoff">bug &quot;savileRowNoParam&quot;</span></span></span>
@@ -894,7 +894,7 @@ span.spaces    { background: white }
 <span class="lineno">  875 </span><span class="spaces">                                </span><span class="nottickedoff">when (logLevel &gt;= LogDebug) $ do</span>
 <span class="lineno">  876 </span><span class="spaces">                                    </span><span class="nottickedoff">liftIO $ putStrLn &quot;Using the following options for Savile Row:&quot;</span>
 <span class="lineno">  877 </span><span class="spaces">                                    </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;    runsolver &quot; ++ unwords (map quoteMultiWord runsolverArgs)</span>
-<span class="lineno">  878 </span><span class="spaces">                                                        </span><span class="nottickedoff">++ &quot;savilerow &quot; ++ unwords (map (quoteMultiWord . textToString) srArgs)</span>
+<span class="lineno">  878 </span><span class="spaces">                                                        </span><span class="nottickedoff">++ &quot; savilerow &quot; ++ unwords (map (quoteMultiWord . textToString) srArgs)</span>
 <span class="lineno">  879 </span><span class="spaces">                                </span><span class="nottickedoff">runHandle &quot;runsolver&quot; (map stringToText runsolverArgs ++ [stringToText savilerowScriptName] ++ srArgs) handler</span>
 <span class="lineno">  880 </span><span class="spaces"></span><span class="nottickedoff"></span>
 <span class="lineno">  881 </span><span class="spaces">            </span><span class="nottickedoff">srCleanUp outBase ui (stringToText $ unlines stdoutSR) solutions</span>
