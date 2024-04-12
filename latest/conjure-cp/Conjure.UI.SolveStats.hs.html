@@ -123,37 +123,38 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">[ T.isInfixOf msg combinedSR</span></span>
 <span class="lineno">  105 </span><span class="spaces">              </span><span class="istickedoff"><span class="tickonlyfalse">| msg &lt;-</span></span>
 <span class="lineno">  106 </span><span class="spaces">                  </span><span class="istickedoff"><span class="tickonlyfalse">[ &quot;Savile Row timed out.&quot;,</span></span>
-<span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;time out: time limit reached&quot;</span></span>
-<span class="lineno">  108 </span><span class="spaces">                  </span><span class="istickedoff"><span class="tickonlyfalse">]</span></span>
-<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">]</span> =</span>
-<span class="lineno">  110 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TimeOut</span></span>
-<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;ERROR: In statement: where false&quot; combinedSR</span> = <span class="nottickedoff">Invalid</span></span>
-<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;MEMOUT&quot; runsolverInfo == Just <span class="nottickedoff">&quot;true&quot;</span></span> = <span class="nottickedoff">MemOut</span></span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;TIMEOUT&quot; runsolverInfo == Just <span class="nottickedoff">&quot;true&quot;</span></span> = <span class="nottickedoff">TimeOut</span></span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowTimeOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
-<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowClauseOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
-<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SolverTimeOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
-<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">exitCodeSR /= 0</span> = <span class="nottickedoff">Error</span></span>
-<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = OK</span>
-<span class="lineno">  119 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  120 </span><span class="spaces">      </span><span class="istickedoff">totalTime</span>
-<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">| Just srTotalTime &lt;- M.lookup &quot;SavileRowTotalTime&quot; savilerowInfo &gt;&gt;= readMay,</span>
-<span class="lineno">  122 </span><span class="spaces">          </span><span class="istickedoff">Just solverTotalTime &lt;- M.lookup &quot;SolverTotalTime&quot; savilerowInfo &gt;&gt;= readMay =</span>
-<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">Just (srTotalTime + solverTotalTime)</span>
-<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">Nothing</span></span>
-<span class="lineno">  125 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  126 </span><span class="spaces">  </span><span class="istickedoff">computer &lt;- getHostName</span>
-<span class="lineno">  127 </span><span class="spaces">  </span><span class="istickedoff">timestamp &lt;- getCurrentTime</span>
-<span class="lineno">  128 </span><span class="spaces">  </span><span class="istickedoff">let conjureVersion = versionLine</span>
-<span class="lineno">  129 </span><span class="spaces">  </span><span class="istickedoff">savilerowVersion &lt;- head . lines . textToString &lt;$&gt; sh (run &quot;savilerow&quot; [&quot;-help&quot;])</span>
-<span class="lineno">  130 </span><span class="spaces">  </span><span class="istickedoff">let savilerowLogs =</span>
-<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">SavileRowLogs</span>
-<span class="lineno">  132 </span><span class="spaces">          </span><span class="istickedoff">{ exitCode = exitCodeSR,</span>
-<span class="lineno">  133 </span><span class="spaces">            </span><span class="istickedoff">stdout = if <span class="tickonlyfalse">T.null stdoutSR</span> then <span class="nottickedoff">Nothing</span> else Just (lines (textToString stdoutSR)),</span>
-<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">stderr = if <span class="tickonlytrue">T.null stderrSR</span> then Nothing else <span class="nottickedoff">Just (lines (textToString stderrSR))</span></span>
-<span class="lineno">  135 </span><span class="spaces">          </span><span class="istickedoff">}</span>
-<span class="lineno">  136 </span><span class="spaces">  </span><span class="istickedoff">return SolveStats {..}</span>
-<span class="lineno">  137 </span><span class="spaces"></span><span class="istickedoff">mkSolveStats _ _ _ _ = <span class="nottickedoff">bug &quot;mkSolveStats&quot;</span></span></span>
+<span class="lineno">  107 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;time out: time limit reached&quot;,</span></span>
+<span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff"><span class="tickonlyfalse">&quot;Received SIGTERM or SIGINT, killing child&quot; -- for when runsolver prints this message but won't set MEMOUT=true or TIMEOUT=true for some reason</span></span>
+<span class="lineno">  109 </span><span class="spaces">                  </span><span class="istickedoff"><span class="tickonlyfalse">]</span></span>
+<span class="lineno">  110 </span><span class="spaces">            </span><span class="istickedoff"><span class="tickonlyfalse">]</span> =</span>
+<span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;ERROR: In statement: where false&quot; combinedSR</span> = <span class="nottickedoff">Invalid</span></span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;MEMOUT&quot; runsolverInfo == Just <span class="nottickedoff">&quot;true&quot;</span></span> = <span class="nottickedoff">MemOut</span></span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;TIMEOUT&quot; runsolverInfo == Just <span class="nottickedoff">&quot;true&quot;</span></span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowTimeOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SavileRowClauseOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">M.lookup &quot;SolverTimeOut&quot; savilerowInfo == Just &quot;1&quot;</span> = <span class="nottickedoff">TimeOut</span></span>
+<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">exitCodeSR /= 0</span> = <span class="nottickedoff">Error</span></span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = OK</span>
+<span class="lineno">  120 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  121 </span><span class="spaces">      </span><span class="istickedoff">totalTime</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">| Just srTotalTime &lt;- M.lookup &quot;SavileRowTotalTime&quot; savilerowInfo &gt;&gt;= readMay,</span>
+<span class="lineno">  123 </span><span class="spaces">          </span><span class="istickedoff">Just solverTotalTime &lt;- M.lookup &quot;SolverTotalTime&quot; savilerowInfo &gt;&gt;= readMay =</span>
+<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">Just (srTotalTime + solverTotalTime)</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  126 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  127 </span><span class="spaces">  </span><span class="istickedoff">computer &lt;- getHostName</span>
+<span class="lineno">  128 </span><span class="spaces">  </span><span class="istickedoff">timestamp &lt;- getCurrentTime</span>
+<span class="lineno">  129 </span><span class="spaces">  </span><span class="istickedoff">let conjureVersion = versionLine</span>
+<span class="lineno">  130 </span><span class="spaces">  </span><span class="istickedoff">savilerowVersion &lt;- head . lines . textToString &lt;$&gt; sh (run &quot;savilerow&quot; [&quot;-help&quot;])</span>
+<span class="lineno">  131 </span><span class="spaces">  </span><span class="istickedoff">let savilerowLogs =</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">SavileRowLogs</span>
+<span class="lineno">  133 </span><span class="spaces">          </span><span class="istickedoff">{ exitCode = exitCodeSR,</span>
+<span class="lineno">  134 </span><span class="spaces">            </span><span class="istickedoff">stdout = if <span class="tickonlyfalse">T.null stdoutSR</span> then <span class="nottickedoff">Nothing</span> else Just (lines (textToString stdoutSR)),</span>
+<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">stderr = if <span class="tickonlytrue">T.null stderrSR</span> then Nothing else <span class="nottickedoff">Just (lines (textToString stderrSR))</span></span>
+<span class="lineno">  136 </span><span class="spaces">          </span><span class="istickedoff">}</span>
+<span class="lineno">  137 </span><span class="spaces">  </span><span class="istickedoff">return SolveStats {..}</span>
+<span class="lineno">  138 </span><span class="spaces"></span><span class="istickedoff">mkSolveStats _ _ _ _ = <span class="nottickedoff">bug &quot;mkSolveStats&quot;</span></span></span>
 
 </pre>
 </body>
