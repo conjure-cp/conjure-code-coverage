@@ -2362,436 +2362,437 @@ span.spaces    { background: white }
 <span class="lineno"> 2343 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">b' &lt;- unifyTypesFailing t (r2, b)</span></span>
 <span class="lineno"> 2344 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return $ if null a' || null b' then Nothing else Just ()</span></span>
 <span class="lineno"> 2345 </span><span class="spaces">    </span><span class="istickedoff">preImageArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2346 </span><span class="spaces">    </span><span class="istickedoff">preImageArgs (r1, a) (r2, b) = do</span>
-<span class="lineno"> 2347 </span><span class="spaces">      </span><span class="istickedoff">let t = case (typeOf_ a, typeOf_ b) of</span>
-<span class="lineno"> 2348 </span><span class="spaces">            </span><span class="istickedoff">(TypeFunction _ i, tb) -&gt; mostDefinedS [i, tb]</span>
-<span class="lineno"> 2349 </span><span class="spaces">            </span><span class="istickedoff">(TypeSequence i, _) -&gt; <span class="nottickedoff">i</span></span>
-<span class="lineno"> 2350 </span><span class="spaces">            </span><span class="istickedoff">(_, tb) -&gt; <span class="nottickedoff">tb</span></span>
-<span class="lineno"> 2351 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing (TypeFunction TypeAny t) (<span class="nottickedoff">r1</span>, a)</span>
-<span class="lineno"> 2352 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing t (<span class="nottickedoff">r2</span>, b)</span>
-<span class="lineno"> 2353 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2354 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2355 </span><span class="spaces">    </span><span class="istickedoff">partyArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2356 </span><span class="spaces">    </span><span class="istickedoff">partyArgs (r1, a) (r2, b) = do</span>
-<span class="lineno"> 2357 </span><span class="spaces">      </span><span class="istickedoff">let t = case (typeOf_ a, typeOf_ b) of</span>
-<span class="lineno"> 2358 </span><span class="spaces">            </span><span class="istickedoff">(ta, TypePartition tb) -&gt; mostDefinedS [ta, tb]</span>
-<span class="lineno"> 2359 </span><span class="spaces">            </span><span class="istickedoff">(ta, _) -&gt; <span class="nottickedoff">ta</span></span>
-<span class="lineno"> 2360 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing t (<span class="nottickedoff">r1</span>, a)</span>
-<span class="lineno"> 2361 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypePartition t) (<span class="nottickedoff">r2</span>, b)</span>
-<span class="lineno"> 2362 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2363 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2364 </span><span class="spaces">    </span><span class="istickedoff">inverseArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2365 </span><span class="spaces">    </span><span class="istickedoff">inverseArgs (r1, a) (r2, b) = do</span>
-<span class="lineno"> 2366 </span><span class="spaces">      </span><span class="istickedoff">let (fIn, fOut) = case (typeOf_ a, typeOf_ b) of</span>
-<span class="lineno"> 2367 </span><span class="spaces">            </span><span class="istickedoff">(TypeFunction fi fo, TypeFunction gi go) -&gt; (mostDefinedS [fi, go], mostDefinedS [fo, gi])</span>
-<span class="lineno"> 2368 </span><span class="spaces">            </span><span class="istickedoff">(TypeFunction fi fo, _) -&gt; <span class="nottickedoff">(fi, fo)</span></span>
-<span class="lineno"> 2369 </span><span class="spaces">            </span><span class="istickedoff">(_, TypeFunction gi go) -&gt; <span class="nottickedoff">(gi, go)</span></span>
-<span class="lineno"> 2370 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">(TypeAny, TypeAny)</span></span>
-<span class="lineno"> 2371 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing (TypeFunction fIn fOut) (<span class="nottickedoff">r1</span>, a)</span>
-<span class="lineno"> 2372 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypeFunction fOut fIn) (<span class="nottickedoff">r2</span>, b)</span>
-<span class="lineno"> 2373 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2374 </span><span class="spaces">    </span><span class="istickedoff">setPartArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2375 </span><span class="spaces">    </span><span class="istickedoff">setPartArgs (r1, a) (r2, b) = do</span>
-<span class="lineno"> 2376 </span><span class="spaces">      </span><span class="istickedoff">let t = case (typeOf_ a, typeOf_ b) of</span>
-<span class="lineno"> 2377 </span><span class="spaces">            </span><span class="istickedoff">(TypeSet st, TypePartition pt) -&gt; mostDefinedS [st, pt]</span>
-<span class="lineno"> 2378 </span><span class="spaces">            </span><span class="istickedoff">(TypeSet st, _) -&gt; st</span>
-<span class="lineno"> 2379 </span><span class="spaces">            </span><span class="istickedoff">(_, TypePartition ts) -&gt; <span class="nottickedoff">ts</span></span>
-<span class="lineno"> 2380 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; TypeAny</span>
-<span class="lineno"> 2381 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing (TypeSet t) (r1, a)</span>
-<span class="lineno"> 2382 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypePartition t) (r2, b)</span>
-<span class="lineno"> 2383 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2384 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2385 </span><span class="spaces">    </span><span class="istickedoff">partyType :: Maybe Type -&gt; Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2386 </span><span class="spaces">    </span><span class="istickedoff">partyType a b = do</span>
-<span class="lineno"> 2387 </span><span class="spaces">      </span><span class="istickedoff">let at' = fromMaybe <span class="nottickedoff">TypeAny</span> a</span>
-<span class="lineno"> 2388 </span><span class="spaces">      </span><span class="istickedoff">let bt = case b of</span>
-<span class="lineno"> 2389 </span><span class="spaces">            </span><span class="istickedoff">Just (TypePartition t) -&gt; t</span>
-<span class="lineno"> 2390 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny</span></span>
-<span class="lineno"> 2391 </span><span class="spaces">      </span><span class="istickedoff">return $ TypeSet $ mostDefinedS [at', bt]</span>
-<span class="lineno"> 2392 </span><span class="spaces">    </span><span class="istickedoff">partsType :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2393 </span><span class="spaces">    </span><span class="istickedoff">partsType (Just (TypePartition a)) = Just $ TypeSet $ TypeSet a</span>
-<span class="lineno"> 2394 </span><span class="spaces">    </span><span class="istickedoff">partsType (Just TypeAny) = <span class="nottickedoff">Just $ TypeSet $ TypeSet TypeAny</span></span>
-<span class="lineno"> 2395 </span><span class="spaces">    </span><span class="istickedoff">partsType _ = <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2396 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2397 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs :: Arg -&gt; Validator ()</span>
-<span class="lineno"> 2398 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs (r, (Kind DomainType t, _)) =</span>
-<span class="lineno"> 2399 </span><span class="spaces">      </span><span class="istickedoff">case t of</span>
-<span class="lineno"> 2400 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; valid</span>
-<span class="lineno"> 2401 </span><span class="spaces">        </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">valid</span></span>
-<span class="lineno"> 2402 </span><span class="spaces">        </span><span class="istickedoff">TypeEnum {} -&gt; valid</span>
-<span class="lineno"> 2403 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; valid</span>
-<span class="lineno"> 2404 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t</span></span>
-<span class="lineno"> 2405 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs (r, (k, _)) = do</span>
-<span class="lineno"> 2406 </span><span class="spaces">      </span><span class="istickedoff">t &lt;- getValueType k</span>
-<span class="lineno"> 2407 </span><span class="spaces">      </span><span class="istickedoff">inner &lt;- case t of</span>
-<span class="lineno"> 2408 </span><span class="spaces">        </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
-<span class="lineno"> 2409 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
-<span class="lineno"> 2410 </span><span class="spaces">        </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
-<span class="lineno"> 2411 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
-<span class="lineno"> 2412 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return TypeAny</span></span>
-<span class="lineno"> 2413 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ invalid (r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t)</span></span>
-<span class="lineno"> 2414 </span><span class="spaces">      </span><span class="istickedoff">case inner of</span>
-<span class="lineno"> 2415 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; valid</span>
-<span class="lineno"> 2416 </span><span class="spaces">        </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">valid</span></span>
-<span class="lineno"> 2417 </span><span class="spaces">        </span><span class="istickedoff">TypeEnum {} -&gt; <span class="nottickedoff">valid</span></span>
-<span class="lineno"> 2418 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">valid</span></span>
-<span class="lineno"> 2419 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t</span></span>
-<span class="lineno"> 2420 </span><span class="spaces">    </span><span class="istickedoff">minMaxType :: Maybe (Kind, a) -&gt; Maybe Type</span>
-<span class="lineno"> 2421 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind DomainType t@(TypeInt {}), _)) = Just t</span>
-<span class="lineno"> 2422 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind DomainType (TypeEnum (Name nm)), _)) = Just . TypeInt $ TagEnum nm</span>
-<span class="lineno"> 2423 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeMatrix _ a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
-<span class="lineno"> 2424 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeList a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
-<span class="lineno"> 2425 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeSet a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
-<span class="lineno"> 2426 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeMSet a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
-<span class="lineno"> 2427 </span><span class="spaces">    </span><span class="istickedoff">minMaxType _ = Just TypeAny</span>
-<span class="lineno"> 2428 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2429 </span><span class="spaces">    </span><span class="istickedoff">transformArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2430 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">transformArgs _ _ = return $ pure ()</span></span>
-<span class="lineno"> 2431 </span><span class="spaces">    </span><span class="istickedoff">activeArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2432 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (_, typeOf_ -&gt; TypeAny) _ = <span class="nottickedoff">valid</span></span>
-<span class="lineno"> 2433 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (r, typeOf_ -&gt; t@(TypeVariant _)) (r2, typeOf_ -&gt; b) = checkRVMember (<span class="nottickedoff">r</span>, t) (<span class="nottickedoff">r2</span>, b)</span>
-<span class="lineno"> 2434 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (r, typeOf_ -&gt; t) _ = <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Variant &quot; t</span></span>
-<span class="lineno"> 2435 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2436 </span><span class="spaces">    </span><span class="istickedoff">typeToSet :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2437 </span><span class="spaces">    </span><span class="istickedoff">typeToSet (Just t) = Just . TypeSet $ fromMaybe <span class="nottickedoff">TypeAny</span> (tMembers t)</span>
-<span class="lineno"> 2438 </span><span class="spaces">    </span><span class="istickedoff">typeToSet _ = <span class="nottickedoff">Just $ TypeSet TypeAny</span></span>
-<span class="lineno"> 2439 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2440 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet (Just t) = Just . TypeMSet $ fromMaybe <span class="nottickedoff">TypeAny</span> (tMembers t)</span>
-<span class="lineno"> 2441 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet _ = <span class="nottickedoff">Just $ TypeMSet TypeAny</span></span>
-<span class="lineno"> 2442 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2443 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation (Just (TypeFunction i j)) = Just $ TypeRelation [i, j]</span>
-<span class="lineno"> 2444 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation (Just TypeAny) = <span class="nottickedoff">Just $ TypeRelation [TypeAny, TypeAny]</span></span>
-<span class="lineno"> 2445 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation _ = <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2446 </span><span class="spaces">    </span><span class="istickedoff">tMembers t = case t of</span>
-<span class="lineno"> 2447 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">Just TypeAny</span></span>
-<span class="lineno"> 2448 </span><span class="spaces">      </span><span class="istickedoff">TypeList ty -&gt; Just ty</span>
-<span class="lineno"> 2449 </span><span class="spaces">      </span><span class="istickedoff">TypeMatrix _ i -&gt; <span class="nottickedoff">Just i</span></span>
-<span class="lineno"> 2450 </span><span class="spaces">      </span><span class="istickedoff">TypeSet ty -&gt; Just ty</span>
-<span class="lineno"> 2451 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet ty -&gt; Just ty</span>
-<span class="lineno"> 2452 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction i j -&gt; <span class="nottickedoff">Just $ TypeTuple [i, j]</span></span>
-<span class="lineno"> 2453 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation tys -&gt; Just $ TypeTuple tys</span>
-<span class="lineno"> 2454 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2455 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2456 </span><span class="spaces">    </span><span class="istickedoff">imageArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
-<span class="lineno"> 2457 </span><span class="spaces">    </span><span class="istickedoff">imageArgs (r1, typeOf_ -&gt; t1) r2 = do</span>
-<span class="lineno"> 2458 </span><span class="spaces">      </span><span class="istickedoff">from &lt;- case t1 of</span>
-<span class="lineno"> 2459 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ Just TypeAny</span></span>
-<span class="lineno"> 2460 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction a _ -&gt; return $ Just a</span>
-<span class="lineno"> 2461 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence _ -&gt; return $ Just tInt</span>
-<span class="lineno"> 2462 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing &lt;$ raiseTypeError (r1 &lt;!&gt; ComplexTypeError &quot;Function or Sequence&quot; t1)</span></span>
-<span class="lineno"> 2463 </span><span class="spaces">      </span><span class="istickedoff">case from of</span>
-<span class="lineno"> 2464 </span><span class="spaces">        </span><span class="istickedoff">Just f -&gt; unifyTypes f r2 &gt;&gt; return (pure <span class="nottickedoff">()</span>)</span>
-<span class="lineno"> 2465 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">return Nothing</span></span>
-<span class="lineno"> 2466 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2467 </span><span class="spaces">    </span><span class="istickedoff">sumArgs :: SArg -&gt; Validator ()</span>
-<span class="lineno"> 2468 </span><span class="spaces">    </span><span class="istickedoff">sumArgs (r, typeOf_ -&gt; t') = do</span>
-<span class="lineno"> 2469 </span><span class="spaces">      </span><span class="istickedoff">t &lt;- case t' of</span>
-<span class="lineno"> 2470 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return TypeAny</span></span>
-<span class="lineno"> 2471 </span><span class="spaces">        </span><span class="istickedoff">TypeList t -&gt; return t</span>
-<span class="lineno"> 2472 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix _ t -&gt; return t</span>
-<span class="lineno"> 2473 </span><span class="spaces">        </span><span class="istickedoff">TypeSet t -&gt; return t</span>
-<span class="lineno"> 2474 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet t -&gt; <span class="nottickedoff">return t</span></span>
-<span class="lineno"> 2475 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ raiseTypeError (r &lt;!&gt; ComplexTypeError &quot;Matrix or Set&quot; t')</span></span>
-<span class="lineno"> 2476 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2477 </span><span class="spaces">      </span><span class="istickedoff">case t of</span>
-<span class="lineno"> 2478 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2479 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2480 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; Nothing &lt;$ raiseTypeError <span class="nottickedoff">(r &lt;!&gt; ComplexTypeError &quot;Integer elements&quot; t)</span></span>
-<span class="lineno"> 2481 </span><span class="spaces">    </span><span class="istickedoff">funcSeq :: SArg -&gt; Validator ()</span>
-<span class="lineno"> 2482 </span><span class="spaces">    </span><span class="istickedoff">funcSeq (r, typeOf_ -&gt; t') = case t' of</span>
-<span class="lineno"> 2483 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2484 </span><span class="spaces">      </span><span class="istickedoff">TypeSequence _ -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2485 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2486 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Function or Sequence&quot; t'</span></span>
-<span class="lineno"> 2487 </span><span class="spaces">    </span><span class="istickedoff">funcDomain :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2488 </span><span class="spaces">    </span><span class="istickedoff">funcDomain (Just (TypeFunction a _)) = Just a</span>
-<span class="lineno"> 2489 </span><span class="spaces">    </span><span class="istickedoff">funcDomain (Just (TypeSequence _)) = <span class="nottickedoff">Just tInt</span></span>
-<span class="lineno"> 2490 </span><span class="spaces">    </span><span class="istickedoff">funcDomain _ = <span class="nottickedoff">Just TypeAny</span></span>
-<span class="lineno"> 2491 </span><span class="spaces">    </span><span class="istickedoff">funcRange :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2492 </span><span class="spaces">    </span><span class="istickedoff">funcRange (Just (TypeFunction _ b)) = Just b</span>
-<span class="lineno"> 2493 </span><span class="spaces">    </span><span class="istickedoff">funcRange (Just ((TypeSequence b))) = Just b</span>
-<span class="lineno"> 2494 </span><span class="spaces">    </span><span class="istickedoff">funcRange _ = <span class="nottickedoff">Just TypeAny</span></span>
-<span class="lineno"> 2495 </span><span class="spaces">    </span><span class="istickedoff">part :: SArg -&gt; Validator ()</span>
-<span class="lineno"> 2496 </span><span class="spaces">    </span><span class="istickedoff">part (r, typeOf_ -&gt; t) = case t of</span>
-<span class="lineno"> 2497 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; valid</span>
-<span class="lineno"> 2498 </span><span class="spaces">      </span><span class="istickedoff">TypePartition _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2499 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; TypeError (TypePartition TypeAny) t</span></span>
-<span class="lineno"> 2500 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2501 </span><span class="spaces">    </span><span class="istickedoff">histArgs :: SArg -&gt; Validator ()</span>
-<span class="lineno"> 2502 </span><span class="spaces">    </span><span class="istickedoff">histArgs (r, typeOf_ -&gt; a) = case a of</span>
-<span class="lineno"> 2503 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2504 </span><span class="spaces">      </span><span class="istickedoff">TypeList _ -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2505 </span><span class="spaces">      </span><span class="istickedoff">TypeMatrix _ _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2506 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2507 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Matrix, List or MSet&quot; a</span></span>
-<span class="lineno"> 2508 </span><span class="spaces">    </span><span class="istickedoff">histType :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2509 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeMSet a))) = Just $ TypeMatrix <span class="nottickedoff">tInt</span> $ <span class="nottickedoff">TypeTuple [a, tInt]</span></span>
-<span class="lineno"> 2510 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeMatrix _ a))) = Just $ TypeMatrix <span class="nottickedoff">tInt</span> $ TypeTuple [a, tInt]</span>
-<span class="lineno"> 2511 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeList a))) = <span class="nottickedoff">Just $ TypeMatrix tInt $ TypeTuple [a, tInt]</span></span>
-<span class="lineno"> 2512 </span><span class="spaces">    </span><span class="istickedoff">histType _ = <span class="nottickedoff">Just $ TypeMatrix tInt $ TypeTuple [TypeAny, tInt]</span></span>
-<span class="lineno"> 2513 </span><span class="spaces">    </span><span class="istickedoff">enumerable :: SArg -&gt; Validator ()</span>
-<span class="lineno"> 2514 </span><span class="spaces">    </span><span class="istickedoff">enumerable (r, typeOf_ -&gt; t) = case t of</span>
-<span class="lineno"> 2515 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2516 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagUnnamed {} -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; CustomError &quot;Anonymous enums are not explictly enumerable&quot;</span></span>
-<span class="lineno"> 2517 </span><span class="spaces">      </span><span class="istickedoff">TypeInt _ -&gt; return $ <span class="nottickedoff">pure ()</span></span>
-<span class="lineno"> 2518 </span><span class="spaces">      </span><span class="istickedoff">TypeEnum {} -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2519 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2520 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;int enum or bool&quot; t</span></span>
-<span class="lineno"> 2521 </span><span class="spaces">    </span><span class="istickedoff">enumerableType :: Maybe Type -&gt; Maybe Type</span>
-<span class="lineno"> 2522 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeInt TagInt)) = Just t</span></span>
-<span class="lineno"> 2523 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeInt (TagEnum _))) = Just t</span></span>
-<span class="lineno"> 2524 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeEnum {})) = Just t</span></span>
-<span class="lineno"> 2525 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType _ = Nothing</span></span></span>
-<span class="lineno"> 2526 </span>
-<span class="lineno"> 2527 </span>flattenType :: Maybe Int -&gt; Maybe Type -&gt; Maybe Type
-<span class="lineno"> 2528 </span><span class="decl"><span class="istickedoff">flattenType (Just n) (Just a) | <span class="nottickedoff">n &lt; 0</span> = <span class="nottickedoff">Just $ TypeList a</span></span>
-<span class="lineno"> 2529 </span><span class="spaces"></span><span class="istickedoff">flattenType (Just n) (Just (TypeList m)) = <span class="nottickedoff">flattenType (Just (n - 1)) (Just m)</span></span>
-<span class="lineno"> 2530 </span><span class="spaces"></span><span class="istickedoff">flattenType (Just n) (Just (TypeMatrix _ m)) = <span class="nottickedoff">flattenType (Just (n - 1)) (Just m)</span></span>
-<span class="lineno"> 2531 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just (TypeMatrix _ m)) = flattenType Nothing (Just m)</span>
-<span class="lineno"> 2532 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just (TypeList m)) = flattenType Nothing (Just m)</span>
-<span class="lineno"> 2533 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just t) = Just $ TypeList t</span>
-<span class="lineno"> 2534 </span><span class="spaces"></span><span class="istickedoff">flattenType _ _ = <span class="nottickedoff">Just $ TypeList TypeAny</span></span></span>
-<span class="lineno"> 2535 </span>
-<span class="lineno"> 2536 </span>validateFuncOp :: Lexeme -&gt; [RegionTagged (Kind, Expression)] -&gt; ValidatorS (Typed Expression)
-<span class="lineno"> 2537 </span><span class="decl"><span class="istickedoff">validateFuncOp l args = do</span>
-<span class="lineno"> 2538 </span><span class="spaces">  </span><span class="istickedoff">let b = funcOpBuilder l</span>
-<span class="lineno"> 2539 </span><span class="spaces">  </span><span class="istickedoff">b args</span></span>
-<span class="lineno"> 2540 </span>
-<span class="lineno"> 2541 </span>-- case argCheck of
-<span class="lineno"> 2542 </span>--   Nothing -&gt; return $ Typed  (r []) $ fallback &quot;arg fail&quot;
-<span class="lineno"> 2543 </span>--   Just tys -&gt; return $ Typed (r tys)(b $ map untype tys)
-<span class="lineno"> 2544 </span>
-<span class="lineno"> 2545 </span>isOfType :: Type -&gt; RegionTagged (Typed Expression) -&gt; ValidatorS Bool
-<span class="lineno"> 2546 </span><span class="decl"><span class="nottickedoff">isOfType t (r, v) = setContext r &gt;&gt; return v ?=&gt; exactly t &gt;&gt; return (typesUnifyS [t, typeOf_ v])</span></span>
-<span class="lineno"> 2547 </span>
-<span class="lineno"> 2548 </span>isLogicalContainer :: RegionTagged (Typed Expression) -&gt; Validator ()
-<span class="lineno"> 2549 </span><span class="decl"><span class="istickedoff">isLogicalContainer (r, Typed t _) = case t of</span>
-<span class="lineno"> 2550 </span><span class="spaces">  </span><span class="istickedoff">TypeAny -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2551 </span><span class="spaces">  </span><span class="istickedoff">TypeList TypeAny -&gt; return $ <span class="nottickedoff">pure ()</span></span>
-<span class="lineno"> 2552 </span><span class="spaces">  </span><span class="istickedoff">TypeList TypeBool -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2553 </span><span class="spaces">  </span><span class="istickedoff">TypeMatrix _ TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2554 </span><span class="spaces">  </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2555 </span><span class="spaces">  </span><span class="istickedoff">TypeSet TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2556 </span><span class="spaces">  </span><span class="istickedoff">TypeMSet TypeBool -&gt; <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2557 </span><span class="spaces">  </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Collection of boolean&quot; t</span></span></span>
-<span class="lineno"> 2558 </span>
-<span class="lineno"> 2559 </span>-- validateArgList :: [RegionTagged (Typed Expression) -&gt; ValidatorS Bool] -&gt; [RegionTagged (Typed Expression)] -&gt; Validator [Typed Expression]
-<span class="lineno"> 2560 </span>-- validateArgList ps args | length args &lt; length ps = do invalid $ args &lt;!&gt; MissingArgsError (length ps)
-<span class="lineno"> 2561 </span>-- validateArgList ps args = do
-<span class="lineno"> 2562 </span>--     let ps' = ps ++ repeat argOverflow
-<span class="lineno"> 2563 </span>--     xs &lt;- zipWithM id ps' args
-<span class="lineno"> 2564 </span>--     return (if and xs then  Just $ map unregion  args else Nothing)
-<span class="lineno"> 2565 </span>
-<span class="lineno"> 2566 </span>-- argOverflow :: RegionTagged a -&gt; ValidatorS Bool
-<span class="lineno"> 2567 </span>-- argOverflow (region,_) = do
-<span class="lineno"> 2568 </span>--     setContext region
-<span class="lineno"> 2569 </span>--     void . contextError $ CustomError &quot;Extra Args&quot;
-<span class="lineno"> 2570 </span>--     return False
-<span class="lineno"> 2571 </span>type SArg = RegionTagged (Typed Expression)
-<span class="lineno"> 2572 </span>
-<span class="lineno"> 2573 </span>type Arg = RegionTagged (Kind, Expression)
-<span class="lineno"> 2574 </span>
-<span class="lineno"> 2575 </span>unFunc ::
-<span class="lineno"> 2576 </span>  (Arg -&gt; Validator a) -&gt; -- Arg validator
-<span class="lineno"> 2577 </span>  (Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; -- typeEvaluator
-<span class="lineno"> 2578 </span>  ([Expression] -&gt; Expression) -&gt; -- mkOp or similar
-<span class="lineno"> 2579 </span>  [Arg] -&gt;
-<span class="lineno"> 2580 </span>  ValidatorS (Typed Expression)
-<span class="lineno"> 2581 </span><span class="decl"><span class="istickedoff">unFunc argVal t f args = do</span>
-<span class="lineno"> 2582 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
-<span class="lineno"> 2583 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 1 0 &gt;&gt; return (Nothing, Nothing)</span></span>
-<span class="lineno"> 2584 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; do</span>
-<span class="lineno"> 2585 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x</span>
-<span class="lineno"> 2586 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets typeChecking</span>
-<span class="lineno"> 2587 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
-<span class="lineno"> 2588 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="tickonlyfalse">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2589 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just [(snd . unregion) x]</span>
-<span class="lineno"> 2590 </span><span class="spaces">      </span><span class="istickedoff">return (result, Just $ unregion x)</span>
-<span class="lineno"> 2591 </span><span class="spaces">    </span><span class="istickedoff">(x : rs) -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2592 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">tooManyArgs rs</span></span>
-<span class="lineno"> 2593 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">r &lt;- argVal x</span></span>
-<span class="lineno"> 2594 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">let result = case r of</span></span>
-<span class="lineno"> 2595 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
-<span class="lineno"> 2596 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just [(snd . unregion) x]</span></span>
-<span class="lineno"> 2597 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return (result, Just $ unregion x)</span></span>
-<span class="lineno"> 2598 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail Unfunc&quot;)</span> f v</span>
-<span class="lineno"> 2599 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ t ts) res</span></span>
-<span class="lineno"> 2600 </span>
-<span class="lineno"> 2601 </span>biFunc :: (Arg -&gt; Arg -&gt; Validator a) -&gt; (Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; ([Expression] -&gt; Expression) -&gt; [Arg] -&gt; ValidatorS (Typed Expression)
-<span class="lineno"> 2602 </span><span class="decl"><span class="istickedoff">biFunc argVal t f args = do</span>
-<span class="lineno"> 2603 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
-<span class="lineno"> 2604 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 2 0 &gt;&gt; return (Nothing, (Nothing, Nothing))</span></span>
-<span class="lineno"> 2605 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; <span class="nottickedoff">tooFewArgs 2 1 &gt;&gt; return (Nothing, (Just $ unregion x, Nothing))</span></span>
-<span class="lineno"> 2606 </span><span class="spaces">    </span><span class="istickedoff">[x, y] -&gt; do</span>
-<span class="lineno"> 2607 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y</span>
-<span class="lineno"> 2608 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets <span class="nottickedoff">typeChecking</span></span>
-<span class="lineno"> 2609 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
-<span class="lineno"> 2610 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="nottickedoff">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2611 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just $ map (snd . unregion) [x, y]</span>
-<span class="lineno"> 2612 </span><span class="spaces">      </span><span class="istickedoff">return (result, (Just (unregion x), Just (unregion y)))</span>
-<span class="lineno"> 2613 </span><span class="spaces">    </span><span class="istickedoff">(x : y : rs) -&gt; do</span>
-<span class="lineno"> 2614 </span><span class="spaces">      </span><span class="istickedoff">tooManyArgs rs</span>
-<span class="lineno"> 2615 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y</span>
-<span class="lineno"> 2616 </span><span class="spaces">      </span><span class="istickedoff">let <span class="nottickedoff">result = case r of</span></span>
-<span class="lineno"> 2617 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
-<span class="lineno"> 2618 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just $ map (snd . unregion) [x, y]</span></span>
-<span class="lineno"> 2619 </span><span class="spaces">      </span><span class="istickedoff">return (<span class="nottickedoff">result</span>, <span class="nottickedoff">(Just (unregion x), Just (unregion y))</span>)</span>
-<span class="lineno"> 2620 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail BiFunct&quot;)</span> f v</span>
-<span class="lineno"> 2621 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ uncurry t ts) res</span></span>
-<span class="lineno"> 2622 </span>
-<span class="lineno"> 2623 </span>triFunc :: (Arg -&gt; Arg -&gt; Arg -&gt; Validator a) -&gt; (Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; ([Expression] -&gt; Expression) -&gt; [Arg] -&gt; ValidatorS (Typed Expression)
-<span class="lineno"> 2624 </span><span class="decl"><span class="istickedoff">triFunc argVal t f args = do</span>
-<span class="lineno"> 2625 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
-<span class="lineno"> 2626 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 3 0 &gt;&gt; return (Nothing, (Nothing, Nothing, Nothing))</span></span>
-<span class="lineno"> 2627 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; <span class="nottickedoff">tooFewArgs 3 1 &gt;&gt; return (Nothing, (Just $ unregion x, Nothing, Nothing))</span></span>
-<span class="lineno"> 2628 </span><span class="spaces">    </span><span class="istickedoff">[x, y] -&gt; <span class="nottickedoff">tooFewArgs 3 2 &gt;&gt; return (Nothing, (Just $ unregion x, Just $ unregion y, Nothing))</span></span>
-<span class="lineno"> 2629 </span><span class="spaces">    </span><span class="istickedoff">[x, y, z] -&gt; do</span>
-<span class="lineno"> 2630 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y z</span>
-<span class="lineno"> 2631 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets <span class="nottickedoff">typeChecking</span></span>
-<span class="lineno"> 2632 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
-<span class="lineno"> 2633 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="nottickedoff">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
-<span class="lineno"> 2634 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just $ map (snd . unregion) [x, y, z]</span>
-<span class="lineno"> 2635 </span><span class="spaces">      </span><span class="istickedoff">return (result, (<span class="nottickedoff">Just (unregion x)</span>, <span class="nottickedoff">Just (unregion y)</span>, <span class="nottickedoff">Just (unregion z)</span>))</span>
-<span class="lineno"> 2636 </span><span class="spaces">    </span><span class="istickedoff">(x : y : z : rs) -&gt; <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2637 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">tooManyArgs rs</span></span>
-<span class="lineno"> 2638 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">r &lt;- argVal x y z</span></span>
-<span class="lineno"> 2639 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">let result = case r of</span></span>
-<span class="lineno"> 2640 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
-<span class="lineno"> 2641 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just $ map (snd . unregion) [x, y, z]</span></span>
-<span class="lineno"> 2642 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return (result, (Just (unregion x), Just (unregion y), Just (unregion z)))</span></span>
-<span class="lineno"> 2643 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail Tri&quot;)</span> f v</span>
-<span class="lineno"> 2644 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ uncurry3 t ts) res</span>
-<span class="lineno"> 2645 </span><span class="spaces">  </span><span class="istickedoff">where</span>
-<span class="lineno"> 2646 </span><span class="spaces">    </span><span class="istickedoff">uncurry3 fn (a, b, c) = fn <span class="nottickedoff">a</span> <span class="nottickedoff">b</span> <span class="nottickedoff">c</span></span></span> -- todo export from prelude
-<span class="lineno"> 2647 </span>
-<span class="lineno"> 2648 </span>tooFewArgs :: Int -&gt; Int -&gt; ValidatorS ()
-<span class="lineno"> 2649 </span><span class="decl"><span class="nottickedoff">tooFewArgs n i = void . contextError $ MissingArgsError n i</span></span>
-<span class="lineno"> 2650 </span>
-<span class="lineno"> 2651 </span>tooManyArgs :: [RegionTagged a] -&gt; ValidatorS ()
-<span class="lineno"> 2652 </span><span class="decl"><span class="istickedoff">tooManyArgs = mapM_ (\x -&gt; raiseError $ x &lt;!&gt; UnexpectedArg)</span></span>
-<span class="lineno"> 2653 </span>
-<span class="lineno"> 2654 </span>checkRVMember :: RegionTagged Type -&gt; RegionTagged Type -&gt; Validator ()
-<span class="lineno"> 2655 </span><span class="decl"><span class="istickedoff">checkRVMember (_, TypeRecord ts) (_, TypeRecordMember nm _) | <span class="nottickedoff">not . null $ lookup nm ts</span> = <span class="nottickedoff">return $ pure ()</span></span>
-<span class="lineno"> 2656 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeRecord ts) (r2, r) = <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2657 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r2 &lt;!&gt; TypeError (TypeRecordMember (Name &quot;&quot;) ts) r</span></span>
-<span class="lineno"> 2658 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span>
-<span class="lineno"> 2659 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeVariant ts) (_, TypeVariantMember nm _) | <span class="tickonlytrue">not . null $ lookup nm ts</span> = return $ pure <span class="nottickedoff">()</span></span>
-<span class="lineno"> 2660 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeVariant ts) (r2, r) = <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2661 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r2 &lt;!&gt; TypeError (TypeVariantMember (Name &quot;&quot;) ts) r</span></span>
-<span class="lineno"> 2662 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span>
-<span class="lineno"> 2663 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (r1, t) _ = <span class="nottickedoff">do</span></span>
-<span class="lineno"> 2664 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r1 &lt;!&gt; TypeError (TypeVariant []) t</span></span>
-<span class="lineno"> 2665 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span></span>
-<span class="lineno"> 2666 </span>
-<span class="lineno"> 2667 </span>type OpValidator = RegionTagged Kind -&gt; RegionTagged Kind -&gt; ValidatorS Type
-<span class="lineno"> 2668 </span>
-<span class="lineno"> 2669 </span>type OpTyper = Kind -&gt; Kind -&gt; Type
-<span class="lineno"> 2670 </span>
-<span class="lineno"> 2671 </span>sameToSameV :: (Type -&gt; ValidatorS Type) -&gt; (Type -&gt; Type -&gt; Type) -&gt; OpValidator
-<span class="lineno"> 2672 </span><span class="decl"><span class="istickedoff">sameToSameV tc t (rl, kl) (rr, kr) = do</span>
-<span class="lineno"> 2673 </span><span class="spaces">  </span><span class="istickedoff">setContext rl</span>
-<span class="lineno"> 2674 </span><span class="spaces">  </span><span class="istickedoff">lt &lt;- getValueType kl</span>
-<span class="lineno"> 2675 </span><span class="spaces">  </span><span class="istickedoff">lt' &lt;- tc lt</span>
-<span class="lineno"> 2676 </span><span class="spaces">  </span><span class="istickedoff">setContext rr</span>
-<span class="lineno"> 2677 </span><span class="spaces">  </span><span class="istickedoff">rt &lt;- getValueType kr</span>
-<span class="lineno"> 2678 </span><span class="spaces">  </span><span class="istickedoff">rt' &lt;- tc rt</span>
-<span class="lineno"> 2679 </span><span class="spaces">  </span><span class="istickedoff">let md = mostDefinedS [lt, rt]</span>
-<span class="lineno"> 2680 </span><span class="spaces">  </span><span class="istickedoff">_ &lt;- unifyTypesFailing md (<span class="nottickedoff">rl</span>, Typed lt' <span class="nottickedoff">()</span>)</span>
-<span class="lineno"> 2681 </span><span class="spaces">  </span><span class="istickedoff">_ &lt;- unifyTypesFailing md (rr, Typed rt' <span class="nottickedoff">()</span>)</span>
-<span class="lineno"> 2682 </span><span class="spaces">  </span><span class="istickedoff">return $ t lt' rt'</span></span>
-<span class="lineno"> 2683 </span>
-<span class="lineno"> 2684 </span>binOpType :: Lexeme -&gt; OpValidator
-<span class="lineno"> 2685 </span><span class="decl"><span class="istickedoff">binOpType l = case l of</span>
-<span class="lineno"> 2686 </span><span class="spaces">  </span><span class="istickedoff">L_Plus -&gt; sameToSameV number same</span>
-<span class="lineno"> 2687 </span><span class="spaces">  </span><span class="istickedoff">L_Minus -&gt; sameToSameV minusArgs same</span>
-<span class="lineno"> 2688 </span><span class="spaces">  </span><span class="istickedoff">L_Times -&gt; sameToSameV number same</span>
-<span class="lineno"> 2689 </span><span class="spaces">  </span><span class="istickedoff">L_Div -&gt; sameToSameV number same</span>
-<span class="lineno"> 2690 </span><span class="spaces">  </span><span class="istickedoff">L_Mod -&gt; sameToSameV number same</span>
-<span class="lineno"> 2691 </span><span class="spaces">  </span><span class="istickedoff">L_Pow -&gt; sameToSameV number same</span>
-<span class="lineno"> 2692 </span><span class="spaces">  </span><span class="istickedoff">L_Eq -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2693 </span><span class="spaces">  </span><span class="istickedoff">L_Neq -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2694 </span><span class="spaces">  </span><span class="istickedoff">L_Lt -&gt; sameToSameV orderable cBool</span>
-<span class="lineno"> 2695 </span><span class="spaces">  </span><span class="istickedoff">L_Leq -&gt; sameToSameV orderable cBool</span>
-<span class="lineno"> 2696 </span><span class="spaces">  </span><span class="istickedoff">L_Gt -&gt; sameToSameV orderable cBool</span>
-<span class="lineno"> 2697 </span><span class="spaces">  </span><span class="istickedoff">L_Geq -&gt; sameToSameV orderable cBool</span>
-<span class="lineno"> 2698 </span><span class="spaces">  </span><span class="istickedoff">L_in -&gt; checkIn</span>
-<span class="lineno"> 2699 </span><span class="spaces">  </span><span class="istickedoff">L_And -&gt; sameToSameV bools cBool</span>
-<span class="lineno"> 2700 </span><span class="spaces">  </span><span class="istickedoff">L_Or -&gt; sameToSameV bools cBool</span>
-<span class="lineno"> 2701 </span><span class="spaces">  </span><span class="istickedoff">L_Imply -&gt; sameToSameV bools cBool</span>
-<span class="lineno"> 2702 </span><span class="spaces">  </span><span class="istickedoff">L_Iff -&gt; sameToSameV bools cBool -- b b b</span>
-<span class="lineno"> 2703 </span><span class="spaces">  </span><span class="istickedoff">L_subset -&gt; sameToSameV setLike cBool -- set mset func rel</span>
-<span class="lineno"> 2704 </span><span class="spaces">  </span><span class="istickedoff">L_subsetEq -&gt; sameToSameV setLike cBool</span>
-<span class="lineno"> 2705 </span><span class="spaces">  </span><span class="istickedoff">-- \^^^</span>
-<span class="lineno"> 2706 </span><span class="spaces">  </span><span class="istickedoff">L_supset -&gt; sameToSameV setLike cBool</span>
-<span class="lineno"> 2707 </span><span class="spaces">  </span><span class="istickedoff">-- \^^^^</span>
-<span class="lineno"> 2708 </span><span class="spaces">  </span><span class="istickedoff">L_supsetEq -&gt; sameToSameV setLike cBool</span>
-<span class="lineno"> 2709 </span><span class="spaces">  </span><span class="istickedoff">-- \^^</span>
-<span class="lineno"> 2710 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2711 </span><span class="spaces">  </span><span class="istickedoff">L_subsequence -&gt; sameToSameV justSequence cBool -- seq - seq -bool</span>
-<span class="lineno"> 2712 </span><span class="spaces">  </span><span class="istickedoff">L_substring -&gt; sameToSameV justSequence cBool -- seq - seq -bool</span>
-<span class="lineno"> 2713 </span><span class="spaces">  </span><span class="istickedoff">L_intersect -&gt; sameToSameV setLike same</span>
-<span class="lineno"> 2714 </span><span class="spaces">  </span><span class="istickedoff">L_union -&gt; sameToSameV setLike same</span>
-<span class="lineno"> 2715 </span><span class="spaces">  </span><span class="istickedoff">L_LexLt -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2716 </span><span class="spaces">  </span><span class="istickedoff">L_LexLeq -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2717 </span><span class="spaces">  </span><span class="istickedoff">L_LexGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2718 </span><span class="spaces">  </span><span class="istickedoff">L_LexGeq -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2719 </span><span class="spaces">  </span><span class="istickedoff">L_DotLt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2720 </span><span class="spaces">  </span><span class="istickedoff">L_DotLeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2721 </span><span class="spaces">  </span><span class="istickedoff">L_DotGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2722 </span><span class="spaces">  </span><span class="istickedoff">L_DotGeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2723 </span><span class="spaces">  </span><span class="istickedoff">L_TildeLt -&gt; sameToSameV pure cBool</span>
-<span class="lineno"> 2724 </span><span class="spaces">  </span><span class="istickedoff">L_TildeLeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2725 </span><span class="spaces">  </span><span class="istickedoff">L_TildeGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2726 </span><span class="spaces">  </span><span class="istickedoff">L_TildeGeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
-<span class="lineno"> 2727 </span><span class="spaces">  </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;Unkown operator&quot; &lt;+&gt; pretty (show l)</span></span>
-<span class="lineno"> 2728 </span><span class="spaces">  </span><span class="istickedoff">where</span>
-<span class="lineno"> 2729 </span><span class="spaces">    </span><span class="istickedoff">cBool = const . const TypeBool</span>
-<span class="lineno"> 2730 </span><span class="spaces">    </span><span class="istickedoff">same a b = mostDefinedS [a, b]</span>
-<span class="lineno"> 2731 </span><span class="spaces">    </span><span class="istickedoff">checkIn :: OpValidator</span>
-<span class="lineno"> 2732 </span><span class="spaces">    </span><span class="istickedoff">checkIn (r1, kl) (r2, kr) = do</span>
-<span class="lineno"> 2733 </span><span class="spaces">      </span><span class="istickedoff">setContext <span class="nottickedoff">r1</span></span>
-<span class="lineno"> 2734 </span><span class="spaces">      </span><span class="istickedoff">lt &lt;- getValueType kl</span>
-<span class="lineno"> 2735 </span><span class="spaces">      </span><span class="istickedoff">setContext <span class="nottickedoff">r2</span></span>
-<span class="lineno"> 2736 </span><span class="spaces">      </span><span class="istickedoff">rt &lt;- getValueType kr</span>
-<span class="lineno"> 2737 </span><span class="spaces">      </span><span class="istickedoff">case innerTypeOf rt of</span>
-<span class="lineno"> 2738 </span><span class="spaces">        </span><span class="istickedoff">Just t -&gt; unifyTypes t (<span class="nottickedoff">r1</span>, Typed lt <span class="nottickedoff">()</span>)</span>
-<span class="lineno"> 2739 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">unless (rt == TypeAny) $ raiseTypeError (r2 &lt;!&gt; ComplexTypeError (T.pack . show $ &quot;Container of &quot; &lt;+&gt; pretty lt) rt)</span></span>
-<span class="lineno"> 2740 </span><span class="spaces">      </span><span class="istickedoff">return TypeBool</span>
-<span class="lineno"> 2741 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 2742 </span><span class="spaces">    </span><span class="istickedoff">number :: Type -&gt; ValidatorS Type</span>
-<span class="lineno"> 2743 </span><span class="spaces">    </span><span class="istickedoff">number t = case t of</span>
-<span class="lineno"> 2744 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
-<span class="lineno"> 2745 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagEnum {} -&gt; <span class="nottickedoff">return t</span></span>
-<span class="lineno"> 2746 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
-<span class="lineno"> 2747 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number or Enum&quot; t)</span>
-<span class="lineno"> 2748 </span><span class="spaces">    </span><span class="istickedoff">minusArgs t = case t of</span>
-<span class="lineno"> 2749 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
-<span class="lineno"> 2750 </span><span class="spaces">      </span><span class="istickedoff">TypeSet _ -&gt; return t</span>
-<span class="lineno"> 2751 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return t</span>
-<span class="lineno"> 2752 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation _ -&gt; return t</span>
-<span class="lineno"> 2753 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return t</span>
-<span class="lineno"> 2754 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number / set/ mset / relation / function&quot; t)</span>
-<span class="lineno"> 2755 </span><span class="spaces">    </span><span class="istickedoff">orderable t = case t of</span>
-<span class="lineno"> 2756 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
-<span class="lineno"> 2757 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagEnum {} -&gt; return t</span>
-<span class="lineno"> 2758 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; return t</span>
-<span class="lineno"> 2759 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; return t</span>
-<span class="lineno"> 2760 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number, Enum or Bool&quot; t)</span></span>
-<span class="lineno"> 2761 </span><span class="spaces">    </span><span class="istickedoff">justSequence t = case t of</span>
-<span class="lineno"> 2762 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
-<span class="lineno"> 2763 </span><span class="spaces">      </span><span class="istickedoff">TypeSequence _ -&gt; return t</span>
-<span class="lineno"> 2764 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (TypeError (TypeSequence TypeAny) t)</span></span>
-<span class="lineno"> 2765 </span><span class="spaces">    </span><span class="istickedoff">bools t = case t of</span>
-<span class="lineno"> 2766 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; return t</span>
-<span class="lineno"> 2767 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; return t</span>
-<span class="lineno"> 2768 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (TypeError TypeBool t)</span></span>
-<span class="lineno"> 2769 </span><span class="spaces">    </span><span class="istickedoff">setLike t = case t of</span>
-<span class="lineno"> 2770 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
-<span class="lineno"> 2771 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return t</span>
-<span class="lineno"> 2772 </span><span class="spaces">      </span><span class="istickedoff">TypeSet _ -&gt; return t</span>
-<span class="lineno"> 2773 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return t</span>
-<span class="lineno"> 2774 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation _ -&gt; return t</span>
-<span class="lineno"> 2775 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Set MSet funcition or relation&quot; t)</span></span></span>
+<span class="lineno"> 2346 </span><span class="spaces">    </span><span class="istickedoff">preImageArgs _ _ = return $ Just <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2347 </span><span class="spaces">    </span><span class="istickedoff">-- preImageArgs (r1, a) (r2, b) = do</span>
+<span class="lineno"> 2348 </span><span class="spaces">    </span><span class="istickedoff">--   let t = case (typeOf_ a, typeOf_ b) of</span>
+<span class="lineno"> 2349 </span><span class="spaces">    </span><span class="istickedoff">--         (TypeFunction _ i, tb) -&gt; mostDefinedS [i, tb]</span>
+<span class="lineno"> 2350 </span><span class="spaces">    </span><span class="istickedoff">--         (TypeSequence i, _) -&gt; i</span>
+<span class="lineno"> 2351 </span><span class="spaces">    </span><span class="istickedoff">--         (_, tb) -&gt; tb</span>
+<span class="lineno"> 2352 </span><span class="spaces">    </span><span class="istickedoff">--   a' &lt;- unifyTypesFailing (TypeFunction TypeAny t) (r1, a)</span>
+<span class="lineno"> 2353 </span><span class="spaces">    </span><span class="istickedoff">--   b' &lt;- unifyTypesFailing t (r2, b)</span>
+<span class="lineno"> 2354 </span><span class="spaces">    </span><span class="istickedoff">--   return $ if null a' || null b' then Nothing else Just ()</span>
+<span class="lineno"> 2355 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2356 </span><span class="spaces">    </span><span class="istickedoff">partyArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2357 </span><span class="spaces">    </span><span class="istickedoff">partyArgs (r1, a) (r2, b) = do</span>
+<span class="lineno"> 2358 </span><span class="spaces">      </span><span class="istickedoff">let t = case (typeOf_ a, typeOf_ b) of</span>
+<span class="lineno"> 2359 </span><span class="spaces">            </span><span class="istickedoff">(ta, TypePartition tb) -&gt; mostDefinedS [ta, tb]</span>
+<span class="lineno"> 2360 </span><span class="spaces">            </span><span class="istickedoff">(ta, _) -&gt; <span class="nottickedoff">ta</span></span>
+<span class="lineno"> 2361 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing t (<span class="nottickedoff">r1</span>, a)</span>
+<span class="lineno"> 2362 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypePartition t) (<span class="nottickedoff">r2</span>, b)</span>
+<span class="lineno"> 2363 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2364 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2365 </span><span class="spaces">    </span><span class="istickedoff">inverseArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2366 </span><span class="spaces">    </span><span class="istickedoff">inverseArgs (r1, a) (r2, b) = do</span>
+<span class="lineno"> 2367 </span><span class="spaces">      </span><span class="istickedoff">let (fIn, fOut) = case (typeOf_ a, typeOf_ b) of</span>
+<span class="lineno"> 2368 </span><span class="spaces">            </span><span class="istickedoff">(TypeFunction fi fo, TypeFunction gi go) -&gt; (mostDefinedS [fi, go], mostDefinedS [fo, gi])</span>
+<span class="lineno"> 2369 </span><span class="spaces">            </span><span class="istickedoff">(TypeFunction fi fo, _) -&gt; <span class="nottickedoff">(fi, fo)</span></span>
+<span class="lineno"> 2370 </span><span class="spaces">            </span><span class="istickedoff">(_, TypeFunction gi go) -&gt; <span class="nottickedoff">(gi, go)</span></span>
+<span class="lineno"> 2371 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">(TypeAny, TypeAny)</span></span>
+<span class="lineno"> 2372 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing (TypeFunction fIn fOut) (<span class="nottickedoff">r1</span>, a)</span>
+<span class="lineno"> 2373 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypeFunction fOut fIn) (<span class="nottickedoff">r2</span>, b)</span>
+<span class="lineno"> 2374 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2375 </span><span class="spaces">    </span><span class="istickedoff">setPartArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2376 </span><span class="spaces">    </span><span class="istickedoff">setPartArgs (r1, a) (r2, b) = do</span>
+<span class="lineno"> 2377 </span><span class="spaces">      </span><span class="istickedoff">let t = case (typeOf_ a, typeOf_ b) of</span>
+<span class="lineno"> 2378 </span><span class="spaces">            </span><span class="istickedoff">(TypeSet st, TypePartition pt) -&gt; mostDefinedS [st, pt]</span>
+<span class="lineno"> 2379 </span><span class="spaces">            </span><span class="istickedoff">(TypeSet st, _) -&gt; st</span>
+<span class="lineno"> 2380 </span><span class="spaces">            </span><span class="istickedoff">(_, TypePartition ts) -&gt; <span class="nottickedoff">ts</span></span>
+<span class="lineno"> 2381 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; TypeAny</span>
+<span class="lineno"> 2382 </span><span class="spaces">      </span><span class="istickedoff">a' &lt;- unifyTypesFailing (TypeSet t) (r1, a)</span>
+<span class="lineno"> 2383 </span><span class="spaces">      </span><span class="istickedoff">b' &lt;- unifyTypesFailing (TypePartition t) (r2, b)</span>
+<span class="lineno"> 2384 </span><span class="spaces">      </span><span class="istickedoff">return $ if <span class="tickonlyfalse">null a' || null b'</span> then <span class="nottickedoff">Nothing</span> else Just <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2385 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2386 </span><span class="spaces">    </span><span class="istickedoff">partyType :: Maybe Type -&gt; Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2387 </span><span class="spaces">    </span><span class="istickedoff">partyType a b = do</span>
+<span class="lineno"> 2388 </span><span class="spaces">      </span><span class="istickedoff">let at' = fromMaybe <span class="nottickedoff">TypeAny</span> a</span>
+<span class="lineno"> 2389 </span><span class="spaces">      </span><span class="istickedoff">let bt = case b of</span>
+<span class="lineno"> 2390 </span><span class="spaces">            </span><span class="istickedoff">Just (TypePartition t) -&gt; t</span>
+<span class="lineno"> 2391 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny</span></span>
+<span class="lineno"> 2392 </span><span class="spaces">      </span><span class="istickedoff">return $ TypeSet $ mostDefinedS [at', bt]</span>
+<span class="lineno"> 2393 </span><span class="spaces">    </span><span class="istickedoff">partsType :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2394 </span><span class="spaces">    </span><span class="istickedoff">partsType (Just (TypePartition a)) = Just $ TypeSet $ TypeSet a</span>
+<span class="lineno"> 2395 </span><span class="spaces">    </span><span class="istickedoff">partsType (Just TypeAny) = <span class="nottickedoff">Just $ TypeSet $ TypeSet TypeAny</span></span>
+<span class="lineno"> 2396 </span><span class="spaces">    </span><span class="istickedoff">partsType _ = <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2397 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2398 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs :: Arg -&gt; Validator ()</span>
+<span class="lineno"> 2399 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs (r, (Kind DomainType t, _)) =</span>
+<span class="lineno"> 2400 </span><span class="spaces">      </span><span class="istickedoff">case t of</span>
+<span class="lineno"> 2401 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; valid</span>
+<span class="lineno"> 2402 </span><span class="spaces">        </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">valid</span></span>
+<span class="lineno"> 2403 </span><span class="spaces">        </span><span class="istickedoff">TypeEnum {} -&gt; valid</span>
+<span class="lineno"> 2404 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; valid</span>
+<span class="lineno"> 2405 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t</span></span>
+<span class="lineno"> 2406 </span><span class="spaces">    </span><span class="istickedoff">minMaxArgs (r, (k, _)) = do</span>
+<span class="lineno"> 2407 </span><span class="spaces">      </span><span class="istickedoff">t &lt;- getValueType k</span>
+<span class="lineno"> 2408 </span><span class="spaces">      </span><span class="istickedoff">inner &lt;- case t of</span>
+<span class="lineno"> 2409 </span><span class="spaces">        </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
+<span class="lineno"> 2410 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
+<span class="lineno"> 2411 </span><span class="spaces">        </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
+<span class="lineno"> 2412 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
+<span class="lineno"> 2413 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return TypeAny</span></span>
+<span class="lineno"> 2414 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ invalid (r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t)</span></span>
+<span class="lineno"> 2415 </span><span class="spaces">      </span><span class="istickedoff">case inner of</span>
+<span class="lineno"> 2416 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; valid</span>
+<span class="lineno"> 2417 </span><span class="spaces">        </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">valid</span></span>
+<span class="lineno"> 2418 </span><span class="spaces">        </span><span class="istickedoff">TypeEnum {} -&gt; <span class="nottickedoff">valid</span></span>
+<span class="lineno"> 2419 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">valid</span></span>
+<span class="lineno"> 2420 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Domain of int-like or matrix of int-like&quot; t</span></span>
+<span class="lineno"> 2421 </span><span class="spaces">    </span><span class="istickedoff">minMaxType :: Maybe (Kind, a) -&gt; Maybe Type</span>
+<span class="lineno"> 2422 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind DomainType t@(TypeInt {}), _)) = Just t</span>
+<span class="lineno"> 2423 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind DomainType (TypeEnum (Name nm)), _)) = Just . TypeInt $ TagEnum nm</span>
+<span class="lineno"> 2424 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeMatrix _ a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
+<span class="lineno"> 2425 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeList a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
+<span class="lineno"> 2426 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeSet a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
+<span class="lineno"> 2427 </span><span class="spaces">    </span><span class="istickedoff">minMaxType (Just (Kind ValueType {} (TypeMSet a), _)) = minMaxType (Just (Kind DomainType a, <span class="nottickedoff">()</span>))</span>
+<span class="lineno"> 2428 </span><span class="spaces">    </span><span class="istickedoff">minMaxType _ = Just TypeAny</span>
+<span class="lineno"> 2429 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2430 </span><span class="spaces">    </span><span class="istickedoff">transformArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2431 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">transformArgs _ _ = return $ pure ()</span></span>
+<span class="lineno"> 2432 </span><span class="spaces">    </span><span class="istickedoff">activeArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2433 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (_, typeOf_ -&gt; TypeAny) _ = <span class="nottickedoff">valid</span></span>
+<span class="lineno"> 2434 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (r, typeOf_ -&gt; t@(TypeVariant _)) (r2, typeOf_ -&gt; b) = checkRVMember (<span class="nottickedoff">r</span>, t) (<span class="nottickedoff">r2</span>, b)</span>
+<span class="lineno"> 2435 </span><span class="spaces">    </span><span class="istickedoff">activeArgs (r, typeOf_ -&gt; t) _ = <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Variant &quot; t</span></span>
+<span class="lineno"> 2436 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2437 </span><span class="spaces">    </span><span class="istickedoff">typeToSet :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2438 </span><span class="spaces">    </span><span class="istickedoff">typeToSet (Just t) = Just . TypeSet $ fromMaybe <span class="nottickedoff">TypeAny</span> (tMembers t)</span>
+<span class="lineno"> 2439 </span><span class="spaces">    </span><span class="istickedoff">typeToSet _ = <span class="nottickedoff">Just $ TypeSet TypeAny</span></span>
+<span class="lineno"> 2440 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2441 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet (Just t) = Just . TypeMSet $ fromMaybe <span class="nottickedoff">TypeAny</span> (tMembers t)</span>
+<span class="lineno"> 2442 </span><span class="spaces">    </span><span class="istickedoff">typeToMSet _ = <span class="nottickedoff">Just $ TypeMSet TypeAny</span></span>
+<span class="lineno"> 2443 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2444 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation (Just (TypeFunction i j)) = Just $ TypeRelation [i, j]</span>
+<span class="lineno"> 2445 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation (Just TypeAny) = <span class="nottickedoff">Just $ TypeRelation [TypeAny, TypeAny]</span></span>
+<span class="lineno"> 2446 </span><span class="spaces">    </span><span class="istickedoff">typeToRelation _ = <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2447 </span><span class="spaces">    </span><span class="istickedoff">tMembers t = case t of</span>
+<span class="lineno"> 2448 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">Just TypeAny</span></span>
+<span class="lineno"> 2449 </span><span class="spaces">      </span><span class="istickedoff">TypeList ty -&gt; Just ty</span>
+<span class="lineno"> 2450 </span><span class="spaces">      </span><span class="istickedoff">TypeMatrix _ i -&gt; <span class="nottickedoff">Just i</span></span>
+<span class="lineno"> 2451 </span><span class="spaces">      </span><span class="istickedoff">TypeSet ty -&gt; Just ty</span>
+<span class="lineno"> 2452 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet ty -&gt; Just ty</span>
+<span class="lineno"> 2453 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction i j -&gt; <span class="nottickedoff">Just $ TypeTuple [i, j]</span></span>
+<span class="lineno"> 2454 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation tys -&gt; Just $ TypeTuple tys</span>
+<span class="lineno"> 2455 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2456 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2457 </span><span class="spaces">    </span><span class="istickedoff">imageArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
+<span class="lineno"> 2458 </span><span class="spaces">    </span><span class="istickedoff">imageArgs (r1, typeOf_ -&gt; t1) r2 = do</span>
+<span class="lineno"> 2459 </span><span class="spaces">      </span><span class="istickedoff">from &lt;- case t1 of</span>
+<span class="lineno"> 2460 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ Just TypeAny</span></span>
+<span class="lineno"> 2461 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction a _ -&gt; return $ Just a</span>
+<span class="lineno"> 2462 </span><span class="spaces">        </span><span class="istickedoff">TypeSequence _ -&gt; return $ Just tInt</span>
+<span class="lineno"> 2463 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">Nothing &lt;$ raiseTypeError (r1 &lt;!&gt; ComplexTypeError &quot;Function or Sequence&quot; t1)</span></span>
+<span class="lineno"> 2464 </span><span class="spaces">      </span><span class="istickedoff">case from of</span>
+<span class="lineno"> 2465 </span><span class="spaces">        </span><span class="istickedoff">Just f -&gt; unifyTypes f r2 &gt;&gt; return (pure <span class="nottickedoff">()</span>)</span>
+<span class="lineno"> 2466 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">return Nothing</span></span>
+<span class="lineno"> 2467 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2468 </span><span class="spaces">    </span><span class="istickedoff">sumArgs :: SArg -&gt; Validator ()</span>
+<span class="lineno"> 2469 </span><span class="spaces">    </span><span class="istickedoff">sumArgs (r, typeOf_ -&gt; t') = do</span>
+<span class="lineno"> 2470 </span><span class="spaces">      </span><span class="istickedoff">t &lt;- case t' of</span>
+<span class="lineno"> 2471 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return TypeAny</span></span>
+<span class="lineno"> 2472 </span><span class="spaces">        </span><span class="istickedoff">TypeList t -&gt; return t</span>
+<span class="lineno"> 2473 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix _ t -&gt; return t</span>
+<span class="lineno"> 2474 </span><span class="spaces">        </span><span class="istickedoff">TypeSet t -&gt; return t</span>
+<span class="lineno"> 2475 </span><span class="spaces">        </span><span class="istickedoff">TypeMSet t -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno"> 2476 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ raiseTypeError (r &lt;!&gt; ComplexTypeError &quot;Matrix or Set&quot; t')</span></span>
+<span class="lineno"> 2477 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2478 </span><span class="spaces">      </span><span class="istickedoff">case t of</span>
+<span class="lineno"> 2479 </span><span class="spaces">        </span><span class="istickedoff">TypeAny -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2480 </span><span class="spaces">        </span><span class="istickedoff">TypeInt TagInt -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2481 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; Nothing &lt;$ raiseTypeError <span class="nottickedoff">(r &lt;!&gt; ComplexTypeError &quot;Integer elements&quot; t)</span></span>
+<span class="lineno"> 2482 </span><span class="spaces">    </span><span class="istickedoff">funcSeq :: SArg -&gt; Validator ()</span>
+<span class="lineno"> 2483 </span><span class="spaces">    </span><span class="istickedoff">funcSeq (r, typeOf_ -&gt; t') = case t' of</span>
+<span class="lineno"> 2484 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2485 </span><span class="spaces">      </span><span class="istickedoff">TypeSequence _ -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2486 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2487 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Function or Sequence&quot; t'</span></span>
+<span class="lineno"> 2488 </span><span class="spaces">    </span><span class="istickedoff">funcDomain :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2489 </span><span class="spaces">    </span><span class="istickedoff">funcDomain (Just (TypeFunction a _)) = Just a</span>
+<span class="lineno"> 2490 </span><span class="spaces">    </span><span class="istickedoff">funcDomain (Just (TypeSequence _)) = <span class="nottickedoff">Just tInt</span></span>
+<span class="lineno"> 2491 </span><span class="spaces">    </span><span class="istickedoff">funcDomain _ = <span class="nottickedoff">Just TypeAny</span></span>
+<span class="lineno"> 2492 </span><span class="spaces">    </span><span class="istickedoff">funcRange :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2493 </span><span class="spaces">    </span><span class="istickedoff">funcRange (Just (TypeFunction _ b)) = Just b</span>
+<span class="lineno"> 2494 </span><span class="spaces">    </span><span class="istickedoff">funcRange (Just ((TypeSequence b))) = Just b</span>
+<span class="lineno"> 2495 </span><span class="spaces">    </span><span class="istickedoff">funcRange _ = <span class="nottickedoff">Just TypeAny</span></span>
+<span class="lineno"> 2496 </span><span class="spaces">    </span><span class="istickedoff">part :: SArg -&gt; Validator ()</span>
+<span class="lineno"> 2497 </span><span class="spaces">    </span><span class="istickedoff">part (r, typeOf_ -&gt; t) = case t of</span>
+<span class="lineno"> 2498 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; valid</span>
+<span class="lineno"> 2499 </span><span class="spaces">      </span><span class="istickedoff">TypePartition _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2500 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; TypeError (TypePartition TypeAny) t</span></span>
+<span class="lineno"> 2501 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2502 </span><span class="spaces">    </span><span class="istickedoff">histArgs :: SArg -&gt; Validator ()</span>
+<span class="lineno"> 2503 </span><span class="spaces">    </span><span class="istickedoff">histArgs (r, typeOf_ -&gt; a) = case a of</span>
+<span class="lineno"> 2504 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2505 </span><span class="spaces">      </span><span class="istickedoff">TypeList _ -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2506 </span><span class="spaces">      </span><span class="istickedoff">TypeMatrix _ _ -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2507 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2508 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Matrix, List or MSet&quot; a</span></span>
+<span class="lineno"> 2509 </span><span class="spaces">    </span><span class="istickedoff">histType :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2510 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeMSet a))) = Just $ TypeMatrix <span class="nottickedoff">tInt</span> $ <span class="nottickedoff">TypeTuple [a, tInt]</span></span>
+<span class="lineno"> 2511 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeMatrix _ a))) = Just $ TypeMatrix <span class="nottickedoff">tInt</span> $ TypeTuple [a, tInt]</span>
+<span class="lineno"> 2512 </span><span class="spaces">    </span><span class="istickedoff">histType (Just ((TypeList a))) = <span class="nottickedoff">Just $ TypeMatrix tInt $ TypeTuple [a, tInt]</span></span>
+<span class="lineno"> 2513 </span><span class="spaces">    </span><span class="istickedoff">histType _ = <span class="nottickedoff">Just $ TypeMatrix tInt $ TypeTuple [TypeAny, tInt]</span></span>
+<span class="lineno"> 2514 </span><span class="spaces">    </span><span class="istickedoff">enumerable :: SArg -&gt; Validator ()</span>
+<span class="lineno"> 2515 </span><span class="spaces">    </span><span class="istickedoff">enumerable (r, typeOf_ -&gt; t) = case t of</span>
+<span class="lineno"> 2516 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2517 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagUnnamed {} -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; CustomError &quot;Anonymous enums are not explictly enumerable&quot;</span></span>
+<span class="lineno"> 2518 </span><span class="spaces">      </span><span class="istickedoff">TypeInt _ -&gt; return $ <span class="nottickedoff">pure ()</span></span>
+<span class="lineno"> 2519 </span><span class="spaces">      </span><span class="istickedoff">TypeEnum {} -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2520 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2521 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;int enum or bool&quot; t</span></span>
+<span class="lineno"> 2522 </span><span class="spaces">    </span><span class="istickedoff">enumerableType :: Maybe Type -&gt; Maybe Type</span>
+<span class="lineno"> 2523 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeInt TagInt)) = Just t</span></span>
+<span class="lineno"> 2524 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeInt (TagEnum _))) = Just t</span></span>
+<span class="lineno"> 2525 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType (Just t@(TypeEnum {})) = Just t</span></span>
+<span class="lineno"> 2526 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">enumerableType _ = Nothing</span></span></span>
+<span class="lineno"> 2527 </span>
+<span class="lineno"> 2528 </span>flattenType :: Maybe Int -&gt; Maybe Type -&gt; Maybe Type
+<span class="lineno"> 2529 </span><span class="decl"><span class="istickedoff">flattenType (Just n) (Just a) | <span class="nottickedoff">n &lt; 0</span> = <span class="nottickedoff">Just $ TypeList a</span></span>
+<span class="lineno"> 2530 </span><span class="spaces"></span><span class="istickedoff">flattenType (Just n) (Just (TypeList m)) = <span class="nottickedoff">flattenType (Just (n - 1)) (Just m)</span></span>
+<span class="lineno"> 2531 </span><span class="spaces"></span><span class="istickedoff">flattenType (Just n) (Just (TypeMatrix _ m)) = <span class="nottickedoff">flattenType (Just (n - 1)) (Just m)</span></span>
+<span class="lineno"> 2532 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just (TypeMatrix _ m)) = flattenType Nothing (Just m)</span>
+<span class="lineno"> 2533 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just (TypeList m)) = flattenType Nothing (Just m)</span>
+<span class="lineno"> 2534 </span><span class="spaces"></span><span class="istickedoff">flattenType Nothing (Just t) = Just $ TypeList t</span>
+<span class="lineno"> 2535 </span><span class="spaces"></span><span class="istickedoff">flattenType _ _ = <span class="nottickedoff">Just $ TypeList TypeAny</span></span></span>
+<span class="lineno"> 2536 </span>
+<span class="lineno"> 2537 </span>validateFuncOp :: Lexeme -&gt; [RegionTagged (Kind, Expression)] -&gt; ValidatorS (Typed Expression)
+<span class="lineno"> 2538 </span><span class="decl"><span class="istickedoff">validateFuncOp l args = do</span>
+<span class="lineno"> 2539 </span><span class="spaces">  </span><span class="istickedoff">let b = funcOpBuilder l</span>
+<span class="lineno"> 2540 </span><span class="spaces">  </span><span class="istickedoff">b args</span></span>
+<span class="lineno"> 2541 </span>
+<span class="lineno"> 2542 </span>-- case argCheck of
+<span class="lineno"> 2543 </span>--   Nothing -&gt; return $ Typed  (r []) $ fallback &quot;arg fail&quot;
+<span class="lineno"> 2544 </span>--   Just tys -&gt; return $ Typed (r tys)(b $ map untype tys)
+<span class="lineno"> 2545 </span>
+<span class="lineno"> 2546 </span>isOfType :: Type -&gt; RegionTagged (Typed Expression) -&gt; ValidatorS Bool
+<span class="lineno"> 2547 </span><span class="decl"><span class="nottickedoff">isOfType t (r, v) = setContext r &gt;&gt; return v ?=&gt; exactly t &gt;&gt; return (typesUnifyS [t, typeOf_ v])</span></span>
+<span class="lineno"> 2548 </span>
+<span class="lineno"> 2549 </span>isLogicalContainer :: RegionTagged (Typed Expression) -&gt; Validator ()
+<span class="lineno"> 2550 </span><span class="decl"><span class="istickedoff">isLogicalContainer (r, Typed t _) = case t of</span>
+<span class="lineno"> 2551 </span><span class="spaces">  </span><span class="istickedoff">TypeAny -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2552 </span><span class="spaces">  </span><span class="istickedoff">TypeList TypeAny -&gt; return $ <span class="nottickedoff">pure ()</span></span>
+<span class="lineno"> 2553 </span><span class="spaces">  </span><span class="istickedoff">TypeList TypeBool -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2554 </span><span class="spaces">  </span><span class="istickedoff">TypeMatrix _ TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2555 </span><span class="spaces">  </span><span class="istickedoff">TypeMatrix _ TypeBool -&gt; return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2556 </span><span class="spaces">  </span><span class="istickedoff">TypeSet TypeAny -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2557 </span><span class="spaces">  </span><span class="istickedoff">TypeMSet TypeBool -&gt; <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2558 </span><span class="spaces">  </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">invalid $ r &lt;!&gt; ComplexTypeError &quot;Collection of boolean&quot; t</span></span></span>
+<span class="lineno"> 2559 </span>
+<span class="lineno"> 2560 </span>-- validateArgList :: [RegionTagged (Typed Expression) -&gt; ValidatorS Bool] -&gt; [RegionTagged (Typed Expression)] -&gt; Validator [Typed Expression]
+<span class="lineno"> 2561 </span>-- validateArgList ps args | length args &lt; length ps = do invalid $ args &lt;!&gt; MissingArgsError (length ps)
+<span class="lineno"> 2562 </span>-- validateArgList ps args = do
+<span class="lineno"> 2563 </span>--     let ps' = ps ++ repeat argOverflow
+<span class="lineno"> 2564 </span>--     xs &lt;- zipWithM id ps' args
+<span class="lineno"> 2565 </span>--     return (if and xs then  Just $ map unregion  args else Nothing)
+<span class="lineno"> 2566 </span>
+<span class="lineno"> 2567 </span>-- argOverflow :: RegionTagged a -&gt; ValidatorS Bool
+<span class="lineno"> 2568 </span>-- argOverflow (region,_) = do
+<span class="lineno"> 2569 </span>--     setContext region
+<span class="lineno"> 2570 </span>--     void . contextError $ CustomError &quot;Extra Args&quot;
+<span class="lineno"> 2571 </span>--     return False
+<span class="lineno"> 2572 </span>type SArg = RegionTagged (Typed Expression)
+<span class="lineno"> 2573 </span>
+<span class="lineno"> 2574 </span>type Arg = RegionTagged (Kind, Expression)
+<span class="lineno"> 2575 </span>
+<span class="lineno"> 2576 </span>unFunc ::
+<span class="lineno"> 2577 </span>  (Arg -&gt; Validator a) -&gt; -- Arg validator
+<span class="lineno"> 2578 </span>  (Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; -- typeEvaluator
+<span class="lineno"> 2579 </span>  ([Expression] -&gt; Expression) -&gt; -- mkOp or similar
+<span class="lineno"> 2580 </span>  [Arg] -&gt;
+<span class="lineno"> 2581 </span>  ValidatorS (Typed Expression)
+<span class="lineno"> 2582 </span><span class="decl"><span class="istickedoff">unFunc argVal t f args = do</span>
+<span class="lineno"> 2583 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
+<span class="lineno"> 2584 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 1 0 &gt;&gt; return (Nothing, Nothing)</span></span>
+<span class="lineno"> 2585 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; do</span>
+<span class="lineno"> 2586 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x</span>
+<span class="lineno"> 2587 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets typeChecking</span>
+<span class="lineno"> 2588 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
+<span class="lineno"> 2589 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="tickonlyfalse">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2590 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just [(snd . unregion) x]</span>
+<span class="lineno"> 2591 </span><span class="spaces">      </span><span class="istickedoff">return (result, Just $ unregion x)</span>
+<span class="lineno"> 2592 </span><span class="spaces">    </span><span class="istickedoff">(x : rs) -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2593 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">tooManyArgs rs</span></span>
+<span class="lineno"> 2594 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">r &lt;- argVal x</span></span>
+<span class="lineno"> 2595 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">let result = case r of</span></span>
+<span class="lineno"> 2596 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
+<span class="lineno"> 2597 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just [(snd . unregion) x]</span></span>
+<span class="lineno"> 2598 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return (result, Just $ unregion x)</span></span>
+<span class="lineno"> 2599 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail Unfunc&quot;)</span> f v</span>
+<span class="lineno"> 2600 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ t ts) res</span></span>
+<span class="lineno"> 2601 </span>
+<span class="lineno"> 2602 </span>biFunc :: (Arg -&gt; Arg -&gt; Validator a) -&gt; (Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; ([Expression] -&gt; Expression) -&gt; [Arg] -&gt; ValidatorS (Typed Expression)
+<span class="lineno"> 2603 </span><span class="decl"><span class="istickedoff">biFunc argVal t f args = do</span>
+<span class="lineno"> 2604 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
+<span class="lineno"> 2605 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 2 0 &gt;&gt; return (Nothing, (Nothing, Nothing))</span></span>
+<span class="lineno"> 2606 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; <span class="nottickedoff">tooFewArgs 2 1 &gt;&gt; return (Nothing, (Just $ unregion x, Nothing))</span></span>
+<span class="lineno"> 2607 </span><span class="spaces">    </span><span class="istickedoff">[x, y] -&gt; do</span>
+<span class="lineno"> 2608 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y</span>
+<span class="lineno"> 2609 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets <span class="nottickedoff">typeChecking</span></span>
+<span class="lineno"> 2610 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
+<span class="lineno"> 2611 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="nottickedoff">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2612 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just $ map (snd . unregion) [x, y]</span>
+<span class="lineno"> 2613 </span><span class="spaces">      </span><span class="istickedoff">return (result, (Just (unregion x), Just (unregion y)))</span>
+<span class="lineno"> 2614 </span><span class="spaces">    </span><span class="istickedoff">(x : y : rs) -&gt; do</span>
+<span class="lineno"> 2615 </span><span class="spaces">      </span><span class="istickedoff">tooManyArgs rs</span>
+<span class="lineno"> 2616 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y</span>
+<span class="lineno"> 2617 </span><span class="spaces">      </span><span class="istickedoff">let <span class="nottickedoff">result = case r of</span></span>
+<span class="lineno"> 2618 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
+<span class="lineno"> 2619 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just $ map (snd . unregion) [x, y]</span></span>
+<span class="lineno"> 2620 </span><span class="spaces">      </span><span class="istickedoff">return (<span class="nottickedoff">result</span>, <span class="nottickedoff">(Just (unregion x), Just (unregion y))</span>)</span>
+<span class="lineno"> 2621 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail BiFunct&quot;)</span> f v</span>
+<span class="lineno"> 2622 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ uncurry t ts) res</span></span>
+<span class="lineno"> 2623 </span>
+<span class="lineno"> 2624 </span>triFunc :: (Arg -&gt; Arg -&gt; Arg -&gt; Validator a) -&gt; (Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type) -&gt; ([Expression] -&gt; Expression) -&gt; [Arg] -&gt; ValidatorS (Typed Expression)
+<span class="lineno"> 2625 </span><span class="decl"><span class="istickedoff">triFunc argVal t f args = do</span>
+<span class="lineno"> 2626 </span><span class="spaces">  </span><span class="istickedoff">(v, ts) &lt;- case args of</span>
+<span class="lineno"> 2627 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; <span class="nottickedoff">tooFewArgs 3 0 &gt;&gt; return (Nothing, (Nothing, Nothing, Nothing))</span></span>
+<span class="lineno"> 2628 </span><span class="spaces">    </span><span class="istickedoff">[x] -&gt; <span class="nottickedoff">tooFewArgs 3 1 &gt;&gt; return (Nothing, (Just $ unregion x, Nothing, Nothing))</span></span>
+<span class="lineno"> 2629 </span><span class="spaces">    </span><span class="istickedoff">[x, y] -&gt; <span class="nottickedoff">tooFewArgs 3 2 &gt;&gt; return (Nothing, (Just $ unregion x, Just $ unregion y, Nothing))</span></span>
+<span class="lineno"> 2630 </span><span class="spaces">    </span><span class="istickedoff">[x, y, z] -&gt; do</span>
+<span class="lineno"> 2631 </span><span class="spaces">      </span><span class="istickedoff">r &lt;- argVal x y z</span>
+<span class="lineno"> 2632 </span><span class="spaces">      </span><span class="istickedoff">tc &lt;- gets <span class="nottickedoff">typeChecking</span></span>
+<span class="lineno"> 2633 </span><span class="spaces">      </span><span class="istickedoff">let result = case r of</span>
+<span class="lineno"> 2634 </span><span class="spaces">            </span><span class="istickedoff">Nothing | <span class="nottickedoff">tc</span> -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno"> 2635 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; Just $ map (snd . unregion) [x, y, z]</span>
+<span class="lineno"> 2636 </span><span class="spaces">      </span><span class="istickedoff">return (result, (<span class="nottickedoff">Just (unregion x)</span>, <span class="nottickedoff">Just (unregion y)</span>, <span class="nottickedoff">Just (unregion z)</span>))</span>
+<span class="lineno"> 2637 </span><span class="spaces">    </span><span class="istickedoff">(x : y : z : rs) -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2638 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">tooManyArgs rs</span></span>
+<span class="lineno"> 2639 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">r &lt;- argVal x y z</span></span>
+<span class="lineno"> 2640 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">let result = case r of</span></span>
+<span class="lineno"> 2641 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; Nothing</span></span>
+<span class="lineno"> 2642 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just _ -&gt; Just $ map (snd . unregion) [x, y, z]</span></span>
+<span class="lineno"> 2643 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return (result, (Just (unregion x), Just (unregion y), Just (unregion z)))</span></span>
+<span class="lineno"> 2644 </span><span class="spaces">  </span><span class="istickedoff">let res = maybe <span class="nottickedoff">(fallback &quot;Arg Fail Tri&quot;)</span> f v</span>
+<span class="lineno"> 2645 </span><span class="spaces">  </span><span class="istickedoff">return $ Typed (fromMaybe <span class="nottickedoff">TypeAny</span> $ uncurry3 t ts) res</span>
+<span class="lineno"> 2646 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno"> 2647 </span><span class="spaces">    </span><span class="istickedoff">uncurry3 fn (a, b, c) = fn <span class="nottickedoff">a</span> <span class="nottickedoff">b</span> <span class="nottickedoff">c</span></span></span> -- todo export from prelude
+<span class="lineno"> 2648 </span>
+<span class="lineno"> 2649 </span>tooFewArgs :: Int -&gt; Int -&gt; ValidatorS ()
+<span class="lineno"> 2650 </span><span class="decl"><span class="nottickedoff">tooFewArgs n i = void . contextError $ MissingArgsError n i</span></span>
+<span class="lineno"> 2651 </span>
+<span class="lineno"> 2652 </span>tooManyArgs :: [RegionTagged a] -&gt; ValidatorS ()
+<span class="lineno"> 2653 </span><span class="decl"><span class="istickedoff">tooManyArgs = mapM_ (\x -&gt; raiseError $ x &lt;!&gt; UnexpectedArg)</span></span>
+<span class="lineno"> 2654 </span>
+<span class="lineno"> 2655 </span>checkRVMember :: RegionTagged Type -&gt; RegionTagged Type -&gt; Validator ()
+<span class="lineno"> 2656 </span><span class="decl"><span class="istickedoff">checkRVMember (_, TypeRecord ts) (_, TypeRecordMember nm _) | <span class="nottickedoff">not . null $ lookup nm ts</span> = <span class="nottickedoff">return $ pure ()</span></span>
+<span class="lineno"> 2657 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeRecord ts) (r2, r) = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2658 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r2 &lt;!&gt; TypeError (TypeRecordMember (Name &quot;&quot;) ts) r</span></span>
+<span class="lineno"> 2659 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span>
+<span class="lineno"> 2660 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeVariant ts) (_, TypeVariantMember nm _) | <span class="tickonlytrue">not . null $ lookup nm ts</span> = return $ pure <span class="nottickedoff">()</span></span>
+<span class="lineno"> 2661 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (_, TypeVariant ts) (r2, r) = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2662 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r2 &lt;!&gt; TypeError (TypeVariantMember (Name &quot;&quot;) ts) r</span></span>
+<span class="lineno"> 2663 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span>
+<span class="lineno"> 2664 </span><span class="spaces"></span><span class="istickedoff">checkRVMember (r1, t) _ = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2665 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">raiseTypeError $ r1 &lt;!&gt; TypeError (TypeVariant []) t</span></span>
+<span class="lineno"> 2666 </span><span class="spaces">  </span><span class="istickedoff"><span class="nottickedoff">return Nothing</span></span></span>
+<span class="lineno"> 2667 </span>
+<span class="lineno"> 2668 </span>type OpValidator = RegionTagged Kind -&gt; RegionTagged Kind -&gt; ValidatorS Type
+<span class="lineno"> 2669 </span>
+<span class="lineno"> 2670 </span>type OpTyper = Kind -&gt; Kind -&gt; Type
+<span class="lineno"> 2671 </span>
+<span class="lineno"> 2672 </span>sameToSameV :: (Type -&gt; ValidatorS Type) -&gt; (Type -&gt; Type -&gt; Type) -&gt; OpValidator
+<span class="lineno"> 2673 </span><span class="decl"><span class="istickedoff">sameToSameV tc t (rl, kl) (rr, kr) = do</span>
+<span class="lineno"> 2674 </span><span class="spaces">  </span><span class="istickedoff">setContext rl</span>
+<span class="lineno"> 2675 </span><span class="spaces">  </span><span class="istickedoff">lt &lt;- getValueType kl</span>
+<span class="lineno"> 2676 </span><span class="spaces">  </span><span class="istickedoff">lt' &lt;- tc lt</span>
+<span class="lineno"> 2677 </span><span class="spaces">  </span><span class="istickedoff">setContext rr</span>
+<span class="lineno"> 2678 </span><span class="spaces">  </span><span class="istickedoff">rt &lt;- getValueType kr</span>
+<span class="lineno"> 2679 </span><span class="spaces">  </span><span class="istickedoff">rt' &lt;- tc rt</span>
+<span class="lineno"> 2680 </span><span class="spaces">  </span><span class="istickedoff">let md = mostDefinedS [lt, rt]</span>
+<span class="lineno"> 2681 </span><span class="spaces">  </span><span class="istickedoff">_ &lt;- unifyTypesFailing md (<span class="nottickedoff">rl</span>, Typed lt' <span class="nottickedoff">()</span>)</span>
+<span class="lineno"> 2682 </span><span class="spaces">  </span><span class="istickedoff">_ &lt;- unifyTypesFailing md (rr, Typed rt' <span class="nottickedoff">()</span>)</span>
+<span class="lineno"> 2683 </span><span class="spaces">  </span><span class="istickedoff">return $ t lt' rt'</span></span>
+<span class="lineno"> 2684 </span>
+<span class="lineno"> 2685 </span>binOpType :: Lexeme -&gt; OpValidator
+<span class="lineno"> 2686 </span><span class="decl"><span class="istickedoff">binOpType l = case l of</span>
+<span class="lineno"> 2687 </span><span class="spaces">  </span><span class="istickedoff">L_Plus -&gt; sameToSameV number same</span>
+<span class="lineno"> 2688 </span><span class="spaces">  </span><span class="istickedoff">L_Minus -&gt; sameToSameV minusArgs same</span>
+<span class="lineno"> 2689 </span><span class="spaces">  </span><span class="istickedoff">L_Times -&gt; sameToSameV number same</span>
+<span class="lineno"> 2690 </span><span class="spaces">  </span><span class="istickedoff">L_Div -&gt; sameToSameV number same</span>
+<span class="lineno"> 2691 </span><span class="spaces">  </span><span class="istickedoff">L_Mod -&gt; sameToSameV number same</span>
+<span class="lineno"> 2692 </span><span class="spaces">  </span><span class="istickedoff">L_Pow -&gt; sameToSameV number same</span>
+<span class="lineno"> 2693 </span><span class="spaces">  </span><span class="istickedoff">L_Eq -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2694 </span><span class="spaces">  </span><span class="istickedoff">L_Neq -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2695 </span><span class="spaces">  </span><span class="istickedoff">L_Lt -&gt; sameToSameV orderable cBool</span>
+<span class="lineno"> 2696 </span><span class="spaces">  </span><span class="istickedoff">L_Leq -&gt; sameToSameV orderable cBool</span>
+<span class="lineno"> 2697 </span><span class="spaces">  </span><span class="istickedoff">L_Gt -&gt; sameToSameV orderable cBool</span>
+<span class="lineno"> 2698 </span><span class="spaces">  </span><span class="istickedoff">L_Geq -&gt; sameToSameV orderable cBool</span>
+<span class="lineno"> 2699 </span><span class="spaces">  </span><span class="istickedoff">L_in -&gt; checkIn</span>
+<span class="lineno"> 2700 </span><span class="spaces">  </span><span class="istickedoff">L_And -&gt; sameToSameV bools cBool</span>
+<span class="lineno"> 2701 </span><span class="spaces">  </span><span class="istickedoff">L_Or -&gt; sameToSameV bools cBool</span>
+<span class="lineno"> 2702 </span><span class="spaces">  </span><span class="istickedoff">L_Imply -&gt; sameToSameV bools cBool</span>
+<span class="lineno"> 2703 </span><span class="spaces">  </span><span class="istickedoff">L_Iff -&gt; sameToSameV bools cBool -- b b b</span>
+<span class="lineno"> 2704 </span><span class="spaces">  </span><span class="istickedoff">L_subset -&gt; sameToSameV setLike cBool -- set mset func rel</span>
+<span class="lineno"> 2705 </span><span class="spaces">  </span><span class="istickedoff">L_subsetEq -&gt; sameToSameV setLike cBool</span>
+<span class="lineno"> 2706 </span><span class="spaces">  </span><span class="istickedoff">-- \^^^</span>
+<span class="lineno"> 2707 </span><span class="spaces">  </span><span class="istickedoff">L_supset -&gt; sameToSameV setLike cBool</span>
+<span class="lineno"> 2708 </span><span class="spaces">  </span><span class="istickedoff">-- \^^^^</span>
+<span class="lineno"> 2709 </span><span class="spaces">  </span><span class="istickedoff">L_supsetEq -&gt; sameToSameV setLike cBool</span>
+<span class="lineno"> 2710 </span><span class="spaces">  </span><span class="istickedoff">-- \^^</span>
+<span class="lineno"> 2711 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2712 </span><span class="spaces">  </span><span class="istickedoff">L_subsequence -&gt; sameToSameV justSequence cBool -- seq - seq -bool</span>
+<span class="lineno"> 2713 </span><span class="spaces">  </span><span class="istickedoff">L_substring -&gt; sameToSameV justSequence cBool -- seq - seq -bool</span>
+<span class="lineno"> 2714 </span><span class="spaces">  </span><span class="istickedoff">L_intersect -&gt; sameToSameV setLike same</span>
+<span class="lineno"> 2715 </span><span class="spaces">  </span><span class="istickedoff">L_union -&gt; sameToSameV setLike same</span>
+<span class="lineno"> 2716 </span><span class="spaces">  </span><span class="istickedoff">L_LexLt -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2717 </span><span class="spaces">  </span><span class="istickedoff">L_LexLeq -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2718 </span><span class="spaces">  </span><span class="istickedoff">L_LexGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2719 </span><span class="spaces">  </span><span class="istickedoff">L_LexGeq -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2720 </span><span class="spaces">  </span><span class="istickedoff">L_DotLt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2721 </span><span class="spaces">  </span><span class="istickedoff">L_DotLeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2722 </span><span class="spaces">  </span><span class="istickedoff">L_DotGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2723 </span><span class="spaces">  </span><span class="istickedoff">L_DotGeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2724 </span><span class="spaces">  </span><span class="istickedoff">L_TildeLt -&gt; sameToSameV pure cBool</span>
+<span class="lineno"> 2725 </span><span class="spaces">  </span><span class="istickedoff">L_TildeLeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2726 </span><span class="spaces">  </span><span class="istickedoff">L_TildeGt -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2727 </span><span class="spaces">  </span><span class="istickedoff">L_TildeGeq -&gt; <span class="nottickedoff">sameToSameV pure cBool</span></span>
+<span class="lineno"> 2728 </span><span class="spaces">  </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;Unkown operator&quot; &lt;+&gt; pretty (show l)</span></span>
+<span class="lineno"> 2729 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno"> 2730 </span><span class="spaces">    </span><span class="istickedoff">cBool = const . const TypeBool</span>
+<span class="lineno"> 2731 </span><span class="spaces">    </span><span class="istickedoff">same a b = mostDefinedS [a, b]</span>
+<span class="lineno"> 2732 </span><span class="spaces">    </span><span class="istickedoff">checkIn :: OpValidator</span>
+<span class="lineno"> 2733 </span><span class="spaces">    </span><span class="istickedoff">checkIn (r1, kl) (r2, kr) = do</span>
+<span class="lineno"> 2734 </span><span class="spaces">      </span><span class="istickedoff">setContext <span class="nottickedoff">r1</span></span>
+<span class="lineno"> 2735 </span><span class="spaces">      </span><span class="istickedoff">lt &lt;- getValueType kl</span>
+<span class="lineno"> 2736 </span><span class="spaces">      </span><span class="istickedoff">setContext <span class="nottickedoff">r2</span></span>
+<span class="lineno"> 2737 </span><span class="spaces">      </span><span class="istickedoff">rt &lt;- getValueType kr</span>
+<span class="lineno"> 2738 </span><span class="spaces">      </span><span class="istickedoff">case innerTypeOf rt of</span>
+<span class="lineno"> 2739 </span><span class="spaces">        </span><span class="istickedoff">Just t -&gt; unifyTypes t (<span class="nottickedoff">r1</span>, Typed lt <span class="nottickedoff">()</span>)</span>
+<span class="lineno"> 2740 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">unless (rt == TypeAny) $ raiseTypeError (r2 &lt;!&gt; ComplexTypeError (T.pack . show $ &quot;Container of &quot; &lt;+&gt; pretty lt) rt)</span></span>
+<span class="lineno"> 2741 </span><span class="spaces">      </span><span class="istickedoff">return TypeBool</span>
+<span class="lineno"> 2742 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 2743 </span><span class="spaces">    </span><span class="istickedoff">number :: Type -&gt; ValidatorS Type</span>
+<span class="lineno"> 2744 </span><span class="spaces">    </span><span class="istickedoff">number t = case t of</span>
+<span class="lineno"> 2745 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
+<span class="lineno"> 2746 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagEnum {} -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno"> 2747 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno"> 2748 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number or Enum&quot; t)</span>
+<span class="lineno"> 2749 </span><span class="spaces">    </span><span class="istickedoff">minusArgs t = case t of</span>
+<span class="lineno"> 2750 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
+<span class="lineno"> 2751 </span><span class="spaces">      </span><span class="istickedoff">TypeSet _ -&gt; return t</span>
+<span class="lineno"> 2752 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return t</span>
+<span class="lineno"> 2753 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation _ -&gt; return t</span>
+<span class="lineno"> 2754 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return t</span>
+<span class="lineno"> 2755 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number / set/ mset / relation / function&quot; t)</span>
+<span class="lineno"> 2756 </span><span class="spaces">    </span><span class="istickedoff">orderable t = case t of</span>
+<span class="lineno"> 2757 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagInt -&gt; return t</span>
+<span class="lineno"> 2758 </span><span class="spaces">      </span><span class="istickedoff">TypeInt TagEnum {} -&gt; return t</span>
+<span class="lineno"> 2759 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; return t</span>
+<span class="lineno"> 2760 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; return t</span>
+<span class="lineno"> 2761 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Number, Enum or Bool&quot; t)</span></span>
+<span class="lineno"> 2762 </span><span class="spaces">    </span><span class="istickedoff">justSequence t = case t of</span>
+<span class="lineno"> 2763 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno"> 2764 </span><span class="spaces">      </span><span class="istickedoff">TypeSequence _ -&gt; return t</span>
+<span class="lineno"> 2765 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (TypeError (TypeSequence TypeAny) t)</span></span>
+<span class="lineno"> 2766 </span><span class="spaces">    </span><span class="istickedoff">bools t = case t of</span>
+<span class="lineno"> 2767 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; return t</span>
+<span class="lineno"> 2768 </span><span class="spaces">      </span><span class="istickedoff">TypeBool -&gt; return t</span>
+<span class="lineno"> 2769 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (TypeError TypeBool t)</span></span>
+<span class="lineno"> 2770 </span><span class="spaces">    </span><span class="istickedoff">setLike t = case t of</span>
+<span class="lineno"> 2771 </span><span class="spaces">      </span><span class="istickedoff">TypeAny -&gt; <span class="nottickedoff">return t</span></span>
+<span class="lineno"> 2772 </span><span class="spaces">      </span><span class="istickedoff">TypeMSet _ -&gt; return t</span>
+<span class="lineno"> 2773 </span><span class="spaces">      </span><span class="istickedoff">TypeSet _ -&gt; return t</span>
+<span class="lineno"> 2774 </span><span class="spaces">      </span><span class="istickedoff">TypeFunction _ _ -&gt; return t</span>
+<span class="lineno"> 2775 </span><span class="spaces">      </span><span class="istickedoff">TypeRelation _ -&gt; return t</span>
+<span class="lineno"> 2776 </span><span class="spaces">      </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">TypeAny &lt;$ contextTypeError (ComplexTypeError &quot;Set MSet funcition or relation&quot; t)</span></span></span>
 
 </pre>
 </body>
