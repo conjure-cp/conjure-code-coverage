@@ -43,7 +43,7 @@ span.spaces    { background: white }
 <span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">TypeFunction a _ -&gt; return (TypeSet a)</span>
-<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence _   -&gt; return (TypeSet (TypeInt <span class="nottickedoff">TagInt</span>))</span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeSequence _   -&gt; <span class="nottickedoff">return (TypeSet (TypeInt TagInt))</span></span>
 <span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">_                -&gt; <span class="nottickedoff">raiseTypeError p</span></span></span>
 <span class="lineno">   29 </span>
 <span class="lineno">   30 </span>instance SimplifyOp OpDefined x where

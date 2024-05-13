@@ -89,7 +89,7 @@ span.spaces    { background: white }
 <span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">return $ mkUndef ty $ <span class="nottickedoff">&quot;Has undefined children:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (OpDefined (viewConstantFunction -&gt; Just xs)) =</span>
 <span class="lineno">   72 </span><span class="spaces">        </span><span class="istickedoff">return $ ConstantAbstract $ AbsLitSet $ sortNub $ map fst xs</span>
-<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = na $ &quot;evaluateOp{OpDefined}:&quot; &lt;++&gt; <span class="nottickedoff">pretty (show op)</span></span></span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp op = <span class="nottickedoff">na $ &quot;evaluateOp{OpDefined}:&quot; &lt;++&gt; pretty (show op)</span></span></span>
 <span class="lineno">   74 </span>
 <span class="lineno">   75 </span>instance EvaluateOp OpDiv where
 <span class="lineno">   76 </span>    <span class="decl"><span class="istickedoff">evaluateOp p | any isUndef (childrenBi p) =</span>
