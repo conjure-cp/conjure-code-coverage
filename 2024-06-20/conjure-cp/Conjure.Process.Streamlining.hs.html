@@ -1,0 +1,1048 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Process.Streamlining
+<span class="lineno">    4 </span>    ( streamlining
+<span class="lineno">    5 </span>    , streamliningToStdout
+<span class="lineno">    6 </span>    ) where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>import Conjure.Prelude
+<span class="lineno">    9 </span>import Conjure.Bug
+<span class="lineno">   10 </span>import Conjure.Language
+<span class="lineno">   11 </span>import Conjure.Compute.DomainOf ( domainOf )
+<span class="lineno">   12 </span>import Conjure.Representations.Common ( mkBinRelCons, mkBinRelConsSoft )
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>-- containers
+<span class="lineno">   15 </span>import Data.Set as S ( singleton )
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>streamliningToStdout ::
+<span class="lineno">   19 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   20 </span>    MonadLog m =&gt;
+<span class="lineno">   21 </span>    MonadUserError m =&gt;
+<span class="lineno">   22 </span>    NameGen m =&gt;
+<span class="lineno">   23 </span>    MonadIO m =&gt;
+<span class="lineno">   24 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   25 </span>    Model -&gt; m ()
+<span class="lineno">   26 </span><span class="decl"><span class="nottickedoff">streamliningToStdout model = do</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="nottickedoff">whitespace '\t' = ' '</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="nottickedoff">whitespace '\n' = ' '</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="nottickedoff">whitespace ch   = ch</span>
+<span class="lineno">   31 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="nottickedoff">showStr :: String -&gt; Doc</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="nottickedoff">showStr = pretty . show</span>
+<span class="lineno">   34 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">streamliners &lt;- streamlining model</span>
+<span class="lineno">   36 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ print $ prettyList prBraces &quot;,&quot;</span>
+<span class="lineno">   38 </span><span class="spaces">        </span><span class="nottickedoff">[ showStr (show i) &lt;&gt; &quot;:&quot; &lt;+&gt; prBraces (vcat</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="nottickedoff">[ showStr &quot;onVariable&quot; &lt;&gt; &quot;:&quot; &lt;+&gt; showStr (show (pretty nm)) &lt;&gt; &quot;,&quot;</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="nottickedoff">, showStr &quot;groups&quot;     &lt;&gt; &quot;:&quot; &lt;+&gt; prettyList prBrackets &quot;,&quot; (map showStr (nub groups)) &lt;&gt; &quot;,&quot;</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="nottickedoff">, showStr &quot;constraint&quot; &lt;&gt; &quot;:&quot; &lt;+&gt; showStr (map whitespace $ show $ pretty cons)</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="nottickedoff">| (i, (nm, (cons, groups))) &lt;- zip allNats streamliners</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">traceM $ show $ &quot;Number of streamliners: &quot; &lt;+&gt; pretty (length streamliners)</span></span>
+<span class="lineno">   46 </span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>streamlining ::
+<span class="lineno">   49 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   50 </span>    MonadLog m =&gt;
+<span class="lineno">   51 </span>    MonadUserError m =&gt;
+<span class="lineno">   52 </span>    NameGen m =&gt;
+<span class="lineno">   53 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   54 </span>    Model -&gt; m [(Name, Streamliner)]
+<span class="lineno">   55 </span><span class="decl"><span class="nottickedoff">streamlining model = do</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">concatForM (mStatements model) $ \case</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">Declaration (FindOrGiven Find nm domain) -&gt; do</span>
+<span class="lineno">   58 </span><span class="spaces">            </span><span class="nottickedoff">let ref = Reference nm (Just (DeclNoRepr Find nm domain NoRegion))</span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="nottickedoff">streamliners &lt;- streamlinersForSingleVariable ref</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ vcat [ &quot;Streamliners for --&quot; &lt;+&gt; pretty statement</span>
+<span class="lineno">   61 </span><span class="spaces">            </span><span class="nottickedoff">--                      , vcat [ nest 4 (vcat (pretty x : map pretty gs)) | (x,gs) &lt;- streamliners ]</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="nottickedoff">--                      ]</span>
+<span class="lineno">   63 </span><span class="spaces">            </span><span class="nottickedoff">return [ (nm, s) | s &lt;- streamliners ]</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>
+<span class="lineno">   67 </span>type StreamlinerGroup = String
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>type Streamliner = (Expression, [StreamlinerGroup])
+<span class="lineno">   70 </span>
+<span class="lineno">   71 </span>type StreamlinerGen m = Expression -&gt; m [Streamliner]
+<span class="lineno">   72 </span>
+<span class="lineno">   73 </span>mkStreamliner
+<span class="lineno">   74 </span>    :: Monad m
+<span class="lineno">   75 </span>    =&gt; StreamlinerGroup         -- the group label
+<span class="lineno">   76 </span>    -&gt; Expression               -- the streamlining constraint
+<span class="lineno">   77 </span>    -&gt; m [Streamliner]
+<span class="lineno">   78 </span><span class="decl"><span class="nottickedoff">mkStreamliner grp x = return [(x, [grp])]</span></span>
+<span class="lineno">   79 </span>
+<span class="lineno">   80 </span>noStreamliner :: Monad m =&gt; m [a]
+<span class="lineno">   81 </span><span class="decl"><span class="nottickedoff">noStreamliner = return []</span></span>
+<span class="lineno">   82 </span>
+<span class="lineno">   83 </span>attachGroup
+<span class="lineno">   84 </span>    :: Monad m
+<span class="lineno">   85 </span>    =&gt; [StreamlinerGroup]
+<span class="lineno">   86 </span>    -&gt; Expression
+<span class="lineno">   87 </span>    -&gt; m Streamliner
+<span class="lineno">   88 </span><span class="decl"><span class="nottickedoff">attachGroup grps x = return (x, grps)</span></span>
+<span class="lineno">   89 </span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>-- given a reference to a top level variable, produce a list of all applicable streamliners
+<span class="lineno">   92 </span>streamlinersForSingleVariable ::
+<span class="lineno">   93 </span>    MonadFailDoc m =&gt;
+<span class="lineno">   94 </span>    NameGen m =&gt;
+<span class="lineno">   95 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   96 </span>    StreamlinerGen m
+<span class="lineno">   97 </span><span class="decl"><span class="nottickedoff">streamlinersForSingleVariable x = concatMapM ($ x)</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">[ intOdd</span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">, intEven</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">, intLowerHalf</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="nottickedoff">, intUpperHalf</span>
+<span class="lineno">  102 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  103 </span><span class="spaces">    </span><span class="nottickedoff">, onTuple 1 streamlinersForSingleVariable</span>
+<span class="lineno">  104 </span><span class="spaces">    </span><span class="nottickedoff">, onTuple 2 streamlinersForSingleVariable</span>
+<span class="lineno">  105 </span><span class="spaces">    </span><span class="nottickedoff">, onTuple 3 streamlinersForSingleVariable</span>
+<span class="lineno">  106 </span><span class="spaces">    </span><span class="nottickedoff">, onTuple 4 streamlinersForSingleVariable</span>
+<span class="lineno">  107 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="nottickedoff">, matrixByRowBucket streamlinersForSingleVariable</span>
+<span class="lineno">  109 </span><span class="spaces">    </span><span class="nottickedoff">, matrixByColBucket streamlinersForSingleVariable</span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">, matrixAll streamlinersForSingleVariable</span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">, matrixHalf streamlinersForSingleVariable</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="nottickedoff">, matrixAtMostOne streamlinersForSingleVariable</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">, matrixApproxHalf streamlinersForSingleVariable</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="nottickedoff">, matrixMoreThanHalf streamlinersForSingleVariable</span>
+<span class="lineno">  116 </span><span class="spaces">    </span><span class="nottickedoff">, matrixLessThanHalf streamlinersForSingleVariable</span>
+<span class="lineno">  117 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  118 </span><span class="spaces">    </span><span class="nottickedoff">, setAll streamlinersForSingleVariable</span>
+<span class="lineno">  119 </span><span class="spaces">    </span><span class="nottickedoff">, setHalf streamlinersForSingleVariable</span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="nottickedoff">, setAtMostOne streamlinersForSingleVariable</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="nottickedoff">, setApproxHalf streamlinersForSingleVariable</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="nottickedoff">, setMoreThanHalf streamlinersForSingleVariable</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="nottickedoff">, setLessThanHalf streamlinersForSingleVariable</span>
+<span class="lineno">  124 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  125 </span><span class="spaces">    </span><span class="nottickedoff">, relationCardinality</span>
+<span class="lineno">  126 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  127 </span><span class="spaces">    </span><span class="nottickedoff">, binRelAttributes</span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="nottickedoff">, monotonicallyIncreasing</span>
+<span class="lineno">  130 </span><span class="spaces">    </span><span class="nottickedoff">, monotonicallyDecreasing</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="nottickedoff">, smallestFirst</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="nottickedoff">, largestFirst</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="nottickedoff">, commutative</span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="nottickedoff">, nonCommutative</span>
+<span class="lineno">  135 </span><span class="spaces">    </span><span class="nottickedoff">, associative</span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="nottickedoff">, onRange streamlinersForSingleVariable</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="nottickedoff">, onDefined streamlinersForSingleVariable</span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="nottickedoff">-- , diagonal streamlinersForSingleVariable</span>
+<span class="lineno">  139 </span><span class="spaces">    </span><span class="nottickedoff">-- , prefix streamlinersForSingleVariable</span>
+<span class="lineno">  140 </span><span class="spaces">    </span><span class="nottickedoff">-- , postfix streamlinersForSingleVariable</span>
+<span class="lineno">  141 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="nottickedoff">, parts streamlinersForSingleVariable</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="nottickedoff">, quasiRegular</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  146 </span>
+<span class="lineno">  147 </span>
+<span class="lineno">  148 </span>------------------------------------------------------------------------------
+<span class="lineno">  149 </span>-- Integers
+<span class="lineno">  150 </span>------------------------------------------------------------------------------
+<span class="lineno">  151 </span>
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>-- given an integer expression (which can be a reference to a decision variable),
+<span class="lineno">  154 </span>-- generate a constraint forcing it to be odd
+<span class="lineno">  155 </span>intOdd ::
+<span class="lineno">  156 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  157 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  158 </span>    StreamlinerGen m
+<span class="lineno">  159 </span><span class="decl"><span class="nottickedoff">intOdd x = do</span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  161 </span><span class="spaces">    </span><span class="nottickedoff">if typeUnify ty (TypeInt TagInt)</span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="nottickedoff">then mkStreamliner &quot;IntOddEven&quot; [essence| &amp;x % 2 = 1 |]</span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  164 </span>
+<span class="lineno">  165 </span>
+<span class="lineno">  166 </span>intEven ::
+<span class="lineno">  167 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  168 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  169 </span>    StreamlinerGen m
+<span class="lineno">  170 </span><span class="decl"><span class="nottickedoff">intEven x = do</span>
+<span class="lineno">  171 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  172 </span><span class="spaces">    </span><span class="nottickedoff">if typeUnify ty (TypeInt TagInt)</span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="nottickedoff">then mkStreamliner &quot;IntOddEven&quot; [essence| &amp;x % 2 = 0 |]</span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  175 </span>
+<span class="lineno">  176 </span>
+<span class="lineno">  177 </span>intLowerHalf ::
+<span class="lineno">  178 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  179 </span>    NameGen m =&gt;
+<span class="lineno">  180 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  181 </span>    StreamlinerGen m
+<span class="lineno">  182 </span><span class="decl"><span class="nottickedoff">intLowerHalf x = do</span>
+<span class="lineno">  183 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  184 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  186 </span><span class="spaces">        </span><span class="nottickedoff">DomainInt _ [RangeBounded _lower upper] -&gt; do</span>
+<span class="lineno">  187 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;DomainInt &quot; &lt;+&gt; pretty (lower, upper)</span>
+<span class="lineno">  188 </span><span class="spaces">            </span><span class="nottickedoff">if typeUnify ty (TypeInt TagInt)</span>
+<span class="lineno">  189 </span><span class="spaces">                </span><span class="nottickedoff">then mkStreamliner &quot;IntLowHigh&quot; [essence| &amp;x &lt; 1 + (&amp;upper -1) /2 |]</span>
+<span class="lineno">  190 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  192 </span>
+<span class="lineno">  193 </span>
+<span class="lineno">  194 </span>intUpperHalf ::
+<span class="lineno">  195 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  196 </span>    NameGen m =&gt;
+<span class="lineno">  197 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  198 </span>    StreamlinerGen m
+<span class="lineno">  199 </span><span class="decl"><span class="nottickedoff">intUpperHalf x = do</span>
+<span class="lineno">  200 </span><span class="spaces">    </span><span class="nottickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">  201 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  202 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="nottickedoff">DomainInt _ [RangeBounded _lower upper] -&gt; do</span>
+<span class="lineno">  204 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;DomainInt &quot; &lt;+&gt; pretty (lower, upper)</span>
+<span class="lineno">  205 </span><span class="spaces">            </span><span class="nottickedoff">if typeUnify ty (TypeInt TagInt)</span>
+<span class="lineno">  206 </span><span class="spaces">                </span><span class="nottickedoff">then mkStreamliner &quot;IntLowHigh&quot; [essence| &amp;x &gt; 1 + (&amp;upper -1) /2 |]</span>
+<span class="lineno">  207 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  209 </span>
+<span class="lineno">  210 </span>
+<span class="lineno">  211 </span>------------------------------------------------------------------------------
+<span class="lineno">  212 </span>-- Matrices
+<span class="lineno">  213 </span>------------------------------------------------------------------------------
+<span class="lineno">  214 </span>
+<span class="lineno">  215 </span>
+<span class="lineno">  216 </span>matrixAll ::
+<span class="lineno">  217 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  218 </span>    NameGen m =&gt;
+<span class="lineno">  219 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  220 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  221 </span><span class="decl"><span class="nottickedoff">matrixAll innerStreamliner x = do</span>
+<span class="lineno">  222 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  223 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  225 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  226 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;matrixAll nm&quot; &lt;+&gt; pretty nm</span>
+<span class="lineno">  227 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  228 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  229 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  230 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  231 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  232 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  233 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  234 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;maybeInnerConstraint&quot; &lt;+&gt; vcat (map pretty innerConstraints)</span>
+<span class="lineno">  235 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  236 </span><span class="spaces">                    </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence| forAll &amp;pat : &amp;indexDom . &amp;innerConstraint |]</span>
+<span class="lineno">  237 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  238 </span>
+<span class="lineno">  239 </span>
+<span class="lineno">  240 </span>matrixAtMostOne ::
+<span class="lineno">  241 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  242 </span>    NameGen m =&gt;
+<span class="lineno">  243 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  244 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  245 </span><span class="decl"><span class="nottickedoff">matrixAtMostOne innerStreamliner x = do</span>
+<span class="lineno">  246 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  248 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  249 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  250 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  251 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  252 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  253 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  254 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  256 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  257 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  258 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence| 1 &gt;= sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint) |]</span>
+<span class="lineno">  259 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  260 </span>
+<span class="lineno">  261 </span>
+<span class="lineno">  262 </span>matrixHalf :: MonadFailDoc m =&gt;
+<span class="lineno">  263 </span>    NameGen m =&gt;
+<span class="lineno">  264 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  265 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  266 </span><span class="decl"><span class="nottickedoff">matrixHalf innerStreamliner x = do</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  269 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  270 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |`&amp;indexDom`| |]</span>
+<span class="lineno">  271 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  272 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  273 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  274 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  275 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  276 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  277 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  278 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  279 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence| &amp;size / 2 = (sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint)) |]</span>
+<span class="lineno">  281 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  282 </span>
+<span class="lineno">  283 </span>
+<span class="lineno">  284 </span>matrixApproxHalf ::
+<span class="lineno">  285 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  286 </span>    NameGen m =&gt;
+<span class="lineno">  287 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  288 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  289 </span><span class="decl"><span class="nottickedoff">matrixApproxHalf innerStreamliner x = do</span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  291 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  292 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  293 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |`&amp;indexDom`| |]</span>
+<span class="lineno">  294 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  295 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  296 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  297 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  298 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  299 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  300 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  301 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  302 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  303 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence|</span>
+<span class="lineno">  304 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) + 1 &gt;= (sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint)) /\</span>
+<span class="lineno">  305 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2 -1) &lt;= (sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  306 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  307 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  308 </span>
+<span class="lineno">  309 </span>
+<span class="lineno">  310 </span>matrixMoreThanHalf ::
+<span class="lineno">  311 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  312 </span>    NameGen m =&gt;
+<span class="lineno">  313 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  314 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  315 </span><span class="decl"><span class="nottickedoff">matrixMoreThanHalf innerStreamliner x = do</span>
+<span class="lineno">  316 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  317 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  318 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  319 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |`&amp;indexDom`| |]</span>
+<span class="lineno">  320 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  321 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  322 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  323 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  324 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  325 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  326 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  327 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  328 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  329 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence|</span>
+<span class="lineno">  330 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) &lt;= (sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  331 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  332 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  333 </span>
+<span class="lineno">  334 </span>
+<span class="lineno">  335 </span>matrixLessThanHalf ::
+<span class="lineno">  336 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  337 </span>    NameGen m =&gt;
+<span class="lineno">  338 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  339 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  340 </span><span class="decl"><span class="nottickedoff">matrixLessThanHalf innerStreamliner x = do</span>
+<span class="lineno">  341 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  343 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix indexDom innerDom -&gt; do</span>
+<span class="lineno">  344 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |`&amp;indexDom`| |]</span>
+<span class="lineno">  345 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  346 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  347 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  348 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  349 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  350 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  351 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  352 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  353 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  354 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (&quot;MatrixCardinality&quot;: grps) [essence|</span>
+<span class="lineno">  355 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) &gt;= (sum &amp;pat : &amp;indexDom . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  356 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  357 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  358 </span>
+<span class="lineno">  359 </span>
+<span class="lineno">  360 </span>matrixByRowBucket ::
+<span class="lineno">  361 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  362 </span>    NameGen m =&gt;
+<span class="lineno">  363 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  364 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  365 </span><span class="decl"><span class="nottickedoff">matrixByRowBucket innerStreamliner x = do</span>
+<span class="lineno">  366 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  367 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix (DomainInt _ [RangeBounded lb ub]) innerDom@(DomainMatrix _ DomainInt{}) -&gt; do</span>
+<span class="lineno">  369 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| &amp;ub - &amp;lb + 1 |]</span>
+<span class="lineno">  370 </span><span class="spaces">            </span><span class="nottickedoff">let bucketSize = [essence| &amp;size / 10 |]</span>
+<span class="lineno">  371 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  372 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  373 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  374 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  375 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;ref] |]</span>
+<span class="lineno">  376 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  377 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  378 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  379 </span><span class="spaces">            </span><span class="nottickedoff">concatForM [0..9] $ \ (bucketInt :: Integer) -&gt; let bucket = fromInt bucketInt in</span>
+<span class="lineno">  380 </span><span class="spaces">                </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  381 </span><span class="spaces">                    </span><span class="nottickedoff">attachGroup ((&quot;MatrixByRowBucket-&quot; ++ show bucketInt) : grps) [essence|</span>
+<span class="lineno">  382 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;pat : int(&amp;lb + &amp;bucket * &amp;bucketSize .. min([&amp;ub, &amp;lb + (&amp;bucket+1) * &amp;bucketSize])) . &amp;innerConstraint</span>
+<span class="lineno">  383 </span><span class="spaces">                        </span><span class="nottickedoff">|]</span>
+<span class="lineno">  384 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  385 </span>
+<span class="lineno">  386 </span>
+<span class="lineno">  387 </span>
+<span class="lineno">  388 </span>matrixByColBucket ::
+<span class="lineno">  389 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  390 </span>    NameGen m =&gt;
+<span class="lineno">  391 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  392 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  393 </span><span class="decl"><span class="nottickedoff">matrixByColBucket innerStreamliner x = do</span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  396 </span><span class="spaces">        </span><span class="nottickedoff">DomainMatrix outerIndex (DomainMatrix (DomainInt _ [RangeBounded lb ub]) innerDom) -&gt; do</span>
+<span class="lineno">  397 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| &amp;ub - &amp;lb + 1 |]</span>
+<span class="lineno">  398 </span><span class="spaces">            </span><span class="nottickedoff">let bucketSize = [essence| &amp;size / 10 |]</span>
+<span class="lineno">  399 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  400 </span><span class="spaces">            </span><span class="nottickedoff">nmO &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  401 </span><span class="spaces">            </span><span class="nottickedoff">let patO = Single nmO</span>
+<span class="lineno">  402 </span><span class="spaces">            </span><span class="nottickedoff">let refO = Reference nmO Nothing</span>
+<span class="lineno">  403 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  404 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  405 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  406 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  407 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  408 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix (Reference n _) | n == nm = [essence| &amp;x[&amp;refO, &amp;ref] |]</span>
+<span class="lineno">  409 </span><span class="spaces">                </span><span class="nottickedoff">liftMatrix p = p</span>
+<span class="lineno">  410 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  411 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- transformBi liftMatrix &lt;$&gt; innerStreamliner ref</span>
+<span class="lineno">  412 </span><span class="spaces">            </span><span class="nottickedoff">concatForM [0..9] $ \ (bucketInt :: Integer) -&gt; let bucket = fromInt bucketInt in</span>
+<span class="lineno">  413 </span><span class="spaces">                </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  414 </span><span class="spaces">                    </span><span class="nottickedoff">attachGroup ((&quot;MatrixByColBucket-&quot; ++ show bucketInt) : grps) [essence|</span>
+<span class="lineno">  415 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;patO : &amp;outerIndex .</span>
+<span class="lineno">  416 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;pat : int(&amp;lb + &amp;bucket * &amp;bucketSize .. min([&amp;ub, &amp;lb + (&amp;bucket+1) * &amp;bucketSize])) .</span>
+<span class="lineno">  417 </span><span class="spaces">                        </span><span class="nottickedoff">&amp;innerConstraint</span>
+<span class="lineno">  418 </span><span class="spaces">                        </span><span class="nottickedoff">|]</span>
+<span class="lineno">  419 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  420 </span>
+<span class="lineno">  421 </span>
+<span class="lineno">  422 </span>------------------------------------------------------------------------------
+<span class="lineno">  423 </span>-- Sets and MSets
+<span class="lineno">  424 </span>------------------------------------------------------------------------------
+<span class="lineno">  425 </span>
+<span class="lineno">  426 </span>
+<span class="lineno">  427 </span>setAll ::
+<span class="lineno">  428 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  429 </span>    NameGen m =&gt;
+<span class="lineno">  430 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  431 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  432 </span><span class="decl"><span class="nottickedoff">setAll innerStreamliner x = do</span>
+<span class="lineno">  433 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  434 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  435 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  436 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  437 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  438 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  439 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  440 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  441 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  442 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  443 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;setAll nm&quot; &lt;+&gt; pretty nm</span>
+<span class="lineno">  444 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  445 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  446 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  447 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;maybeInnerConstraint&quot; &lt;+&gt; vcat (map pretty innerConstraints)</span>
+<span class="lineno">  448 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  449 </span><span class="spaces">                    </span><span class="nottickedoff">attachGroup (newTag: grps) [essence| forAll &amp;pat in &amp;x . &amp;innerConstraint |]</span>
+<span class="lineno">  450 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  451 </span>
+<span class="lineno">  452 </span>
+<span class="lineno">  453 </span>setAtMostOne ::
+<span class="lineno">  454 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  455 </span>    NameGen m =&gt;
+<span class="lineno">  456 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  457 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  458 </span><span class="decl"><span class="nottickedoff">setAtMostOne innerStreamliner x = do</span>
+<span class="lineno">  459 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  460 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  461 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  462 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  463 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  464 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  465 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  466 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  467 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  468 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  469 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  470 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  471 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  472 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  473 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (newTag: grps) [essence| 1 &gt;= sum &amp;pat in &amp;x . toInt(&amp;innerConstraint) |]</span>
+<span class="lineno">  474 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  475 </span>
+<span class="lineno">  476 </span>
+<span class="lineno">  477 </span>setHalf ::
+<span class="lineno">  478 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  479 </span>    NameGen m =&gt;
+<span class="lineno">  480 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  481 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  482 </span><span class="decl"><span class="nottickedoff">setHalf innerStreamliner x = do</span>
+<span class="lineno">  483 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  484 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  485 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  486 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  487 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  488 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  489 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  490 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  491 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  492 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |&amp;x| |]</span>
+<span class="lineno">  493 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  494 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  495 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  496 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  497 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  498 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (newTag: grps) [essence| &amp;size / 2 = (sum &amp;pat in &amp;x . toInt(&amp;innerConstraint)) |]</span>
+<span class="lineno">  499 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  500 </span>
+<span class="lineno">  501 </span>
+<span class="lineno">  502 </span>setApproxHalf ::
+<span class="lineno">  503 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  504 </span>    NameGen m =&gt;
+<span class="lineno">  505 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  506 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  507 </span><span class="decl"><span class="nottickedoff">setApproxHalf innerStreamliner x = do</span>
+<span class="lineno">  508 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  509 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  510 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  511 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  512 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  513 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  514 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  515 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  516 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  517 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |&amp;x| |]</span>
+<span class="lineno">  518 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  519 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  520 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  521 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  522 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  523 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (newTag: grps) [essence|</span>
+<span class="lineno">  524 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) + 1 &gt;= (sum &amp;pat in &amp;x . toInt(&amp;innerConstraint)) /\</span>
+<span class="lineno">  525 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2 -1) &lt;= (sum &amp;pat in &amp;x . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  526 </span><span class="spaces">                </span><span class="nottickedoff">|]</span>
+<span class="lineno">  527 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  528 </span>
+<span class="lineno">  529 </span>
+<span class="lineno">  530 </span>setMoreThanHalf ::
+<span class="lineno">  531 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  532 </span>    NameGen m =&gt;
+<span class="lineno">  533 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  534 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  535 </span><span class="decl"><span class="nottickedoff">setMoreThanHalf innerStreamliner x = do</span>
+<span class="lineno">  536 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  537 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  538 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  539 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  540 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  541 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  542 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  543 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  544 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  545 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |&amp;x| |]</span>
+<span class="lineno">  546 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  547 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  548 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  549 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  550 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  551 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (newTag: grps) [essence|</span>
+<span class="lineno">  552 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) &lt;= (sum &amp;pat in &amp;x . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  553 </span><span class="spaces">                </span><span class="nottickedoff">|]</span>
+<span class="lineno">  554 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  555 </span>
+<span class="lineno">  556 </span>
+<span class="lineno">  557 </span>setLessThanHalf ::
+<span class="lineno">  558 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  559 </span>    NameGen m =&gt;
+<span class="lineno">  560 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  561 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  562 </span><span class="decl"><span class="nottickedoff">setLessThanHalf innerStreamliner x = do</span>
+<span class="lineno">  563 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  564 </span><span class="spaces">    </span><span class="nottickedoff">let minnerDom =</span>
+<span class="lineno">  565 </span><span class="spaces">            </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  566 </span><span class="spaces">                </span><span class="nottickedoff">DomainSet _ _ innerDom -&gt; Just (innerDom, &quot;SetCardinality&quot;)</span>
+<span class="lineno">  567 </span><span class="spaces">                </span><span class="nottickedoff">DomainMSet _ _ innerDom -&gt; Just (innerDom, &quot;MSetCardinality&quot;)</span>
+<span class="lineno">  568 </span><span class="spaces">                </span><span class="nottickedoff">DomainRelation _ _ innerDoms -&gt; Just (DomainTuple innerDoms, &quot;RelationCardinality&quot;)</span>
+<span class="lineno">  569 </span><span class="spaces">                </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  570 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDom of</span>
+<span class="lineno">  571 </span><span class="spaces">        </span><span class="nottickedoff">Just (innerDom, newTag) -&gt; do</span>
+<span class="lineno">  572 </span><span class="spaces">            </span><span class="nottickedoff">let size = [essence| |&amp;x| |]</span>
+<span class="lineno">  573 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  574 </span><span class="spaces">            </span><span class="nottickedoff">let pat = Single nm</span>
+<span class="lineno">  575 </span><span class="spaces">                </span><span class="nottickedoff">ref = Reference nm (Just (DeclNoRepr Find nm innerDom NoRegion))</span>
+<span class="lineno">  576 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  577 </span><span class="spaces">            </span><span class="nottickedoff">forM innerConstraints $ \ (innerConstraint, grps) -&gt;</span>
+<span class="lineno">  578 </span><span class="spaces">                </span><span class="nottickedoff">attachGroup (newTag: grps) [essence|</span>
+<span class="lineno">  579 </span><span class="spaces">                    </span><span class="nottickedoff">(&amp;size/2) &gt;= (sum &amp;pat in &amp;x . toInt(&amp;innerConstraint))</span>
+<span class="lineno">  580 </span><span class="spaces">                </span><span class="nottickedoff">|]</span>
+<span class="lineno">  581 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  582 </span>
+<span class="lineno">  583 </span>
+<span class="lineno">  584 </span>relationCardinality ::
+<span class="lineno">  585 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  586 </span>    NameGen m =&gt;
+<span class="lineno">  587 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  588 </span>    StreamlinerGen m
+<span class="lineno">  589 </span><span class="decl"><span class="nottickedoff">relationCardinality x = do</span>
+<span class="lineno">  590 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  591 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  592 </span><span class="spaces">        </span><span class="nottickedoff">DomainRelation _ _ inners -&gt; do</span>
+<span class="lineno">  593 </span><span class="spaces">            </span><span class="nottickedoff">let maxCard = make opProduct $ fromList [ [essence| |`&amp;i`| |] | i &lt;- inners ]</span>
+<span class="lineno">  594 </span><span class="spaces">            </span><span class="nottickedoff">sequence</span>
+<span class="lineno">  595 </span><span class="spaces">                </span><span class="nottickedoff">[ case lowerOrUpper of</span>
+<span class="lineno">  596 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;lowerBound&quot; -&gt; return ([essence| |&amp;x| &gt;= &amp;maxCard / &amp;slice |], [grp])</span>
+<span class="lineno">  597 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;upperBound&quot; -&gt; return ([essence| |&amp;x| &lt;= &amp;maxCard / &amp;slice |], [grp])</span>
+<span class="lineno">  598 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; bug &quot;relationCardinality&quot;</span>
+<span class="lineno">  599 </span><span class="spaces">                </span><span class="nottickedoff">| slice &lt;- [1,2,4,8,16,32]</span>
+<span class="lineno">  600 </span><span class="spaces">                </span><span class="nottickedoff">, lowerOrUpper &lt;- [&quot;LowerBound&quot;,&quot;UpperBound&quot;]</span>
+<span class="lineno">  601 </span><span class="spaces">                </span><span class="nottickedoff">, let grp = &quot;RelationCardinality-&quot; ++ lowerOrUpper</span>
+<span class="lineno">  602 </span><span class="spaces">                </span><span class="nottickedoff">]</span>
+<span class="lineno">  603 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  604 </span>
+<span class="lineno">  605 </span>
+<span class="lineno">  606 </span>binRelAttributes ::
+<span class="lineno">  607 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  608 </span>    NameGen m =&gt;
+<span class="lineno">  609 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  610 </span>    StreamlinerGen m
+<span class="lineno">  611 </span><span class="decl"><span class="nottickedoff">binRelAttributes x = do</span>
+<span class="lineno">  612 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  613 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  614 </span><span class="spaces">        </span><span class="nottickedoff">-- we don't insist on inner1 == inner2 any more</span>
+<span class="lineno">  615 </span><span class="spaces">        </span><span class="nottickedoff">DomainRelation _ _ [inner1, inner2] -&gt; sequence</span>
+<span class="lineno">  616 </span><span class="spaces">            </span><span class="nottickedoff">[ do</span>
+<span class="lineno">  617 </span><span class="spaces">                </span><span class="nottickedoff">out &lt;- case softness of</span>
+<span class="lineno">  618 </span><span class="spaces">                        </span><span class="nottickedoff">Nothing -&gt; mkBinRelCons (BinaryRelationAttrs (S.singleton attr)) inner x</span>
+<span class="lineno">  619 </span><span class="spaces">                        </span><span class="nottickedoff">Just s -&gt; mkBinRelConsSoft maxNum s (BinaryRelationAttrs (S.singleton attr)) inner x</span>
+<span class="lineno">  620 </span><span class="spaces">                </span><span class="nottickedoff">return (make opAnd (fromList out), [grp])</span>
+<span class="lineno">  621 </span><span class="spaces">            </span><span class="nottickedoff">| inner &lt;- [inner1, inner2]</span>
+<span class="lineno">  622 </span><span class="spaces">            </span><span class="nottickedoff">, (attr, maxNum) &lt;- [ ( BinRelAttr_Reflexive     , [essence| |`&amp;inner`| |] )</span>
+<span class="lineno">  623 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Irreflexive   , [essence| |`&amp;inner`| |] )</span>
+<span class="lineno">  624 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Coreflexive   , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  625 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Symmetric     , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  626 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_AntiSymmetric , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  627 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_ASymmetric    , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  628 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Transitive    , [essence| |`&amp;inner`| * |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  629 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Total         , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  630 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Connex        , [essence| |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  631 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Euclidean     , [essence| |`&amp;inner`| * |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  632 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Serial        , [essence| |`&amp;inner`| |] )</span>
+<span class="lineno">  633 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_Equivalence   , [essence| |`&amp;inner`| * |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  634 </span><span class="spaces">                                </span><span class="nottickedoff">, ( BinRelAttr_PartialOrder  , [essence| |`&amp;inner`| * |`&amp;inner`| * |`&amp;inner`| |] )</span>
+<span class="lineno">  635 </span><span class="spaces">                                </span><span class="nottickedoff">]</span>
+<span class="lineno">  636 </span><span class="spaces">            </span><span class="nottickedoff">, let grp = show attr</span>
+<span class="lineno">  637 </span><span class="spaces">            </span><span class="nottickedoff">, softness &lt;- [Nothing, Just 2, Just 4, Just 8, Just 16, Just 32]</span>
+<span class="lineno">  638 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">  639 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  640 </span>
+<span class="lineno">  641 </span>
+<span class="lineno">  642 </span>------------------------------------------------------------------------------
+<span class="lineno">  643 </span>-- Functions and Sequences
+<span class="lineno">  644 </span>------------------------------------------------------------------------------
+<span class="lineno">  645 </span>
+<span class="lineno">  646 </span>
+<span class="lineno">  647 </span>monotonicallyIncreasing ::
+<span class="lineno">  648 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  649 </span>    NameGen m =&gt;
+<span class="lineno">  650 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  651 </span>    StreamlinerGen m
+<span class="lineno">  652 </span><span class="decl"><span class="nottickedoff">monotonicallyIncreasing x = do</span>
+<span class="lineno">  653 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;Monotonically Increasing [1]&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  654 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  655 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;Monotonically Increasing [2]&quot; &lt;+&gt; pretty dom</span>
+<span class="lineno">  656 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  657 </span><span class="spaces">        </span><span class="nottickedoff">applicable = case dom of</span>
+<span class="lineno">  658 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ DomainInt{} DomainInt{} -&gt; True</span>
+<span class="lineno">  659 </span><span class="spaces">                        </span><span class="nottickedoff">DomainSequence _ _             DomainInt{} -&gt; True</span>
+<span class="lineno">  660 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  661 </span><span class="spaces">    </span><span class="nottickedoff">if applicable</span>
+<span class="lineno">  662 </span><span class="spaces">        </span><span class="nottickedoff">then do</span>
+<span class="lineno">  663 </span><span class="spaces">            </span><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  664 </span><span class="spaces">            </span><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  665 </span><span class="spaces">            </span><span class="nottickedoff">mkStreamliner &quot;FuncIncreaseDecrease&quot; [essence|</span>
+<span class="lineno">  666 </span><span class="spaces">                </span><span class="nottickedoff">forAll &amp;iPat in defined(&amp;x) .</span>
+<span class="lineno">  667 </span><span class="spaces">                    </span><span class="nottickedoff">forAll &amp;jPat in defined(&amp;x) .</span>
+<span class="lineno">  668 </span><span class="spaces">                        </span><span class="nottickedoff">&amp;i &lt; &amp;j -&gt; &amp;x(&amp;i) &lt;= &amp;x(&amp;j)</span>
+<span class="lineno">  669 </span><span class="spaces">            </span><span class="nottickedoff">|]</span>
+<span class="lineno">  670 </span><span class="spaces">        </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  671 </span>
+<span class="lineno">  672 </span>
+<span class="lineno">  673 </span>monotonicallyDecreasing ::
+<span class="lineno">  674 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  675 </span>    NameGen m =&gt;
+<span class="lineno">  676 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  677 </span>    StreamlinerGen m
+<span class="lineno">  678 </span><span class="decl"><span class="nottickedoff">monotonicallyDecreasing x = do</span>
+<span class="lineno">  679 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  680 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  681 </span><span class="spaces">        </span><span class="nottickedoff">applicable = case dom of</span>
+<span class="lineno">  682 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ DomainInt{} DomainInt{} -&gt; True</span>
+<span class="lineno">  683 </span><span class="spaces">                        </span><span class="nottickedoff">DomainSequence _ _             DomainInt{} -&gt; True</span>
+<span class="lineno">  684 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  685 </span><span class="spaces">    </span><span class="nottickedoff">if applicable</span>
+<span class="lineno">  686 </span><span class="spaces">        </span><span class="nottickedoff">then do</span>
+<span class="lineno">  687 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;Monotonically Decreasing&quot;</span>
+<span class="lineno">  688 </span><span class="spaces">            </span><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  689 </span><span class="spaces">            </span><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  690 </span><span class="spaces">            </span><span class="nottickedoff">mkStreamliner &quot;FuncIncreaseDecrease&quot; [essence|</span>
+<span class="lineno">  691 </span><span class="spaces">                </span><span class="nottickedoff">forAll &amp;iPat in defined(&amp;x) .</span>
+<span class="lineno">  692 </span><span class="spaces">                    </span><span class="nottickedoff">forAll &amp;jPat in defined(&amp;x) .</span>
+<span class="lineno">  693 </span><span class="spaces">                        </span><span class="nottickedoff">&amp;i &lt; &amp;j -&gt; &amp;x(&amp;i) &gt;= &amp;x(&amp;j)</span>
+<span class="lineno">  694 </span><span class="spaces">            </span><span class="nottickedoff">|]</span>
+<span class="lineno">  695 </span><span class="spaces">        </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  696 </span>
+<span class="lineno">  697 </span>
+<span class="lineno">  698 </span>smallestFirst ::
+<span class="lineno">  699 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  700 </span>    NameGen m =&gt;
+<span class="lineno">  701 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  702 </span>    StreamlinerGen m
+<span class="lineno">  703 </span><span class="decl"><span class="nottickedoff">smallestFirst x = do</span>
+<span class="lineno">  704 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  705 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  706 </span><span class="spaces">        </span><span class="nottickedoff">applicable = case dom of</span>
+<span class="lineno">  707 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ DomainInt{} DomainInt{} -&gt; True</span>
+<span class="lineno">  708 </span><span class="spaces">                        </span><span class="nottickedoff">DomainSequence _ _             DomainInt{} -&gt; True</span>
+<span class="lineno">  709 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  710 </span><span class="spaces">    </span><span class="nottickedoff">if applicable</span>
+<span class="lineno">  711 </span><span class="spaces">        </span><span class="nottickedoff">then do</span>
+<span class="lineno">  712 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;Smallest First&quot;</span>
+<span class="lineno">  713 </span><span class="spaces">            </span><span class="nottickedoff">(ipat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  714 </span><span class="spaces">            </span><span class="nottickedoff">mkStreamliner &quot;FuncIncreaseDecrease&quot; [essence|</span>
+<span class="lineno">  715 </span><span class="spaces">                </span><span class="nottickedoff">forAll &amp;ipat in defined(&amp;x) .</span>
+<span class="lineno">  716 </span><span class="spaces">                    </span><span class="nottickedoff">&amp;x(min(defined(&amp;x))) &lt;= &amp;x(&amp;i)</span>
+<span class="lineno">  717 </span><span class="spaces">            </span><span class="nottickedoff">|]</span>
+<span class="lineno">  718 </span><span class="spaces">         </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  719 </span>
+<span class="lineno">  720 </span>
+<span class="lineno">  721 </span>largestFirst ::
+<span class="lineno">  722 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  723 </span>    NameGen m =&gt;
+<span class="lineno">  724 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  725 </span>    StreamlinerGen m
+<span class="lineno">  726 </span><span class="decl"><span class="nottickedoff">largestFirst x = do</span>
+<span class="lineno">  727 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  728 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  729 </span><span class="spaces">        </span><span class="nottickedoff">applicable = case dom of</span>
+<span class="lineno">  730 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ DomainInt{} DomainInt{} -&gt; True</span>
+<span class="lineno">  731 </span><span class="spaces">                        </span><span class="nottickedoff">DomainSequence _ _             DomainInt{} -&gt; True</span>
+<span class="lineno">  732 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; False</span>
+<span class="lineno">  733 </span><span class="spaces">    </span><span class="nottickedoff">if applicable</span>
+<span class="lineno">  734 </span><span class="spaces">        </span><span class="nottickedoff">then do</span>
+<span class="lineno">  735 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;Largest First&quot;</span>
+<span class="lineno">  736 </span><span class="spaces">            </span><span class="nottickedoff">(ipat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  737 </span><span class="spaces">            </span><span class="nottickedoff">mkStreamliner &quot;FuncIncreaseDecrease&quot; [essence|</span>
+<span class="lineno">  738 </span><span class="spaces">                </span><span class="nottickedoff">forAll &amp;ipat in defined(&amp;x) .</span>
+<span class="lineno">  739 </span><span class="spaces">                    </span><span class="nottickedoff">&amp;x(max(defined(&amp;x))) &gt;= &amp;x(&amp;i)</span>
+<span class="lineno">  740 </span><span class="spaces">            </span><span class="nottickedoff">|]</span>
+<span class="lineno">  741 </span><span class="spaces">         </span><span class="nottickedoff">else noStreamliner</span></span>
+<span class="lineno">  742 </span>
+<span class="lineno">  743 </span>
+<span class="lineno">  744 </span>commutative ::
+<span class="lineno">  745 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  746 </span>    NameGen m =&gt;
+<span class="lineno">  747 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  748 </span>    StreamlinerGen m
+<span class="lineno">  749 </span><span class="decl"><span class="nottickedoff">commutative x = do</span>
+<span class="lineno">  750 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  751 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  752 </span><span class="spaces">        </span><span class="nottickedoff">DomainFunction () _ (DomainTuple [a, b]) c -&gt; do</span>
+<span class="lineno">  753 </span><span class="spaces">            </span><span class="nottickedoff">if (a==b) &amp;&amp; (b==c)</span>
+<span class="lineno">  754 </span><span class="spaces">                </span><span class="nottickedoff">then do</span>
+<span class="lineno">  755 </span><span class="spaces">                    </span><span class="nottickedoff">(ipat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  756 </span><span class="spaces">                    </span><span class="nottickedoff">(jpat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  757 </span><span class="spaces">                    </span><span class="nottickedoff">mkStreamliner &quot;FuncCommutative&quot; [essence|</span>
+<span class="lineno">  758 </span><span class="spaces">                        </span><span class="nottickedoff">forAll (&amp;ipat,&amp;jpat) in defined(&amp;x) .</span>
+<span class="lineno">  759 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;x((&amp;i,&amp;j)) = &amp;x((&amp;j,&amp;i))</span>
+<span class="lineno">  760 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  761 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
+<span class="lineno">  762 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  763 </span>
+<span class="lineno">  764 </span>
+<span class="lineno">  765 </span>nonCommutative ::
+<span class="lineno">  766 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  767 </span>    NameGen m =&gt;
+<span class="lineno">  768 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  769 </span>    StreamlinerGen m
+<span class="lineno">  770 </span><span class="decl"><span class="nottickedoff">nonCommutative x = do</span>
+<span class="lineno">  771 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  772 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  773 </span><span class="spaces">        </span><span class="nottickedoff">DomainFunction () _ (DomainTuple [a, b]) c -&gt; do</span>
+<span class="lineno">  774 </span><span class="spaces">            </span><span class="nottickedoff">if (a==b) &amp;&amp; (b==c)</span>
+<span class="lineno">  775 </span><span class="spaces">                </span><span class="nottickedoff">then do</span>
+<span class="lineno">  776 </span><span class="spaces">                    </span><span class="nottickedoff">(ipat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  777 </span><span class="spaces">                    </span><span class="nottickedoff">(jpat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  778 </span><span class="spaces">                    </span><span class="nottickedoff">mkStreamliner &quot;FuncCommutative&quot; [essence|</span>
+<span class="lineno">  779 </span><span class="spaces">                        </span><span class="nottickedoff">forAll (&amp;ipat,&amp;jpat) in defined(&amp;x) .</span>
+<span class="lineno">  780 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;x((&amp;i,&amp;j)) != &amp;x((&amp;j,&amp;i))</span>
+<span class="lineno">  781 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  782 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
+<span class="lineno">  783 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  784 </span>
+<span class="lineno">  785 </span>
+<span class="lineno">  786 </span>associative ::
+<span class="lineno">  787 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  788 </span>    NameGen m =&gt;
+<span class="lineno">  789 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  790 </span>    StreamlinerGen m
+<span class="lineno">  791 </span><span class="decl"><span class="nottickedoff">associative x = do</span>
+<span class="lineno">  792 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  793 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  794 </span><span class="spaces">        </span><span class="nottickedoff">DomainFunction () _ (DomainTuple [a, b]) c -&gt; do</span>
+<span class="lineno">  795 </span><span class="spaces">            </span><span class="nottickedoff">if (a==b) &amp;&amp; (b==c)</span>
+<span class="lineno">  796 </span><span class="spaces">                </span><span class="nottickedoff">then do</span>
+<span class="lineno">  797 </span><span class="spaces">                    </span><span class="nottickedoff">(ipat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  798 </span><span class="spaces">                    </span><span class="nottickedoff">(jpat, j) &lt;- quantifiedVar</span>
+<span class="lineno">  799 </span><span class="spaces">                    </span><span class="nottickedoff">(kpat, k) &lt;- quantifiedVar</span>
+<span class="lineno">  800 </span><span class="spaces">                    </span><span class="nottickedoff">mkStreamliner &quot;FuncAssociative&quot; [essence|</span>
+<span class="lineno">  801 </span><span class="spaces">                        </span><span class="nottickedoff">forAll &amp;ipat, &amp;jpat, &amp;kpat in defined(&amp;x) .</span>
+<span class="lineno">  802 </span><span class="spaces">                            </span><span class="nottickedoff">&amp;x((&amp;x((&amp;i,&amp;j)), &amp;k)) = &amp;x((&amp;i, &amp;x((&amp;j, &amp;k))))</span>
+<span class="lineno">  803 </span><span class="spaces">                    </span><span class="nottickedoff">|]</span>
+<span class="lineno">  804 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
+<span class="lineno">  805 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  806 </span>
+<span class="lineno">  807 </span>
+<span class="lineno">  808 </span>
+<span class="lineno">  809 </span>onTuple ::
+<span class="lineno">  810 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  811 </span>    NameGen m =&gt;
+<span class="lineno">  812 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  813 </span>    Integer -&gt; StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  814 </span><span class="decl"><span class="nottickedoff">onTuple n innerStreamliner x = do</span>
+<span class="lineno">  815 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  816 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  817 </span><span class="spaces">        </span><span class="nottickedoff">DomainTuple ds | n &gt;= 1 &amp;&amp; n &lt;= genericLength ds -&gt; do</span>
+<span class="lineno">  818 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  819 </span><span class="spaces">            </span><span class="nottickedoff">let ref = Reference nm (Just (DeclNoRepr Find nm (ds `genericIndex` (n-1)) NoRegion))</span>
+<span class="lineno">  820 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  821 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  822 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  823 </span><span class="spaces">                </span><span class="nottickedoff">nE = fromInt n</span>
+<span class="lineno">  824 </span><span class="spaces">                </span><span class="nottickedoff">replaceRef (Reference nm2 _) | nm2 == nm = [essence| &amp;x[&amp;nE] |]</span>
+<span class="lineno">  825 </span><span class="spaces">                </span><span class="nottickedoff">replaceRef p = p</span>
+<span class="lineno">  826 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  827 </span><span class="spaces">            </span><span class="nottickedoff">return [ (transform replaceRef cons, grps)</span>
+<span class="lineno">  828 </span><span class="spaces">                   </span><span class="nottickedoff">| (cons, grps) &lt;- innerConstraints</span>
+<span class="lineno">  829 </span><span class="spaces">                   </span><span class="nottickedoff">]</span>
+<span class="lineno">  830 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  831 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  832 </span>
+<span class="lineno">  833 </span>
+<span class="lineno">  834 </span>onRange ::
+<span class="lineno">  835 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  836 </span>    NameGen m =&gt;
+<span class="lineno">  837 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  838 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  839 </span><span class="decl"><span class="nottickedoff">onRange innerStreamliner x = do</span>
+<span class="lineno">  840 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;onRange&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  841 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  842 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;onRange dom&quot; &lt;+&gt; pretty dom</span>
+<span class="lineno">  843 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  844 </span><span class="spaces">        </span><span class="nottickedoff">minnerDomTo = case dom of</span>
+<span class="lineno">  845 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ DomainInt{} innerDomTo -&gt; return innerDomTo</span>
+<span class="lineno">  846 </span><span class="spaces">                        </span><span class="nottickedoff">DomainSequence _ _             innerDomTo -&gt; return innerDomTo</span>
+<span class="lineno">  847 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  848 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDomTo of</span>
+<span class="lineno">  849 </span><span class="spaces">        </span><span class="nottickedoff">Just innerDomTo -&gt; do</span>
+<span class="lineno">  850 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  851 </span><span class="spaces">            </span><span class="nottickedoff">let rangeSetDomain = DomainSet () def innerDomTo</span>
+<span class="lineno">  852 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  853 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  854 </span><span class="spaces">            </span><span class="nottickedoff">let ref = Reference nm (Just (DeclNoRepr Find nm rangeSetDomain NoRegion))</span>
+<span class="lineno">  855 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  856 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  857 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  858 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX (Reference n _) | n == nm = [essence| range(&amp;x) |]</span>
+<span class="lineno">  859 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX p = p</span>
+<span class="lineno">  860 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  861 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;innerConstraints 1&quot; &lt;+&gt; vcat (map pretty innerConstraints)</span>
+<span class="lineno">  862 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;innerConstraints 2&quot; &lt;+&gt; vcat (map pretty (transformBi replaceWithRangeOfX innerConstraints))</span>
+<span class="lineno">  863 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  864 </span><span class="spaces">            </span><span class="nottickedoff">return [ (transform replaceWithRangeOfX cons, grps)</span>
+<span class="lineno">  865 </span><span class="spaces">                   </span><span class="nottickedoff">| (cons, grps) &lt;- innerConstraints</span>
+<span class="lineno">  866 </span><span class="spaces">                   </span><span class="nottickedoff">]</span>
+<span class="lineno">  867 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  868 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  869 </span>
+<span class="lineno">  870 </span>
+<span class="lineno">  871 </span>onDefined ::
+<span class="lineno">  872 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  873 </span>    NameGen m =&gt;
+<span class="lineno">  874 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  875 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  876 </span><span class="decl"><span class="nottickedoff">onDefined innerStreamliner x = do</span>
+<span class="lineno">  877 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;Defined&quot; &lt;+&gt; pretty x</span>
+<span class="lineno">  878 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  879 </span><span class="spaces">    </span><span class="nottickedoff">-- traceM $ show $ &quot;Defined dom&quot; &lt;+&gt; pretty dom</span>
+<span class="lineno">  880 </span><span class="spaces">    </span><span class="nottickedoff">-- So we get the range and then we apply and then apply the rule to the range of the function</span>
+<span class="lineno">  881 </span><span class="spaces">    </span><span class="nottickedoff">let</span>
+<span class="lineno">  882 </span><span class="spaces">        </span><span class="nottickedoff">minnerDomFr = case dom of</span>
+<span class="lineno">  883 </span><span class="spaces">                        </span><span class="nottickedoff">DomainFunction _ _ innerDomFr _ -&gt; return innerDomFr</span>
+<span class="lineno">  884 </span><span class="spaces">                        </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  885 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  886 </span><span class="spaces">    </span><span class="nottickedoff">case minnerDomFr of</span>
+<span class="lineno">  887 </span><span class="spaces">        </span><span class="nottickedoff">Just innerDomFr -&gt; do</span>
+<span class="lineno">  888 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  889 </span><span class="spaces">            </span><span class="nottickedoff">let rangeSetDomain = DomainSet () def innerDomFr</span>
+<span class="lineno">  890 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  891 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  892 </span><span class="spaces">            </span><span class="nottickedoff">let ref = Reference nm (Just (DeclNoRepr Find nm rangeSetDomain NoRegion))</span>
+<span class="lineno">  893 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno">  894 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  895 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno">  896 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX (Reference n _) | n == nm = [essence| defined(&amp;x) |]</span>
+<span class="lineno">  897 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX p = p</span>
+<span class="lineno">  898 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  899 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;innerConstraints 1&quot; &lt;+&gt; vcat (map pretty innerConstraints)</span>
+<span class="lineno">  900 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;innerConstraints 2&quot; &lt;+&gt; vcat (map pretty (transformBi replaceWithRangeOfX innerConstraints))</span>
+<span class="lineno">  901 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  902 </span><span class="spaces">            </span><span class="nottickedoff">return [ (transform replaceWithRangeOfX cons, grps)</span>
+<span class="lineno">  903 </span><span class="spaces">                   </span><span class="nottickedoff">| (cons, grps) &lt;- innerConstraints</span>
+<span class="lineno">  904 </span><span class="spaces">                   </span><span class="nottickedoff">]</span>
+<span class="lineno">  905 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  906 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno">  907 </span>
+<span class="lineno">  908 </span>
+<span class="lineno">  909 </span>-- diagonal :: (MonadFailDoc m, NameGen m) =&gt; StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  910 </span>-- diagonal innerStreamliner x = do
+<span class="lineno">  911 </span>--     traceM $ show $ &quot;diagnoal&quot; &lt;+&gt; pretty x
+<span class="lineno">  912 </span>--     dom &lt;- expandDomainReference &lt;$&gt; domainOf x
+<span class="lineno">  913 </span>--     case dom of
+<span class="lineno">  914 </span>--         DomainFunction () _ (DomainTuple [a, b]) domto-&gt; do
+<span class="lineno">  915 </span>--             case (a == b)  of
+<span class="lineno">  916 </span>--                 True -&gt; do
+<span class="lineno">  917 </span>--                     nm &lt;- nextname &quot;fx&quot;
+<span class="lineno">  918 </span>--                     let auxfunction = domainfunction () def a domto
+<span class="lineno">  919 </span>--                         ref =  reference nm (just (declnorepr find nm auxfunction noregion))
+<span class="lineno">  920 </span>
+<span class="lineno">  921 </span>--                     i &lt;- nextname &quot;q&quot;
+<span class="lineno">  922 </span>--                     (ipat, i) &lt;- quantifiedvar
+<span class="lineno">  923 </span>
+<span class="lineno">  924 </span>--                     innerconstraints &lt;- innerstreamliner ref
+<span class="lineno">  925 </span>--                     return $ attachGroup grps [essence| find &amp;ref: function &amp;a --&gt; &amp;domto such that forall &amp;ipat: &amp;a. (&amp;i, &amp;i) in defined(&amp;x) -&gt; &amp;ref(&amp;i) = &amp;x((&amp;i,&amp;i)),
+<span class="lineno">  926 </span>--                                     forall &amp;ipat: &amp;a . &amp;i in defined(&amp;ref) -&gt; &amp;ref(&amp;i) = &amp;x((&amp;i,&amp;i)) |]
+<span class="lineno">  927 </span>--                 False -&gt; do
+<span class="lineno">  928 </span>--                     noStreamliner
+<span class="lineno">  929 </span>--         _ -&gt; noStreamliner
+<span class="lineno">  930 </span>
+<span class="lineno">  931 </span>--
+<span class="lineno">  932 </span>-- prefix :: (MonadFailDoc m, NameGen m) =&gt; StreamlinerGen m -&gt;  StreamlinerGen m
+<span class="lineno">  933 </span>-- prefix innerStreamliner x = do
+<span class="lineno">  934 </span>--     traceM $ show $ &quot;prefix&quot;
+<span class="lineno">  935 </span>--     dom &lt;- expandDomainReference &lt;$&gt; domainOf x
+<span class="lineno">  936 </span>--     case dom of
+<span class="lineno">  937 </span>--         DomainFunction () _ (DomainInt [RangeBounded lb up]) innerDomTo -&gt; do
+<span class="lineno">  938 </span>--             case x of
+<span class="lineno">  939 </span>--                 Reference nm (Just (DeclNoRepr Find _ domain NoRegion)) -&gt; do
+<span class="lineno">  940 </span>
+<span class="lineno">  941 </span>--                     innerConstraints &lt;- innerStreamliner x
+<span class="lineno">  942 </span>
+<span class="lineno">  943 </span>--                     let
+<span class="lineno">  944 </span>--                         replaceWithRangeOfX (Reference n _) | n == nm = [essence| restrict(&amp;x,`int(&amp;lb..(&amp;up-1))`) |]
+<span class="lineno">  945 </span>--                         replaceWithRangeOfX p = p
+<span class="lineno">  946 </span>
+<span class="lineno">  947 </span>--                 --  traceM $ show $ &quot;innerConstraints 1&quot; &lt;+&gt; vcat (map pretty innerConstraints)
+<span class="lineno">  948 </span>--                 -- traceM $ show $ &quot;innerConstraints 2&quot; &lt;+&gt; vcat (map pretty (transformBi replaceWithRangeOfX innerConstraints))
+<span class="lineno">  949 </span>
+<span class="lineno">  950 </span>--                     return (transformBi replaceWithRangeOfX innerConstraints)
+<span class="lineno">  951 </span>--                 _ -&gt; noStreamliner
+<span class="lineno">  952 </span>
+<span class="lineno">  953 </span>--         _ -&gt; noStreamliner
+<span class="lineno">  954 </span>--
+<span class="lineno">  955 </span>
+<span class="lineno">  956 </span>-- postfix :: (MonadFailDoc m, NameGen m) =&gt; StreamlinerGen m -&gt;  StreamlinerGen m
+<span class="lineno">  957 </span>-- postfix innerStreamliner x = do
+<span class="lineno">  958 </span>--     traceM $ show $ &quot;postfix&quot;
+<span class="lineno">  959 </span>--     dom &lt;- expandDomainReference &lt;$&gt; domainOf x
+<span class="lineno">  960 </span>--     case dom of
+<span class="lineno">  961 </span>--         DomainFunction () _ (DomainInt [RangeBounded lb up]) innerDomTo -&gt; do
+<span class="lineno">  962 </span>--             case x of
+<span class="lineno">  963 </span>--                 Reference nm (Just (DeclNoRepr Find _ domain NoRegion)) -&gt; do
+<span class="lineno">  964 </span>
+<span class="lineno">  965 </span>--                     innerConstraints &lt;- innerStreamliner x
+<span class="lineno">  966 </span>
+<span class="lineno">  967 </span>--                     let
+<span class="lineno">  968 </span>--                         replaceWithRangeOfX (Reference n _) | n == nm = [essence| restrict(&amp;x,`int((&amp;lb+1)..&amp;up)`) |]
+<span class="lineno">  969 </span>--                         replaceWithRangeOfX p = p
+<span class="lineno">  970 </span>
+<span class="lineno">  971 </span>--                 --  traceM $ show $ &quot;innerConstraints 1&quot; &lt;+&gt; vcat (map pretty innerConstraints)
+<span class="lineno">  972 </span>--                 -- traceM $ show $ &quot;innerConstraints 2&quot; &lt;+&gt; vcat (map pretty (transformBi replaceWithRangeOfX innerConstraints))
+<span class="lineno">  973 </span>
+<span class="lineno">  974 </span>--                     return (transformBi replaceWithRangeOfX innerConstraints)
+<span class="lineno">  975 </span>--                 _ -&gt; noStreamliner
+<span class="lineno">  976 </span>
+<span class="lineno">  977 </span>--         _ -&gt; noStreamliner
+<span class="lineno">  978 </span>
+<span class="lineno">  979 </span>
+<span class="lineno">  980 </span>------------------------------------------------------------------------------
+<span class="lineno">  981 </span>-- Partitions
+<span class="lineno">  982 </span>------------------------------------------------------------------------------
+<span class="lineno">  983 </span>
+<span class="lineno">  984 </span>
+<span class="lineno">  985 </span>parts ::
+<span class="lineno">  986 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  987 </span>    NameGen m =&gt;
+<span class="lineno">  988 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  989 </span>    StreamlinerGen m -&gt; StreamlinerGen m
+<span class="lineno">  990 </span><span class="decl"><span class="nottickedoff">parts innerStreamliner x = do</span>
+<span class="lineno">  991 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno">  992 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno">  993 </span><span class="spaces">        </span><span class="nottickedoff">DomainPartition _ _ partitionDomain -&gt; do</span>
+<span class="lineno">  994 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;partition&quot;</span>
+<span class="lineno">  995 </span><span class="spaces">            </span><span class="nottickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  996 </span><span class="spaces">            </span><span class="nottickedoff">let setDomain = DomainSet () def (DomainSet () def partitionDomain)</span>
+<span class="lineno">  997 </span><span class="spaces">                </span><span class="nottickedoff">ref =  Reference nm (Just (DeclNoRepr Find nm setDomain NoRegion))</span>
+<span class="lineno">  998 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno">  999 </span><span class="spaces">            </span><span class="nottickedoff">innerConstraints &lt;- innerStreamliner ref</span>
+<span class="lineno"> 1000 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno"> 1001 </span><span class="spaces">            </span><span class="nottickedoff">let</span>
+<span class="lineno"> 1002 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX (Reference n _) | n == nm = [essence| parts(&amp;x) |]</span>
+<span class="lineno"> 1003 </span><span class="spaces">                </span><span class="nottickedoff">replaceWithRangeOfX p = p</span>
+<span class="lineno"> 1004 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno"> 1005 </span><span class="spaces">            </span><span class="nottickedoff">return [ (transform replaceWithRangeOfX cons, grps)</span>
+<span class="lineno"> 1006 </span><span class="spaces">                   </span><span class="nottickedoff">| (cons, grps) &lt;- innerConstraints</span>
+<span class="lineno"> 1007 </span><span class="spaces">                   </span><span class="nottickedoff">]</span>
+<span class="lineno"> 1008 </span><span class="spaces"></span><span class="nottickedoff"></span>
+<span class="lineno"> 1009 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+<span class="lineno"> 1010 </span>
+<span class="lineno"> 1011 </span>
+<span class="lineno"> 1012 </span>quasiRegular ::
+<span class="lineno"> 1013 </span>    MonadFailDoc m =&gt;
+<span class="lineno"> 1014 </span>    NameGen m =&gt;
+<span class="lineno"> 1015 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno"> 1016 </span>    StreamlinerGen m
+<span class="lineno"> 1017 </span><span class="decl"><span class="nottickedoff">quasiRegular x = do</span>
+<span class="lineno"> 1018 </span><span class="spaces">    </span><span class="nottickedoff">dom &lt;- expandDomainReference &lt;$&gt; domainOf x</span>
+<span class="lineno"> 1019 </span><span class="spaces">    </span><span class="nottickedoff">case dom of</span>
+<span class="lineno"> 1020 </span><span class="spaces">        </span><span class="nottickedoff">DomainPartition{} -&gt; do</span>
+<span class="lineno"> 1021 </span><span class="spaces">            </span><span class="nottickedoff">mkStreamliner &quot;PartitionRegular&quot; [essence|</span>
+<span class="lineno"> 1022 </span><span class="spaces">                </span><span class="nottickedoff">minPartSize(&amp;x, |participants(&amp;x)| / |parts(&amp;x)| - 1) /\</span>
+<span class="lineno"> 1023 </span><span class="spaces">                </span><span class="nottickedoff">maxPartSize(&amp;x, |participants(&amp;x)|/ |parts(&amp;x)| + 1)</span>
+<span class="lineno"> 1024 </span><span class="spaces">            </span><span class="nottickedoff">|]</span>
+<span class="lineno"> 1025 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
+
+</pre>
+</body>
+</html>
