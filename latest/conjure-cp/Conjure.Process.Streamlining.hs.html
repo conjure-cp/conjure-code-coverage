@@ -205,7 +205,7 @@ span.spaces    { background: white }
 <span class="lineno">  186 </span><span class="spaces">        </span><span class="nottickedoff">DomainInt _ [RangeBounded _lower upper] -&gt; do</span>
 <span class="lineno">  187 </span><span class="spaces">            </span><span class="nottickedoff">-- traceM $ show $ &quot;DomainInt &quot; &lt;+&gt; pretty (lower, upper)</span>
 <span class="lineno">  188 </span><span class="spaces">            </span><span class="nottickedoff">if typeUnify ty (TypeInt TagInt)</span>
-<span class="lineno">  189 </span><span class="spaces">                </span><span class="nottickedoff">then mkStreamliner &quot;IntLowHigh&quot; [essence| &amp;x &lt; 1 + (&amp;upper -1) /2 |]</span>
+<span class="lineno">  189 </span><span class="spaces">                </span><span class="nottickedoff">then mkStreamliner &quot;IntLowHigh&quot; [essence| &amp;x &lt;= 1 + (&amp;upper -1) /2 |]</span>
 <span class="lineno">  190 </span><span class="spaces">                </span><span class="nottickedoff">else noStreamliner</span>
 <span class="lineno">  191 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; noStreamliner</span></span>
 <span class="lineno">  192 </span>
