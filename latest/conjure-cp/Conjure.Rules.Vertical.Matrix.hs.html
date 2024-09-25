@@ -246,7 +246,7 @@ span.spaces    { background: white }
 <span class="lineno">  227 </span>rule_Comprehension_ToSet_List :: Rule
 <span class="lineno">  228 </span><span class="decl"><span class="istickedoff">rule_Comprehension_ToSet_List = &quot;matrix-toSet-listInside&quot; `namedRule` theRule where</span>
 <span class="lineno">  229 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff">-- we cannot assume that the list is duplciate-free</span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff">-- we cannot assume that the list is duplicate-free</span>
 <span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff">(False, Comprehension body gensOrConds) &lt;- match opToSetWithFlag p</span>
 <span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff">bodyDomain &lt;- domainOf body</span>
 <span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff">let auxDomain = DomainSet () (SetAttr SizeAttr_None) bodyDomain</span>
