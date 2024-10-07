@@ -48,31 +48,32 @@ span.spaces    { background: white }
 <span class="lineno">   29 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
 <span class="lineno">   30 </span><span class="spaces">                    </span><span class="istickedoff">TypeInt _       -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{}      -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">TypeSet{}       -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">TypeMSet{}      -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">TypeFunction{}  -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">TypeSequence{}  -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff">TypeRelation{}  -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">TypePartition{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff">_               -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   39 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected an integer or a collection.&quot;</span></span>
-<span class="lineno">   40 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   41 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">return $ TypeInt TagInt</span></span>
-<span class="lineno">   43 </span>
-<span class="lineno">   44 </span>instance SimplifyOp OpTwoBars x where
-<span class="lineno">   45 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpTwoBars}&quot;</span></span>
-<span class="lineno">   46 </span>
-<span class="lineno">   47 </span>instance <span class="decl"><span class="istickedoff">Pretty x =&gt; Pretty (OpTwoBars x)</span></span> where
-<span class="lineno">   48 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpTwoBars a) = &quot;|&quot; &lt;&gt; pretty a &lt;&gt; &quot;|&quot;</span></span>
-<span class="lineno">   49 </span>
-<span class="lineno">   50 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpTwoBars x) where
-<span class="lineno">   51 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpTwoBars a) = JSON.Object $ KM.fromList</span>
-<span class="lineno">   52 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpTwoBars&quot;)</span>
-<span class="lineno">   53 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
-<span class="lineno">   54 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
-<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
-<span class="lineno">   56 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{}    -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">TypeSet{}       -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">TypeMSet{}      -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">TypeFunction{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff">TypeSequence{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">TypeRelation{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff">TypePartition{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff">_               -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   40 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected an integer or a collection.&quot;</span></span>
+<span class="lineno">   41 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   42 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">return $ TypeInt TagInt</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>instance SimplifyOp OpTwoBars x where
+<span class="lineno">   46 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpTwoBars}&quot;</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>instance <span class="decl"><span class="istickedoff">Pretty x =&gt; Pretty (OpTwoBars x)</span></span> where
+<span class="lineno">   49 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpTwoBars a) = &quot;|&quot; &lt;&gt; pretty a &lt;&gt; &quot;|&quot;</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpTwoBars x) where
+<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpTwoBars a) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpTwoBars&quot;)</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

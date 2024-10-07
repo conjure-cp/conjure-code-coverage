@@ -134,7 +134,7 @@ span.spaces    { background: white }
 <span class="lineno">  115 </span><span class="spaces">                    </span><span class="nottickedoff">Nothing -&gt; noFromSimpleJSON &quot;Integer&quot; t text</span>
 <span class="lineno">  116 </span><span class="spaces">            </span><span class="nottickedoff">_ -&gt; noFromSimpleJSON &quot;Integer&quot; t x</span></span>
 <span class="lineno">  117 </span>
-<span class="lineno">  118 </span>data AsDictionary a b = AsDictionary [(a,b)]
+<span class="lineno">  118 </span>newtype AsDictionary a b = AsDictionary [(a,b)]
 <span class="lineno">  119 </span>
 <span class="lineno">  120 </span>instance (Pretty x, SimpleJSON x, SimpleJSON y) =&gt; SimpleJSON (AsDictionary x y) where
 <span class="lineno">  121 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON (AsDictionary xs) = do</span>

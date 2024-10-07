@@ -69,16 +69,16 @@ span.spaces    { background: white }
 <span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitVariant _ nm x -&gt; do</span>
 <span class="lineno">   51 </span><span class="spaces">                </span><span class="nottickedoff">x' &lt;- toSimpleJSON x</span>
 <span class="lineno">   52 </span><span class="spaces">                </span><span class="nottickedoff">return $ JSON.Object $ KM.fromList [(fromString (renderNormal nm), x')]</span>
-<span class="lineno">   53 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMatrix index xs -&gt;</span>
-<span class="lineno">   54 </span><span class="spaces">                </span><span class="nottickedoff">case index of</span>
-<span class="lineno">   55 </span><span class="spaces">                    </span><span class="nottickedoff">DomainInt _ ranges -&gt; do</span>
-<span class="lineno">   56 </span><span class="spaces">                        </span><span class="nottickedoff">indices &lt;- failToUserError $ rangesInts ranges</span>
-<span class="lineno">   57 </span><span class="spaces">                        </span><span class="nottickedoff">toSimpleJSON (AsDictionary (zip indices xs))</span>
-<span class="lineno">   58 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; toSimpleJSON xs</span>
-<span class="lineno">   59 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSet xs -&gt; toSimpleJSON xs</span>
-<span class="lineno">   60 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMSet xs -&gt; toSimpleJSON xs</span>
-<span class="lineno">   61 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitFunction xs -&gt; toSimpleJSON (AsDictionary xs)</span>
-<span class="lineno">   62 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSequence xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   53 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSequence xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMatrix index xs -&gt;</span>
+<span class="lineno">   55 </span><span class="spaces">                </span><span class="nottickedoff">case index of</span>
+<span class="lineno">   56 </span><span class="spaces">                    </span><span class="nottickedoff">DomainInt _ ranges -&gt; do</span>
+<span class="lineno">   57 </span><span class="spaces">                        </span><span class="nottickedoff">indices &lt;- failToUserError $ rangesInts ranges</span>
+<span class="lineno">   58 </span><span class="spaces">                        </span><span class="nottickedoff">toSimpleJSON (AsDictionary (zip indices xs))</span>
+<span class="lineno">   59 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; toSimpleJSON xs</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitSet xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   61 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitMSet xs -&gt; toSimpleJSON xs</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitFunction xs -&gt; toSimpleJSON (AsDictionary xs)</span>
 <span class="lineno">   63 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitRelation xs -&gt; toSimpleJSON xs</span>
 <span class="lineno">   64 </span><span class="spaces">            </span><span class="nottickedoff">AbsLitPartition xs -&gt; toSimpleJSON xs</span></span>
 <span class="lineno">   65 </span>    <span class="decl"><span class="nottickedoff">fromSimpleJSON = noFromSimpleJSON &quot;AbstractLiteral&quot;</span></span>
