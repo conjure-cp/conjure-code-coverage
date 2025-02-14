@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveGeneric, DeriveDataTypeable, DeriveFunctor, DeriveTraversable, DeriveFoldable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE UndecidableInstances #-}
+<span class="lineno">    3 </span>
+<span class="lineno">    4 </span>module Conjure.Language.Expression.Op.TwoBars where
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>import qualified Data.Aeson as JSON             -- aeson
+<span class="lineno">   10 </span>import qualified Data.Aeson.KeyMap as KM
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>import qualified Data.Vector as V               -- vector
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>data OpTwoBars x = OpTwoBars x
+<span class="lineno">   16 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Traversable</span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize x =&gt; Serialize (OpTwoBars x)</span></span></span></span>
+<span class="lineno">   19 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  x =&gt; Hashable  (OpTwoBars x)</span></span></span></span>
+<span class="lineno">   20 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    x =&gt; ToJSON    (OpTwoBars x)</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   21 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  x =&gt; FromJSON  (OpTwoBars x)</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>instance (TypeOf x, Pretty x, Domain () x :&lt; x) =&gt; TypeOf (OpTwoBars x) where
+<span class="lineno">   24 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpTwoBars a) = do</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">case project a of</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">Just (_ :: Domain () x) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; do</span>
+<span class="lineno">   28 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf a</span>
+<span class="lineno">   29 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
+<span class="lineno">   30 </span><span class="spaces">                    </span><span class="istickedoff">TypeInt _       -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{}      -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{}    -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">TypeSet{}       -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">TypeMSet{}      -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">TypeFunction{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff">TypeSequence{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   37 </span><span class="spaces">                    </span><span class="istickedoff">TypeRelation{}  -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   38 </span><span class="spaces">                    </span><span class="istickedoff">TypePartition{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   39 </span><span class="spaces">                    </span><span class="istickedoff">_               -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   40 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected an integer or a collection.&quot;</span></span>
+<span class="lineno">   41 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   42 </span><span class="spaces">                                                             </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">return $ TypeInt TagInt</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>instance SimplifyOp OpTwoBars x where
+<span class="lineno">   46 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpTwoBars}&quot;</span></span>
+<span class="lineno">   47 </span>
+<span class="lineno">   48 </span>instance <span class="decl"><span class="istickedoff">Pretty x =&gt; Pretty (OpTwoBars x)</span></span> where
+<span class="lineno">   49 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpTwoBars a) = &quot;|&quot; &lt;&gt; pretty a &lt;&gt; &quot;|&quot;</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpTwoBars x) where
+<span class="lineno">   52 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpTwoBars a) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpTwoBars&quot;)</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>
