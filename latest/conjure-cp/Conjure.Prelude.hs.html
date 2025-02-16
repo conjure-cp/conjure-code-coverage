@@ -430,7 +430,7 @@ span.spaces    { background: white }
 <span class="lineno">  411 </span>    <span class="decl"><span class="istickedoff">failDoc = const Nothing</span></span>
 <span class="lineno">  412 </span>
 <span class="lineno">  413 </span>instance (a ~ Doc) =&gt; MonadFailDoc (Either a) where
-<span class="lineno">  414 </span>    <span class="decl"><span class="nottickedoff">failDoc = Left</span></span>
+<span class="lineno">  414 </span>    <span class="decl"><span class="istickedoff">failDoc = Left</span></span>
 <span class="lineno">  415 </span>
 <span class="lineno">  416 </span>instance MonadFail (Either Doc) where
 <span class="lineno">  417 </span>    <span class="decl"><span class="nottickedoff">fail = failDoc . stringToDoc</span></span>

@@ -33,19 +33,19 @@ span.spaces    { background: white }
 <span class="lineno">   14 </span>
 <span class="lineno">   15 </span>-- call this function instead of &quot;error&quot;
 <span class="lineno">   16 </span>bug :: HasCallStack =&gt; Doc -&gt; a
-<span class="lineno">   17 </span><span class="decl"><span class="nottickedoff">bug message = error $ unlines</span>
-<span class="lineno">   18 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;This should never happen, sorry!&quot;</span>
-<span class="lineno">   19 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   20 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;However, it did happen, so it must be a bug. Please report it to us!&quot;</span>
-<span class="lineno">   21 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   22 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Conjure is actively maintained, we will get back to you as soon as possible.&quot;</span>
-<span class="lineno">   23 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;You can help us by providing a minimal failing example.&quot;</span>
-<span class="lineno">   24 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   25 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Also include the repository version for this build: &quot; ++ repositoryVersion</span>
-<span class="lineno">   26 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;</span>
-<span class="lineno">   27 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Issue tracker: http://github.com/conjure-cp/conjure/issues&quot;</span>
-<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;&quot;, &quot;&quot; , renderNormal message</span>
-<span class="lineno">   29 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   17 </span><span class="decl"><span class="istickedoff">bug message = error $ unlines</span>
+<span class="lineno">   18 </span><span class="spaces">    </span><span class="istickedoff">[ &quot;This should never happen, sorry!&quot;</span>
+<span class="lineno">   19 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">, &quot;However, it did happen, so it must be a bug. Please report it to us!&quot;</span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Conjure is actively maintained, we will get back to you as soon as possible.&quot;</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">, &quot;You can help us by providing a minimal failing example.&quot;</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Also include the repository version for this build: &quot; ++ repositoryVersion</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">, &quot;Issue tracker: http://github.com/conjure-cp/conjure/issues&quot;</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">, &quot;&quot;, &quot;&quot; , renderNormal message</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
 <span class="lineno">   30 </span>
 <span class="lineno">   31 </span>bugFail :: Doc -&gt; Either Doc a -&gt; a
 <span class="lineno">   32 </span><span class="decl"><span class="istickedoff">bugFail loc (Left err) = <span class="nottickedoff">bug (vcat [&quot;BUGFAIL at&quot; &lt;+&gt; loc, err])</span></span>
