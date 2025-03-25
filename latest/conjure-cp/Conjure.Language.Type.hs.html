@@ -68,8 +68,8 @@ span.spaces    { background: white }
 <span class="lineno">   49 </span>
 <span class="lineno">   50 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Type</span></span></span></span>
 <span class="lineno">   51 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Type</span></span></span></span>
-<span class="lineno">   52 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Type</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">   53 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  Type</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   52 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Type</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   53 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Type</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   54 </span>
 <span class="lineno">   55 </span>instance <span class="decl"><span class="nottickedoff">Pretty Type</span></span> where
 <span class="lineno">   56 </span>    <span class="decl"><span class="istickedoff">pretty TypeAny = &quot;?&quot;</span>
@@ -110,8 +110,8 @@ span.spaces    { background: white }
 <span class="lineno">   91 </span>
 <span class="lineno">   92 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize IntTag</span></span></span></span>
 <span class="lineno">   93 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  IntTag</span></span></span></span>
-<span class="lineno">   94 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    IntTag</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">   95 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  IntTag</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   94 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    IntTag</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   95 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  IntTag</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   96 </span>
 <span class="lineno">   97 </span>reTag :: Data a =&gt; IntTag -&gt; a -&gt; a
 <span class="lineno">   98 </span><span class="decl"><span class="istickedoff">reTag t = transformBi (const t)</span></span>
@@ -127,8 +127,8 @@ span.spaces    { background: white }
 <span class="lineno">  108 </span>
 <span class="lineno">  109 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize TypeCheckerMode</span></span></span></span>
 <span class="lineno">  110 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable  TypeCheckerMode</span></span></span></span>
-<span class="lineno">  111 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    TypeCheckerMode</span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  112 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  TypeCheckerMode</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  111 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    TypeCheckerMode</span></span></span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  112 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  TypeCheckerMode</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  113 </span>
 <span class="lineno">  114 </span>instance <span class="decl"><span class="nottickedoff">Pretty TypeCheckerMode</span></span> where
 <span class="lineno">  115 </span>    <span class="decl"><span class="nottickedoff">pretty = pretty . show</span></span>

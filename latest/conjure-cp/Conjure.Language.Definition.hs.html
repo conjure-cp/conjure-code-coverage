@@ -101,8 +101,8 @@ span.spaces    { background: white }
 <span class="lineno">   82 </span>
 <span class="lineno">   83 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Serialize Model</span></span></span></span>
 <span class="lineno">   84 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Hashable  Model</span></span></span></span>
-<span class="lineno">   85 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Model</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">   86 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  Model</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   85 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Model</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   86 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Model</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   87 </span>
 <span class="lineno">   88 </span>instance SimpleJSON Model where
 <span class="lineno">   89 </span>    <span class="decl"><span class="nottickedoff">toSimpleJSON m = do</span>
@@ -203,13 +203,13 @@ span.spaces    { background: white }
 <span class="lineno">  184 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Serialize LanguageVersion</span></span></span></span>
 <span class="lineno">  185 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  LanguageVersion</span></span></span></span>
 <span class="lineno">  186 </span>
-<span class="lineno">  187 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON LanguageVersion</span></span></span></span></span></span> where
+<span class="lineno">  187 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">ToJSON LanguageVersion</span></span></span></span></span></span></span></span> where
 <span class="lineno">  188 </span>    <span class="decl"><span class="istickedoff">toJSON (LanguageVersion t is) =</span>
 <span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">JSON.object [ &quot;language&quot; .= toJSON t</span>
 <span class="lineno">  190 </span><span class="spaces">                    </span><span class="istickedoff">, &quot;version&quot;  .= toJSON is</span>
 <span class="lineno">  191 </span><span class="spaces">                    </span><span class="istickedoff">]</span></span>
 <span class="lineno">  192 </span>
-<span class="lineno">  193 </span>instance <span class="decl"><span class="nottickedoff">FromJSON LanguageVersion</span></span> where
+<span class="lineno">  193 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON LanguageVersion</span></span></span></span> where
 <span class="lineno">  194 </span>    <span class="decl"><span class="nottickedoff">parseJSON (JSON.Object x) =</span>
 <span class="lineno">  195 </span><span class="spaces">        </span><span class="nottickedoff">LanguageVersion &lt;$&gt; x .: &quot;language&quot;</span>
 <span class="lineno">  196 </span><span class="spaces">                        </span><span class="nottickedoff">&lt;*&gt; x .: &quot;version&quot;</span>
@@ -261,8 +261,8 @@ span.spaces    { background: white }
 <span class="lineno">  242 </span>
 <span class="lineno">  243 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize ModelInfo</span></span></span></span>
 <span class="lineno">  244 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  ModelInfo</span></span></span></span>
-<span class="lineno">  245 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    ModelInfo</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON modelInfoJSONOptions</span></span>
-<span class="lineno">  246 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  ModelInfo</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON modelInfoJSONOptions</span></span>
+<span class="lineno">  245 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">ToJSON    ModelInfo</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON modelInfoJSONOptions</span></span>
+<span class="lineno">  246 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  ModelInfo</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON modelInfoJSONOptions</span></span>
 <span class="lineno">  247 </span>
 <span class="lineno">  248 </span>instance Default ModelInfo where
 <span class="lineno">  249 </span>    <span class="decl"><span class="istickedoff">def = ModelInfo def def def def def def def def def def def def def def def def def</span></span>
@@ -309,8 +309,8 @@ span.spaces    { background: white }
 <span class="lineno">  290 </span>
 <span class="lineno">  291 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Strategy</span></span></span></span>
 <span class="lineno">  292 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Strategy</span></span></span></span>
-<span class="lineno">  293 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Strategy</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  294 </span>instance <span class="decl"><span class="nottickedoff">FromJSON  Strategy</span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  293 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">ToJSON    Strategy</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  294 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">FromJSON  Strategy</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">  295 </span>
 <span class="lineno">  296 </span>instance Default Strategy where <span class="decl"><span class="istickedoff">def = Auto Interactive</span></span>
 <span class="lineno">  297 </span>
@@ -345,8 +345,8 @@ span.spaces    { background: white }
 <span class="lineno">  326 </span>
 <span class="lineno">  327 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Decision</span></span></span></span>
 <span class="lineno">  328 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable  Decision</span></span></span></span>
-<span class="lineno">  329 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Decision</span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON decisionJSONOptions</span></span>
-<span class="lineno">  330 </span>instance <span class="decl"><span class="istickedoff">FromJSON  Decision</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON decisionJSONOptions</span></span>
+<span class="lineno">  329 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Decision</span></span></span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON decisionJSONOptions</span></span>
+<span class="lineno">  330 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Decision</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON decisionJSONOptions</span></span>
 <span class="lineno">  331 </span>
 <span class="lineno">  332 </span>
 <span class="lineno">  333 </span>------------------------------------------------------------------------------------------------------------------------
@@ -365,8 +365,8 @@ span.spaces    { background: white }
 <span class="lineno">  346 </span>
 <span class="lineno">  347 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize TrailRewrites</span></span></span></span>
 <span class="lineno">  348 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable  TrailRewrites</span></span></span></span>
-<span class="lineno">  349 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">ToJSON    TrailRewrites</span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON trJSONOptions</span></span>
-<span class="lineno">  350 </span>instance <span class="decl"><span class="istickedoff">FromJSON  TrailRewrites</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON trJSONOptions</span></span>
+<span class="lineno">  349 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    TrailRewrites</span></span></span></span></span></span></span></span> where <span class="decl"><span class="nottickedoff">toJSON = genericToJSON trJSONOptions</span></span>
+<span class="lineno">  350 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">FromJSON  TrailRewrites</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON trJSONOptions</span></span>
 <span class="lineno">  351 </span>
 <span class="lineno">  352 </span>
 <span class="lineno">  353 </span>------------------------------------------------------------------------------------------------------------------------

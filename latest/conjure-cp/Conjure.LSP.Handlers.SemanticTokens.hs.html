@@ -18,62 +18,59 @@ span.spaces    { background: white }
 </pre>
 <pre>
 <span class="lineno">    1 </span>module Conjure.LSP.Handlers.SemanticTokens where
-<span class="lineno">    2 </span>import Language.LSP.Server (requestHandler, LspM, Handlers)
-<span class="lineno">    3 </span>import qualified Language.LSP.Types as T
-<span class="lineno">    4 </span>import Control.Lens
-<span class="lineno">    5 </span>import Conjure.Prelude
-<span class="lineno">    6 </span>import Conjure.LSP.Util (withProcessedDoc, ProcessedFile (ProcessedFile), sourcePosToPosition,  sendErrorMessage)
-<span class="lineno">    7 </span>import Conjure.Language.Validator (ValidatorState (symbolCategories), TaggedToken (TaggedToken), TagType (..))
-<span class="lineno">    8 </span>import Language.LSP.Types.Lens (HasParams(..), HasTextDocument (textDocument))
-<span class="lineno">    9 </span>import Conjure.Language.Lexer (ETok(..), Offsets (..), trueLength)
-<span class="lineno">   10 </span>import Language.LSP.Types (SemanticTokenTypes(..), SemanticTokenModifiers (..))
-<span class="lineno">   11 </span>import qualified Data.Map as M
-<span class="lineno">   12 </span>
-<span class="lineno">   13 </span>semanticTokensHandler :: Handlers (LspM ())
-<span class="lineno">   14 </span><span class="decl"><span class="nottickedoff">semanticTokensHandler = semanticTokensHandlerFull</span></span>
-<span class="lineno">   15 </span>
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.LSP.Util (ProcessedFile (ProcessedFile), sendErrorMessage, sourcePosToPosition, withProcessedDoc)
+<span class="lineno">    4 </span>import Conjure.Language.Lexer (ETok (..), Offsets (..), trueLength)
+<span class="lineno">    5 </span>import Conjure.Language.Validator (TagType (..), TaggedToken (TaggedToken), ValidatorState (symbolCategories))
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Control.Lens
+<span class="lineno">    8 </span>import Data.Map qualified as M
+<span class="lineno">    9 </span>import Language.LSP.Protocol.Lens (HasParams (..), HasTextDocument (..))
+<span class="lineno">   10 </span>import Language.LSP.Protocol.Message
+<span class="lineno">   11 </span>import Language.LSP.Protocol.Types
+<span class="lineno">   12 </span>import Language.LSP.Server (Handlers, LspM, requestHandler)
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>semanticTokensHandler :: Handlers (LspM ())
+<span class="lineno">   15 </span><span class="decl"><span class="nottickedoff">semanticTokensHandler = semanticTokensHandlerFull</span></span>
 <span class="lineno">   16 </span>
 <span class="lineno">   17 </span>semanticTokensHandlerFull :: Handlers (LspM ())
-<span class="lineno">   18 </span><span class="decl"><span class="nottickedoff">semanticTokensHandlerFull = requestHandler T.STextDocumentSemanticTokensFull $ \ req res -&gt; do</span>
-<span class="lineno">   19 </span><span class="spaces">    </span><span class="nottickedoff">let ps = req^.params . textDocument</span>
-<span class="lineno">   20 </span><span class="spaces">    </span><span class="nottickedoff">withProcessedDoc ps $ \(ProcessedFile _ _ (symbolCategories-&gt;ts) _) -&gt; do</span>
-<span class="lineno">   21 </span><span class="spaces">        </span><span class="nottickedoff">let toks = mapMaybe createSemanticToken (sortOn (\(TaggedToken _ (oTrueStart . offsets-&gt;e)) -&gt; e) $ M.elems ts)</span>
-<span class="lineno">   22 </span><span class="spaces">        </span><span class="nottickedoff">-- sendInfoMessage . pack $  &quot;Got semantic tokens req : &quot; ++ show toks</span>
-<span class="lineno">   23 </span><span class="spaces">        </span><span class="nottickedoff">let sToks = T.makeSemanticTokens def toks</span>
-<span class="lineno">   24 </span><span class="spaces">        </span><span class="nottickedoff">r &lt;-case sToks of</span>
-<span class="lineno">   25 </span><span class="spaces">          </span><span class="nottickedoff">Left txt -&gt; sendErrorMessage txt &gt;&gt; return (Right Nothing)</span>
-<span class="lineno">   26 </span><span class="spaces">          </span><span class="nottickedoff">Right st -&gt; return . Right . pure $ st</span>
-<span class="lineno">   27 </span><span class="spaces">        </span><span class="nottickedoff">res r</span></span>
-<span class="lineno">   28 </span>
-<span class="lineno">   29 </span>
-<span class="lineno">   30 </span>createSemanticToken :: TaggedToken -&gt; Maybe T.SemanticTokenAbsolute
-<span class="lineno">   31 </span><span class="decl"><span class="nottickedoff">createSemanticToken (TaggedToken tt tok) = </span>
-<span class="lineno">   32 </span><span class="spaces">  </span><span class="nottickedoff">(uncurry (T.SemanticTokenAbsolute ln col len)) &lt;$&gt; symbolType tt</span>
-<span class="lineno">   33 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">T.Position ln col = sourcePosToPosition (oSourcePos . offsets $ tok)</span>
-<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">len = fromInteger . toInteger . trueLength  $ tok</span>
-<span class="lineno">   36 </span><span class="spaces">    </span><span class="nottickedoff">symbolType :: TagType -&gt; Maybe (T.SemanticTokenTypes,[T.SemanticTokenModifiers])</span>
-<span class="lineno">   37 </span><span class="spaces">    </span><span class="nottickedoff">symbolType s = case s of</span>
-<span class="lineno">   38 </span><span class="spaces">      </span><span class="nottickedoff">TtType -&gt; Just (SttType,[StmDefaultLibrary])</span>
-<span class="lineno">   39 </span><span class="spaces">      </span><span class="nottickedoff">TtNumber -&gt; Just (SttNumber,[])</span>
-<span class="lineno">   40 </span><span class="spaces">      </span><span class="nottickedoff">TtBool -&gt; Just (SttRegexp,[])</span>
-<span class="lineno">   41 </span><span class="spaces">      </span><span class="nottickedoff">TtDomain -&gt; Just (SttClass,[StmAbstract])</span>
-<span class="lineno">   42 </span><span class="spaces">      </span><span class="nottickedoff">TtEnum -&gt; Just (SttEnum,[StmAbstract])</span>
-<span class="lineno">   43 </span><span class="spaces">      </span><span class="nottickedoff">TtEnumMember -&gt; Just (SttEnumMember,[])</span>
-<span class="lineno">   44 </span><span class="spaces">      </span><span class="nottickedoff">TtRecord -&gt; Just (SttStruct,[])</span>
-<span class="lineno">   45 </span><span class="spaces">      </span><span class="nottickedoff">TtRecordMember -&gt; Just (SttProperty,[StmReadonly])</span>
-<span class="lineno">   46 </span><span class="spaces">      </span><span class="nottickedoff">TtUserFunction -&gt; Just (SttFunction,[])</span>
-<span class="lineno">   47 </span><span class="spaces">      </span><span class="nottickedoff">TtFunction -&gt; Just (SttFunction,[StmDefaultLibrary])</span>
-<span class="lineno">   48 </span><span class="spaces">      </span><span class="nottickedoff">TtAttribute -&gt; Just (SttVariable,[StmReadonly])</span>
-<span class="lineno">   49 </span><span class="spaces">      </span><span class="nottickedoff">TtAAC -&gt; Just (SttInterface,[])</span>
-<span class="lineno">   50 </span><span class="spaces">      </span><span class="nottickedoff">TtVariable -&gt; Just (SttVariable,[])</span>
-<span class="lineno">   51 </span><span class="spaces">      </span><span class="nottickedoff">TtKeyword -&gt; Just (SttKeyword,[])</span>
-<span class="lineno">   52 </span><span class="spaces">      </span><span class="nottickedoff">TtQuantifier -&gt; Just (SttMacro,[])</span>
-<span class="lineno">   53 </span><span class="spaces">      </span><span class="nottickedoff">TtSubKeyword -&gt; Just (SttModifier,[])</span>
-<span class="lineno">   54 </span><span class="spaces">      </span><span class="nottickedoff">TtOperator -&gt; Just (SttOperator,[])</span>
-<span class="lineno">   55 </span><span class="spaces">      </span><span class="nottickedoff">TtLocal -&gt; Just (SttParameter,[])</span>
-<span class="lineno">   56 </span><span class="spaces">      </span><span class="nottickedoff">TtOther _ -&gt; Nothing</span></span>
-<span class="lineno">   57 </span>
+<span class="lineno">   18 </span><span class="decl"><span class="nottickedoff">semanticTokensHandlerFull = requestHandler SMethod_TextDocumentSemanticTokensFull $ \req res -&gt; do</span>
+<span class="lineno">   19 </span><span class="spaces">  </span><span class="nottickedoff">let ps = req ^. params . textDocument</span>
+<span class="lineno">   20 </span><span class="spaces">  </span><span class="nottickedoff">withProcessedDoc ps $ \(ProcessedFile _ _ (symbolCategories -&gt; ts) _) -&gt; do</span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="nottickedoff">let toks = mapMaybe createSemanticToken (sortOn (\(TaggedToken _ (oTrueStart . offsets -&gt; e)) -&gt; e) $ M.elems ts)</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="nottickedoff">let sToks = makeSemanticTokens defaultSemanticTokensLegend toks</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="nottickedoff">r &lt;- case sToks of</span>
+<span class="lineno">   24 </span><span class="spaces">      </span><span class="nottickedoff">Left txt -&gt; sendErrorMessage txt &gt;&gt; return (Right $ InR Null)</span>
+<span class="lineno">   25 </span><span class="spaces">      </span><span class="nottickedoff">Right st -&gt; return . Right . InL $ st</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="nottickedoff">res r</span></span>
+<span class="lineno">   27 </span>
+<span class="lineno">   28 </span>createSemanticToken :: TaggedToken -&gt; Maybe SemanticTokenAbsolute
+<span class="lineno">   29 </span><span class="decl"><span class="nottickedoff">createSemanticToken (TaggedToken tt tok) =</span>
+<span class="lineno">   30 </span><span class="spaces">  </span><span class="nottickedoff">uncurry (SemanticTokenAbsolute ln col len) &lt;$&gt; symbolType tt</span>
+<span class="lineno">   31 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="nottickedoff">Position ln col = sourcePosToPosition (oSourcePos . offsets $ tok)</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">len = fromInteger . toInteger . trueLength $ tok</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">symbolType :: TagType -&gt; Maybe (SemanticTokenTypes, [SemanticTokenModifiers])</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">symbolType s = case s of</span>
+<span class="lineno">   36 </span><span class="spaces">      </span><span class="nottickedoff">TtType -&gt; Just (SemanticTokenTypes_Type, [SemanticTokenModifiers_DefaultLibrary])</span>
+<span class="lineno">   37 </span><span class="spaces">      </span><span class="nottickedoff">TtNumber -&gt; Just (SemanticTokenTypes_Number, [])</span>
+<span class="lineno">   38 </span><span class="spaces">      </span><span class="nottickedoff">TtBool -&gt; Just (SemanticTokenTypes_Regexp, [])</span>
+<span class="lineno">   39 </span><span class="spaces">      </span><span class="nottickedoff">TtDomain -&gt; Just (SemanticTokenTypes_Class, [SemanticTokenModifiers_Abstract])</span>
+<span class="lineno">   40 </span><span class="spaces">      </span><span class="nottickedoff">TtEnum -&gt; Just (SemanticTokenTypes_Enum, [SemanticTokenModifiers_Abstract])</span>
+<span class="lineno">   41 </span><span class="spaces">      </span><span class="nottickedoff">TtEnumMember -&gt; Just (SemanticTokenTypes_EnumMember, [])</span>
+<span class="lineno">   42 </span><span class="spaces">      </span><span class="nottickedoff">TtRecord -&gt; Just (SemanticTokenTypes_Struct, [])</span>
+<span class="lineno">   43 </span><span class="spaces">      </span><span class="nottickedoff">TtRecordMember -&gt; Just (SemanticTokenTypes_Property, [SemanticTokenModifiers_Readonly])</span>
+<span class="lineno">   44 </span><span class="spaces">      </span><span class="nottickedoff">TtUserFunction -&gt; Just (SemanticTokenTypes_Function, [])</span>
+<span class="lineno">   45 </span><span class="spaces">      </span><span class="nottickedoff">TtFunction -&gt; Just (SemanticTokenTypes_Function, [SemanticTokenModifiers_DefaultLibrary])</span>
+<span class="lineno">   46 </span><span class="spaces">      </span><span class="nottickedoff">TtAttribute -&gt; Just (SemanticTokenTypes_Variable, [SemanticTokenModifiers_Readonly])</span>
+<span class="lineno">   47 </span><span class="spaces">      </span><span class="nottickedoff">TtAAC -&gt; Just (SemanticTokenTypes_Interface, [])</span>
+<span class="lineno">   48 </span><span class="spaces">      </span><span class="nottickedoff">TtVariable -&gt; Just (SemanticTokenTypes_Variable, [])</span>
+<span class="lineno">   49 </span><span class="spaces">      </span><span class="nottickedoff">TtKeyword -&gt; Just (SemanticTokenTypes_Keyword, [])</span>
+<span class="lineno">   50 </span><span class="spaces">      </span><span class="nottickedoff">TtQuantifier -&gt; Just (SemanticTokenTypes_Macro, [])</span>
+<span class="lineno">   51 </span><span class="spaces">      </span><span class="nottickedoff">TtSubKeyword -&gt; Just (SemanticTokenTypes_Modifier, [])</span>
+<span class="lineno">   52 </span><span class="spaces">      </span><span class="nottickedoff">TtOperator -&gt; Just (SemanticTokenTypes_Operator, [])</span>
+<span class="lineno">   53 </span><span class="spaces">      </span><span class="nottickedoff">TtLocal -&gt; Just (SemanticTokenTypes_Parameter, [])</span>
+<span class="lineno">   54 </span><span class="spaces">      </span><span class="nottickedoff">TtOther _ -&gt; Nothing</span></span>
 
 </pre>
 </body>

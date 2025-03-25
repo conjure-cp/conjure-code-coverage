@@ -53,9 +53,9 @@ span.spaces    { background: white }
 <span class="lineno">   34 </span>
 <span class="lineno">   35 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SolveStats</span></span></span></span>
 <span class="lineno">   36 </span>
-<span class="lineno">   37 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SolveStats</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   37 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SolveStats</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   38 </span>
-<span class="lineno">   39 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SolveStats</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   39 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON SolveStats</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   40 </span>
 <span class="lineno">   41 </span>-- OK: solved, can be sat or unsat.
 <span class="lineno">   42 </span>-- Invalid: instance is not valid.
@@ -66,9 +66,9 @@ span.spaces    { background: white }
 <span class="lineno">   47 </span>
 <span class="lineno">   48 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SolveStatus</span></span></span></span>
 <span class="lineno">   49 </span>
-<span class="lineno">   50 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SolveStatus</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   50 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">ToJSON SolveStatus</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   51 </span>
-<span class="lineno">   52 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SolveStatus</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   52 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON SolveStatus</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   53 </span>
 <span class="lineno">   54 </span>data SavileRowLogs = SavileRowLogs
 <span class="lineno">   55 </span>  { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">exitCode</span></span></span> :: Int,
@@ -79,9 +79,9 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span>
 <span class="lineno">   61 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Hashable SavileRowLogs</span></span></span></span>
 <span class="lineno">   62 </span>
-<span class="lineno">   63 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON SavileRowLogs</span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   63 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">ToJSON SavileRowLogs</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   64 </span>
-<span class="lineno">   65 </span>instance <span class="decl"><span class="nottickedoff">FromJSON SavileRowLogs</span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   65 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON SavileRowLogs</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   66 </span>
 <span class="lineno">   67 </span>mkSolveStats :: UI -&gt; (Int, Text, Text) -&gt; String -&gt; String -&gt; IO SolveStats
 <span class="lineno">   68 </span><span class="decl"><span class="istickedoff">mkSolveStats Solve {..} (exitCodeSR, stdoutSR, stderrSR) savilerowInfoText runsolverInfoText = do</span>
@@ -155,7 +155,7 @@ span.spaces    { background: white }
 <span class="lineno">  136 </span><span class="spaces">  </span><span class="istickedoff">computer &lt;- getHostName</span>
 <span class="lineno">  137 </span><span class="spaces">  </span><span class="istickedoff">timestamp &lt;- getCurrentTime</span>
 <span class="lineno">  138 </span><span class="spaces">  </span><span class="istickedoff">let conjureVersion = versionLine</span>
-<span class="lineno">  139 </span><span class="spaces">  </span><span class="istickedoff">savilerowVersion &lt;- head . lines . textToString &lt;$&gt; sh (run &quot;savilerow&quot; [&quot;-help&quot;])</span>
+<span class="lineno">  139 </span><span class="spaces">  </span><span class="istickedoff">savilerowVersion &lt;- concat . take 1 . lines . textToString &lt;$&gt; sh (run &quot;savilerow&quot; [&quot;-help&quot;])</span>
 <span class="lineno">  140 </span><span class="spaces">  </span><span class="istickedoff">let savilerowLogs =</span>
 <span class="lineno">  141 </span><span class="spaces">        </span><span class="istickedoff">SavileRowLogs</span>
 <span class="lineno">  142 </span><span class="spaces">          </span><span class="istickedoff">{ exitCode = exitCodeSR,</span>

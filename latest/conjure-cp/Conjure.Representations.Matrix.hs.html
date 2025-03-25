@@ -111,10 +111,10 @@ span.spaces    { background: white }
 <span class="lineno">   92 </span><span class="spaces">                    </span><span class="istickedoff">if <span class="tickonlytrue">length mids2 == length mids1</span>             -- if all were `Just`s</span>
 <span class="lineno">   93 </span><span class="spaces">                        </span><span class="istickedoff">then do</span>
 <span class="lineno">   94 </span><span class="spaces">                            </span><span class="istickedoff">let</span>
-<span class="lineno">   95 </span><span class="spaces">                                </span><span class="istickedoff">mids3 :: [(Name, DomainC, [Constant])]</span>
-<span class="lineno">   96 </span><span class="spaces">                                </span><span class="istickedoff">mids3 = [ ( head [ n | (n,_,_) &lt;- line ]</span>
-<span class="lineno">   97 </span><span class="spaces">                                          </span><span class="istickedoff">, head [ d | (_,d,_) &lt;- line ]</span>
-<span class="lineno">   98 </span><span class="spaces">                                          </span><span class="istickedoff">,      [ c | (_,_,c) &lt;- line ]</span>
+<span class="lineno">   95 </span><span class="spaces">                                </span><span class="istickedoff">mids3 :: [([Name], [DomainC], [Constant])]</span>
+<span class="lineno">   96 </span><span class="spaces">                                </span><span class="istickedoff">mids3 = [ ( take 1 [ n | (n,_,_) &lt;- line ]</span>
+<span class="lineno">   97 </span><span class="spaces">                                          </span><span class="istickedoff">, take 1 [ d | (_,d,_) &lt;- line ]</span>
+<span class="lineno">   98 </span><span class="spaces">                                          </span><span class="istickedoff">,        [ c | (_,_,c) &lt;- line ]</span>
 <span class="lineno">   99 </span><span class="spaces">                                          </span><span class="istickedoff">)</span>
 <span class="lineno">  100 </span><span class="spaces">                                        </span><span class="istickedoff">| line &lt;- transpose mids2</span>
 <span class="lineno">  101 </span><span class="spaces">                                        </span><span class="istickedoff">]</span>
@@ -123,7 +123,7 @@ span.spaces    { background: white }
 <span class="lineno">  104 </span><span class="spaces">                                  </span><span class="istickedoff">, DomainMatrix indexDomain d</span>
 <span class="lineno">  105 </span><span class="spaces">                                  </span><span class="istickedoff">, ConstantAbstract $ AbsLitMatrix indexDomain cs</span>
 <span class="lineno">  106 </span><span class="spaces">                                  </span><span class="istickedoff">)</span>
-<span class="lineno">  107 </span><span class="spaces">                                </span><span class="istickedoff">| (n, d, cs) &lt;- mids3</span>
+<span class="lineno">  107 </span><span class="spaces">                                </span><span class="istickedoff">| ([n], [d], cs) &lt;- mids3</span>
 <span class="lineno">  108 </span><span class="spaces">                                </span><span class="istickedoff">]</span>
 <span class="lineno">  109 </span><span class="spaces">                        </span><span class="istickedoff">else</span>
 <span class="lineno">  110 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat</span></span>

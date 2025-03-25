@@ -79,7 +79,7 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span><span class="spaces">                          </span><span class="istickedoff">, Condition [essence| &amp;patX &gt; &amp;beforeX |]</span>
 <span class="lineno">   61 </span><span class="spaces">                          </span><span class="istickedoff">, Condition [essence| &amp;m[&amp;patX] |]</span>
 <span class="lineno">   62 </span><span class="spaces">                          </span><span class="istickedoff">]</span>
-<span class="lineno">   63 </span><span class="spaces">                        </span><span class="istickedoff">| (before, pat) &lt;- zip patNames (tail patNames)</span>
+<span class="lineno">   63 </span><span class="spaces">                        </span><span class="istickedoff">| (before, pat) &lt;- zip patNames (drop 1 patNames)</span>
 <span class="lineno">   64 </span><span class="spaces">                        </span><span class="istickedoff">, let beforeX = Reference before Nothing</span>
 <span class="lineno">   65 </span><span class="spaces">                        </span><span class="istickedoff">, let patX = Reference pat Nothing</span>
 <span class="lineno">   66 </span><span class="spaces">                        </span><span class="istickedoff">]</span>

@@ -17,24 +17,20 @@ span.spaces    { background: white }
 <span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
 </pre>
 <pre>
-<span class="lineno">    1 </span>{-# LANGUAGE TypeFamilies #-}
+<span class="lineno">    1 </span>{-# LANGUAGE DataKinds #-}
 <span class="lineno">    2 </span>{-# LANGUAGE PolyKinds #-}
-<span class="lineno">    3 </span>{-# LANGUAGE DataKinds #-}
-<span class="lineno">    4 </span>module Conjure.LSP.Handlers.Initialize where
-<span class="lineno">    5 </span>import Language.LSP.Types (SMethod(SInitialized, SWindowShowMessage), ShowMessageParams (ShowMessageParams), MessageType (MtInfo))
-<span class="lineno">    6 </span>import Language.LSP.Server
+<span class="lineno">    3 </span>{-# LANGUAGE TypeFamilies #-}
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>module Conjure.LSP.Handlers.Initialize where
+<span class="lineno">    6 </span>
 <span class="lineno">    7 </span>import Conjure.Prelude
-<span class="lineno">    8 </span>
-<span class="lineno">    9 </span>
-<span class="lineno">   10 </span>-- handleInitialize :: Handlers (LspM ())
-<span class="lineno">   11 </span>-- handleInitialize = requestHandler SInitialize $ \ req res -&gt; do
-<span class="lineno">   12 </span>
-<span class="lineno">   13 </span>
-<span class="lineno">   14 </span>handleInitialized :: Handlers (LspM ())
-<span class="lineno">   15 </span><span class="decl"><span class="nottickedoff">handleInitialized = notificationHandler SInitialized $ \_ -&gt; do</span>
-<span class="lineno">   16 </span><span class="spaces">    </span><span class="nottickedoff">sendNotification SWindowShowMessage (ShowMessageParams MtInfo &quot;LSP Started 0.0.2\n&quot;)</span></span>
-<span class="lineno">   17 </span>    
-<span class="lineno">   18 </span>
+<span class="lineno">    8 </span>import Language.LSP.Protocol.Message
+<span class="lineno">    9 </span>import Language.LSP.Protocol.Types
+<span class="lineno">   10 </span>import Language.LSP.Server
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>handleInitialized :: Handlers (LspM ())
+<span class="lineno">   13 </span><span class="decl"><span class="nottickedoff">handleInitialized = notificationHandler SMethod_Initialized $ \_ -&gt; do</span>
+<span class="lineno">   14 </span><span class="spaces">  </span><span class="nottickedoff">sendNotification SMethod_WindowShowMessage (ShowMessageParams MessageType_Info &quot;Conjure LSP started\n&quot;)</span></span>
 
 </pre>
 </body>

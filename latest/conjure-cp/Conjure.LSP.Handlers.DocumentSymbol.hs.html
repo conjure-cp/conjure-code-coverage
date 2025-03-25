@@ -27,110 +27,111 @@ span.spaces    { background: white }
 <span class="lineno">    8 </span>import Conjure.Prelude
 <span class="lineno">    9 </span>import Control.Lens
 <span class="lineno">   10 </span>import Data.Text (intercalate)
-<span class="lineno">   11 </span>import Language.LSP.Server (Handlers, LspM, requestHandler)
-<span class="lineno">   12 </span>import Language.LSP.Types (DocumentSymbol (..), SMethod (STextDocumentDocumentSymbol), SymbolKind (..), type (|?) (..))
-<span class="lineno">   13 </span>import Language.LSP.Types qualified as T
-<span class="lineno">   14 </span>import Language.LSP.Types.Lens (HasParams (..), HasTextDocument (textDocument))
-<span class="lineno">   15 </span>
-<span class="lineno">   16 </span>docSymbolHandler :: Handlers (LspM ())
-<span class="lineno">   17 </span><span class="decl"><span class="nottickedoff">docSymbolHandler = requestHandler STextDocumentDocumentSymbol $ \req res -&gt; do</span>
-<span class="lineno">   18 </span><span class="spaces">  </span><span class="nottickedoff">let ps = req ^. params . textDocument</span>
-<span class="lineno">   19 </span><span class="spaces">  </span><span class="nottickedoff">withProcessedDoc ps $ \(ProcessedFile _ _ (regionInfo -&gt; ri) _) -&gt; do</span>
-<span class="lineno">   20 </span><span class="spaces">    </span><span class="nottickedoff">res $ Right $ InL . T.List $ mapMaybe translate ri</span></span>
-<span class="lineno">   21 </span>
-<span class="lineno">   22 </span>translate :: RegionInfo -&gt; Maybe T.DocumentSymbol
-<span class="lineno">   23 </span><span class="decl"><span class="nottickedoff">translate reg@(RegionInfo r rSel ty cs _) =</span>
-<span class="lineno">   24 </span><span class="spaces">  </span><span class="nottickedoff">( \x -&gt;</span>
-<span class="lineno">   25 </span><span class="spaces">      </span><span class="nottickedoff">DocumentSymbol</span>
-<span class="lineno">   26 </span><span class="spaces">        </span><span class="nottickedoff">(getRegionName reg)</span>
-<span class="lineno">   27 </span><span class="spaces">        </span><span class="nottickedoff">(getRegionDetail reg)</span>
-<span class="lineno">   28 </span><span class="spaces">        </span><span class="nottickedoff">x</span>
-<span class="lineno">   29 </span><span class="spaces">        </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">   11 </span>import Language.LSP.Protocol.Lens (HasParams (..), HasTextDocument (textDocument))
+<span class="lineno">   12 </span>import Language.LSP.Protocol.Message
+<span class="lineno">   13 </span>import Language.LSP.Protocol.Types (DocumentSymbol (..), SymbolKind (..), type (|?) (..))
+<span class="lineno">   14 </span>import Language.LSP.Protocol.Types qualified as T
+<span class="lineno">   15 </span>import Language.LSP.Server (Handlers, LspM, requestHandler)
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>docSymbolHandler :: Handlers (LspM ())
+<span class="lineno">   18 </span><span class="decl"><span class="nottickedoff">docSymbolHandler = requestHandler SMethod_TextDocumentDocumentSymbol $ \req res -&gt; do</span>
+<span class="lineno">   19 </span><span class="spaces">  </span><span class="nottickedoff">let ps = req ^. params . textDocument</span>
+<span class="lineno">   20 </span><span class="spaces">  </span><span class="nottickedoff">withProcessedDoc ps $ \(ProcessedFile _ _ (regionInfo -&gt; ri) _) -&gt; do</span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="nottickedoff">res $ Right $ InR $ InL $ mapMaybe translate ri</span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>translate :: RegionInfo -&gt; Maybe T.DocumentSymbol
+<span class="lineno">   24 </span><span class="decl"><span class="nottickedoff">translate reg@(RegionInfo r rSel ty cs _) =</span>
+<span class="lineno">   25 </span><span class="spaces">  </span><span class="nottickedoff">( \x -&gt;</span>
+<span class="lineno">   26 </span><span class="spaces">      </span><span class="nottickedoff">DocumentSymbol</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="nottickedoff">(getRegionName reg)</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="nottickedoff">(getRegionDetail reg)</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="nottickedoff">x</span>
 <span class="lineno">   30 </span><span class="spaces">        </span><span class="nottickedoff">Nothing</span>
-<span class="lineno">   31 </span><span class="spaces">        </span><span class="nottickedoff">(regionToRange r)</span>
-<span class="lineno">   32 </span><span class="spaces">        </span><span class="nottickedoff">(regionToRange (fromMaybe r rSel))</span>
-<span class="lineno">   33 </span><span class="spaces">        </span><span class="nottickedoff">(Just . T.List $ mapMaybe translate cs)</span>
-<span class="lineno">   34 </span><span class="spaces">  </span><span class="nottickedoff">)</span>
-<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">&lt;$&gt; sk</span>
-<span class="lineno">   36 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">   37 </span><span class="spaces">    </span><span class="nottickedoff">sk = symbolKindFromDeclaration ty</span></span>
-<span class="lineno">   38 </span>
-<span class="lineno">   39 </span>getRegionName :: RegionInfo -&gt; Text
-<span class="lineno">   40 </span><span class="decl"><span class="nottickedoff">getRegionName (rRegionType -&gt; rType) = case rType of</span>
-<span class="lineno">   41 </span><span class="spaces">  </span><span class="nottickedoff">Definition txt _ -&gt; txt</span>
-<span class="lineno">   42 </span><span class="spaces">  </span><span class="nottickedoff">LiteralDecl _ -&gt; &quot;Literal&quot;</span>
-<span class="lineno">   43 </span><span class="spaces">  </span><span class="nottickedoff">Ref txt _ _ -&gt; txt</span>
-<span class="lineno">   44 </span><span class="spaces">  </span><span class="nottickedoff">Structural st -&gt; case st of</span>
-<span class="lineno">   45 </span><span class="spaces">    </span><span class="nottickedoff">SSuchThat -&gt; &quot;Constraints&quot;</span>
-<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">SGiven -&gt; &quot;Parameters&quot;</span>
-<span class="lineno">   47 </span><span class="spaces">    </span><span class="nottickedoff">SFind -&gt; &quot;Decision Variables&quot;</span>
-<span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">SLetting -&gt; &quot;Definitions&quot;</span>
-<span class="lineno">   49 </span><span class="spaces">    </span><span class="nottickedoff">SEnum txt -&gt; txt</span>
-<span class="lineno">   50 </span><span class="spaces">    </span><span class="nottickedoff">SBranching -&gt; &quot;Branch&quot;</span>
-<span class="lineno">   51 </span><span class="spaces">    </span><span class="nottickedoff">SQuantification n _ -&gt; &quot;Quantification: &quot; `mappend` n</span>
-<span class="lineno">   52 </span><span class="spaces">    </span><span class="nottickedoff">SComprehension _ -&gt; &quot;Comprehension&quot;</span>
-<span class="lineno">   53 </span><span class="spaces">    </span><span class="nottickedoff">SBody -&gt; &quot;Body&quot;</span>
-<span class="lineno">   54 </span><span class="spaces">    </span><span class="nottickedoff">SGuard -&gt; &quot;Guard&quot;</span>
-<span class="lineno">   55 </span><span class="spaces">    </span><span class="nottickedoff">SGen -&gt; &quot;Generator&quot;</span>
-<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">SWhere -&gt; &quot;Parameter validation&quot;</span>
-<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">SGoal dir -&gt; dir</span>
-<span class="lineno">   58 </span><span class="spaces">  </span><span class="nottickedoff">Documentation _ _ -&gt; &quot;&quot;</span></span>
-<span class="lineno">   59 </span>
-<span class="lineno">   60 </span>getRegionDetail :: RegionInfo -&gt; Maybe Text
-<span class="lineno">   61 </span><span class="decl"><span class="nottickedoff">getRegionDetail (RegionInfo {rRegionType = rType, rChildren = childDefs}) =</span>
-<span class="lineno">   62 </span><span class="spaces">  </span><span class="nottickedoff">case rType of</span>
-<span class="lineno">   63 </span><span class="spaces">    </span><span class="nottickedoff">Definition _ ki -&gt; Just $ prettyT ki</span>
-<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">LiteralDecl ki -&gt; Just $ prettyT ki</span>
-<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">Ref _ ki _ -&gt; Just $ prettyT ki</span>
-<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">Structural st -&gt; case st of</span>
-<span class="lineno">   67 </span><span class="spaces">      </span><span class="nottickedoff">SSuchThat -&gt; Nothing</span>
-<span class="lineno">   68 </span><span class="spaces">      </span><span class="nottickedoff">SGiven -&gt; Just $ getDefs childDefs</span>
-<span class="lineno">   69 </span><span class="spaces">      </span><span class="nottickedoff">SFind -&gt; Just $ getDefs childDefs</span>
-<span class="lineno">   70 </span><span class="spaces">      </span><span class="nottickedoff">SLetting -&gt; Just $ getDefs childDefs</span>
-<span class="lineno">   71 </span><span class="spaces">      </span><span class="nottickedoff">SEnum _ -&gt; Just &quot;new type enum&quot;</span>
-<span class="lineno">   72 </span><span class="spaces">      </span><span class="nottickedoff">SQuantification _ ki -&gt; Just $ prettyT ki</span>
-<span class="lineno">   73 </span><span class="spaces">      </span><span class="nottickedoff">SComprehension ki -&gt; Just $ prettyT ki</span>
-<span class="lineno">   74 </span><span class="spaces">      </span><span class="nottickedoff">_ -&gt; Nothing</span>
-<span class="lineno">   75 </span><span class="spaces">    </span><span class="nottickedoff">Documentation {} -&gt; Nothing</span>
-<span class="lineno">   76 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
-<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">getDefs :: [RegionInfo] -&gt; Text</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">getDefs rs = Data.Text.intercalate &quot;, &quot; [nm | Definition nm _ &lt;- rRegionType &lt;$&gt; rs]</span></span>
-<span class="lineno">   79 </span>
-<span class="lineno">   80 </span>symbolKindFromDeclaration :: RegionType -&gt; Maybe T.SymbolKind
-<span class="lineno">   81 </span><span class="decl"><span class="nottickedoff">symbolKindFromDeclaration (Definition _ t) = Just $ case t of</span>
-<span class="lineno">   82 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeInt TagEnum {}) -&gt; SkEnumMember</span>
-<span class="lineno">   83 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeRecordMember {}) -&gt; SkField</span>
-<span class="lineno">   84 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeVariantMember {}) -&gt; SkField</span>
-<span class="lineno">   85 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} _ -&gt; SkVariable</span>
-<span class="lineno">   86 </span><span class="spaces">  </span><span class="nottickedoff">Kind DomainType _ -&gt; SkTypeParameter</span>
-<span class="lineno">   87 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (LiteralDecl t) = Just $ case t of</span>
-<span class="lineno">   88 </span><span class="spaces">  </span><span class="nottickedoff">Kind _ ty -&gt; case ty of</span>
-<span class="lineno">   89 </span><span class="spaces">    </span><span class="nottickedoff">TypeBool -&gt; SkBoolean</span>
-<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">TypeInt it -&gt; case it of</span>
-<span class="lineno">   91 </span><span class="spaces">      </span><span class="nottickedoff">TagInt -&gt; SkNumber</span>
-<span class="lineno">   92 </span><span class="spaces">      </span><span class="nottickedoff">TagEnum _ -&gt; SkEnumMember</span>
-<span class="lineno">   93 </span><span class="spaces">      </span><span class="nottickedoff">TagUnnamed _ -&gt; SkNumber</span>
-<span class="lineno">   94 </span><span class="spaces">    </span><span class="nottickedoff">TypeEnum _ -&gt; SkEnum</span>
-<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">TypeUnnamed _ -&gt; SkEnum</span>
-<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">_ -&gt; SkConstant</span>
-<span class="lineno">   97 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (Structural st) =</span>
-<span class="lineno">   98 </span><span class="spaces">  </span><span class="nottickedoff">Just</span>
-<span class="lineno">   99 </span><span class="spaces">    </span><span class="nottickedoff">$ ( case st of</span>
-<span class="lineno">  100 </span><span class="spaces">          </span><span class="nottickedoff">SSuchThat -&gt; SkInterface</span>
-<span class="lineno">  101 </span><span class="spaces">          </span><span class="nottickedoff">SGiven -&gt; SkProperty</span>
-<span class="lineno">  102 </span><span class="spaces">          </span><span class="nottickedoff">SFind -&gt; SkField</span>
-<span class="lineno">  103 </span><span class="spaces">          </span><span class="nottickedoff">SLetting -&gt; SkField</span>
-<span class="lineno">  104 </span><span class="spaces">          </span><span class="nottickedoff">SBranching -&gt; SkClass</span>
-<span class="lineno">  105 </span><span class="spaces">          </span><span class="nottickedoff">SEnum _ -&gt; SkEnum</span>
-<span class="lineno">  106 </span><span class="spaces">          </span><span class="nottickedoff">SQuantification _ _ -&gt; SkOperator</span>
-<span class="lineno">  107 </span><span class="spaces">          </span><span class="nottickedoff">SComprehension _ -&gt; SkArray</span>
-<span class="lineno">  108 </span><span class="spaces">          </span><span class="nottickedoff">SGuard -&gt; SkBoolean</span>
-<span class="lineno">  109 </span><span class="spaces">          </span><span class="nottickedoff">SGen -&gt; SkEvent</span>
-<span class="lineno">  110 </span><span class="spaces">          </span><span class="nottickedoff">SBody -&gt; SkNamespace</span>
-<span class="lineno">  111 </span><span class="spaces">          </span><span class="nottickedoff">SGoal _ -&gt; SkVariable</span>
-<span class="lineno">  112 </span><span class="spaces">          </span><span class="nottickedoff">SWhere -&gt; SkObject</span>
-<span class="lineno">  113 </span><span class="spaces">      </span><span class="nottickedoff">)</span>
-<span class="lineno">  114 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration _ = Nothing</span></span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">   32 </span><span class="spaces">        </span><span class="nottickedoff">(regionToRange r)</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="nottickedoff">(regionToRange (fromMaybe r rSel))</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="nottickedoff">(Just $ mapMaybe translate cs)</span>
+<span class="lineno">   35 </span><span class="spaces">  </span><span class="nottickedoff">)</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="nottickedoff">&lt;$&gt; sk</span>
+<span class="lineno">   37 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="nottickedoff">sk = symbolKindFromDeclaration ty</span></span>
+<span class="lineno">   39 </span>
+<span class="lineno">   40 </span>getRegionName :: RegionInfo -&gt; Text
+<span class="lineno">   41 </span><span class="decl"><span class="nottickedoff">getRegionName (rRegionType -&gt; rType) = case rType of</span>
+<span class="lineno">   42 </span><span class="spaces">  </span><span class="nottickedoff">Definition txt _ -&gt; txt</span>
+<span class="lineno">   43 </span><span class="spaces">  </span><span class="nottickedoff">LiteralDecl _ -&gt; &quot;Literal&quot;</span>
+<span class="lineno">   44 </span><span class="spaces">  </span><span class="nottickedoff">Ref txt _ _ -&gt; txt</span>
+<span class="lineno">   45 </span><span class="spaces">  </span><span class="nottickedoff">Structural st -&gt; case st of</span>
+<span class="lineno">   46 </span><span class="spaces">    </span><span class="nottickedoff">SSuchThat -&gt; &quot;Constraints&quot;</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="nottickedoff">SGiven -&gt; &quot;Parameters&quot;</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">SFind -&gt; &quot;Decision Variables&quot;</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="nottickedoff">SLetting -&gt; &quot;Definitions&quot;</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="nottickedoff">SEnum txt -&gt; txt</span>
+<span class="lineno">   51 </span><span class="spaces">    </span><span class="nottickedoff">SBranching -&gt; &quot;Branch&quot;</span>
+<span class="lineno">   52 </span><span class="spaces">    </span><span class="nottickedoff">SQuantification n _ -&gt; &quot;Quantification: &quot; `mappend` n</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="nottickedoff">SComprehension _ -&gt; &quot;Comprehension&quot;</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="nottickedoff">SBody -&gt; &quot;Body&quot;</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="nottickedoff">SGuard -&gt; &quot;Guard&quot;</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">SGen -&gt; &quot;Generator&quot;</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">SWhere -&gt; &quot;Parameter validation&quot;</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">SGoal dir -&gt; dir</span>
+<span class="lineno">   59 </span><span class="spaces">  </span><span class="nottickedoff">Documentation _ _ -&gt; &quot;&quot;</span></span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>getRegionDetail :: RegionInfo -&gt; Maybe Text
+<span class="lineno">   62 </span><span class="decl"><span class="nottickedoff">getRegionDetail (RegionInfo {rRegionType = rType, rChildren = childDefs}) =</span>
+<span class="lineno">   63 </span><span class="spaces">  </span><span class="nottickedoff">case rType of</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">Definition _ ki -&gt; Just $ prettyT ki</span>
+<span class="lineno">   65 </span><span class="spaces">    </span><span class="nottickedoff">LiteralDecl ki -&gt; Just $ prettyT ki</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">Ref _ ki _ -&gt; Just $ prettyT ki</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="nottickedoff">Structural st -&gt; case st of</span>
+<span class="lineno">   68 </span><span class="spaces">      </span><span class="nottickedoff">SSuchThat -&gt; Nothing</span>
+<span class="lineno">   69 </span><span class="spaces">      </span><span class="nottickedoff">SGiven -&gt; Just $ getDefs childDefs</span>
+<span class="lineno">   70 </span><span class="spaces">      </span><span class="nottickedoff">SFind -&gt; Just $ getDefs childDefs</span>
+<span class="lineno">   71 </span><span class="spaces">      </span><span class="nottickedoff">SLetting -&gt; Just $ getDefs childDefs</span>
+<span class="lineno">   72 </span><span class="spaces">      </span><span class="nottickedoff">SEnum _ -&gt; Just &quot;new type enum&quot;</span>
+<span class="lineno">   73 </span><span class="spaces">      </span><span class="nottickedoff">SQuantification _ ki -&gt; Just $ prettyT ki</span>
+<span class="lineno">   74 </span><span class="spaces">      </span><span class="nottickedoff">SComprehension ki -&gt; Just $ prettyT ki</span>
+<span class="lineno">   75 </span><span class="spaces">      </span><span class="nottickedoff">_ -&gt; Nothing</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">Documentation {} -&gt; Nothing</span>
+<span class="lineno">   77 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">getDefs :: [RegionInfo] -&gt; Text</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">getDefs rs = Data.Text.intercalate &quot;, &quot; [nm | Definition nm _ &lt;- rRegionType &lt;$&gt; rs]</span></span>
+<span class="lineno">   80 </span>
+<span class="lineno">   81 </span>symbolKindFromDeclaration :: RegionType -&gt; Maybe T.SymbolKind
+<span class="lineno">   82 </span><span class="decl"><span class="nottickedoff">symbolKindFromDeclaration (Definition _ t) = Just $ case t of</span>
+<span class="lineno">   83 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeInt TagEnum {}) -&gt; SymbolKind_EnumMember</span>
+<span class="lineno">   84 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeRecordMember {}) -&gt; SymbolKind_Field</span>
+<span class="lineno">   85 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} (TypeVariantMember {}) -&gt; SymbolKind_Field</span>
+<span class="lineno">   86 </span><span class="spaces">  </span><span class="nottickedoff">Kind ValueType {} _ -&gt; SymbolKind_Variable</span>
+<span class="lineno">   87 </span><span class="spaces">  </span><span class="nottickedoff">Kind DomainType _ -&gt; SymbolKind_TypeParameter</span>
+<span class="lineno">   88 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (LiteralDecl t) = Just $ case t of</span>
+<span class="lineno">   89 </span><span class="spaces">  </span><span class="nottickedoff">Kind _ ty -&gt; case ty of</span>
+<span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">TypeBool -&gt; SymbolKind_Boolean</span>
+<span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">TypeInt it -&gt; case it of</span>
+<span class="lineno">   92 </span><span class="spaces">      </span><span class="nottickedoff">TagInt -&gt; SymbolKind_Number</span>
+<span class="lineno">   93 </span><span class="spaces">      </span><span class="nottickedoff">TagEnum _ -&gt; SymbolKind_EnumMember</span>
+<span class="lineno">   94 </span><span class="spaces">      </span><span class="nottickedoff">TagUnnamed _ -&gt; SymbolKind_Number</span>
+<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">TypeEnum _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">TypeUnnamed _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">_ -&gt; SymbolKind_Constant</span>
+<span class="lineno">   98 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (Structural st) =</span>
+<span class="lineno">   99 </span><span class="spaces">  </span><span class="nottickedoff">Just</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">( case st of</span>
+<span class="lineno">  101 </span><span class="spaces">        </span><span class="nottickedoff">SSuchThat -&gt; SymbolKind_Interface</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">SGiven -&gt; SymbolKind_Property</span>
+<span class="lineno">  103 </span><span class="spaces">        </span><span class="nottickedoff">SFind -&gt; SymbolKind_Field</span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">SLetting -&gt; SymbolKind_Field</span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">SBranching -&gt; SymbolKind_Class</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="nottickedoff">SEnum _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">SQuantification _ _ -&gt; SymbolKind_Operator</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">SComprehension _ -&gt; SymbolKind_Array</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="nottickedoff">SGuard -&gt; SymbolKind_Boolean</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">SGen -&gt; SymbolKind_Event</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="nottickedoff">SBody -&gt; SymbolKind_Namespace</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="nottickedoff">SGoal _ -&gt; SymbolKind_Variable</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">SWhere -&gt; SymbolKind_Object</span>
+<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">)</span>
+<span class="lineno">  115 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration _ = Nothing</span></span>
 
 </pre>
 </body>
