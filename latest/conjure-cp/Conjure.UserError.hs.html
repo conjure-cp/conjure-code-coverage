@@ -61,10 +61,10 @@ span.spaces    { background: white }
 <span class="lineno">   42 </span>-- exit code 1 is for bugs
 <span class="lineno">   43 </span>-- exit code &gt;1 for user errors
 <span class="lineno">   44 </span>instance MonadUserError IO where
-<span class="lineno">   45 </span>    <span class="decl"><span class="nottickedoff">userErr msgs =</span>
-<span class="lineno">   46 </span><span class="spaces">        </span><span class="nottickedoff">case userErr msgs of</span>
-<span class="lineno">   47 </span><span class="spaces">            </span><span class="nottickedoff">Left doc -&gt; hPutStrLn stderr (renderNormal (doc :: Doc)) &gt;&gt; exitWith (ExitFailure 2)</span>
-<span class="lineno">   48 </span><span class="spaces">            </span><span class="nottickedoff">Right x  -&gt; return x</span></span>
+<span class="lineno">   45 </span>    <span class="decl"><span class="istickedoff">userErr msgs =</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">case userErr msgs of</span>
+<span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">Left doc -&gt; hPutStrLn stderr (renderNormal (doc :: Doc)) &gt;&gt; exitWith (ExitFailure 2)</span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">Right x  -&gt; <span class="nottickedoff">return x</span></span></span>
 <span class="lineno">   49 </span>
 <span class="lineno">   50 </span>instance MonadUserError m =&gt; MonadUserError (IdentityT m) where
 <span class="lineno">   51 </span>    <span class="decl"><span class="istickedoff">userErr = lift . userErr</span></span>
@@ -85,7 +85,7 @@ span.spaces    { background: white }
 <span class="lineno">   66 </span>    <span class="decl"><span class="nottickedoff">userErr = lift . userErr</span></span>
 <span class="lineno">   67 </span>
 <span class="lineno">   68 </span>instance MonadUserError m =&gt; MonadUserError (Pipes.Proxy a b c d m) where
-<span class="lineno">   69 </span>    <span class="decl"><span class="nottickedoff">userErr = lift . userErr</span></span>
+<span class="lineno">   69 </span>    <span class="decl"><span class="istickedoff">userErr = lift . userErr</span></span>
 <span class="lineno">   70 </span>
 <span class="lineno">   71 </span>
 <span class="lineno">   72 </span>-- | This is to run a MonadUserError. Everything else should lift.
