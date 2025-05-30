@@ -157,7 +157,7 @@ span.spaces    { background: white }
 <span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">onName (Name t) =</span>
 <span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">case T.stripPrefix &quot;UNDERSCORE__&quot; t of</span>
 <span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; Name t</span>
-<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">Just t' -&gt; <span class="nottickedoff">Name (mappend &quot;_&quot; t')</span></span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">Just t' -&gt; Name (mappend &quot;_&quot; t')</span>
 <span class="lineno">  142 </span><span class="spaces">        </span><span class="istickedoff">onName n = n</span>
 <span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  144 </span><span class="spaces">    </span><span class="istickedoff">in</span>
