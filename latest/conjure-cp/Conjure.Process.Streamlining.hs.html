@@ -628,8 +628,8 @@ span.spaces    { background: white }
 <span class="lineno">  609 </span><span class="spaces">            </span><span class="nottickedoff">let maxCard = make opProduct $ fromList [ [essence| |`&amp;i`| |] | i &lt;- inners ]</span>
 <span class="lineno">  610 </span><span class="spaces">            </span><span class="nottickedoff">sequence</span>
 <span class="lineno">  611 </span><span class="spaces">                </span><span class="nottickedoff">[ case lowerOrUpper of</span>
-<span class="lineno">  612 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;lowerBound&quot; -&gt; return ([essence| |&amp;x| &gt;= &amp;maxCard / &amp;slice |], [grp])</span>
-<span class="lineno">  613 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;upperBound&quot; -&gt; return ([essence| |&amp;x| &lt;= &amp;maxCard / &amp;slice |], [grp])</span>
+<span class="lineno">  612 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;LowerBound&quot; -&gt; return ([essence| |&amp;x| &gt;= &amp;maxCard / &amp;slice |], [grp])</span>
+<span class="lineno">  613 </span><span class="spaces">                    </span><span class="nottickedoff">&quot;UpperBound&quot; -&gt; return ([essence| |&amp;x| &lt;= &amp;maxCard / &amp;slice |], [grp])</span>
 <span class="lineno">  614 </span><span class="spaces">                    </span><span class="nottickedoff">_ -&gt; bug &quot;relationCardinality&quot;</span>
 <span class="lineno">  615 </span><span class="spaces">                </span><span class="nottickedoff">| slice &lt;- [1,2,4,8,16,32]</span>
 <span class="lineno">  616 </span><span class="spaces">                </span><span class="nottickedoff">, lowerOrUpper &lt;- [&quot;LowerBound&quot;,&quot;UpperBound&quot;]</span>

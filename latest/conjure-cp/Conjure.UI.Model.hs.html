@@ -1193,7 +1193,7 @@ span.spaces    { background: white }
 <span class="lineno"> 1174 </span><span class="spaces">        </span><span class="istickedoff">-- a slice at the end of a chain of slices &amp; indexings</span>
 <span class="lineno"> 1175 </span><span class="spaces">        </span><span class="istickedoff">-- does no good in Essence and should be removed</span>
 <span class="lineno"> 1176 </span><span class="spaces">        </span><span class="istickedoff">onExpr :: Monad m =&gt; Expression -&gt; m Expression</span>
-<span class="lineno"> 1177 </span><span class="spaces">        </span><span class="istickedoff">onExpr (match opSlicing -&gt; Just (m,_,_)) = onExpr m</span>
+<span class="lineno"> 1177 </span><span class="spaces">        </span><span class="istickedoff">onExpr (match opSlicing -&gt; Just (m,Nothing,Nothing)) = onExpr m</span>
 <span class="lineno"> 1178 </span><span class="spaces">        </span><span class="istickedoff">onExpr p@(match opIndexing -&gt; Just _) = return p</span>
 <span class="lineno"> 1179 </span><span class="spaces">        </span><span class="istickedoff">onExpr p = descendM onExpr p</span>
 <span class="lineno"> 1180 </span><span class="spaces"></span><span class="istickedoff"></span>
