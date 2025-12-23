@@ -43,7 +43,7 @@ span.spaces    { background: white }
 <span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opNeq p</span>
 <span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
-<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeTuple{}</span> &lt;- <span class="nottickedoff">typeOf y</span></span>
 <span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -57,7 +57,7 @@ span.spaces    { background: white }
 <span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opLt p</span>
 <span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
-<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeTuple{}</span> &lt;- <span class="nottickedoff">typeOf y</span></span>
 <span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -71,7 +71,7 @@ span.spaces    { background: white }
 <span class="lineno">   52 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opLeq p</span>
 <span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- typeOf x        -- TODO: check if x and y have the same arity</span>
-<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeTuple{}</span> &lt;- <span class="nottickedoff">typeOf y</span></span>
 <span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
@@ -98,8 +98,8 @@ span.spaces    { background: white }
 <span class="lineno">   79 </span><span class="decl"><span class="istickedoff">rule_Tuple_TildeLeq = <span class="nottickedoff">&quot;tuple-TildeLeq&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
 <span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">(x,y)       &lt;- match opTildeLeq p</span>
-<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf x</span>        -- TODO: check if x and y have the same arity</span>
-<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">TypeTuple{} &lt;- <span class="nottickedoff">typeOf y</span></span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeTuple{}</span> &lt;- <span class="nottickedoff">typeOf x</span>        -- TODO: check if x and y have the same arity</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeTuple{}</span> &lt;- <span class="nottickedoff">typeOf y</span></span>
 <span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">xs          &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">   85 </span><span class="spaces">        </span><span class="istickedoff">ys          &lt;- <span class="nottickedoff">downX1 y</span></span>
 <span class="lineno">   86 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>

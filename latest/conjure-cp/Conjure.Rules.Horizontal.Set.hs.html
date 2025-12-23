@@ -109,7 +109,7 @@ span.spaces    { background: white }
 <span class="lineno">   90 </span><span class="decl"><span class="istickedoff">rule_Supset = <span class="nottickedoff">&quot;set-supset&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">   91 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;a supset &amp;b |] = do</span>
 <span class="lineno">   92 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- typeOf a</span>
-<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff">TypeSet{} &lt;- <span class="nottickedoff">typeOf b</span></span>
+<span class="lineno">   93 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeSet{}</span> &lt;- <span class="nottickedoff">typeOf b</span></span>
 <span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Horizontal rule for set supset&quot;</span></span>
 <span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;b subset &amp;a |]</span></span>
@@ -367,7 +367,7 @@ span.spaces    { background: white }
 <span class="lineno">  348 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
 <span class="lineno">  349 </span><span class="spaces">        </span><span class="istickedoff">unless (categoryOf s == CatParameter) $ na &quot;rule_Param_MinOfSet&quot;</span>
 <span class="lineno">  350 </span><span class="spaces">        </span><span class="istickedoff">isDomainExpr s</span>
-<span class="lineno">  351 </span><span class="spaces">        </span><span class="istickedoff">DomainSet _ _ inner &lt;- <span class="nottickedoff">domainOf s</span></span>
+<span class="lineno">  351 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">DomainSet _ _ inner</span> &lt;- <span class="nottickedoff">domainOf s</span></span>
 <span class="lineno">  352 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case inner of</span></span>
 <span class="lineno">  353 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ rs | isInfinite rs -&gt; na &quot;rule_Param_MaxOfSet&quot;</span></span>
 <span class="lineno">  354 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; return ()</span></span>
@@ -388,7 +388,7 @@ span.spaces    { background: white }
 <span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">TypeSet (TypeInt _) &lt;- typeOf s</span>
 <span class="lineno">  370 </span><span class="spaces">        </span><span class="istickedoff">unless (categoryOf s == CatParameter) $ na &quot;rule_Param_MaxOfSet&quot;</span>
 <span class="lineno">  371 </span><span class="spaces">        </span><span class="istickedoff">isDomainExpr s</span>
-<span class="lineno">  372 </span><span class="spaces">        </span><span class="istickedoff">DomainSet _ _ inner &lt;- <span class="nottickedoff">domainOf s</span></span>
+<span class="lineno">  372 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">DomainSet _ _ inner</span> &lt;- <span class="nottickedoff">domainOf s</span></span>
 <span class="lineno">  373 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">case inner of</span></span>
 <span class="lineno">  374 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">DomainInt _ rs | isInfinite rs -&gt; na &quot;rule_Param_MaxOfSet&quot;</span></span>
 <span class="lineno">  375 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; return ()</span></span>

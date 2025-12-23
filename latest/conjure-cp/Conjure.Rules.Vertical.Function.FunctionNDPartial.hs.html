@@ -79,7 +79,7 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span><span class="decl"><span class="istickedoff">rule_InDefined = <span class="nottickedoff">&quot;function-in-defined{FunctionNDPartial}&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in defined(&amp;f) |] = do</span>
 <span class="lineno">   62 </span><span class="spaces">        </span><span class="istickedoff">Function_NDPartial  &lt;- representationOf f</span>
-<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">[flags,_values]     &lt;- <span class="nottickedoff">downX1 f</span></span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[flags,_values]</span>     &lt;- <span class="nottickedoff">downX1 f</span></span>
 <span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">toIndex             &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">flagsIndexed  = make opMatrixIndexing flags toIndex</span></span>
 <span class="lineno">   66 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>

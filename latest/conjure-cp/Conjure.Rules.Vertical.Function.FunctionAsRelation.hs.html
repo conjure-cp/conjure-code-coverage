@@ -40,7 +40,7 @@ span.spaces    { background: white }
 <span class="lineno">   21 </span><span class="spaces">            </span><span class="istickedoff">)</span>
 <span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;y = image(&amp;func, &amp;x) |] = do</span>
 <span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">Function_AsRelation{} &lt;- representationOf func</span>
-<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff">[rel]                 &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">   24 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel]</span>                 &lt;- <span class="nottickedoff">downX1 func</span></span>
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Function image-equals, FunctionAsRelation representation&quot;</span></span>
 <span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
@@ -51,7 +51,7 @@ span.spaces    { background: white }
 <span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">-- &lt;=</span>
 <span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| image(&amp;func, &amp;x) &lt;= &amp;y |] = do</span>
 <span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">Function_AsRelation{} &lt;- representationOf func</span>
-<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">[rel]                 &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel]</span>                 &lt;- <span class="nottickedoff">downX1 func</span></span>
 <span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Function image-equals, FunctionAsRelation representation&quot;</span></span>
 <span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
@@ -79,8 +79,8 @@ span.spaces    { background: white }
 <span class="lineno">   60 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">return [essence| or([ &amp;i[1] = &amp;x /\ &amp;i[2] &gt;= &amp;y | &amp;iPat &lt;- &amp;rel ]) |]</span></span>
 <span class="lineno">   61 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;y &lt;= image(&amp;func, &amp;x) |] = do</span>
-<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">Function_AsRelation{} &lt;- representationOf func</span>
-<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff">[rel]                 &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Function_AsRelation{}</span> &lt;- representationOf func</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel]</span>                 &lt;- <span class="nottickedoff">downX1 func</span></span>
 <span class="lineno">   65 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Function image-equals, FunctionAsRelation representation&quot;</span></span>
 <span class="lineno">   67 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, do</span></span>
@@ -146,12 +146,12 @@ span.spaces    { background: white }
 <span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func</span></span>
 <span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">xParts &lt;- <span class="nottickedoff">downX1 x</span></span>
 <span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">vars = fromList xParts</span></span>
-<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff">[rel] &lt;- <span class="nottickedoff">downX1 func</span></span>
-<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">[set] &lt;- <span class="nottickedoff">downX1 rel</span></span>
-<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">[matrix] &lt;- <span class="nottickedoff">downX1 set</span></span>
-<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff">[from, _to] &lt;- <span class="nottickedoff">downX1 matrix</span></span>
+<span class="lineno">  130 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel]</span> &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[set]</span> &lt;- <span class="nottickedoff">downX1 rel</span></span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[matrix]</span> &lt;- <span class="nottickedoff">downX1 set</span></span>
+<span class="lineno">  133 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[from, _to]</span> &lt;- <span class="nottickedoff">downX1 matrix</span></span>
 <span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">parts &lt;- <span class="nottickedoff">downX1 from</span></span>
-<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">(index:_) &lt;- <span class="nottickedoff">indexDomainsOf from</span></span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(index:_)</span> &lt;- <span class="nottickedoff">indexDomainsOf from</span></span>
 <span class="lineno">  136 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- <span class="nottickedoff">quantifiedVar</span></span>
 <span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">oneRow = fromList [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span></span>
 <span class="lineno">  138 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span></span>
