@@ -87,7 +87,7 @@ span.spaces    { background: white }
 <span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff">addEmptyLiteral :: (Name, DomainX Expression) -&gt; m (Name, DomainC, Constant)</span>
 <span class="lineno">   69 </span><span class="spaces">                </span><span class="istickedoff">addEmptyLiteral (nm, dom) = do</span>
 <span class="lineno">   70 </span><span class="spaces">                    </span><span class="istickedoff">dom' &lt;- mapM (instantiateExpression <span class="nottickedoff">[]</span>) dom</span>
-<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff">return (nm, dom', ConstantAbstract (AbsLitMatrix <span class="nottickedoff">indexDomain</span> []))</span>
+<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff">return (nm, dom', ConstantAbstract (AbsLitMatrix indexDomain []))</span>
 <span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff">mapM (mapM addEmptyLiteral) mids1</span>
 <span class="lineno">   73 </span><span class="spaces">        </span><span class="istickedoff">matrixDownC ( name</span>
 <span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff">, domain@(DomainMatrix indexDomain innerDomain)</span>
