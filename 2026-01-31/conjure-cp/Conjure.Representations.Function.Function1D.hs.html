@@ -1,0 +1,221 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Representations.Function.Function1D
+<span class="lineno">    4 </span>    ( function1D
+<span class="lineno">    5 </span>    , domainValues
+<span class="lineno">    6 </span>    ) where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>-- conjure
+<span class="lineno">    9 </span>import Conjure.Prelude
+<span class="lineno">   10 </span>import Conjure.Language.Definition
+<span class="lineno">   11 </span>import Conjure.Language.Domain
+<span class="lineno">   12 </span>import Conjure.Language.Type
+<span class="lineno">   13 </span>import Conjure.Language.Constant
+<span class="lineno">   14 </span>import Conjure.Language.DomainSizeOf
+<span class="lineno">   15 </span>import Conjure.Language.Expression.DomainSizeOf ()
+<span class="lineno">   16 </span>import Conjure.Language.TH
+<span class="lineno">   17 </span>import Conjure.Language.Pretty
+<span class="lineno">   18 </span>import Conjure.Representations.Internal
+<span class="lineno">   19 </span>import Conjure.Representations.Common
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>-- unordered-containers
+<span class="lineno">   22 </span>import qualified Data.HashMap.Strict as M
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>
+<span class="lineno">   25 </span>function1D :: forall m . (MonadFailDoc m, NameGen m, ?typeCheckerMode :: TypeCheckerMode) =&gt; Representation m
+<span class="lineno">   26 </span><span class="decl"><span class="istickedoff">function1D = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   27 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">   29 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">chck :: TypeOf_ReprCheck m</span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">chck f (DomainFunction _</span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">attrs@(FunctionAttr _ PartialityAttr_Total _)</span>
+<span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainFr</span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainTo) | domainCanIndexMatrix innerDomainFr = do</span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff">innerDomainFr' &lt;- f innerDomainFr</span>
+<span class="lineno">   36 </span><span class="spaces">            </span><span class="istickedoff">innerDomainTo' &lt;- f innerDomainTo</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">return [ DomainFunction Function_1D attrs fr to</span>
+<span class="lineno">   38 </span><span class="spaces">                   </span><span class="istickedoff">| fr &lt;- innerDomainFr'</span>
+<span class="lineno">   39 </span><span class="spaces">                   </span><span class="istickedoff">, to &lt;- innerDomainTo'</span>
+<span class="lineno">   40 </span><span class="spaces">                   </span><span class="istickedoff">]</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">chck _ _ = return []</span>
+<span class="lineno">   42 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">outName :: Domain HasRepresentation x -&gt; Name -&gt; Name</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">outName = mkOutName Nothing</span>
+<span class="lineno">   45 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">downD (name, domain@(DomainFunction Function_1D</span>
+<span class="lineno">   48 </span><span class="spaces">                    </span><span class="istickedoff">(FunctionAttr _ PartialityAttr_Total _)</span>
+<span class="lineno">   49 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainFr</span>
+<span class="lineno">   50 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainTo)) | <span class="tickonlytrue">domainCanIndexMatrix innerDomainFr</span> = return $ Just</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">[ ( outName domain name</span>
+<span class="lineno">   52 </span><span class="spaces">              </span><span class="istickedoff">, DomainMatrix</span>
+<span class="lineno">   53 </span><span class="spaces">                  </span><span class="istickedoff">(forgetRepr innerDomainFr)</span>
+<span class="lineno">   54 </span><span class="spaces">                  </span><span class="istickedoff">innerDomainTo</span>
+<span class="lineno">   55 </span><span class="spaces">              </span><span class="istickedoff">) ]</span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">downD _ = <span class="nottickedoff">na &quot;{downD} Function1D&quot;</span></span>
+<span class="lineno">   57 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">structuralCons :: TypeOf_Structural m</span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">structuralCons f downX1</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="istickedoff">(DomainFunction Function_1D</span>
+<span class="lineno">   61 </span><span class="spaces">                </span><span class="istickedoff">(FunctionAttr sizeAttr PartialityAttr_Total jectivityAttr)</span>
+<span class="lineno">   62 </span><span class="spaces">                </span><span class="istickedoff">innerDomainFr</span>
+<span class="lineno">   63 </span><span class="spaces">                </span><span class="istickedoff">innerDomainTo) | <span class="tickonlytrue">domainCanIndexMatrix innerDomainFr</span> = do</span>
+<span class="lineno">   64 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   65 </span><span class="spaces">            </span><span class="istickedoff">let</span>
+<span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff">injectiveCons :: Expression -&gt; m [Expression]</span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">injectiveCons m = do</span>
+<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">tyTo &lt;- typeOfDomain innerDomainTo</span>
+<span class="lineno">   69 </span><span class="spaces">                    </span><span class="istickedoff">let canAllDiff = case tyTo of</span>
+<span class="lineno">   70 </span><span class="spaces">                            </span><span class="istickedoff">TypeBool{} -&gt; <span class="nottickedoff">True</span></span>
+<span class="lineno">   71 </span><span class="spaces">                            </span><span class="istickedoff">TypeInt{}  -&gt; True</span>
+<span class="lineno">   72 </span><span class="spaces">                            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">True</span></span>
+<span class="lineno">   73 </span><span class="spaces">                            </span><span class="istickedoff">_          -&gt; False</span>
+<span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff">if canAllDiff</span>
+<span class="lineno">   75 </span><span class="spaces">                        </span><span class="istickedoff">then</span>
+<span class="lineno">   76 </span><span class="spaces">                            </span><span class="istickedoff">return $ return $ -- list</span>
+<span class="lineno">   77 </span><span class="spaces">                                </span><span class="istickedoff">[essence| allDiff(&amp;m) |]</span>
+<span class="lineno">   78 </span><span class="spaces">                        </span><span class="istickedoff">else do</span>
+<span class="lineno">   79 </span><span class="spaces">                            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   80 </span><span class="spaces">                            </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">   81 </span><span class="spaces">                            </span><span class="istickedoff">return $ return $ -- list</span>
+<span class="lineno">   82 </span><span class="spaces">                                </span><span class="istickedoff">[essence|</span>
+<span class="lineno">   83 </span><span class="spaces">                                    </span><span class="istickedoff">forAll &amp;iPat, &amp;jPat : &amp;innerDomainFr .</span>
+<span class="lineno">   84 </span><span class="spaces">                                        </span><span class="istickedoff">&amp;i .&lt; &amp;j -&gt; &amp;m[&amp;i] != &amp;m[&amp;j]</span>
+<span class="lineno">   85 </span><span class="spaces">                                </span><span class="istickedoff">|]</span>
+<span class="lineno">   86 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   87 </span><span class="spaces">                </span><span class="istickedoff">surjectiveCons :: Expression -&gt; m [Expression]</span>
+<span class="lineno">   88 </span><span class="spaces">                </span><span class="istickedoff">surjectiveCons m = do</span>
+<span class="lineno">   89 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff">(jPat, j) &lt;- quantifiedVar</span>
+<span class="lineno">   91 </span><span class="spaces">                    </span><span class="istickedoff">return $ return $ -- list</span>
+<span class="lineno">   92 </span><span class="spaces">                        </span><span class="istickedoff">[essence|</span>
+<span class="lineno">   93 </span><span class="spaces">                            </span><span class="istickedoff">forAll &amp;iPat : &amp;innerDomainTo .</span>
+<span class="lineno">   94 </span><span class="spaces">                                </span><span class="istickedoff">exists &amp;jPat : &amp;innerDomainFr .</span>
+<span class="lineno">   95 </span><span class="spaces">                                    </span><span class="istickedoff">&amp;m[&amp;j] = &amp;i</span>
+<span class="lineno">   96 </span><span class="spaces">                        </span><span class="istickedoff">|]</span>
+<span class="lineno">   97 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   98 </span><span class="spaces">                </span><span class="istickedoff">jectivityCons :: Expression -&gt; m [Expression]</span>
+<span class="lineno">   99 </span><span class="spaces">                </span><span class="istickedoff">jectivityCons m = case jectivityAttr of</span>
+<span class="lineno">  100 </span><span class="spaces">                    </span><span class="istickedoff">JectivityAttr_None       -&gt; return []</span>
+<span class="lineno">  101 </span><span class="spaces">                    </span><span class="istickedoff">JectivityAttr_Injective  -&gt; injectiveCons  m</span>
+<span class="lineno">  102 </span><span class="spaces">                    </span><span class="istickedoff">JectivityAttr_Surjective -&gt; surjectiveCons m</span>
+<span class="lineno">  103 </span><span class="spaces">                    </span><span class="istickedoff">JectivityAttr_Bijective  -&gt; (++) &lt;$&gt; injectiveCons m &lt;*&gt; surjectiveCons m</span>
+<span class="lineno">  104 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff">cardinality &lt;- domainSizeOf innerDomainFr</span>
+<span class="lineno">  106 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="istickedoff">let innerStructuralCons m = do</span>
+<span class="lineno">  108 </span><span class="spaces">                    </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain (forgetRepr innerDomainFr)</span>
+<span class="lineno">  109 </span><span class="spaces">                    </span><span class="istickedoff">let activeZone b = [essence| forAll &amp;iPat : &amp;innerDomainFr . &amp;b |]</span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  111 </span><span class="spaces">                    </span><span class="istickedoff">-- preparing structural constraints for the inner guys</span>
+<span class="lineno">  112 </span><span class="spaces">                    </span><span class="istickedoff">innerStructuralConsGen &lt;- f innerDomainTo</span>
+<span class="lineno">  113 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  114 </span><span class="spaces">                    </span><span class="istickedoff">let inLoop = [essence| &amp;m[&amp;i] |]</span>
+<span class="lineno">  115 </span><span class="spaces">                    </span><span class="istickedoff">outs &lt;- innerStructuralConsGen inLoop</span>
+<span class="lineno">  116 </span><span class="spaces">                    </span><span class="istickedoff">return (map activeZone outs)</span>
+<span class="lineno">  117 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff">return $ \ func -&gt; do</span>
+<span class="lineno">  119 </span><span class="spaces">                </span><span class="istickedoff">refs &lt;- downX1 func</span>
+<span class="lineno">  120 </span><span class="spaces">                </span><span class="istickedoff">case refs of</span>
+<span class="lineno">  121 </span><span class="spaces">                    </span><span class="istickedoff">[m] -&gt;</span>
+<span class="lineno">  122 </span><span class="spaces">                        </span><span class="istickedoff">concat &lt;$&gt; sequence</span>
+<span class="lineno">  123 </span><span class="spaces">                            </span><span class="istickedoff">[ jectivityCons m</span>
+<span class="lineno">  124 </span><span class="spaces">                            </span><span class="istickedoff">, return (mkSizeCons sizeAttr <span class="nottickedoff">cardinality</span>)</span>
+<span class="lineno">  125 </span><span class="spaces">                            </span><span class="istickedoff">, innerStructuralCons m</span>
+<span class="lineno">  126 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;{structuralCons} Function1D&quot;</span></span>
+<span class="lineno">  128 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">structuralCons _ _ _ = <span class="nottickedoff">na &quot;{structuralCons} Function1D&quot;</span></span>
+<span class="lineno">  130 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  131 </span><span class="spaces">        </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
+<span class="lineno">  132 </span><span class="spaces">        </span><span class="istickedoff">downC ( name</span>
+<span class="lineno">  133 </span><span class="spaces">              </span><span class="istickedoff">, domain@(DomainFunction Function_1D</span>
+<span class="lineno">  134 </span><span class="spaces">                    </span><span class="istickedoff">(FunctionAttr _ PartialityAttr_Total _)</span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainFr</span>
+<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff">innerDomainTo)</span>
+<span class="lineno">  137 </span><span class="spaces">              </span><span class="istickedoff">, viewConstantFunction -&gt; Just vals_</span>
+<span class="lineno">  138 </span><span class="spaces">              </span><span class="istickedoff">) | <span class="tickonlytrue">domainCanIndexMatrix innerDomainFr</span> = do</span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff">let vals = M.fromList vals_</span>
+<span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff">froms            &lt;- domainValues innerDomainFr</span>
+<span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff">valsOut          &lt;- sequence</span>
+<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">[ val</span>
+<span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">| fr &lt;- froms</span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">, let val = case M.lookup fr vals of</span>
+<span class="lineno">  145 </span><span class="spaces">                                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat [ &quot;No value for&quot; &lt;+&gt; pretty fr</span></span>
+<span class="lineno">  146 </span><span class="spaces">                                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;In:&quot; &lt;+&gt; pretty (AbsLitFunction vals_)</span></span>
+<span class="lineno">  147 </span><span class="spaces">                                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  148 </span><span class="spaces">                                </span><span class="istickedoff">Just v  -&gt; return v</span>
+<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff">return $ Just</span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">[ ( outName domain name</span>
+<span class="lineno">  152 </span><span class="spaces">                  </span><span class="istickedoff">, DomainMatrix (forgetRepr innerDomainFr) innerDomainTo</span>
+<span class="lineno">  153 </span><span class="spaces">                  </span><span class="istickedoff">, ConstantAbstract $ AbsLitMatrix (forgetRepr innerDomainFr) valsOut</span>
+<span class="lineno">  154 </span><span class="spaces">                  </span><span class="istickedoff">) ]</span>
+<span class="lineno">  155 </span><span class="spaces">        </span><span class="istickedoff">downC _ = <span class="nottickedoff">na &quot;{downC} Function1D&quot;</span></span>
+<span class="lineno">  156 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  157 </span><span class="spaces">        </span><span class="istickedoff">up :: TypeOf_Up m</span>
+<span class="lineno">  158 </span><span class="spaces">        </span><span class="istickedoff">up ctxt (name, domain@(DomainFunction Function_1D</span>
+<span class="lineno">  159 </span><span class="spaces">                                </span><span class="istickedoff">(FunctionAttr _ PartialityAttr_Total _)</span>
+<span class="lineno">  160 </span><span class="spaces">                                </span><span class="istickedoff">innerDomainFr _)) =</span>
+<span class="lineno">  161 </span><span class="spaces">            </span><span class="istickedoff">case lookup (outName domain name) ctxt of</span>
+<span class="lineno">  162 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">failDoc $ vcat $</span></span>
+<span class="lineno">  163 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;(in Function1D up)&quot;</span></span>
+<span class="lineno">  164 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;No value for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  165 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  166 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  167 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">] ++</span></span>
+<span class="lineno">  168 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">  169 </span><span class="spaces">                </span><span class="istickedoff">Just constant -&gt;</span>
+<span class="lineno">  170 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constant of</span>
+<span class="lineno">  171 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt; do</span>
+<span class="lineno">  172 </span><span class="spaces">                            </span><span class="istickedoff">froms &lt;- domainValues innerDomainFr</span>
+<span class="lineno">  173 </span><span class="spaces">                            </span><span class="istickedoff">return ( <span class="nottickedoff">name</span></span>
+<span class="lineno">  174 </span><span class="spaces">                                   </span><span class="istickedoff">, ConstantAbstract $ AbsLitFunction $ zip froms vals</span>
+<span class="lineno">  175 </span><span class="spaces">                                   </span><span class="istickedoff">)</span>
+<span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>
+<span class="lineno">  177 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expecting a matrix literal for:&quot; &lt;+&gt; pretty (outName domain name)</span></span>
+<span class="lineno">  178 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  179 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;When working on:&quot; &lt;+&gt; pretty name</span></span>
+<span class="lineno">  180 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  181 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  182 </span><span class="spaces">        </span><span class="istickedoff">up _ _ = <span class="nottickedoff">na &quot;{up} Function1D&quot;</span></span>
+<span class="lineno">  183 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  184 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
+<span class="lineno">  186 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[inner] &lt;- downX1 inp</span></span>
+<span class="lineno">  187 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Just [(_, innerDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
+<span class="lineno">  188 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">innerSO downX1 inner innerDomain</span></span></span>
+<span class="lineno">  189 </span>
+<span class="lineno">  190 </span>
+<span class="lineno">  191 </span>
+<span class="lineno">  192 </span>domainValues :: (MonadFailDoc m, Pretty r) =&gt; Domain r Constant -&gt; m [Constant]
+<span class="lineno">  193 </span><span class="decl"><span class="istickedoff">domainValues dom =</span>
+<span class="lineno">  194 </span><span class="spaces">    </span><span class="istickedoff">case dom of</span>
+<span class="lineno">  195 </span><span class="spaces">        </span><span class="istickedoff">DomainBool -&gt; return [ConstantBool False, ConstantBool True]</span>
+<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff">DomainInt t rs -&gt; map (ConstantInt t) &lt;$&gt; valuesInIntDomain rs</span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc (&quot;domainValues, not supported:&quot; &lt;+&gt; pretty dom)</span></span></span>
+<span class="lineno">  198 </span>
+
+</pre>
+</body>
+</html>
