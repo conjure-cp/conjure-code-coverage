@@ -48,7 +48,7 @@ span.spaces    { background: white }
 <span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">allFiles &lt;-  shelly $ silently $ run  &quot;git&quot; [&quot;ls-tree&quot;, &quot;--full-tree&quot;,  &quot;--name-only&quot;, &quot;-r&quot;, &quot;HEAD&quot;] </span>
 <span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">let allFileList = lines $ T.unpack allFiles</span>
 <span class="lineno">   31 </span><span class="spaces">    </span><span class="istickedoff">let testCases = testFile &lt;$&gt; allFileList</span>
-<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">return (testGroup <span class="nottickedoff">&quot;parse_fuzz&quot;</span> testCases)</span></span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">return (testGroup &quot;parse_fuzz&quot; testCases)</span></span>
 <span class="lineno">   33 </span>
 <span class="lineno">   34 </span>testFile :: FilePath -&gt; TestTree
 <span class="lineno">   35 </span><span class="decl"><span class="istickedoff">testFile fp = testCaseSteps (map (\ch -&gt; if ch == '/' then '.' else ch) fp) $ \step -&gt;  do</span>
