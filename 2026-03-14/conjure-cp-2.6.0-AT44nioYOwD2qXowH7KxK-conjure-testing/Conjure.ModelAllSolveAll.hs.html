@@ -1,0 +1,561 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE RecordWildCards #-}
+<span class="lineno">    3 </span>{-# LANGUAGE ScopedTypeVariables #-}
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>module Conjure.ModelAllSolveAll ( tests, TestTimeLimit(..) ) where
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>-- conjure
+<span class="lineno">    8 </span>import Conjure.Prelude
+<span class="lineno">    9 </span>import Conjure.Bug
+<span class="lineno">   10 </span>import Conjure.Language.Definition
+<span class="lineno">   11 </span>import Conjure.Language.Pretty
+<span class="lineno">   12 </span>import Conjure.Language.Type ( TypeCheckerMode(..) )
+<span class="lineno">   13 </span>import Conjure.UI.IO
+<span class="lineno">   14 </span>import Conjure.UI.TranslateParameter
+<span class="lineno">   15 </span>import Conjure.UI.TranslateSolution
+<span class="lineno">   16 </span>import Conjure.UI.ValidateSolution
+<span class="lineno">   17 </span>import Conjure.UI.MainHelper ( savilerowScriptName, mainWithArgs )
+<span class="lineno">   18 </span>import Conjure.Language.NameResolution ( resolveNamesMulti )
+<span class="lineno">   19 </span>import Conjure.UserError ( runUserErrorT )
+<span class="lineno">   20 </span>import Conjure.UI ( ui )
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>-- base
+<span class="lineno">   23 </span>import System.Environment ( getEnvironment )
+<span class="lineno">   24 </span>import System.Environment ( withArgs )
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>-- tasty
+<span class="lineno">   27 </span>import Test.Tasty ( TestTree, testGroup )
+<span class="lineno">   28 </span>import Test.Tasty.HUnit ( Assertion, testCaseSteps )
+<span class="lineno">   29 </span>import Test.Tasty.Options ( IsOption(..) )
+<span class="lineno">   30 </span>
+<span class="lineno">   31 </span>-- shelly
+<span class="lineno">   32 </span>import Shelly ( run, errExit, lastStderr, lastExitCode )
+<span class="lineno">   33 </span>
+<span class="lineno">   34 </span>-- cmdargs
+<span class="lineno">   35 </span>import System.Console.CmdArgs ( cmdArgs )
+<span class="lineno">   36 </span>
+<span class="lineno">   37 </span>-- text
+<span class="lineno">   38 </span>import qualified Data.Text as T ( isInfixOf, lines, unlines )
+<span class="lineno">   39 </span>import qualified Data.Text.IO as T ( readFile )
+<span class="lineno">   40 </span>
+<span class="lineno">   41 </span>-- containers
+<span class="lineno">   42 </span>import qualified Data.Set as S ( fromList, toList, empty, null, difference )
+<span class="lineno">   43 </span>
+<span class="lineno">   44 </span>-- Diff
+<span class="lineno">   45 </span>-- Diff
+<span class="lineno">   46 </span>import Data.Algorithm.Diff ( getGroupedDiff, PolyDiff (..) )
+<span class="lineno">   47 </span>import Data.Algorithm.DiffOutput ( ppDiff )
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>srOptionsMk :: String -&gt; [Text]
+<span class="lineno">   51 </span><span class="decl"><span class="istickedoff">srOptionsMk srExtraOptions =</span>
+<span class="lineno">   52 </span><span class="spaces">    </span><span class="istickedoff">[ &quot;-run-solver&quot;</span>
+<span class="lineno">   53 </span><span class="spaces">    </span><span class="istickedoff">-- , &quot;-timelimit&quot;      , &quot;1200000&quot;</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">-- , &quot;-solver-options&quot; , &quot;-cpulimit 1200&quot;</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">, &quot;-all-solutions&quot;</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">, &quot;-preprocess&quot;     , &quot;None&quot;</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">, &quot;-S0&quot;</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">] ++ map stringToText (words srExtraOptions)</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>-- | Which tests are we running?
+<span class="lineno">   62 </span>data TestTimeLimit = TestTimeLimit Int          -- lower bound, in seconds, default 0
+<span class="lineno">   63 </span>                                   Int          -- upper bound, in seconds, default 10
+<span class="lineno">   64 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable)
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">IsOption TestTimeLimit</span></span></span></span> where
+<span class="lineno">   67 </span>    <span class="decl"><span class="istickedoff">defaultValue = TestTimeLimit 0 10</span></span>
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>    <span class="decl"><span class="istickedoff">parseValue inp =</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">case splitOn &quot;-&quot; inp of</span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="istickedoff">[i] -&gt;</span>
+<span class="lineno">   72 </span><span class="spaces">                </span><span class="istickedoff">case readMay i of</span>
+<span class="lineno">   73 </span><span class="spaces">                    </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">Nothing</span></span>
+<span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff">Just u  -&gt; Just (TestTimeLimit <span class="nottickedoff">0</span> u)</span>
+<span class="lineno">   75 </span><span class="spaces">            </span><span class="istickedoff">[i,j] -&gt;</span>
+<span class="lineno">   76 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case (readMay i, readMay j) of</span></span>
+<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(Just l, Just u) -&gt; Just (TestTimeLimit l u)</span></span>
+<span class="lineno">   78 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; Nothing</span></span>
+<span class="lineno">   79 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug &quot;parseValue{TestTimeLimit}&quot;</span></span></span>
+<span class="lineno">   80 </span>
+<span class="lineno">   81 </span>    <span class="decl"><span class="istickedoff">optionName = return &quot;limit-time&quot;</span></span>
+<span class="lineno">   82 </span>    <span class="decl"><span class="nottickedoff">optionHelp = return $ unlines [ &quot;Select which tests to run by their expected times.&quot;</span>
+<span class="lineno">   83 </span><span class="spaces">                                  </span><span class="nottickedoff">, &quot;Only tests which take less than the given value will be run.&quot;</span>
+<span class="lineno">   84 </span><span class="spaces">                                  </span><span class="nottickedoff">, &quot;See `expected-time.txt` files in the `tests/exhaustive` directory.&quot;</span>
+<span class="lineno">   85 </span><span class="spaces">                                  </span><span class="nottickedoff">, &quot;Default is 10.&quot;</span>
+<span class="lineno">   86 </span><span class="spaces">                                  </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>tests ::
+<span class="lineno">   90 </span>    HasCallStack =&gt;
+<span class="lineno">   91 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">   92 </span>    IO (TestTimeLimit -&gt; TestTree)
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">tests = do</span>
+<span class="lineno">   94 </span><span class="spaces">    </span><span class="istickedoff">srExtraOptions &lt;- do</span>
+<span class="lineno">   95 </span><span class="spaces">        </span><span class="istickedoff">env &lt;- getEnvironment</span>
+<span class="lineno">   96 </span><span class="spaces">        </span><span class="istickedoff">return $ fromMaybe &quot;-O0&quot; (lookup &quot;SR_OPTIONS&quot; env)</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="istickedoff">let srOptions = srOptionsMk srExtraOptions</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="istickedoff">putStrLn $ &quot;Using Savile Row options: &quot; ++ unwords (map textToString srOptions)</span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">let baseDir = &quot;tests/exhaustive&quot;</span>
+<span class="lineno">  100 </span><span class="spaces">    </span><span class="istickedoff">dirs &lt;- mapM (isTestDir baseDir) =&lt;&lt; getAllDirs baseDir</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="istickedoff">let testCases tl = concatMap (testSingleDir tl srOptions) (catMaybes dirs)</span>
+<span class="lineno">  102 </span><span class="spaces">    </span><span class="istickedoff">return $ \ tl -&gt; testGroup <span class="nottickedoff">&quot;exhaustive&quot;</span> (testCases tl)</span></span>
+<span class="lineno">  103 </span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>data TestDirFiles = TestDirFiles
+<span class="lineno">  106 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">name</span></span></span>           :: String          -- a name for the test case
+<span class="lineno">  107 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">expectedTime</span></span></span>   :: Int             -- how long do we expect this test to run (in seconds) (default: 0)
+<span class="lineno">  108 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">tBaseDir</span></span></span>       :: FilePath        -- dir
+<span class="lineno">  109 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">outputsDir</span></span></span>     :: FilePath        -- dir
+<span class="lineno">  110 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">expectedsDir</span></span></span>   :: FilePath        -- dir
+<span class="lineno">  111 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">essenceFile</span></span></span>    :: FilePath        -- dir + filename
+<span class="lineno">  112 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">paramFiles</span></span></span>     :: [FilePath]      -- filename
+<span class="lineno">  113 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">expectedModels</span></span></span> :: [FilePath]      -- filename
+<span class="lineno">  114 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">expectedSols</span></span></span>   :: [FilePath]      -- filename
+<span class="lineno">  115 </span>    }
+<span class="lineno">  116 </span>    deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>
+<span class="lineno">  117 </span>
+<span class="lineno">  118 </span>
+<span class="lineno">  119 </span>-- returns True if the argument points to a directory that is not hidden
+<span class="lineno">  120 </span>isTestDir :: HasCallStack =&gt; FilePath -&gt; FilePath -&gt; IO (Maybe TestDirFiles)
+<span class="lineno">  121 </span><span class="decl"><span class="istickedoff">isTestDir baseDir dir = do</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">dirContents &lt;- getDirectoryContents dir</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">expectedTime &lt;-</span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">if &quot;expected-time.txt&quot; `elem` dirContents</span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">then fromMaybe <span class="nottickedoff">0</span> . readMay . textToString &lt;$&gt; T.readFile (dir ++ &quot;/expected-time.txt&quot;)</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">else return 0</span>
+<span class="lineno">  127 </span><span class="spaces">    </span><span class="istickedoff">let essenceFiles = filter (&quot;.essence&quot; `isSuffixOf`) dirContents</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="istickedoff">case essenceFiles of</span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">[f] -&gt; Just &lt;$&gt; do</span>
+<span class="lineno">  130 </span><span class="spaces">            </span><span class="istickedoff">let params = filter (&quot;.param&quot;  `isSuffixOf`) dirContents</span>
+<span class="lineno">  131 </span><span class="spaces">            </span><span class="istickedoff">expecteds &lt;- do</span>
+<span class="lineno">  132 </span><span class="spaces">                </span><span class="istickedoff">let dirExpected = dir &lt;/&gt; &quot;expected&quot;</span>
+<span class="lineno">  133 </span><span class="spaces">                </span><span class="istickedoff">isDir &lt;- doesDirectoryExist dirExpected</span>
+<span class="lineno">  134 </span><span class="spaces">                </span><span class="istickedoff">if <span class="tickonlytrue">isDir</span></span>
+<span class="lineno">  135 </span><span class="spaces">                    </span><span class="istickedoff">then getDirectoryContents dirExpected</span>
+<span class="lineno">  136 </span><span class="spaces">                    </span><span class="istickedoff">else <span class="nottickedoff">return []</span></span>
+<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">return TestDirFiles</span>
+<span class="lineno">  138 </span><span class="spaces">                </span><span class="istickedoff">{ name           = drop (length baseDir + 1) dir</span>
+<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff">, tBaseDir       = dir</span>
+<span class="lineno">  140 </span><span class="spaces">                </span><span class="istickedoff">, outputsDir     = dir &lt;/&gt; &quot;outputs&quot;</span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">, expectedsDir   = dir &lt;/&gt; &quot;expected&quot;</span>
+<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">, essenceFile    = dir &lt;/&gt; f</span>
+<span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">, paramFiles     = params</span>
+<span class="lineno">  144 </span><span class="spaces">                </span><span class="istickedoff">, expectedModels = filter (&quot;.eprime&quot;   `isSuffixOf`) expecteds</span>
+<span class="lineno">  145 </span><span class="spaces">                </span><span class="istickedoff">, expectedSols   = filter (&quot;.solution&quot; `isSuffixOf`) expecteds</span>
+<span class="lineno">  146 </span><span class="spaces">                </span><span class="istickedoff">, expectedTime   = expectedTime</span>
+<span class="lineno">  147 </span><span class="spaces">                </span><span class="istickedoff">}</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return Nothing</span></span>
+<span class="lineno">  149 </span>
+<span class="lineno">  150 </span>
+<span class="lineno">  151 </span>type Step = String -&gt; Assertion
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>
+<span class="lineno">  154 </span>-- the first FilePath is the base directory for the exhaustive tests
+<span class="lineno">  155 </span>-- we know at this point that the second FilePath points to a directory D,
+<span class="lineno">  156 </span>-- which contains + an Essence file D/D.essence
+<span class="lineno">  157 </span>--                + D/*.param files if required
+<span class="lineno">  158 </span>--                + D/expected for the expected output files
+<span class="lineno">  159 </span>testSingleDir ::
+<span class="lineno">  160 </span>    HasCallStack =&gt;
+<span class="lineno">  161 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  162 </span>    TestTimeLimit -&gt; [Text] -&gt; TestDirFiles -&gt; [TestTree]
+<span class="lineno">  163 </span><span class="decl"><span class="istickedoff">testSingleDir (TestTimeLimit timeLimitMin timeLimitMax) srOptions t@TestDirFiles{..} =</span>
+<span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">if shouldRun</span>
+<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff">then return $ testCaseSteps (map (\ ch -&gt; if ch == '/' then '.' else ch) name) $ \ step -&gt; do</span>
+<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff">conjuring step</span>
+<span class="lineno">  167 </span><span class="spaces">                </span><span class="istickedoff">sequence_ (savileRows step)</span>
+<span class="lineno">  168 </span><span class="spaces">                </span><span class="istickedoff">validating step</span>
+<span class="lineno">  169 </span><span class="spaces">                </span><span class="istickedoff">checkExpectedAndExtraFiles step srOptions t</span>
+<span class="lineno">  170 </span><span class="spaces">                </span><span class="istickedoff">equalNumberOfSolutions step t</span>
+<span class="lineno">  171 </span><span class="spaces">                </span><span class="istickedoff">noDuplicateSolutions step t</span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">else []</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  174 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">shouldRun = or [ timeLimitMax == 0</span>
+<span class="lineno">  176 </span><span class="spaces">                       </span><span class="istickedoff">, timeLimitMin &lt;= expectedTime &amp;&amp; expectedTime &lt;= timeLimitMax</span>
+<span class="lineno">  177 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">  178 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">conjuring step = do</span>
+<span class="lineno">  180 </span><span class="spaces">            </span><span class="istickedoff">void (step &quot;Conjuring&quot;)</span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="istickedoff">removeDirectoryIfExists outputsDir</span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="istickedoff">-- generate the eprimes</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="istickedoff">modelAll tBaseDir outputsDir essenceFile</span>
+<span class="lineno">  184 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  185 </span><span class="spaces">        </span><span class="istickedoff">savileRows step =</span>
+<span class="lineno">  186 </span><span class="spaces">            </span><span class="istickedoff">if null paramFiles</span>
+<span class="lineno">  187 </span><span class="spaces">                </span><span class="istickedoff">then [ savileRowNoParam    step srOptions t m   | m &lt;- expectedModels ]</span>
+<span class="lineno">  188 </span><span class="spaces">                </span><span class="istickedoff">else [ savileRowWithParams step srOptions t m p | m &lt;- expectedModels</span>
+<span class="lineno">  189 </span><span class="spaces">                                                                </span><span class="istickedoff">, p &lt;- paramFiles     ]</span>
+<span class="lineno">  190 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff">validating step =</span>
+<span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff">if null paramFiles</span>
+<span class="lineno">  193 </span><span class="spaces">                </span><span class="istickedoff">then validateSolutionNoParam    step t expectedSols</span>
+<span class="lineno">  194 </span><span class="spaces">                </span><span class="istickedoff">else validateSolutionWithParams step t [ ( p</span>
+<span class="lineno">  195 </span><span class="spaces">                                                         </span><span class="istickedoff">, [ s | s &lt;- expectedSols</span>
+<span class="lineno">  196 </span><span class="spaces">                                                               </span><span class="istickedoff">, dropExtension p `isInfixOf` dropExtension s</span>
+<span class="lineno">  197 </span><span class="spaces">                                                               </span><span class="istickedoff">]</span>
+<span class="lineno">  198 </span><span class="spaces">                                                         </span><span class="istickedoff">)</span>
+<span class="lineno">  199 </span><span class="spaces">                                                       </span><span class="istickedoff">| p &lt;- paramFiles</span>
+<span class="lineno">  200 </span><span class="spaces">                                                       </span><span class="istickedoff">]</span></span>
+<span class="lineno">  201 </span>
+<span class="lineno">  202 </span>
+<span class="lineno">  203 </span>savileRowNoParam ::
+<span class="lineno">  204 </span>    HasCallStack =&gt;
+<span class="lineno">  205 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  206 </span>    Step -&gt; [Text] -&gt; TestDirFiles -&gt; FilePath -&gt; Assertion
+<span class="lineno">  207 </span><span class="decl"><span class="istickedoff">savileRowNoParam step srOptions TestDirFiles{..} modelPath = do</span>
+<span class="lineno">  208 </span><span class="spaces">    </span><span class="istickedoff">step (unwords [&quot;Savile Row:&quot;, modelPath])</span>
+<span class="lineno">  209 </span><span class="spaces">    </span><span class="istickedoff">let outBase = dropExtension modelPath</span>
+<span class="lineno">  210 </span><span class="spaces">    </span><span class="istickedoff">fileShouldExist (outputsDir &lt;/&gt; outBase ++ &quot;.eprime&quot;)</span>
+<span class="lineno">  211 </span><span class="spaces">    </span><span class="istickedoff">(stdoutSR, stderrSR, exitCodeSR) &lt;-</span>
+<span class="lineno">  212 </span><span class="spaces">        </span><span class="istickedoff">sh $ errExit False $ do</span>
+<span class="lineno">  213 </span><span class="spaces">            </span><span class="istickedoff">stdoutSR &lt;- run savilerowScriptName $</span>
+<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff">[ &quot;-in-eprime&quot;      , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime&quot;</span>
+<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-minion&quot;     , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-minion&quot;</span>
+<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-aux&quot;        , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-aux&quot;</span>
+<span class="lineno">  217 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-info&quot;       , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-info&quot;</span>
+<span class="lineno">  218 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-solution&quot;   , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-solution&quot;</span>
+<span class="lineno">  219 </span><span class="spaces">                </span><span class="istickedoff">] ++ srOptions</span>
+<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
+<span class="lineno">  221 </span><span class="spaces">            </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
+<span class="lineno">  222 </span><span class="spaces">            </span><span class="istickedoff">return (stdoutSR, stderrSR, exitCodeSR)</span>
+<span class="lineno">  223 </span><span class="spaces">    </span><span class="istickedoff">if</span>
+<span class="lineno">  224 </span><span class="spaces">        </span><span class="istickedoff">| exitCodeSR == 0 -&gt; do</span>
+<span class="lineno">  225 </span><span class="spaces">            </span><span class="istickedoff">eprimeModel       &lt;- readModelInfoFromFile (outputsDir &lt;/&gt; modelPath)</span>
+<span class="lineno">  226 </span><span class="spaces">            </span><span class="istickedoff">nbEprimeSolutions &lt;- length . filter ((outBase ++ &quot;.eprime-solution.&quot;) `isPrefixOf`)</span>
+<span class="lineno">  227 </span><span class="spaces">                                      </span><span class="istickedoff">&lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  228 </span><span class="spaces">            </span><span class="istickedoff">forM_ (take nbEprimeSolutions allNats) $ \ i -&gt; do</span>
+<span class="lineno">  229 </span><span class="spaces">                </span><span class="istickedoff">let eprimeSolutionPath = outBase ++ &quot;.eprime-solution.&quot; ++ padLeft 6 '0' (show i)</span>
+<span class="lineno">  230 </span><span class="spaces">                </span><span class="istickedoff">eprimeSolution &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">eprimeModel</span> (outputsDir &lt;/&gt; eprimeSolutionPath)</span>
+<span class="lineno">  231 </span><span class="spaces">                </span><span class="istickedoff">res &lt;- runUserErrorT $ ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $</span>
+<span class="lineno">  232 </span><span class="spaces">                            </span><span class="istickedoff">translateSolution eprimeModel def eprimeSolution</span>
+<span class="lineno">  233 </span><span class="spaces">                </span><span class="istickedoff">case res of</span>
+<span class="lineno">  234 </span><span class="spaces">                    </span><span class="istickedoff">Left errs -&gt; <span class="nottickedoff">assert $ vcat errs</span></span>
+<span class="lineno">  235 </span><span class="spaces">                    </span><span class="istickedoff">Right s  -&gt; do</span>
+<span class="lineno">  236 </span><span class="spaces">                        </span><span class="istickedoff">let filename = outputsDir &lt;/&gt; outBase ++ &quot;-solution&quot; ++ padLeft 6 '0' (show i) ++ &quot;.solution&quot;</span>
+<span class="lineno">  237 </span><span class="spaces">                        </span><span class="istickedoff">writeFile filename (renderNormal s)</span>
+<span class="lineno">  238 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  239 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">T.isInfixOf &quot;where false&quot; (T.unlines [stdoutSR, stderrSR])</span> -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  240 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">assert $ vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
+<span class="lineno">  241 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
+<span class="lineno">  242 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
+<span class="lineno">  243 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  244 </span>
+<span class="lineno">  245 </span>
+<span class="lineno">  246 </span>savileRowWithParams ::
+<span class="lineno">  247 </span>    HasCallStack =&gt;
+<span class="lineno">  248 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  249 </span>    Step -&gt; [Text] -&gt; TestDirFiles -&gt; FilePath -&gt; FilePath -&gt; Assertion
+<span class="lineno">  250 </span><span class="decl"><span class="istickedoff">savileRowWithParams step srOptions TestDirFiles{..} modelPath paramPath = do</span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">step (unwords [&quot;Savile Row:&quot;, modelPath, paramPath])</span>
+<span class="lineno">  252 </span><span class="spaces">    </span><span class="istickedoff">fileShouldExist (outputsDir &lt;/&gt; modelPath)</span>
+<span class="lineno">  253 </span><span class="spaces">    </span><span class="istickedoff">fileShouldExist (tBaseDir   &lt;/&gt; paramPath)</span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">eprimeModel &lt;- readModelInfoFromFile (outputsDir &lt;/&gt; modelPath)</span>
+<span class="lineno">  255 </span><span class="spaces">    </span><span class="istickedoff">param       &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">eprimeModel</span> (tBaseDir   &lt;/&gt; paramPath)</span>
+<span class="lineno">  256 </span><span class="spaces">    </span><span class="istickedoff">eprimeParam &lt;- ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $ translateParameter False eprimeModel param</span>
+<span class="lineno">  257 </span><span class="spaces">    </span><span class="istickedoff">let outBase = dropExtension modelPath ++ &quot;-&quot; ++ dropExtension paramPath</span>
+<span class="lineno">  258 </span><span class="spaces">    </span><span class="istickedoff">writeFile (outputsDir &lt;/&gt; outBase ++ &quot;.eprime-param&quot;) (renderNormal eprimeParam)</span>
+<span class="lineno">  259 </span><span class="spaces">    </span><span class="istickedoff">(stdoutSR, stderrSR, exitCodeSR) &lt;-</span>
+<span class="lineno">  260 </span><span class="spaces">        </span><span class="istickedoff">sh $ errExit False $ do</span>
+<span class="lineno">  261 </span><span class="spaces">            </span><span class="istickedoff">stdoutSR &lt;- run savilerowScriptName $</span>
+<span class="lineno">  262 </span><span class="spaces">                </span><span class="istickedoff">[ &quot;-in-eprime&quot;      , stringToText $ outputsDir &lt;/&gt; modelPath</span>
+<span class="lineno">  263 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-in-param&quot;       , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-param&quot;</span>
+<span class="lineno">  264 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-minion&quot;     , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-minion&quot;</span>
+<span class="lineno">  265 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-aux&quot;        , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-aux&quot;</span>
+<span class="lineno">  266 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-info&quot;       , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-info&quot;</span>
+<span class="lineno">  267 </span><span class="spaces">                </span><span class="istickedoff">, &quot;-out-solution&quot;   , stringToText $ outputsDir &lt;/&gt; outBase ++ &quot;.eprime-solution&quot;</span>
+<span class="lineno">  268 </span><span class="spaces">                </span><span class="istickedoff">] ++ srOptions</span>
+<span class="lineno">  269 </span><span class="spaces">            </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
+<span class="lineno">  270 </span><span class="spaces">            </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
+<span class="lineno">  271 </span><span class="spaces">            </span><span class="istickedoff">return (stdoutSR, stderrSR, exitCodeSR)</span>
+<span class="lineno">  272 </span><span class="spaces">    </span><span class="istickedoff">let stdouterrSR = T.unlines [stdoutSR, stderrSR]</span>
+<span class="lineno">  273 </span><span class="spaces">    </span><span class="istickedoff">if</span>
+<span class="lineno">  274 </span><span class="spaces">        </span><span class="istickedoff">| exitCodeSR == 0 &amp;&amp; not (T.isInfixOf &quot;Exception&quot; stdouterrSR) -&gt; do</span>
+<span class="lineno">  275 </span><span class="spaces">            </span><span class="istickedoff">nbEprimeSolutions &lt;- length . filter ((outBase ++ &quot;.eprime-solution.&quot;) `isPrefixOf`)</span>
+<span class="lineno">  276 </span><span class="spaces">                                      </span><span class="istickedoff">&lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  277 </span><span class="spaces">            </span><span class="istickedoff">forM_ (take nbEprimeSolutions allNats) $ \ i -&gt; do</span>
+<span class="lineno">  278 </span><span class="spaces">                </span><span class="istickedoff">let eprimeSolutionPath = outBase ++ &quot;.eprime-solution.&quot; ++ padLeft 6 '0' (show i)</span>
+<span class="lineno">  279 </span><span class="spaces">                </span><span class="istickedoff">eprimeSolution &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">eprimeModel</span> (outputsDir &lt;/&gt; eprimeSolutionPath)</span>
+<span class="lineno">  280 </span><span class="spaces">                </span><span class="istickedoff">res &lt;- runUserErrorT $ ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $</span>
+<span class="lineno">  281 </span><span class="spaces">                            </span><span class="istickedoff">translateSolution eprimeModel param eprimeSolution</span>
+<span class="lineno">  282 </span><span class="spaces">                </span><span class="istickedoff">case res of</span>
+<span class="lineno">  283 </span><span class="spaces">                    </span><span class="istickedoff">Left errs -&gt; <span class="nottickedoff">assert $ vcat errs</span></span>
+<span class="lineno">  284 </span><span class="spaces">                    </span><span class="istickedoff">Right s  -&gt; do</span>
+<span class="lineno">  285 </span><span class="spaces">                        </span><span class="istickedoff">let filename = outputsDir &lt;/&gt; outBase ++ &quot;-solution&quot; ++ padLeft 6 '0' (show i) ++ &quot;.solution&quot;</span>
+<span class="lineno">  286 </span><span class="spaces">                        </span><span class="istickedoff">writeFile filename (renderNormal s)</span>
+<span class="lineno">  287 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">T.isInfixOf &quot;where false&quot; stdouterrSR</span> -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  288 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">assert $ vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
+<span class="lineno">  289 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
+<span class="lineno">  290 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
+<span class="lineno">  291 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  292 </span>
+<span class="lineno">  293 </span>
+<span class="lineno">  294 </span>validateSolutionNoParam ::
+<span class="lineno">  295 </span>    HasCallStack =&gt;
+<span class="lineno">  296 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  297 </span>    Step -&gt; TestDirFiles -&gt; [FilePath] -&gt; Assertion
+<span class="lineno">  298 </span><span class="decl"><span class="istickedoff">validateSolutionNoParam step TestDirFiles{..} solutionPaths = do</span>
+<span class="lineno">  299 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Validating solutions&quot;</span>
+<span class="lineno">  300 </span><span class="spaces">    </span><span class="istickedoff">essence &lt;- readModelFromFile essenceFile</span>
+<span class="lineno">  301 </span><span class="spaces">    </span><span class="istickedoff">forM_ solutionPaths $ \ solutionPath -&gt; do</span>
+<span class="lineno">  302 </span><span class="spaces">        </span><span class="istickedoff">step (unwords [&quot;Validating solution:&quot;, solutionPath])</span>
+<span class="lineno">  303 </span><span class="spaces">        </span><span class="istickedoff">fileShouldExist (outputsDir &lt;/&gt; solutionPath)</span>
+<span class="lineno">  304 </span><span class="spaces">        </span><span class="istickedoff">solution &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">essence</span> (outputsDir &lt;/&gt; solutionPath)</span>
+<span class="lineno">  305 </span><span class="spaces">        </span><span class="istickedoff">result   &lt;- runUserErrorT $ ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $ do</span>
+<span class="lineno">  306 </span><span class="spaces">            </span><span class="istickedoff">[essence2, param2, solution2] &lt;- resolveNamesMulti [essence, def, solution]</span>
+<span class="lineno">  307 </span><span class="spaces">            </span><span class="istickedoff">validateSolution essence2 <span class="nottickedoff">param2</span> solution2</span>
+<span class="lineno">  308 </span><span class="spaces">        </span><span class="istickedoff">case result of</span>
+<span class="lineno">  309 </span><span class="spaces">            </span><span class="istickedoff">Left errs -&gt; <span class="nottickedoff">assert $ vcat errs</span></span>
+<span class="lineno">  310 </span><span class="spaces">            </span><span class="istickedoff">Right () -&gt; return <span class="nottickedoff">()</span></span></span>
+<span class="lineno">  311 </span>
+<span class="lineno">  312 </span>
+<span class="lineno">  313 </span>validateSolutionWithParams ::
+<span class="lineno">  314 </span>    HasCallStack =&gt;
+<span class="lineno">  315 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  316 </span>    Step -&gt; TestDirFiles -&gt; [(FilePath, [FilePath])] -&gt; Assertion
+<span class="lineno">  317 </span><span class="decl"><span class="istickedoff">validateSolutionWithParams step TestDirFiles{..} paramSolutionPaths = do</span>
+<span class="lineno">  318 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Validating solutions&quot;</span>
+<span class="lineno">  319 </span><span class="spaces">    </span><span class="istickedoff">essence &lt;- readModelFromFile essenceFile</span>
+<span class="lineno">  320 </span><span class="spaces">    </span><span class="istickedoff">forM_ paramSolutionPaths $ \ (paramPath, solutionPaths) -&gt; do</span>
+<span class="lineno">  321 </span><span class="spaces">        </span><span class="istickedoff">fileShouldExist (tBaseDir &lt;/&gt; paramPath)</span>
+<span class="lineno">  322 </span><span class="spaces">        </span><span class="istickedoff">param &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">essence</span> (tBaseDir &lt;/&gt; paramPath)</span>
+<span class="lineno">  323 </span><span class="spaces">        </span><span class="istickedoff">forM_ solutionPaths $ \ solutionPath -&gt; do</span>
+<span class="lineno">  324 </span><span class="spaces">            </span><span class="istickedoff">step (unwords [&quot;Validating solution:&quot;, paramPath, solutionPath])</span>
+<span class="lineno">  325 </span><span class="spaces">            </span><span class="istickedoff">fileShouldExist (outputsDir &lt;/&gt; solutionPath)</span>
+<span class="lineno">  326 </span><span class="spaces">            </span><span class="istickedoff">solution &lt;- runLoggerPipeIO <span class="nottickedoff">LogDebug</span> $ readParamOrSolutionFromFile <span class="nottickedoff">essence</span> (outputsDir &lt;/&gt; solutionPath)</span>
+<span class="lineno">  327 </span><span class="spaces">            </span><span class="istickedoff">result   &lt;- runUserErrorT $ ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $ do</span>
+<span class="lineno">  328 </span><span class="spaces">                </span><span class="istickedoff">[essence2, param2, solution2] &lt;- resolveNamesMulti [essence, param, solution]</span>
+<span class="lineno">  329 </span><span class="spaces">                </span><span class="istickedoff">validateSolution essence2 param2 solution2</span>
+<span class="lineno">  330 </span><span class="spaces">            </span><span class="istickedoff">case result of</span>
+<span class="lineno">  331 </span><span class="spaces">                </span><span class="istickedoff">Left errs -&gt; <span class="nottickedoff">assert $ vcat errs</span></span>
+<span class="lineno">  332 </span><span class="spaces">                </span><span class="istickedoff">Right () -&gt; return <span class="nottickedoff">()</span></span></span>
+<span class="lineno">  333 </span>
+<span class="lineno">  334 </span>
+<span class="lineno">  335 </span>checkExpectedAndExtraFiles :: Step -&gt; [Text] -&gt; TestDirFiles -&gt; Assertion
+<span class="lineno">  336 </span><span class="decl"><span class="istickedoff">checkExpectedAndExtraFiles step srOptions TestDirFiles{..} = do</span>
+<span class="lineno">  337 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking&quot;</span>
+<span class="lineno">  338 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  339 </span><span class="spaces">        </span><span class="istickedoff">relevantExts :: [String]</span>
+<span class="lineno">  340 </span><span class="spaces">        </span><span class="istickedoff">relevantExts = [&quot;.eprime&quot;, &quot;.eprime-param&quot;]</span>
+<span class="lineno">  341 </span><span class="spaces">                    </span><span class="istickedoff">++ [&quot;.solution&quot; | <span class="tickonlytrue">&quot;-sat&quot; `notElem` srOptions</span>]       -- do not diff each individual solution</span>
+<span class="lineno">  342 </span><span class="spaces">                                                                        </span><span class="istickedoff">-- if we are using a sat solver</span>
+<span class="lineno">  343 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  344 </span><span class="spaces">        </span><span class="istickedoff">relevantFile :: FilePath -&gt; Bool</span>
+<span class="lineno">  345 </span><span class="spaces">        </span><span class="istickedoff">relevantFile f = or [ suffix `isSuffixOf` f</span>
+<span class="lineno">  346 </span><span class="spaces">                            </span><span class="istickedoff">| suffix &lt;- relevantExts</span>
+<span class="lineno">  347 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  348 </span><span class="spaces">    </span><span class="istickedoff">expecteds &lt;- do</span>
+<span class="lineno">  349 </span><span class="spaces">        </span><span class="istickedoff">b &lt;- doesDirectoryExist expectedsDir</span>
+<span class="lineno">  350 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">b</span></span>
+<span class="lineno">  351 </span><span class="spaces">            </span><span class="istickedoff">then S.fromList . filter relevantFile &lt;$&gt; getDirectoryContents expectedsDir</span>
+<span class="lineno">  352 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">return S.empty</span></span>
+<span class="lineno">  353 </span><span class="spaces">    </span><span class="istickedoff">outputs   &lt;- do</span>
+<span class="lineno">  354 </span><span class="spaces">        </span><span class="istickedoff">b &lt;- doesDirectoryExist outputsDir</span>
+<span class="lineno">  355 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">b</span></span>
+<span class="lineno">  356 </span><span class="spaces">            </span><span class="istickedoff">then S.fromList . filter relevantFile &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  357 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">return S.empty</span></span>
+<span class="lineno">  358 </span><span class="spaces">    </span><span class="istickedoff">let extras = S.difference outputs expecteds</span>
+<span class="lineno">  359 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  360 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking extra files&quot;</span>
+<span class="lineno">  361 </span><span class="spaces">    </span><span class="istickedoff">unless (S.null extras) $ <span class="nottickedoff">assert $ &quot;Unexpected files:&quot; &lt;+&gt; prettyList id &quot;, &quot; (S.toList extras)</span></span>
+<span class="lineno">  362 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  363 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking expected files&quot;</span>
+<span class="lineno">  364 </span><span class="spaces">    </span><span class="istickedoff">forM_ expecteds $ \ item -&gt; do</span>
+<span class="lineno">  365 </span><span class="spaces">        </span><span class="istickedoff">step (unwords [&quot;Checking expected file:&quot;, item])</span>
+<span class="lineno">  366 </span><span class="spaces">        </span><span class="istickedoff">let expectedPath  = expectedsDir &lt;/&gt; item</span>
+<span class="lineno">  367 </span><span class="spaces">        </span><span class="istickedoff">let generatedPath = outputsDir   &lt;/&gt; item</span>
+<span class="lineno">  368 </span><span class="spaces">        </span><span class="istickedoff">isFile &lt;- doesFileExist generatedPath</span>
+<span class="lineno">  369 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlytrue">isFile</span></span>
+<span class="lineno">  370 </span><span class="spaces">            </span><span class="istickedoff">then do</span>
+<span class="lineno">  371 </span><span class="spaces">                </span><span class="istickedoff">e &lt;- T.lines &lt;$&gt; T.readFile expectedPath</span>
+<span class="lineno">  372 </span><span class="spaces">                </span><span class="istickedoff">g &lt;- takeWhile (/= &quot;$ Conjure's&quot;) . T.lines &lt;$&gt; T.readFile generatedPath</span>
+<span class="lineno">  373 </span><span class="spaces">                </span><span class="istickedoff">let</span>
+<span class="lineno">  374 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">fmapDiff f (First x) = First (f x)</span></span>
+<span class="lineno">  375 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">fmapDiff f (Second x) = Second (f x)</span></span>
+<span class="lineno">  376 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">fmapDiff f (Both x y) = Both (f x) (f y)</span></span>
+<span class="lineno">  377 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  378 </span><span class="spaces">                    </span><span class="istickedoff">isBoth Both{} = True</span>
+<span class="lineno">  379 </span><span class="spaces">                    </span><span class="istickedoff">isBoth _ = <span class="nottickedoff">False</span></span>
+<span class="lineno">  380 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  381 </span><span class="spaces">                    </span><span class="istickedoff">diffs = filter (not . isBoth) $ getGroupedDiff e g</span>
+<span class="lineno">  382 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">diffsString = fmap (fmapDiff (fmap textToString)) diffs</span></span>
+<span class="lineno">  383 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  384 </span><span class="spaces">                </span><span class="istickedoff">unless (null diffs) $</span>
+<span class="lineno">  385 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">assert $ vcat [&quot;files differ.&quot;, pretty (ppDiff diffsString)]</span></span>
+<span class="lineno">  386 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">assert $ pretty $ &quot;file doesn't exist: &quot; ++ generatedPath</span></span></span>
+<span class="lineno">  387 </span>
+<span class="lineno">  388 </span>
+<span class="lineno">  389 </span>equalNumberOfSolutions :: HasCallStack =&gt; Step -&gt; TestDirFiles -&gt; Assertion
+<span class="lineno">  390 </span><span class="decl"><span class="istickedoff">equalNumberOfSolutions step TestDirFiles{..} = do</span>
+<span class="lineno">  391 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking number of solutions&quot;</span>
+<span class="lineno">  392 </span><span class="spaces">    </span><span class="istickedoff">dirShouldExist outputsDir</span>
+<span class="lineno">  393 </span><span class="spaces">    </span><span class="istickedoff">models    &lt;- sort . filter (&quot;.eprime&quot;       `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  394 </span><span class="spaces">    </span><span class="istickedoff">params    &lt;- sort . filter (&quot;.eprime-param&quot; `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  395 </span><span class="spaces">    </span><span class="istickedoff">solutions &lt;- filter (&quot;.solution&quot;     `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  396 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  397 </span><span class="spaces">        </span><span class="istickedoff">grouped :: [ ( Maybe String             -- the parameter</span>
+<span class="lineno">  398 </span><span class="spaces">                     </span><span class="istickedoff">, [(String, Int)]          -- model, number of solutions</span>
+<span class="lineno">  399 </span><span class="spaces">                     </span><span class="istickedoff">) ]</span>
+<span class="lineno">  400 </span><span class="spaces">        </span><span class="istickedoff">grouped =</span>
+<span class="lineno">  401 </span><span class="spaces">            </span><span class="istickedoff">(if null params</span>
+<span class="lineno">  402 </span><span class="spaces">                </span><span class="istickedoff">then</span>
+<span class="lineno">  403 </span><span class="spaces">                    </span><span class="istickedoff">[ (Nothing, (<span class="nottickedoff">model</span>, length $ filter (solnPrefix `isPrefixOf`) solutions))</span>
+<span class="lineno">  404 </span><span class="spaces">                    </span><span class="istickedoff">| model' &lt;- models</span>
+<span class="lineno">  405 </span><span class="spaces">                    </span><span class="istickedoff">, let model = splitOn1 &quot;.&quot; model'</span>
+<span class="lineno">  406 </span><span class="spaces">                    </span><span class="istickedoff">, let solnPrefix = model</span>
+<span class="lineno">  407 </span><span class="spaces">                    </span><span class="istickedoff">]</span>
+<span class="lineno">  408 </span><span class="spaces">                </span><span class="istickedoff">else</span>
+<span class="lineno">  409 </span><span class="spaces">                    </span><span class="istickedoff">[ (Just param, (<span class="nottickedoff">model</span>, length $ filter (solnPrefix `isPrefixOf`) solutions))</span>
+<span class="lineno">  410 </span><span class="spaces">                    </span><span class="istickedoff">| model          &lt;- map (splitOn1 &quot;.&quot;) models</span>
+<span class="lineno">  411 </span><span class="spaces">                    </span><span class="istickedoff">, [model2,param] &lt;- map (splitOn &quot;-&quot; . splitOn1 &quot;.&quot;) params</span>
+<span class="lineno">  412 </span><span class="spaces">                    </span><span class="istickedoff">, model == model2</span>
+<span class="lineno">  413 </span><span class="spaces">                    </span><span class="istickedoff">, let solnPrefix = model ++ &quot;-&quot; ++ param</span>
+<span class="lineno">  414 </span><span class="spaces">                    </span><span class="istickedoff">])</span>
+<span class="lineno">  415 </span><span class="spaces">            </span><span class="istickedoff">|&gt; sortBy  (comparing fst)</span>
+<span class="lineno">  416 </span><span class="spaces">            </span><span class="istickedoff">|&gt; groupBy ((==) `on` fst)</span>
+<span class="lineno">  417 </span><span class="spaces">            </span><span class="istickedoff">|&gt; mapMaybe (\ grp -&gt; case grp of [] -&gt; <span class="nottickedoff">Nothing</span> ; ((sol, _):_) -&gt; Just (<span class="nottickedoff">sol</span>, map snd grp) )</span>
+<span class="lineno">  418 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  419 </span><span class="spaces">        </span><span class="istickedoff">differentOnes :: [(Maybe String, [(String, Int)])]</span>
+<span class="lineno">  420 </span><span class="spaces">        </span><span class="istickedoff">differentOnes =</span>
+<span class="lineno">  421 </span><span class="spaces">            </span><span class="istickedoff">[ <span class="nottickedoff">this</span></span>
+<span class="lineno">  422 </span><span class="spaces">            </span><span class="istickedoff">| this@(_, modelSols) &lt;- grouped</span>
+<span class="lineno">  423 </span><span class="spaces">            </span><span class="istickedoff">, let nbSols = map snd modelSols |&gt; nub</span>
+<span class="lineno">  424 </span><span class="spaces">            </span><span class="istickedoff">, <span class="tickonlyfalse">length nbSols &gt; 1</span></span>
+<span class="lineno">  425 </span><span class="spaces">            </span><span class="istickedoff">]</span>
+<span class="lineno">  426 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  427 </span><span class="spaces">    </span><span class="istickedoff">unless (null differentOnes) $</span>
+<span class="lineno">  428 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assert $ vcat</span></span>
+<span class="lineno">  429 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ maybe</span></span>
+<span class="lineno">  430 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">id</span></span>
+<span class="lineno">  431 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">(\ p -&gt; hang (&quot;For parameter&quot; &lt;+&gt; pretty p) 4 )</span></span>
+<span class="lineno">  432 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">param</span></span>
+<span class="lineno">  433 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">$ vcat [ &quot;Model&quot; &lt;+&gt; pretty model &lt;+&gt; &quot;has&quot; &lt;+&gt; pretty nbSols &lt;+&gt; &quot;solutions.&quot;</span></span>
+<span class="lineno">  434 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">| (model, nbSols) &lt;- modelSols</span></span>
+<span class="lineno">  435 </span><span class="spaces">                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  436 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (param, modelSols) &lt;- differentOnes</span></span>
+<span class="lineno">  437 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  438 </span>
+<span class="lineno">  439 </span>
+<span class="lineno">  440 </span>noDuplicateSolutions :: HasCallStack =&gt;(?typeCheckerMode :: TypeCheckerMode) =&gt; Step -&gt; TestDirFiles -&gt; Assertion
+<span class="lineno">  441 </span><span class="decl"><span class="istickedoff">noDuplicateSolutions step TestDirFiles{..} = do</span>
+<span class="lineno">  442 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking duplicate solutions&quot;</span>
+<span class="lineno">  443 </span><span class="spaces">    </span><span class="istickedoff">dirShouldExist outputsDir</span>
+<span class="lineno">  444 </span><span class="spaces">    </span><span class="istickedoff">models    &lt;- sort . filter (&quot;.eprime&quot;       `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  445 </span><span class="spaces">    </span><span class="istickedoff">params    &lt;- sort . filter (&quot;.eprime-param&quot; `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  446 </span><span class="spaces">    </span><span class="istickedoff">solutions &lt;- filter (&quot;.solution&quot;     `isSuffixOf`) &lt;$&gt; getDirectoryContents outputsDir</span>
+<span class="lineno">  447 </span><span class="spaces">    </span><span class="istickedoff">solutionContents &lt;- forM solutions $ \ s -&gt; do m &lt;-runLoggerPipeIO <span class="nottickedoff">LogDebug</span> (readParamOrSolutionFromFile <span class="nottickedoff">(def :: Model)</span> (outputsDir &lt;/&gt; s))</span>
+<span class="lineno">  448 </span><span class="spaces">                                                   </span><span class="istickedoff">return (s, m)</span>
+<span class="lineno">  449 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  450 </span><span class="spaces">        </span><span class="istickedoff">grouped :: [ ( Maybe String             -- the parameter</span>
+<span class="lineno">  451 </span><span class="spaces">                     </span><span class="istickedoff">, [(String, [String])]     -- model, duplicate solutions</span>
+<span class="lineno">  452 </span><span class="spaces">                     </span><span class="istickedoff">) ]</span>
+<span class="lineno">  453 </span><span class="spaces">        </span><span class="istickedoff">grouped =</span>
+<span class="lineno">  454 </span><span class="spaces">            </span><span class="istickedoff">(if null params</span>
+<span class="lineno">  455 </span><span class="spaces">                </span><span class="istickedoff">then</span>
+<span class="lineno">  456 </span><span class="spaces">                    </span><span class="istickedoff">[ <span class="nottickedoff">(Nothing, (model, duplicateSolutions))</span></span>
+<span class="lineno">  457 </span><span class="spaces">                    </span><span class="istickedoff">| model' &lt;- models</span>
+<span class="lineno">  458 </span><span class="spaces">                    </span><span class="istickedoff">, let model = splitOn1 &quot;.&quot; model'</span>
+<span class="lineno">  459 </span><span class="spaces">                    </span><span class="istickedoff">, let solnPrefix = model</span>
+<span class="lineno">  460 </span><span class="spaces">                    </span><span class="istickedoff">, let thisSolutions = filter ((solnPrefix `isPrefixOf`) . fst) solutionContents</span>
+<span class="lineno">  461 </span><span class="spaces">                    </span><span class="istickedoff">, let duplicateSolutions =</span>
+<span class="lineno">  462 </span><span class="spaces">                            </span><span class="istickedoff">[ <span class="nottickedoff">s1name</span></span>
+<span class="lineno">  463 </span><span class="spaces">                            </span><span class="istickedoff">| (s1name, s1) &lt;- thisSolutions</span>
+<span class="lineno">  464 </span><span class="spaces">                            </span><span class="istickedoff">, <span class="tickonlyfalse">not $ null [ <span class="nottickedoff">s2name</span> | (s2name, s2) &lt;- thisSolutions</span></span>
+<span class="lineno">  465 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="tickonlyfalse">, s1name /= s2name &amp;&amp; s1 == s2</span></span>
+<span class="lineno">  466 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="tickonlyfalse">]</span></span>
+<span class="lineno">  467 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  468 </span><span class="spaces">                    </span><span class="istickedoff">, <span class="tickonlyfalse">not (null duplicateSolutions)</span></span>
+<span class="lineno">  469 </span><span class="spaces">                    </span><span class="istickedoff">]</span>
+<span class="lineno">  470 </span><span class="spaces">                </span><span class="istickedoff">else</span>
+<span class="lineno">  471 </span><span class="spaces">                    </span><span class="istickedoff">[ <span class="nottickedoff">(Just param, (model, duplicateSolutions))</span></span>
+<span class="lineno">  472 </span><span class="spaces">                    </span><span class="istickedoff">| model          &lt;- map (splitOn1 &quot;.&quot;) models</span>
+<span class="lineno">  473 </span><span class="spaces">                    </span><span class="istickedoff">, [model2,param] &lt;- map (splitOn &quot;-&quot; . splitOn1 &quot;.&quot;) params</span>
+<span class="lineno">  474 </span><span class="spaces">                    </span><span class="istickedoff">, model == model2</span>
+<span class="lineno">  475 </span><span class="spaces">                    </span><span class="istickedoff">, let solnPrefix = model ++ &quot;-&quot; ++ param</span>
+<span class="lineno">  476 </span><span class="spaces">                    </span><span class="istickedoff">, let thisSolutions = filter ((solnPrefix `isPrefixOf`) . fst) solutionContents</span>
+<span class="lineno">  477 </span><span class="spaces">                    </span><span class="istickedoff">, let duplicateSolutions =</span>
+<span class="lineno">  478 </span><span class="spaces">                            </span><span class="istickedoff">[ <span class="nottickedoff">s1name</span></span>
+<span class="lineno">  479 </span><span class="spaces">                            </span><span class="istickedoff">| (s1name, s1) &lt;- thisSolutions</span>
+<span class="lineno">  480 </span><span class="spaces">                            </span><span class="istickedoff">, <span class="tickonlyfalse">not $ null [ <span class="nottickedoff">s2name</span> | (s2name, s2) &lt;- thisSolutions</span></span>
+<span class="lineno">  481 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="tickonlyfalse">, s1name /= s2name &amp;&amp; s1 == s2</span></span>
+<span class="lineno">  482 </span><span class="spaces">                                         </span><span class="istickedoff"><span class="tickonlyfalse">]</span></span>
+<span class="lineno">  483 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
+<span class="lineno">  484 </span><span class="spaces">                    </span><span class="istickedoff">, <span class="tickonlyfalse">not (null duplicateSolutions)</span></span>
+<span class="lineno">  485 </span><span class="spaces">                    </span><span class="istickedoff">])</span>
+<span class="lineno">  486 </span><span class="spaces">            </span><span class="istickedoff">|&gt; sortBy  <span class="nottickedoff">(comparing fst)</span></span>
+<span class="lineno">  487 </span><span class="spaces">            </span><span class="istickedoff">|&gt; groupBy <span class="nottickedoff">((==) `on` fst)</span></span>
+<span class="lineno">  488 </span><span class="spaces">            </span><span class="istickedoff">|&gt; mapMaybe <span class="nottickedoff">(\ grp -&gt; case grp of [] -&gt; Nothing ; ((sol, _):_) -&gt; Just (sol, map snd grp) )</span></span>
+<span class="lineno">  489 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  490 </span><span class="spaces">    </span><span class="istickedoff">unless (null grouped) $</span>
+<span class="lineno">  491 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assert $ vcat</span></span>
+<span class="lineno">  492 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ case param of</span></span>
+<span class="lineno">  493 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Nothing -&gt; &quot;For model&quot; &lt;+&gt; pretty model &lt;++&gt; rest</span></span>
+<span class="lineno">  494 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Just p  -&gt; &quot;For parameter&quot; &lt;+&gt; pretty p &lt;&gt; &quot;, for model&quot; &lt;+&gt; pretty model &lt;++&gt; rest</span></span>
+<span class="lineno">  495 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (param, duplicateSols) &lt;- grouped</span></span>
+<span class="lineno">  496 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, (model, sols) &lt;- duplicateSols</span></span>
+<span class="lineno">  497 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, let rest = &quot;Duplicate solutions:&quot; &lt;++&gt; prettyList id &quot;,&quot; sols</span></span>
+<span class="lineno">  498 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  499 </span>
+<span class="lineno">  500 </span>
+<span class="lineno">  501 </span>assert :: HasCallStack =&gt; Doc -&gt; Assertion
+<span class="lineno">  502 </span><span class="decl"><span class="nottickedoff">assert doc = error (renderNormal doc)</span></span>
+<span class="lineno">  503 </span>
+<span class="lineno">  504 </span>
+<span class="lineno">  505 </span>dirShouldExist :: HasCallStack =&gt; FilePath -&gt; Assertion
+<span class="lineno">  506 </span><span class="decl"><span class="istickedoff">dirShouldExist d = do</span>
+<span class="lineno">  507 </span><span class="spaces">    </span><span class="istickedoff">b &lt;- doesDirectoryExist d</span>
+<span class="lineno">  508 </span><span class="spaces">    </span><span class="istickedoff">unless b $</span>
+<span class="lineno">  509 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assert $ pretty (&quot;dir does not exist: &quot; ++ d)</span></span></span>
+<span class="lineno">  510 </span>
+<span class="lineno">  511 </span>fileShouldExist :: HasCallStack =&gt; FilePath -&gt; Assertion
+<span class="lineno">  512 </span><span class="decl"><span class="istickedoff">fileShouldExist f = do</span>
+<span class="lineno">  513 </span><span class="spaces">    </span><span class="istickedoff">b &lt;- doesFileExist f</span>
+<span class="lineno">  514 </span><span class="spaces">    </span><span class="istickedoff">unless b $</span>
+<span class="lineno">  515 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assert $ pretty (&quot;file does not exist: &quot; ++ f)</span></span></span>
+<span class="lineno">  516 </span>
+<span class="lineno">  517 </span>
+<span class="lineno">  518 </span>modelAll ::
+<span class="lineno">  519 </span>    HasCallStack =&gt;
+<span class="lineno">  520 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno">  521 </span>    FilePath -&gt; FilePath -&gt; FilePath -&gt; IO ()
+<span class="lineno">  522 </span><span class="decl"><span class="istickedoff">modelAll tBaseDir dir essenceFile = do</span>
+<span class="lineno">  523 </span><span class="spaces">    </span><span class="istickedoff">additionalArgs &lt;- catch (words . textToString &lt;$&gt; T.readFile (tBaseDir ++ &quot;/additional-arguments.txt&quot;))</span>
+<span class="lineno">  524 </span><span class="spaces">                            </span><span class="istickedoff">(\ (_ :: SomeException) -&gt; return [] )</span>
+<span class="lineno">  525 </span><span class="spaces">    </span><span class="istickedoff">args &lt;- withArgs (defaultArgs ++ additionalArgs) (cmdArgs ui)</span>
+<span class="lineno">  526 </span><span class="spaces">    </span><span class="istickedoff">ignoreLogs $ runNameGen <span class="nottickedoff">()</span> $ mainWithArgs args</span>
+<span class="lineno">  527 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  528 </span><span class="spaces">        </span><span class="istickedoff">defaultArgs = [ &quot;modelling&quot;</span>
+<span class="lineno">  529 </span><span class="spaces">                      </span><span class="istickedoff">, essenceFile</span>
+<span class="lineno">  530 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;--output-directory=&quot; ++ dir</span>
+<span class="lineno">  531 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;-qf&quot;</span>
+<span class="lineno">  532 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;-ax&quot;</span>
+<span class="lineno">  533 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;--smart-filenames&quot;</span>
+<span class="lineno">  534 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;--line-width=120&quot;</span>
+<span class="lineno">  535 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;--channelling=yes&quot;</span>
+<span class="lineno">  536 </span><span class="spaces">                      </span><span class="istickedoff">, &quot;--representation-levels=yes&quot;</span>
+<span class="lineno">  537 </span><span class="spaces">                      </span><span class="istickedoff">]</span></span>
+<span class="lineno">  538 </span>
+
+</pre>
+</body>
+</html>

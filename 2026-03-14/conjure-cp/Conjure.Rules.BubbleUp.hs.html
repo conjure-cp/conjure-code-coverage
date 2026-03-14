@@ -1,0 +1,284 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Rules.BubbleUp where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Rules.Import
+<span class="lineno">    6 </span>
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>rule_MergeNested :: Rule
+<span class="lineno">    9 </span><span class="decl"><span class="istickedoff">rule_MergeNested = &quot;bubble-up-merge-nested&quot; `namedRule` theRule where</span>
+<span class="lineno">   10 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals (WithLocals body (DefinednessConstraints locals1)) (DefinednessConstraints locals2)) =</span>
+<span class="lineno">   11 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   12 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Merging nested bubbles&quot;</span></span>
+<span class="lineno">   13 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals body (DefinednessConstraints (locals1 ++ locals2))</span>
+<span class="lineno">   14 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   15 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals (WithLocals body (AuxiliaryVars locals1)) (AuxiliaryVars locals2)) =</span>
+<span class="lineno">   16 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   17 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Merging nested bubbles&quot;</span></span>
+<span class="lineno">   18 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ WithLocals body (AuxiliaryVars (locals1 ++ locals2))</span></span>
+<span class="lineno">   19 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_MergeNested&quot;</span></span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>rule_ToAnd :: Rule
+<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">rule_ToAnd = &quot;bubble-to-and&quot; `namedRule` theRule where</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals x (AuxiliaryVars [])) = <span class="nottickedoff">return (&quot;Empty bubble is no bubble&quot;, return x)</span></span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals x (DefinednessConstraints [])) = <span class="nottickedoff">return (&quot;Empty bubble is no bubble&quot;, return x)</span></span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals x (DefinednessConstraints cons))</span>
+<span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">| let isTrueCons (Constant (ConstantBool True)) = True</span>
+<span class="lineno">   29 </span><span class="spaces">              </span><span class="istickedoff">isTrueCons _ = False</span>
+<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">, all isTrueCons cons</span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">= return (<span class="nottickedoff">&quot;Trivially defined&quot;</span>, return x)</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals x (DefinednessConstraints cons))</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">| let isFalseCons (Constant (ConstantBool False)) = True</span>
+<span class="lineno">   34 </span><span class="spaces">              </span><span class="istickedoff">isFalseCons _ = False</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">, any isFalseCons cons</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">, <span class="tickonlyfalse">length cons &gt; 1</span></span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">return ( &quot;Trivially undefined&quot;</span></span>
+<span class="lineno">   38 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">, return (WithLocals x (DefinednessConstraints [Constant (ConstantBool False)]))</span></span>
+<span class="lineno">   39 </span><span class="spaces">                 </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">theRule (WithLocals x (DefinednessConstraints locals@(_:_))) = do</span>
+<span class="lineno">   41 </span><span class="spaces">        </span><span class="istickedoff">TypeBool &lt;- typeOf x</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">let out = make opAnd $ fromList (x:locals)</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Converting a bubble into a conjunction.&quot;</span></span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">, return out</span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_BubbleToAnd&quot;</span></span>
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>
+<span class="lineno">   50 </span>rule_ToMultiply_HeadOfIntComprehension :: Rule
+<span class="lineno">   51 </span><span class="decl"><span class="istickedoff">rule_ToMultiply_HeadOfIntComprehension = <span class="nottickedoff">&quot;bubble-to-multiply-HeadOfIntComprehension&quot;</span> `namedRule` theRule where</span>
+<span class="lineno">   52 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">(_, _, mk, Comprehension (WithLocals x (DefinednessConstraints cons)) gocs) &lt;- match opReducer p</span>
+<span class="lineno">   54 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeInt _</span> &lt;- <span class="nottickedoff">typeOf x</span></span>
+<span class="lineno">   55 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">conjunct = make opAnd (fromList cons)</span></span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">x' = [essence| &amp;x * toInt(&amp;conjunct) |]</span></span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">out = mk $ Comprehension x' gocs</span></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">   59 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Converting a bubble into a multiplication.&quot;</span></span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return out</span></span>
+<span class="lineno">   61 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>
+<span class="lineno">   64 </span>rule_NotBoolYet :: Rule
+<span class="lineno">   65 </span><span class="decl"><span class="istickedoff">rule_NotBoolYet = &quot;bubble-up-NotBoolYet&quot; `namedRule` theRule where</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">theRule WithLocals{}</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">= na &quot;rule_NotBoolYet WithLocals&quot;</span>
+<span class="lineno">   68 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| catchUndef(&amp;x, &amp;_) |]</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="istickedoff">| WithLocals _ (DefinednessConstraints _) &lt;- x</span>
+<span class="lineno">   71 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">na &quot;rule_NotBoolYet WithLocals&quot;</span></span>
+<span class="lineno">   72 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   73 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">-- if anything in a comprehension is undefined, the whole comprehension is undefined</span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">-- this is for the non-bool case.</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension (WithLocals body (DefinednessConstraints locals@(_:_))) gensOrConds) = do</span>
+<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   78 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf body</span>
+<span class="lineno">   79 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
+<span class="lineno">   80 </span><span class="spaces">            </span><span class="istickedoff">TypeBool -&gt; <span class="nottickedoff">na &quot;rule_NotBoolYet&quot;</span></span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">_        -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   82 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">forM_ gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">Generator GenDomainHasRepr{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">Generator {}                 -&gt; na &quot;rule_NotBoolYet&quot;        -- no other generators, only GenDomainHasRepr</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">Condition {}                 -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   87 </span><span class="spaces">            </span><span class="istickedoff">ComprehensionLetting {}      -&gt; <span class="nottickedoff">na &quot;rule_NotBoolYet&quot;</span>        -- no lettings</span>
+<span class="lineno">   88 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">let localsLifted =</span>
+<span class="lineno">   90 </span><span class="spaces">                </span><span class="istickedoff">[ make opAnd $ Comprehension c gensOrConds</span>
+<span class="lineno">   91 </span><span class="spaces">                </span><span class="istickedoff">| c &lt;- locals</span>
+<span class="lineno">   92 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   93 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   94 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up (through comprehension), not reached a relational context yet.&quot;</span></span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals (Comprehension body gensOrConds) (DefinednessConstraints localsLifted)</span>
+<span class="lineno">   97 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">   98 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension x gensOrConds) = do</span>
+<span class="lineno">  100 </span><span class="spaces">        </span><span class="istickedoff">let (gensOrConds', Any changed) = mconcat</span>
+<span class="lineno">  101 </span><span class="spaces">                </span><span class="istickedoff">[ case goc of</span>
+<span class="lineno">  102 </span><span class="spaces">                    </span><span class="istickedoff">Generator (GenInExpr pat (WithLocals y (DefinednessConstraints cons)))</span>
+<span class="lineno">  103 </span><span class="spaces">                        </span><span class="istickedoff">-&gt; <span class="nottickedoff">(Generator (GenInExpr pat y) : map Condition cons, Any True)</span></span>
+<span class="lineno">  104 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; (<span class="nottickedoff">[goc]</span>, Any False)</span>
+<span class="lineno">  105 </span><span class="spaces">                </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
+<span class="lineno">  106 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">unless changed (na &quot;rule_NotBoolYet&quot;)</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up, attached to a generator inside a comprehension&quot;</span></span>
+<span class="lineno">  110 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension x gensOrConds'</span></span>
+<span class="lineno">  111 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  112 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno">  115 </span><span class="spaces">            </span><span class="istickedoff">f x@(WithLocals y (DefinednessConstraints locals@(_:_))) = do</span>
+<span class="lineno">  116 </span><span class="spaces">                </span><span class="istickedoff">ty &lt;- typeOf y</span>
+<span class="lineno">  117 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
+<span class="lineno">  118 </span><span class="spaces">                    </span><span class="istickedoff">TypeBool -&gt;                <span class="nottickedoff">return x</span>         -- do not bubble-up if it is attached to a bool</span>
+<span class="lineno">  119 </span><span class="spaces">                    </span><span class="istickedoff">_        -&gt; tell locals &gt;&gt; return y</span>
+<span class="lineno">  120 </span><span class="spaces">            </span><span class="istickedoff">f x = return x</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">(p', collected) &lt;- runWriterT (descendM f p)</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">when (null collected) $</span>
+<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_NotBoolYet doesn't have any bubbly children&quot;</span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up, not reached a relational context yet.&quot;</span></span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals p' (DefinednessConstraints collected)</span>
+<span class="lineno">  127 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+<span class="lineno">  128 </span>
+<span class="lineno">  129 </span>
+<span class="lineno">  130 </span>rule_ConditionInsideGeneratorDomain :: Rule
+<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">rule_ConditionInsideGeneratorDomain = &quot;bubble-up-ConditionInsideGeneratorDomain&quot; `namedRule` theRule where</span>
+<span class="lineno">  132 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension body gensOrConds) = do</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">(gocBefore, (goc', newConditions), gocAfter) &lt;- matchFirst gensOrConds $ \ goc -&gt; case goc of</span>
+<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">Generator (GenDomainHasRepr pat domain@DomainInt{}) -&gt; do</span>
+<span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff">let</span>
+<span class="lineno">  137 </span><span class="spaces">                    </span><span class="istickedoff">f (WithLocals x (DefinednessConstraints cons)) = do</span>
+<span class="lineno">  138 </span><span class="spaces">                        </span><span class="istickedoff">tell cons</span>
+<span class="lineno">  139 </span><span class="spaces">                        </span><span class="istickedoff">f x</span>
+<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff">f x = return x</span>
+<span class="lineno">  141 </span><span class="spaces">                </span><span class="istickedoff">(domain', newConditions) &lt;- runWriterT (transformBiM f domain)</span>
+<span class="lineno">  142 </span><span class="spaces">                </span><span class="istickedoff">let goc' = Generator (GenDomainHasRepr pat domain')</span>
+<span class="lineno">  143 </span><span class="spaces">                </span><span class="istickedoff">if null newConditions</span>
+<span class="lineno">  144 </span><span class="spaces">                    </span><span class="istickedoff">then na <span class="nottickedoff">&quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
+<span class="lineno">  145 </span><span class="spaces">                    </span><span class="istickedoff">else return (goc', newConditions)</span>
+<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">&quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
+<span class="lineno">  147 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up definedness constraints inside a generator domain.&quot;</span></span>
+<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">, return $ Comprehension body</span>
+<span class="lineno">  150 </span><span class="spaces">                        </span><span class="istickedoff">$  gocBefore</span>
+<span class="lineno">  151 </span><span class="spaces">                        </span><span class="istickedoff">++ [goc']</span>
+<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff">++ map Condition newConditions</span>
+<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff">++ gocAfter</span>
+<span class="lineno">  154 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ConditionInsideGeneratorDomain&quot;</span></span>
+<span class="lineno">  156 </span>
+<span class="lineno">  157 </span>
+<span class="lineno">  158 </span>rule_LiftVars :: Rule
+<span class="lineno">  159 </span><span class="decl"><span class="istickedoff">rule_LiftVars = &quot;bubble-up-LiftVars&quot; `namedRule` theRule where</span>
+<span class="lineno">  160 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  161 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| catchUndef(&amp;x, &amp;ifUndefVal) |]</span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">| WithLocals body (DefinednessConstraints cons) &lt;- x = <span class="nottickedoff">do</span></span>
+<span class="lineno">  163 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let ifDef = make opAnd (fromList cons)</span></span>
+<span class="lineno">  164 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  165 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">( &quot;&quot;</span></span>
+<span class="lineno">  166 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, return [essence| [ catchUndef(&amp;body, &amp;ifUndefVal)</span></span>
+<span class="lineno">  167 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">, &amp;ifUndefVal</span></span>
+<span class="lineno">  168 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">; int(0..1)</span></span>
+<span class="lineno">  169 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">] [ toInt(!&amp;ifDef) ]</span></span>
+<span class="lineno">  170 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">  171 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  172 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension (WithLocals body locals) gensOrConds)</span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">| and [ case goc of</span>
+<span class="lineno">  175 </span><span class="spaces">                    </span><span class="istickedoff">Condition{} -&gt; True</span>
+<span class="lineno">  176 </span><span class="spaces">                    </span><span class="istickedoff">ComprehensionLetting{} -&gt; <span class="nottickedoff">True</span></span>
+<span class="lineno">  177 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; False</span>
+<span class="lineno">  178 </span><span class="spaces">              </span><span class="istickedoff">| goc &lt;- gensOrConds</span>
+<span class="lineno">  179 </span><span class="spaces">              </span><span class="istickedoff">]                                                 -- if gensOrConds do not contain generators</span>
+<span class="lineno">  180 </span><span class="spaces">        </span><span class="istickedoff">= return</span>
+<span class="lineno">  181 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up when a comprehension doesn't contain any generators.&quot;</span></span>
+<span class="lineno">  182 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals (Comprehension body gensOrConds) locals</span>
+<span class="lineno">  183 </span><span class="spaces">            </span><span class="istickedoff">)</span>
+<span class="lineno">  184 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">theRule (Comprehension (WithLocals body (AuxiliaryVars locals@(_:_))) gensOrConds) = <span class="nottickedoff">do</span></span>
+<span class="lineno">  186 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let decls = [ (nm,dom) | Declaration (FindOrGiven LocalFind nm dom) &lt;- locals ]</span></span>
+<span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let cons  = concat [ xs | SuchThat xs &lt;- locals ]</span></span>
+<span class="lineno">  189 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- TODO: what to do with the conditions?</span></span>
+<span class="lineno">  191 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- should we `dontCare unless condition`?</span></span>
+<span class="lineno">  192 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- discard for now</span></span>
+<span class="lineno">  193 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(_conditions, generators) &lt;- fmap mconcat $ forM gensOrConds $ \ goc -&gt; case goc of</span></span>
+<span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Condition{} -&gt; return ([goc], [])</span></span>
+<span class="lineno">  195 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">ComprehensionLetting{} -&gt; return ([], [goc])</span></span>
+<span class="lineno">  196 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Generator (GenDomainHasRepr _ _) -&gt; return ([], [goc])</span></span>
+<span class="lineno">  197 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_LiftVars&quot;</span></span>
+<span class="lineno">  198 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  199 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let patRefs = [ Reference patName Nothing | Generator (GenDomainHasRepr patName _domain) &lt;- generators ]</span></span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let indexDomains = [domain | Generator (GenDomainHasRepr _patName domain) &lt;- generators ]</span></span>
+<span class="lineno">  201 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upd (Reference nm _) | nm `elem` map fst decls</span></span>
+<span class="lineno">  203 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">= let r = Reference nm Nothing</span></span>
+<span class="lineno">  204 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">in  make opMatrixIndexing r patRefs</span></span>
+<span class="lineno">  205 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">upd r = r</span></span>
+<span class="lineno">  206 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  207 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let declsLifted =</span></span>
+<span class="lineno">  208 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind nm domLifted)</span></span>
+<span class="lineno">  209 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| (nm, dom) &lt;- decls</span></span>
+<span class="lineno">  210 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, let domLifted = foldr (\ i j -&gt; DomainMatrix (forgetRepr i) j ) dom indexDomains</span></span>
+<span class="lineno">  211 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  212 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let consLifted =</span></span>
+<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension c generators</span></span>
+<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| c &lt;- transformBi upd cons</span></span>
+<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  217 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  219 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up auxiliary variables through a comprehension.&quot;</span></span>
+<span class="lineno">  220 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ WithLocals (Comprehension (transform upd body) (transformBi upd gensOrConds))</span></span>
+<span class="lineno">  221 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">(AuxiliaryVars (declsLifted ++ [SuchThat consLifted]))</span></span>
+<span class="lineno">  222 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  223 </span><span class="spaces">    </span><span class="istickedoff">theRule WithLocals{} = na &quot;rule_LiftVars&quot;</span>
+<span class="lineno">  224 </span><span class="spaces">    </span><span class="istickedoff">theRule Reference{} = na &quot;rule_LiftVars&quot;</span>
+<span class="lineno">  225 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  226 </span><span class="spaces">    </span><span class="istickedoff">-- special handling of AuxiliaryVars-bubbles on the rhs of an implication</span>
+<span class="lineno">  227 </span><span class="spaces">    </span><span class="istickedoff">theRule p</span>
+<span class="lineno">  228 </span><span class="spaces">        </span><span class="istickedoff">| Just (a, WithLocals b (AuxiliaryVars locals@(_:_))) &lt;- match opImply p</span>
+<span class="lineno">  229 </span><span class="spaces">        </span><span class="istickedoff">= <span class="nottickedoff">do</span></span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">  231 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">decls = [ l | l@(Declaration (FindOrGiven LocalFind _ _)) &lt;- locals ]</span></span>
+<span class="lineno">  232 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  233 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">cons  = make opAnd $ fromList $ concat [ xs | SuchThat xs &lt;- locals ]</span></span>
+<span class="lineno">  234 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  235 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">dontCares = make opAnd $ fromList [ make opDontCare (Reference nm Nothing)</span></span>
+<span class="lineno">  236 </span><span class="spaces">                                              </span><span class="istickedoff"><span class="nottickedoff">| Declaration (FindOrGiven LocalFind nm _) &lt;- locals</span></span>
+<span class="lineno">  237 </span><span class="spaces">                                              </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  238 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  239 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">p' = [essence| and([ &amp;a -&gt; (&amp;b /\ &amp;cons)</span></span>
+<span class="lineno">  240 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, !&amp;a -&gt; &amp;dontCares</span></span>
+<span class="lineno">  241 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
+<span class="lineno">  242 </span><span class="spaces">                         </span><span class="istickedoff"><span class="nottickedoff">|]</span></span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  244 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  245 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up auxiliary variables, rhs of imply.&quot;</span></span>
+<span class="lineno">  246 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ WithLocals p' (AuxiliaryVars decls)</span></span>
+<span class="lineno">  247 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  248 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  249 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno">  251 </span><span class="spaces">            </span><span class="istickedoff">f (WithLocals y (AuxiliaryVars locals@(_:_))) = do</span>
+<span class="lineno">  252 </span><span class="spaces">                </span><span class="istickedoff">tell locals</span>
+<span class="lineno">  253 </span><span class="spaces">                </span><span class="istickedoff">return y</span>
+<span class="lineno">  254 </span><span class="spaces">            </span><span class="istickedoff">f x = return x</span>
+<span class="lineno">  255 </span><span class="spaces">        </span><span class="istickedoff">(p', collected) &lt;- runWriterT (descendM f p)</span>
+<span class="lineno">  256 </span><span class="spaces">        </span><span class="istickedoff">when (null collected) $</span>
+<span class="lineno">  257 </span><span class="spaces">            </span><span class="istickedoff">na &quot;rule_LiftVars doesn't have any bubbly children&quot;</span>
+<span class="lineno">  258 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  259 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Bubbling up auxiliary variables.&quot;</span></span>
+<span class="lineno">  260 </span><span class="spaces">            </span><span class="istickedoff">, return $ WithLocals p' (AuxiliaryVars collected)</span>
+<span class="lineno">  261 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
+
+</pre>
+</body>
+</html>

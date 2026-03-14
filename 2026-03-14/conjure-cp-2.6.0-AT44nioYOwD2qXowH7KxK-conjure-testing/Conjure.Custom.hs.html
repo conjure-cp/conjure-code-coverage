@@ -1,0 +1,117 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE RecordWildCards #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Custom ( tests ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>-- conjure
+<span class="lineno">    6 </span>import Conjure.Prelude
+<span class="lineno">    7 </span>import Conjure.Language.Pretty 
+<span class="lineno">    8 </span>import Conjure.ModelAllSolveAll ( TestTimeLimit(..) )
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>-- tasty
+<span class="lineno">   11 </span>import Test.Tasty ( TestTree, testGroup )
+<span class="lineno">   12 </span>import Test.Tasty.HUnit ( testCaseSteps, assertFailure )
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>-- text
+<span class="lineno">   15 </span>import Data.Text.IO as T ( readFile, writeFile )
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>-- shelly
+<span class="lineno">   18 </span>import Shelly ( cd, bash, errExit, lastStderr )
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>tests :: IO (TestTimeLimit -&gt; TestTree)
+<span class="lineno">   22 </span><span class="decl"><span class="istickedoff">tests = do</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="istickedoff">let baseDir = &quot;tests/custom&quot;</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">dirs &lt;- mapM (isTestDir baseDir) =&lt;&lt; getAllDirs baseDir</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">let testCases tl = concatMap (testSingleDir tl) (catMaybes dirs)</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">return $ \ tl -&gt; testGroup <span class="nottickedoff">&quot;custom&quot;</span> (testCases tl)</span></span>
+<span class="lineno">   27 </span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>data TestDirFiles = TestDirFiles
+<span class="lineno">   30 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">name</span></span></span>           :: String          -- a name for the test case
+<span class="lineno">   31 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">tBaseDir</span></span></span>       :: FilePath        -- dir
+<span class="lineno">   32 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">expectedTime</span></span></span>   :: Int
+<span class="lineno">   33 </span>    }
+<span class="lineno">   34 </span>    deriving <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>
+<span class="lineno">   37 </span>-- returns True if the argument points to a directory that is not hidden
+<span class="lineno">   38 </span>isTestDir :: FilePath -&gt; FilePath -&gt; IO (Maybe TestDirFiles)
+<span class="lineno">   39 </span><span class="decl"><span class="istickedoff">isTestDir baseDir dir = do</span>
+<span class="lineno">   40 </span><span class="spaces">    </span><span class="istickedoff">dirContents &lt;- getDirectoryContents dir</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">let runSh = filter (&quot;run.sh&quot; ==) dirContents</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">case runSh of</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">[_] -&gt; do</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">expectedTime &lt;-</span>
+<span class="lineno">   45 </span><span class="spaces">                </span><span class="istickedoff">if &quot;expected-time.txt&quot; `elem` dirContents</span>
+<span class="lineno">   46 </span><span class="spaces">                    </span><span class="istickedoff">then fromMaybe <span class="nottickedoff">0</span> . readMay . textToString &lt;$&gt; T.readFile (dir ++ &quot;/expected-time.txt&quot;)</span>
+<span class="lineno">   47 </span><span class="spaces">                    </span><span class="istickedoff">else return 0</span>
+<span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">return $ Just TestDirFiles</span>
+<span class="lineno">   49 </span><span class="spaces">                        </span><span class="istickedoff">{ name           = drop (length baseDir + 1) dir</span>
+<span class="lineno">   50 </span><span class="spaces">                        </span><span class="istickedoff">, tBaseDir       = dir</span>
+<span class="lineno">   51 </span><span class="spaces">                        </span><span class="istickedoff">, expectedTime   = expectedTime</span>
+<span class="lineno">   52 </span><span class="spaces">                        </span><span class="istickedoff">}</span>
+<span class="lineno">   53 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return Nothing</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>
+<span class="lineno">   56 </span>testSingleDir :: TestTimeLimit -&gt; TestDirFiles -&gt; [TestTree]
+<span class="lineno">   57 </span><span class="decl"><span class="istickedoff">testSingleDir (TestTimeLimit timeLimitMin timeLimitMax) TestDirFiles{..} =</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">shouldRun = or [ timeLimitMax == 0</span>
+<span class="lineno">   60 </span><span class="spaces">                       </span><span class="istickedoff">, timeLimitMin &lt;= expectedTime &amp;&amp; expectedTime &lt;= timeLimitMax</span>
+<span class="lineno">   61 </span><span class="spaces">                       </span><span class="istickedoff">]</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="istickedoff">if shouldRun</span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">then return $ testCaseSteps (map (\ ch -&gt; if ch == '/' then '.' else ch) name) $ \ step -&gt; do</span>
+<span class="lineno">   65 </span><span class="spaces">                </span><span class="istickedoff">step &quot;Running&quot;</span>
+<span class="lineno">   66 </span><span class="spaces">                </span><span class="istickedoff">(stdout, stderr) &lt;- sh $ errExit False $ do</span>
+<span class="lineno">   67 </span><span class="spaces">                    </span><span class="istickedoff">-- stdout &lt;- run (tBaseDir &lt;/&gt; &quot;run.sh&quot;) []</span>
+<span class="lineno">   68 </span><span class="spaces">                    </span><span class="istickedoff">cd (tBaseDir)</span>
+<span class="lineno">   69 </span><span class="spaces">                    </span><span class="istickedoff">stdout &lt;- bash &quot;./run.sh&quot; []</span>
+<span class="lineno">   70 </span><span class="spaces">                    </span><span class="istickedoff">stderr &lt;- lastStderr</span>
+<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff">return (stdout, stderr)</span>
+<span class="lineno">   72 </span><span class="spaces">                </span><span class="istickedoff">T.writeFile (tBaseDir &lt;/&gt; &quot;stdout&quot;) stdout</span>
+<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff">T.writeFile (tBaseDir &lt;/&gt; &quot;stderr&quot;) stderr</span>
+<span class="lineno">   74 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   75 </span><span class="spaces">                </span><span class="istickedoff">let</span>
+<span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff">readIfExists :: FilePath -&gt; IO String</span>
+<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff">readIfExists f = fromMaybe &quot;&quot; &lt;$&gt; readFileIfExists f</span>
+<span class="lineno">   78 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   79 </span><span class="spaces">                </span><span class="istickedoff">step &quot;Checking stderr&quot;</span>
+<span class="lineno">   80 </span><span class="spaces">                </span><span class="istickedoff">stderrG &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stderr&quot;)</span>
+<span class="lineno">   81 </span><span class="spaces">                </span><span class="istickedoff">stderrE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stderr.expected&quot;)</span>
+<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">unless (stderrE == stderrG) $</span>
+<span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">assertFailure $ renderNormal $ vcat</span></span>
+<span class="lineno">   84 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stderr:&quot; &lt;++&gt; vcat (map pretty (lines stderrG))</span></span>
+<span class="lineno">   85 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; vcat (map pretty (lines stderrE)) ]</span></span>
+<span class="lineno">   86 </span><span class="spaces">                </span><span class="istickedoff">step &quot;Checking stdout&quot;</span>
+<span class="lineno">   87 </span><span class="spaces">                </span><span class="istickedoff">stdoutG &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stdout&quot;)</span>
+<span class="lineno">   88 </span><span class="spaces">                </span><span class="istickedoff">stdoutE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stdout.expected&quot;)</span>
+<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">unless (stdoutE == stdoutG) $</span>
+<span class="lineno">   90 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">assertFailure $ renderNormal $ vcat</span></span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stdout:&quot; &lt;++&gt; vcat (map pretty (lines stdoutG))</span></span>
+<span class="lineno">   92 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; vcat (map pretty (lines stdoutE)) ]</span></span>
+<span class="lineno">   93 </span><span class="spaces">            </span><span class="istickedoff">else []</span></span>
+<span class="lineno">   94 </span>
+
+</pre>
+</body>
+</html>

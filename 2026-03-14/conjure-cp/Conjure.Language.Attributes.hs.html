@@ -1,0 +1,152 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.Attributes where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.Language.Domain (BinaryRelationAttr (..))
+<span class="lineno">    4 </span>import Conjure.Language.Expression.Op.Internal.Common (Lexeme (..))
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Data.Map (Map)
+<span class="lineno">    7 </span>import qualified Data.Map.Strict as M
+<span class="lineno">    8 </span>
+<span class="lineno">    9 </span>type Attr = (Lexeme, Bool)
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>mapFrom :: [[Attr]] -&gt; Map Lexeme Bool
+<span class="lineno">   12 </span><span class="decl"><span class="istickedoff">mapFrom attrs = M.fromList $ concat attrs</span></span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>setValidAttrs :: Map Lexeme Bool
+<span class="lineno">   15 </span><span class="decl"><span class="istickedoff">setValidAttrs = mapFrom [sizeyAttrs]</span></span>
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>msetValidAttrs :: Map Lexeme Bool
+<span class="lineno">   18 </span><span class="decl"><span class="istickedoff">msetValidAttrs = mapFrom [sizeyAttrs, occursAttrs]</span></span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>funAttrs :: Map Lexeme Bool
+<span class="lineno">   21 </span><span class="decl"><span class="istickedoff">funAttrs = mapFrom [sizeyAttrs, jectivityAttrs, totalityAttrs]</span></span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>seqAttrs :: Map Lexeme Bool
+<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">seqAttrs = mapFrom [sizeyAttrs, jectivityAttrs]</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>relAttrs :: Map Lexeme Bool
+<span class="lineno">   27 </span><span class="decl"><span class="istickedoff">relAttrs = mapFrom [sizeyAttrs, binRelAttrs, totalityAttrs]</span></span>
+<span class="lineno">   28 </span>
+<span class="lineno">   29 </span>partitionAttrs :: Map Lexeme Bool
+<span class="lineno">   30 </span><span class="decl"><span class="istickedoff">partitionAttrs = mapFrom [sizeyAttrs, partSizeAttrs,partNumAttrs, regularity]</span></span>
+<span class="lineno">   31 </span>
+<span class="lineno">   32 </span>sizeyAttrs :: [Attr]
+<span class="lineno">   33 </span><span class="decl"><span class="istickedoff">sizeyAttrs =</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">[ (L_size, True)</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">, (L_maxSize, True)</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">, (L_minSize, True)</span>
+<span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>occursAttrs :: [Attr]
+<span class="lineno">   40 </span><span class="decl"><span class="istickedoff">occursAttrs =</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">[ (L_minOccur, True)</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="istickedoff">, (L_maxOccur, True)</span>
+<span class="lineno">   43 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>partNumAttrs :: [Attr]
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">partNumAttrs =</span>
+<span class="lineno">   47 </span><span class="spaces">    </span><span class="istickedoff">[ (L_numParts, True)</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">, (L_maxNumParts, True)</span>
+<span class="lineno">   49 </span><span class="spaces">    </span><span class="istickedoff">, (L_minNumParts, True)</span>
+<span class="lineno">   50 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>partSizeAttrs :: [(Lexeme, Bool)]
+<span class="lineno">   53 </span><span class="decl"><span class="istickedoff">partSizeAttrs =</span>
+<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">[ (L_partSize, True)</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">, (L_minPartSize, True)</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">, (L_maxPartSize, True)</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>jectivityAttrs :: [(Lexeme, Bool)]
+<span class="lineno">   60 </span><span class="decl"><span class="istickedoff">jectivityAttrs =</span>
+<span class="lineno">   61 </span><span class="spaces">    </span><span class="istickedoff">[ (L_injective, False)</span>
+<span class="lineno">   62 </span><span class="spaces">    </span><span class="istickedoff">, (L_bijective, False)</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="istickedoff">, (L_surjective, False)</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   65 </span>
+<span class="lineno">   66 </span>binRelAttrs :: [(Lexeme, Bool)]
+<span class="lineno">   67 </span><span class="decl"><span class="istickedoff">binRelAttrs =</span>
+<span class="lineno">   68 </span><span class="spaces">    </span><span class="istickedoff">[ (L_reflexive, False)</span>
+<span class="lineno">   69 </span><span class="spaces">    </span><span class="istickedoff">, (L_irreflexive, False)</span>
+<span class="lineno">   70 </span><span class="spaces">    </span><span class="istickedoff">, (L_coreflexive, False)</span>
+<span class="lineno">   71 </span><span class="spaces">    </span><span class="istickedoff">, (L_symmetric, False)</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">, (L_antiSymmetric, False)</span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">, (L_aSymmetric, False)</span>
+<span class="lineno">   74 </span><span class="spaces">    </span><span class="istickedoff">, (L_transitive, False)</span>
+<span class="lineno">   75 </span><span class="spaces">    </span><span class="istickedoff">, (L_total,False)</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">, (L_connex, False)</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="istickedoff">, (L_Euclidean, False)</span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">, (L_serial, False)</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">, (L_equivalence, False)</span>
+<span class="lineno">   80 </span><span class="spaces">    </span><span class="istickedoff">, (L_partialOrder, False)</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">, (L_linearOrder, False)</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">, (L_weakOrder, False)</span>
+<span class="lineno">   83 </span><span class="spaces">    </span><span class="istickedoff">, (L_preOrder, False)</span>
+<span class="lineno">   84 </span><span class="spaces">    </span><span class="istickedoff">, (L_strictPartialOrder, False)</span>
+<span class="lineno">   85 </span><span class="spaces">    </span><span class="istickedoff">, (L_leftTotal, False)</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">, (L_rightTotal, False)</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   88 </span>
+<span class="lineno">   89 </span>lexemeToBinRel :: Lexeme -&gt; Maybe BinaryRelationAttr
+<span class="lineno">   90 </span><span class="decl"><span class="istickedoff">lexemeToBinRel L_reflexive = Just BinRelAttr_Reflexive</span>
+<span class="lineno">   91 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_irreflexive = Just BinRelAttr_Irreflexive</span>
+<span class="lineno">   92 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_coreflexive = Just BinRelAttr_Coreflexive</span>
+<span class="lineno">   93 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_symmetric = Just BinRelAttr_Symmetric</span>
+<span class="lineno">   94 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_antiSymmetric = Just BinRelAttr_AntiSymmetric</span>
+<span class="lineno">   95 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_aSymmetric = Just BinRelAttr_ASymmetric</span>
+<span class="lineno">   96 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_transitive = Just BinRelAttr_Transitive</span>
+<span class="lineno">   97 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_total = Just BinRelAttr_Total</span>
+<span class="lineno">   98 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_connex = Just BinRelAttr_Connex</span>
+<span class="lineno">   99 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_Euclidean = Just BinRelAttr_Euclidean</span>
+<span class="lineno">  100 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_serial = Just BinRelAttr_Serial</span>
+<span class="lineno">  101 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_equivalence = Just BinRelAttr_Equivalence</span>
+<span class="lineno">  102 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_partialOrder = Just BinRelAttr_PartialOrder</span>
+<span class="lineno">  103 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_linearOrder = <span class="nottickedoff">Just BinRelAttr_LinearOrder</span></span>
+<span class="lineno">  104 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_weakOrder = <span class="nottickedoff">Just BinRelAttr_WeakOrder</span></span>
+<span class="lineno">  105 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_preOrder = <span class="nottickedoff">Just BinRelAttr_PreOrder</span></span>
+<span class="lineno">  106 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_strictPartialOrder = <span class="nottickedoff">Just BinRelAttr_StrictPartialOrder</span></span>
+<span class="lineno">  107 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_leftTotal = <span class="nottickedoff">Just BinRelAttr_LeftTotal</span></span>
+<span class="lineno">  108 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel L_rightTotal = <span class="nottickedoff">Just BinRelAttr_RightTotal</span></span>
+<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff">lexemeToBinRel _ = <span class="nottickedoff">Nothing</span></span></span>
+<span class="lineno">  110 </span>
+<span class="lineno">  111 </span>totalityAttrs :: [Attr]
+<span class="lineno">  112 </span><span class="decl"><span class="istickedoff">totalityAttrs = [(L_total, False)]</span></span>
+<span class="lineno">  113 </span>
+<span class="lineno">  114 </span>regularity :: [Attr]
+<span class="lineno">  115 </span><span class="decl"><span class="istickedoff">regularity = [(L_regular, False)]</span></span>
+<span class="lineno">  116 </span>
+<span class="lineno">  117 </span>allAttributLexemes :: [Lexeme]
+<span class="lineno">  118 </span><span class="decl"><span class="istickedoff">allAttributLexemes =</span>
+<span class="lineno">  119 </span><span class="spaces">    </span><span class="istickedoff">concatMap</span>
+<span class="lineno">  120 </span><span class="spaces">        </span><span class="istickedoff">(map fst)</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">[ sizeyAttrs</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">, jectivityAttrs</span>
+<span class="lineno">  123 </span><span class="spaces">        </span><span class="istickedoff">, occursAttrs</span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff">, partNumAttrs</span>
+<span class="lineno">  125 </span><span class="spaces">        </span><span class="istickedoff">, partSizeAttrs</span>
+<span class="lineno">  126 </span><span class="spaces">        </span><span class="istickedoff">, binRelAttrs</span>
+<span class="lineno">  127 </span><span class="spaces">        </span><span class="istickedoff">, totalityAttrs</span>
+<span class="lineno">  128 </span><span class="spaces">        </span><span class="istickedoff">, regularity</span>
+<span class="lineno">  129 </span><span class="spaces">        </span><span class="istickedoff">]</span></span>
+
+</pre>
+</body>
+</html>

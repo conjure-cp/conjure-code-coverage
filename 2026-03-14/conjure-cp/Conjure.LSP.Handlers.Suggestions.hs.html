@@ -1,0 +1,195 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.LSP.Handlers.Suggestions (suggestionHandler) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.LSP.Util (ProcessedFile (ProcessedFile), getNextTokenStart, getRelevantRegions, positionToSourcePos, sourcePosToPosition, withProcessedDoc)
+<span class="lineno">    4 </span>import Conjure.Language (Type (..))
+<span class="lineno">    5 </span>import Conjure.Language.AST.Reformer
+<span class="lineno">    6 </span>-- (Class (..), Kind (..), RegionInfo (..), ValidatorState (regionInfo), RegionType (..), StructuralType (..),symbolTable)
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>import Conjure.Language.AST.Syntax (LToken (MissingToken))
+<span class="lineno">    9 </span>import Conjure.Language.Lexemes
+<span class="lineno">   10 </span>import Conjure.Language.Lexer
+<span class="lineno">   11 </span>import Conjure.Language.Pretty (prettyT)
+<span class="lineno">   12 </span>import Conjure.Language.Validator
+<span class="lineno">   13 </span>import Conjure.Prelude
+<span class="lineno">   14 </span>import Control.Lens
+<span class="lineno">   15 </span>import Data.Map.Strict qualified as Map
+<span class="lineno">   16 </span>import Language.LSP.Protocol.Lens (HasParams (..), HasPosition (position), HasTextDocument (textDocument))
+<span class="lineno">   17 </span>import Language.LSP.Protocol.Message
+<span class="lineno">   18 </span>import Language.LSP.Protocol.Types (CompletionItem (..), CompletionItemKind (..), type (|?) (..))
+<span class="lineno">   19 </span>import Language.LSP.Protocol.Types qualified as T
+<span class="lineno">   20 </span>import Language.LSP.Server (Handlers, LspM, requestHandler)
+<span class="lineno">   21 </span>import Text.Megaparsec (SourcePos)
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>suggestionHandler :: Handlers (LspM ())
+<span class="lineno">   24 </span><span class="decl"><span class="nottickedoff">suggestionHandler = requestHandler SMethod_TextDocumentCompletion $ \req res -&gt; do</span>
+<span class="lineno">   25 </span><span class="spaces">  </span><span class="nottickedoff">let ps = req ^. params . textDocument</span>
+<span class="lineno">   26 </span><span class="spaces">  </span><span class="nottickedoff">let context = req ^. params . position</span>
+<span class="lineno">   27 </span><span class="spaces">  </span><span class="nottickedoff">withProcessedDoc ps $ \(ProcessedFile _ diags valState pt) -&gt; do</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="nottickedoff">let nextTStart = getNextTokenStart context pt</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="nottickedoff">let roi = getRelevantRegions valState nextTStart</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="nottickedoff">let innermostSymbolTable = if null roi then [] else Map.toList . rTable $ last roi</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="nottickedoff">let errors = [(r, d) | (ValidatorDiagnostic r (Error (TokenError d))) &lt;- diags]</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="nottickedoff">let contextTokens = take 1 [lexeme w | (r, MissingToken w) &lt;- errors, isInRange nextTStart r]</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">let missingTokenBasedHint = missingToSuggestion innermostSymbolTable contextTokens</span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="nottickedoff">-- sendInfoMessage $ pack . show $ context</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">let tlSymbol = getLowestLevelTaggedRegion (positionToSourcePos context) $ makeTree pt</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="nottickedoff">let tlSymbolSuggestion = case tlSymbol of</span>
+<span class="lineno">   37 </span><span class="spaces">          </span><span class="nottickedoff">Just (TIDomain _) -&gt; makeDomainSuggestions innermostSymbolTable</span>
+<span class="lineno">   38 </span><span class="spaces">          </span><span class="nottickedoff">Just (TIExpression _) -&gt; makeExpressionSuggestions innermostSymbolTable</span>
+<span class="lineno">   39 </span><span class="spaces">          </span><span class="nottickedoff">Just (TIList t) -&gt; makeTagSuggestions innermostSymbolTable t</span>
+<span class="lineno">   40 </span><span class="spaces">          </span><span class="nottickedoff">_ -&gt; [] -- or for debugging -&gt; [defaultCompletion $ pack . show $ tlSymbol]</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="nottickedoff">res</span>
+<span class="lineno">   42 </span><span class="spaces">      </span><span class="nottickedoff">$ Right</span>
+<span class="lineno">   43 </span><span class="spaces">      </span><span class="nottickedoff">$ InL</span>
+<span class="lineno">   44 </span><span class="spaces">      </span><span class="nottickedoff">. nubBy isSameInsertion</span>
+<span class="lineno">   45 </span><span class="spaces">      </span><span class="nottickedoff">$ concat</span>
+<span class="lineno">   46 </span><span class="spaces">        </span><span class="nottickedoff">[ missingTokenBasedHint,</span>
+<span class="lineno">   47 </span><span class="spaces">          </span><span class="nottickedoff">tlSymbolSuggestion,</span>
+<span class="lineno">   48 </span><span class="spaces">          </span><span class="nottickedoff">keywordCompletions</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>isSameInsertion :: CompletionItem -&gt; CompletionItem -&gt; Bool
+<span class="lineno">   52 </span><span class="decl"><span class="nottickedoff">isSameInsertion CompletionItem {_label = a} CompletionItem {_label = b} = a == b</span></span>
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>isInRange :: T.Position -&gt; DiagnosticRegion -&gt; Bool
+<span class="lineno">   55 </span><span class="decl"><span class="nottickedoff">isInRange p reg = sourcePosToPosition (drSourcePos reg) == p</span></span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>makeSuggestionsFromSymbolTable :: [(Text, SymbolTableValue)] -&gt; [CompletionItem]
+<span class="lineno">   58 </span><span class="decl"><span class="nottickedoff">makeSuggestionsFromSymbolTable = map symbolToHint</span></span>
+<span class="lineno">   59 </span>
+<span class="lineno">   60 </span>makeDomainSuggestions :: [(Text, SymbolTableValue)] -&gt; [CompletionItem]
+<span class="lineno">   61 </span><span class="decl"><span class="nottickedoff">makeDomainSuggestions table = stDomains ++ newDomainPlaceholders</span>
+<span class="lineno">   62 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   63 </span><span class="spaces">    </span><span class="nottickedoff">stDomains = map symbolToHint $ [x | x@(_, (_, _, Kind DomainType t)) &lt;- table, typesUnifyS [t, TypeAny]]</span>
+<span class="lineno">   64 </span><span class="spaces">    </span><span class="nottickedoff">newDomainPlaceholders =</span>
+<span class="lineno">   65 </span><span class="spaces">      </span><span class="nottickedoff">uncurry snippetCompletion</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">&lt;$&gt; [ (&quot;int&quot;, &quot;int&quot;),</span>
+<span class="lineno">   67 </span><span class="spaces">              </span><span class="nottickedoff">(&quot;int&quot;, &quot;bool&quot;),</span>
+<span class="lineno">   68 </span><span class="spaces">              </span><span class="nottickedoff">(&quot;matrix&quot;, &quot;matrix indexed by ${1:[index_domains]} of ${2:type}&quot;),</span>
+<span class="lineno">   69 </span><span class="spaces">              </span><span class="nottickedoff">(&quot;set&quot;, &quot;set of $1&quot;),</span>
+<span class="lineno">   70 </span><span class="spaces">              </span><span class="nottickedoff">(&quot;mset&quot;, &quot;mset of $1&quot;)</span>
+<span class="lineno">   71 </span><span class="spaces">            </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   72 </span>
+<span class="lineno">   73 </span>makeExpressionSuggestions :: [(Text, SymbolTableValue)] -&gt; [CompletionItem]
+<span class="lineno">   74 </span><span class="decl"><span class="nottickedoff">makeExpressionSuggestions table = stExprs ++ newExpressionPlaceholders</span>
+<span class="lineno">   75 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">stExprs = map symbolToHint $ [x | x@(_, (_, _, Kind ValueType {} t)) &lt;- table, typesUnifyS [t, TypeAny]]</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">newExpressionPlaceholders = []</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>makeTagSuggestions :: [(Text, SymbolTableValue)] -&gt; ListItemClasses -&gt; [CompletionItem]
+<span class="lineno">   80 </span><span class="decl"><span class="nottickedoff">makeTagSuggestions table tag = case tag of</span>
+<span class="lineno">   81 </span><span class="spaces">  </span><span class="nottickedoff">ICAttribute -&gt; defaultCompletion &lt;$&gt; [&quot;size&quot;]</span>
+<span class="lineno">   82 </span><span class="spaces">  </span><span class="nottickedoff">ICExpression -&gt; makeExpressionSuggestions table</span>
+<span class="lineno">   83 </span><span class="spaces">  </span><span class="nottickedoff">ICDomain -&gt; makeDomainSuggestions table</span>
+<span class="lineno">   84 </span><span class="spaces">  </span><span class="nottickedoff">ICRange -&gt; uncurry snippetCompletion &lt;$&gt; [(&quot;openL&quot;, &quot;..$1&quot;), (&quot;closed&quot;, &quot;$1..$2&quot;), (&quot;openR&quot;, &quot;$1..&quot;)]</span>
+<span class="lineno">   85 </span><span class="spaces">  </span><span class="nottickedoff">ICIdentifier -&gt; freeIdentifierSuggestion table</span>
+<span class="lineno">   86 </span><span class="spaces">  </span><span class="nottickedoff">ICStatement -&gt; topLevelSuggestions</span></span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>symbolToHint :: (Text, SymbolTableValue) -&gt; CompletionItem
+<span class="lineno">   89 </span><span class="decl"><span class="nottickedoff">symbolToHint (name, (_, _, k)) =</span>
+<span class="lineno">   90 </span><span class="spaces">  </span><span class="nottickedoff">let typeName = prettyT k</span>
+<span class="lineno">   91 </span><span class="spaces">   </span><span class="nottickedoff">in (defaultCompletion name) {_detail = Just typeName, _kind = pure $ getCIKind k}</span></span>
+<span class="lineno">   92 </span>
+<span class="lineno">   93 </span>getCIKind :: Kind -&gt; CompletionItemKind
+<span class="lineno">   94 </span><span class="decl"><span class="nottickedoff">getCIKind (Kind DomainType _) = CompletionItemKind_Class</span>
+<span class="lineno">   95 </span><span class="spaces"></span><span class="nottickedoff">getCIKind (Kind ValueType {} t) = case t of</span>
+<span class="lineno">   96 </span><span class="spaces">  </span><span class="nottickedoff">TypeAny -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">   97 </span><span class="spaces">  </span><span class="nottickedoff">TypeBool -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">   98 </span><span class="spaces">  </span><span class="nottickedoff">TypeInt _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">   99 </span><span class="spaces">  </span><span class="nottickedoff">TypeEnum _ -&gt; CompletionItemKind_Enum</span>
+<span class="lineno">  100 </span><span class="spaces">  </span><span class="nottickedoff">TypeUnnamed _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  101 </span><span class="spaces">  </span><span class="nottickedoff">TypeTuple _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  102 </span><span class="spaces">  </span><span class="nottickedoff">TypeRecord _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  103 </span><span class="spaces">  </span><span class="nottickedoff">TypeRecordMember _ _ -&gt; CompletionItemKind_EnumMember</span>
+<span class="lineno">  104 </span><span class="spaces">  </span><span class="nottickedoff">TypeVariant _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  105 </span><span class="spaces">  </span><span class="nottickedoff">TypeVariantMember _ _ -&gt; CompletionItemKind_EnumMember</span>
+<span class="lineno">  106 </span><span class="spaces">  </span><span class="nottickedoff">TypeList _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  107 </span><span class="spaces">  </span><span class="nottickedoff">TypeMatrix _ _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  108 </span><span class="spaces">  </span><span class="nottickedoff">TypeSet _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  109 </span><span class="spaces">  </span><span class="nottickedoff">TypeMSet _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  110 </span><span class="spaces">  </span><span class="nottickedoff">TypeFunction _ _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  111 </span><span class="spaces">  </span><span class="nottickedoff">TypeSequence _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  112 </span><span class="spaces">  </span><span class="nottickedoff">TypeRelation _ -&gt; CompletionItemKind_Variable</span>
+<span class="lineno">  113 </span><span class="spaces">  </span><span class="nottickedoff">TypePartition _ -&gt; CompletionItemKind_Variable</span></span>
+<span class="lineno">  114 </span>
+<span class="lineno">  115 </span>snippetCompletion :: Text -&gt; Text -&gt; CompletionItem
+<span class="lineno">  116 </span><span class="decl"><span class="nottickedoff">snippetCompletion label snippet = (defaultCompletion label) {_kind = pure CompletionItemKind_Snippet, _insertText = pure snippet, _insertTextFormat = pure T.InsertTextFormat_Snippet}</span></span>
+<span class="lineno">  117 </span>
+<span class="lineno">  118 </span>defaultCompletion :: Text -&gt; CompletionItem
+<span class="lineno">  119 </span><span class="decl"><span class="nottickedoff">defaultCompletion n =</span>
+<span class="lineno">  120 </span><span class="spaces">  </span><span class="nottickedoff">CompletionItem</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="nottickedoff">n</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  125 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  126 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  127 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  128 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  129 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  130 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  134 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  135 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span>
+<span class="lineno">  139 </span><span class="spaces">    </span><span class="nottickedoff">Nothing</span></span>
+<span class="lineno">  140 </span>
+<span class="lineno">  141 </span>--
+<span class="lineno">  142 </span>missingToSuggestion :: [(Text, SymbolTableValue)] -&gt; [Lexeme] -&gt; [CompletionItem]
+<span class="lineno">  143 </span><span class="decl"><span class="nottickedoff">missingToSuggestion table (x : _) = makeMissingTokenHint x</span>
+<span class="lineno">  144 </span><span class="spaces">  </span><span class="nottickedoff">where</span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="nottickedoff">makeMissingTokenHint (L_Missing s) = case s of</span>
+<span class="lineno">  146 </span><span class="spaces">      </span><span class="nottickedoff">MissingExpression -&gt; makeExpressionSuggestions table</span>
+<span class="lineno">  147 </span><span class="spaces">      </span><span class="nottickedoff">MissingDomain -&gt; makeDomainSuggestions table</span>
+<span class="lineno">  148 </span><span class="spaces">      </span><span class="nottickedoff">MissingUnknown -&gt; []</span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="nottickedoff">makeMissingTokenHint LMissingIdentifier = freeIdentifierSuggestion table</span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="nottickedoff">makeMissingTokenHint l = [defaultCompletion $ lexemeText l]</span>
+<span class="lineno">  151 </span><span class="spaces"></span><span class="nottickedoff">missingToSuggestion table _ = makeSuggestionsFromSymbolTable table</span></span>
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>keywordCompletions :: [CompletionItem]
+<span class="lineno">  154 </span><span class="decl"><span class="nottickedoff">keywordCompletions = []</span></span>
+<span class="lineno">  155 </span>
+<span class="lineno">  156 </span>getLowestLevelTaggedRegion :: SourcePos -&gt; HLTree -&gt; Maybe TreeItemLinks
+<span class="lineno">  157 </span><span class="decl"><span class="nottickedoff">getLowestLevelTaggedRegion p tr =</span>
+<span class="lineno">  158 </span><span class="spaces">  </span><span class="nottickedoff">let regs = filterContaining p tr</span>
+<span class="lineno">  159 </span><span class="spaces">   </span><span class="nottickedoff">in case [t | HLTagged t _ &lt;- regs, t /= TIGeneral] of</span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="nottickedoff">[] -&gt; Nothing</span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="nottickedoff">ins -&gt; Just $ last ins</span></span>
+<span class="lineno">  162 </span>
+<span class="lineno">  163 </span>topLevelSuggestions :: [CompletionItem]
+<span class="lineno">  164 </span><span class="decl"><span class="nottickedoff">topLevelSuggestions =</span>
+<span class="lineno">  165 </span><span class="spaces">  </span><span class="nottickedoff">uncurry snippetCompletion</span>
+<span class="lineno">  166 </span><span class="spaces">    </span><span class="nottickedoff">&lt;$&gt; [ (&quot;find&quot;, &quot;find $1 : $2&quot;),</span>
+<span class="lineno">  167 </span><span class="spaces">          </span><span class="nottickedoff">(&quot;given&quot;, &quot;such that $0&quot;),</span>
+<span class="lineno">  168 </span><span class="spaces">          </span><span class="nottickedoff">(&quot;such that&quot;, &quot;given $1 : $2&quot;)</span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  170 </span>
+<span class="lineno">  171 </span>freeIdentifierSuggestion :: a -&gt; [CompletionItem]
+<span class="lineno">  172 </span><span class="decl"><span class="nottickedoff">freeIdentifierSuggestion _ = [defaultCompletion &quot;identifier&quot;]</span></span>
+
+</pre>
+</body>
+</html>

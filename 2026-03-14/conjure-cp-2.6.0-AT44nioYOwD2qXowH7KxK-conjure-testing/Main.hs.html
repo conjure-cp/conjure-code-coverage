@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Main where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>-- conjure tests
+<span class="lineno">    4 </span>import Conjure.Prelude
+<span class="lineno">    5 </span>import Conjure.Language.Type ( TypeCheckerMode(..) )
+<span class="lineno">    6 </span>import qualified Conjure.Language.DomainSizeTest ( tests )
+<span class="lineno">    7 </span>import qualified Conjure.RepresentationsTest ( tests )
+<span class="lineno">    8 </span>import qualified Conjure.ModelAllSolveAll ( tests, TestTimeLimit(..) )
+<span class="lineno">    9 </span>import qualified Conjure.TypeCheckAll ( tests )
+<span class="lineno">   10 </span>import qualified Conjure.ParsePrint ( tests )
+<span class="lineno">   11 </span>import qualified Conjure.ParserFuzz ( tests )
+<span class="lineno">   12 </span>import qualified Conjure.Custom ( tests )
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>-- tasty
+<span class="lineno">   15 </span>import Test.Tasty ( defaultMainWithIngredients, defaultIngredients, includingOptions, askOption, testGroup )
+<span class="lineno">   16 </span>import Test.Tasty.Options ( OptionDescription(..) )
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>-- tasty-ant-xml
+<span class="lineno">   19 </span>import Test.Tasty.Runners.AntXML ( antXMLRunner )
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>main :: IO ()
+<span class="lineno">   23 </span><span class="decl"><span class="istickedoff">main = do</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">let ?typeCheckerMode = StronglyTyped</span>
+<span class="lineno">   25 </span><span class="spaces">    </span><span class="istickedoff">modelAllSolveAllTests &lt;- Conjure.ModelAllSolveAll.tests</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">typeCheckAllTests     &lt;- Conjure.TypeCheckAll.tests</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">parsePrintTests       &lt;- Conjure.ParsePrint.tests</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">parseFuzzTests        &lt;- Conjure.ParserFuzz.tests</span>
+<span class="lineno">   29 </span><span class="spaces">    </span><span class="istickedoff">customTests           &lt;- Conjure.Custom.tests</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">let ingredients = antXMLRunner</span>
+<span class="lineno">   31 </span><span class="spaces">                    </span><span class="istickedoff">: includingOptions [Option <span class="nottickedoff">(Proxy :: Proxy Conjure.ModelAllSolveAll.TestTimeLimit)</span>]</span>
+<span class="lineno">   32 </span><span class="spaces">                    </span><span class="istickedoff">: defaultIngredients</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">defaultMainWithIngredients ingredients $ askOption $ \ testTimeLimit -&gt;</span>
+<span class="lineno">   34 </span><span class="spaces">        </span><span class="istickedoff">testGroup <span class="nottickedoff">&quot;conjure&quot;</span></span>
+<span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff">[ Conjure.Language.DomainSizeTest.tests</span>
+<span class="lineno">   36 </span><span class="spaces">            </span><span class="istickedoff">, Conjure.RepresentationsTest.tests</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">, parseFuzzTests</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">, parsePrintTests</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">, modelAllSolveAllTests testTimeLimit</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">, typeCheckAllTests</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">, customTests testTimeLimit</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">]</span></span>
+
+</pre>
+</body>
+</html>

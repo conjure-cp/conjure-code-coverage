@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.DomainSizeTest ( tests ) where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>-- conjure
+<span class="lineno">    4 </span>import Conjure.Prelude
+<span class="lineno">    5 </span>import Conjure.Language.Constant
+<span class="lineno">    6 </span>import Conjure.Language.Type
+<span class="lineno">    7 </span>import Conjure.Language.Domain
+<span class="lineno">    8 </span>import Conjure.Language.DomainSizeOf ( domainSizeOf )
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>-- tasty
+<span class="lineno">   11 </span>import Test.Tasty ( TestTree, testGroup )
+<span class="lineno">   12 </span>import Test.Tasty.HUnit ( testCase, (@?=) )
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>domainSizeConstant :: (MonadFailDoc m ) =&gt; Domain () Constant -&gt; m Integer
+<span class="lineno">   16 </span><span class="decl"><span class="istickedoff">domainSizeConstant = domainSizeOf</span></span>
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>tests :: TestTree
+<span class="lineno">   19 </span><span class="decl"><span class="istickedoff">tests = testGroup <span class="nottickedoff">&quot;domainSize&quot;</span></span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="istickedoff">[ testCase &quot;domain size of bool is 2&quot; $</span>
+<span class="lineno">   21 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant DomainBool @?= Right 2</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of int(1..100)&quot; $</span>
+<span class="lineno">   23 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainInt <span class="nottickedoff">TagInt</span> [RangeBounded ((ConstantInt <span class="nottickedoff">TagInt</span>) 1) ((ConstantInt <span class="nottickedoff">TagInt</span>) 100)]) @?= Right 100</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of int(1,...,100)&quot; $</span>
+<span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainInt <span class="nottickedoff">TagInt</span> (map (RangeSingle . (ConstantInt <span class="nottickedoff">TagInt</span>)) [1 .. 100])) @?= Right 100</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of int(13)&quot; $</span>
+<span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainInt <span class="nottickedoff">TagInt</span> [RangeSingle ((ConstantInt <span class="nottickedoff">TagInt</span>) 13)]) @?= Right 1</span>
+<span class="lineno">   28 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of int(13,1..100)&quot; $</span>
+<span class="lineno">   29 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainInt <span class="nottickedoff">TagInt</span> [ RangeSingle ((ConstantInt <span class="nottickedoff">TagInt</span>) 13)</span>
+<span class="lineno">   30 </span><span class="spaces">                                      </span><span class="istickedoff">, RangeBounded ((ConstantInt <span class="nottickedoff">TagInt</span>) 1) ((ConstantInt <span class="nottickedoff">TagInt</span>) 100)</span>
+<span class="lineno">   31 </span><span class="spaces">                                      </span><span class="istickedoff">]) @?= Right 100</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of int(113,1..100)&quot; $</span>
+<span class="lineno">   33 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainInt <span class="nottickedoff">TagInt</span> [ RangeSingle ((ConstantInt <span class="nottickedoff">TagInt</span>) 113)</span>
+<span class="lineno">   34 </span><span class="spaces">                                      </span><span class="istickedoff">, RangeBounded ((ConstantInt <span class="nottickedoff">TagInt</span>) 1) ((ConstantInt <span class="nottickedoff">TagInt</span>) 100)</span>
+<span class="lineno">   35 </span><span class="spaces">                                      </span><span class="istickedoff">]) @?= Right 101</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of set of bool #1&quot; $</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">domainSizeConstant (DomainSet <span class="nottickedoff">()</span> (SetAttr SizeAttr_None) DomainBool) @?= Right 4</span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">, testCase &quot;domain size of set of bool #2&quot; $</span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="istickedoff">let setOfSize n = DomainSet <span class="nottickedoff">()</span> (SetAttr (SizeAttr_Size n))</span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="istickedoff">in  domainSizeConstant (setOfSize ((ConstantInt <span class="nottickedoff">TagInt</span>) 2) DomainBool) @?= Right 1</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">]</span></span>
+<span class="lineno">   42 </span>
+
+</pre>
+</body>
+</html>
