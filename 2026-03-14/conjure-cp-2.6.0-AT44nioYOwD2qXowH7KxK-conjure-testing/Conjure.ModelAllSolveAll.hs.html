@@ -118,7 +118,7 @@ span.spaces    { background: white }
 <span class="lineno">   99 </span><span class="spaces">    </span><span class="istickedoff">let baseDir = &quot;tests/exhaustive&quot;</span>
 <span class="lineno">  100 </span><span class="spaces">    </span><span class="istickedoff">dirs &lt;- mapM (isTestDir baseDir) =&lt;&lt; getAllDirs baseDir</span>
 <span class="lineno">  101 </span><span class="spaces">    </span><span class="istickedoff">let testCases tl = concatMap (testSingleDir tl srOptions) (catMaybes dirs)</span>
-<span class="lineno">  102 </span><span class="spaces">    </span><span class="istickedoff">return $ \ tl -&gt; testGroup <span class="nottickedoff">&quot;exhaustive&quot;</span> (testCases tl)</span></span>
+<span class="lineno">  102 </span><span class="spaces">    </span><span class="istickedoff">return $ \ tl -&gt; testGroup &quot;exhaustive&quot; (testCases tl)</span></span>
 <span class="lineno">  103 </span>
 <span class="lineno">  104 </span>
 <span class="lineno">  105 </span>data TestDirFiles = TestDirFiles

@@ -55,7 +55,7 @@ span.spaces    { background: white }
 <span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">let baseDir = &quot;tests/parse_print&quot;</span>
 <span class="lineno">   37 </span><span class="spaces">    </span><span class="istickedoff">dirs &lt;- mapM (isTestDir baseDir) =&lt;&lt; getAllDirs baseDir</span>
 <span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">let testCases = map testSingleDir (catMaybes dirs)</span>
-<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">return (testGroup <span class="nottickedoff">&quot;parse_print&quot;</span> testCases)</span></span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">return (testGroup &quot;parse_print&quot; testCases)</span></span>
 <span class="lineno">   40 </span>
 <span class="lineno">   41 </span>data TestDirFiles = TestDirFiles
 <span class="lineno">   42 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">name</span></span></span> :: String -- a name for the test case
