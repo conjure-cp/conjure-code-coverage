@@ -1,0 +1,209 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>{-# LANGUAGE Rank2Types #-}
+<span class="lineno">    3 </span>{-# LANGUAGE RecordWildCards #-}
+<span class="lineno">    4 </span>{-# LANGUAGE ViewPatterns #-}
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>module Conjure.Representations.Permutation.PermutationAsFunction (permutationAsFunction) where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>-- conjure
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>import Conjure.Language
+<span class="lineno">   11 </span>import Conjure.Language.DomainSizeOf
+<span class="lineno">   12 </span>import Conjure.Language.Expression.DomainSizeOf ()
+<span class="lineno">   13 </span>import Conjure.Prelude
+<span class="lineno">   14 </span>import Conjure.Process.Enumerate
+<span class="lineno">   15 </span>import Conjure.Representations.Common
+<span class="lineno">   16 </span>import Conjure.Representations.Internal
+<span class="lineno">   17 </span>import Conjure.Util.Permutation
+<span class="lineno">   18 </span>
+<span class="lineno">   19 </span>permutationAsFunction ::
+<span class="lineno">   20 </span>  forall m.
+<span class="lineno">   21 </span>  (MonadFailDoc m, NameGen m, EnumerateDomain m) =&gt;
+<span class="lineno">   22 </span>  (forall x. DispatchFunction m x) -&gt;
+<span class="lineno">   23 </span>  Representation m
+<span class="lineno">   24 </span><span class="decl"><span class="istickedoff">permutationAsFunction dispatch = Representation chck downD structuralCons downC up <span class="nottickedoff">symmetryOrdering</span></span>
+<span class="lineno">   25 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   26 </span><span class="spaces">    </span><span class="istickedoff">chck :: TypeOf_ReprCheck m</span>
+<span class="lineno">   27 </span><span class="spaces">    </span><span class="istickedoff">chck f (DomainPermutation _ s innerDomain)</span>
+<span class="lineno">   28 </span><span class="spaces">      </span><span class="istickedoff">| <span class="tickonlytrue">domainCanIndexMatrix innerDomain</span> =</span>
+<span class="lineno">   29 </span><span class="spaces">          </span><span class="istickedoff">map (DomainPermutation Permutation_AsFunction s) &lt;$&gt; f innerDomain</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="istickedoff">chck _ _ = return []</span>
+<span class="lineno">   31 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="istickedoff">outNameF :: Domain HasRepresentation x -&gt; Name -&gt; Name</span>
+<span class="lineno">   33 </span><span class="spaces">    </span><span class="istickedoff">outNameF = mkOutName (Just &quot;PermutationFunction_forwards&quot;)</span>
+<span class="lineno">   34 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">outNameB :: Domain HasRepresentation x -&gt; Name -&gt; Name</span>
+<span class="lineno">   36 </span><span class="spaces">    </span><span class="istickedoff">outNameB = mkOutName (Just &quot;PermutationFunction_backwards&quot;)</span>
+<span class="lineno">   37 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   38 </span><span class="spaces">    </span><span class="istickedoff">outDomain :: (DomainSizeOf x x, Pretty x) =&gt; Domain HasRepresentation x -&gt; m (Domain HasRepresentation x)</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="istickedoff">outDomain (DomainPermutation Permutation_AsFunction _ innerDomain) = do</span>
+<span class="lineno">   40 </span><span class="spaces">      </span><span class="istickedoff">s &lt;- domainSizeOf innerDomain</span>
+<span class="lineno">   41 </span><span class="spaces">      </span><span class="istickedoff">return</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">( DomainFunction</span>
+<span class="lineno">   43 </span><span class="spaces">            </span><span class="istickedoff">Function_1D</span>
+<span class="lineno">   44 </span><span class="spaces">            </span><span class="istickedoff">(FunctionAttr (SizeAttr_Size s) PartialityAttr_Total JectivityAttr_Bijective)</span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">)</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">outDomain domain =</span>
+<span class="lineno">   49 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">na</span></span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">   51 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">[ &quot;{outDomain} PermutationAsFunction&quot;,</span></span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">   53 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   54 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">downD :: TypeOf_DownD m</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="istickedoff">downD (name, domain@(DomainPermutation Permutation_AsFunction _ innerDomain))</span>
+<span class="lineno">   57 </span><span class="spaces">      </span><span class="istickedoff">| <span class="tickonlytrue">domainCanIndexMatrix innerDomain</span> = do</span>
+<span class="lineno">   58 </span><span class="spaces">          </span><span class="istickedoff">m &lt;- domainSizeOf innerDomain</span>
+<span class="lineno">   59 </span><span class="spaces">          </span><span class="istickedoff">return</span>
+<span class="lineno">   60 </span><span class="spaces">            </span><span class="istickedoff">$ Just</span>
+<span class="lineno">   61 </span><span class="spaces">              </span><span class="istickedoff">[ ( outNameF domain name,</span>
+<span class="lineno">   62 </span><span class="spaces">                  </span><span class="istickedoff">DomainFunction</span>
+<span class="lineno">   63 </span><span class="spaces">                    </span><span class="istickedoff">Function_1D</span>
+<span class="lineno">   64 </span><span class="spaces">                    </span><span class="istickedoff">(FunctionAttr (SizeAttr_Size m) PartialityAttr_Total JectivityAttr_Bijective)</span>
+<span class="lineno">   65 </span><span class="spaces">                    </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   66 </span><span class="spaces">                    </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">),</span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff">( outNameB domain name,</span>
+<span class="lineno">   69 </span><span class="spaces">                  </span><span class="istickedoff">DomainFunction</span>
+<span class="lineno">   70 </span><span class="spaces">                    </span><span class="istickedoff">Function_1D</span>
+<span class="lineno">   71 </span><span class="spaces">                    </span><span class="istickedoff">(FunctionAttr (SizeAttr_Size m) PartialityAttr_Total JectivityAttr_Bijective)</span>
+<span class="lineno">   72 </span><span class="spaces">                    </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   73 </span><span class="spaces">                    </span><span class="istickedoff">innerDomain</span>
+<span class="lineno">   74 </span><span class="spaces">                </span><span class="istickedoff">)</span>
+<span class="lineno">   75 </span><span class="spaces">              </span><span class="istickedoff">]</span>
+<span class="lineno">   76 </span><span class="spaces">    </span><span class="istickedoff">downD _ = <span class="nottickedoff">na &quot;{downD} AsFunction&quot;</span></span>
+<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   78 </span><span class="spaces">    </span><span class="istickedoff">structuralCons :: TypeOf_Structural m</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="istickedoff">structuralCons f downX1 inDom@(DomainPermutation _ (PermutationAttr s) innerDom) =</span>
+<span class="lineno">   80 </span><span class="spaces">      </span><span class="istickedoff">return $ \inpFun -&gt; do</span>
+<span class="lineno">   81 </span><span class="spaces">        </span><span class="istickedoff">refs &lt;- downX1 inpFun</span>
+<span class="lineno">   82 </span><span class="spaces">        </span><span class="istickedoff">case refs of</span>
+<span class="lineno">   83 </span><span class="spaces">          </span><span class="istickedoff">[forw, back] -&gt; do</span>
+<span class="lineno">   84 </span><span class="spaces">            </span><span class="istickedoff">outDom &lt;- outDomain inDom</span>
+<span class="lineno">   85 </span><span class="spaces">            </span><span class="istickedoff">innerStructuralConsGen &lt;- f outDom</span>
+<span class="lineno">   86 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain <span class="nottickedoff">(forgetRepr innerDom)</span></span>
+<span class="lineno">   87 </span><span class="spaces">            </span><span class="istickedoff">concat</span>
+<span class="lineno">   88 </span><span class="spaces">              </span><span class="istickedoff">&lt;$&gt; sequence</span>
+<span class="lineno">   89 </span><span class="spaces">                </span><span class="istickedoff">[ innerStructuralConsGen forw,</span>
+<span class="lineno">   90 </span><span class="spaces">                  </span><span class="istickedoff">innerStructuralConsGen back,</span>
+<span class="lineno">   91 </span><span class="spaces">                  </span><span class="istickedoff">return $ mkSizeCons s [essence| sum([ toInt(&amp;i != image(&amp;forw, &amp;i)) | &amp;iPat : &amp;innerDom ]) |],</span>
+<span class="lineno">   92 </span><span class="spaces">                  </span><span class="istickedoff">return [[essence| forAll &amp;iPat : &amp;innerDom . &amp;back(&amp;forw(&amp;i)) = &amp;i |]],</span>
+<span class="lineno">   93 </span><span class="spaces">                  </span><span class="istickedoff">return [[essence| forAll &amp;iPat : &amp;innerDom . &amp;forw(&amp;back(&amp;i)) = &amp;i |]]</span>
+<span class="lineno">   94 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">   95 </span><span class="spaces">          </span><span class="istickedoff">_ -&gt;</span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">na</span></span>
+<span class="lineno">   97 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">   98 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;{structuralCons} PermutationAsFunction&quot;,</span></span>
+<span class="lineno">   99 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">pretty inDom</span></span>
+<span class="lineno">  100 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="istickedoff">structuralCons _ _ inDom =</span>
+<span class="lineno">  102 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">na</span></span>
+<span class="lineno">  103 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">  104 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">[ &quot;{structuralCons} PermutationAsFunction&quot;,</span></span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">pretty inDom</span></span>
+<span class="lineno">  106 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  107 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="istickedoff">downC :: TypeOf_DownC m</span>
+<span class="lineno">  109 </span><span class="spaces">    </span><span class="istickedoff">downC</span>
+<span class="lineno">  110 </span><span class="spaces">      </span><span class="istickedoff">( name,</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">inDom@(DomainPermutation Permutation_AsFunction _ innerDom),</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">ConstantAbstract (AbsLitPermutation vals)</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">) = do</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="istickedoff">outDom &lt;- outDomain inDom</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="istickedoff">enumDo &lt;- enumerateDomain $ forgetRepr innerDom</span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">case (fromCycles vals, inverse &lt;$&gt; fromCycles vals) of</span>
+<span class="lineno">  117 </span><span class="spaces">          </span><span class="istickedoff">(Right perm1, Right perm2) -&gt; do</span>
+<span class="lineno">  118 </span><span class="spaces">            </span><span class="istickedoff">out1 &lt;-</span>
+<span class="lineno">  119 </span><span class="spaces">              </span><span class="istickedoff">rDownC</span>
+<span class="lineno">  120 </span><span class="spaces">                </span><span class="istickedoff">(dispatch outDom)</span>
+<span class="lineno">  121 </span><span class="spaces">                </span><span class="istickedoff">( outNameF inDom name,</span>
+<span class="lineno">  122 </span><span class="spaces">                  </span><span class="istickedoff">outDom,</span>
+<span class="lineno">  123 </span><span class="spaces">                  </span><span class="istickedoff">ConstantAbstract $ AbsLitFunction $ zip enumDo (toFunction perm1 &lt;$&gt; enumDo)</span>
+<span class="lineno">  124 </span><span class="spaces">                </span><span class="istickedoff">)</span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">out2 &lt;-</span>
+<span class="lineno">  126 </span><span class="spaces">              </span><span class="istickedoff">rDownC</span>
+<span class="lineno">  127 </span><span class="spaces">                </span><span class="istickedoff">(dispatch outDom)</span>
+<span class="lineno">  128 </span><span class="spaces">                </span><span class="istickedoff">( outNameB inDom name,</span>
+<span class="lineno">  129 </span><span class="spaces">                  </span><span class="istickedoff">outDom,</span>
+<span class="lineno">  130 </span><span class="spaces">                  </span><span class="istickedoff">ConstantAbstract $ AbsLitFunction $ zip enumDo (toFunction perm2 &lt;$&gt; enumDo)</span>
+<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff">)</span>
+<span class="lineno">  132 </span><span class="spaces">            </span><span class="istickedoff">return $ Just (fromMaybe <span class="nottickedoff">[]</span> out1 ++ fromMaybe <span class="nottickedoff">[]</span> out2)</span>
+<span class="lineno">  133 </span><span class="spaces">          </span><span class="istickedoff">(Left (PermutationError err), _) -&gt; <span class="nottickedoff">failDoc $ &quot;PermutationError: &quot; &lt;+&gt; stringToDoc err</span></span>
+<span class="lineno">  134 </span><span class="spaces">          </span><span class="istickedoff">(_, Left (PermutationError err)) -&gt; <span class="nottickedoff">failDoc $ &quot;PermutationError: &quot; &lt;+&gt; stringToDoc err</span></span>
+<span class="lineno">  135 </span><span class="spaces">    </span><span class="istickedoff">downC (name, domain, constant) =</span>
+<span class="lineno">  136 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">na</span></span>
+<span class="lineno">  137 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">  138 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">[ &quot;{downC} PermutationAsFunction&quot;,</span></span>
+<span class="lineno">  139 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;name:&quot; &lt;+&gt; pretty name,</span></span>
+<span class="lineno">  140 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;domain:&quot; &lt;+&gt; pretty domain,</span></span>
+<span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;constant:&quot; &lt;+&gt; pretty constant</span></span>
+<span class="lineno">  142 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  143 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  144 </span><span class="spaces">    </span><span class="istickedoff">up :: TypeOf_Up m</span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">up</span>
+<span class="lineno">  146 </span><span class="spaces">      </span><span class="istickedoff">ctxt</span>
+<span class="lineno">  147 </span><span class="spaces">      </span><span class="istickedoff">( name,</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">domain@(DomainPermutation Permutation_AsFunction {} _ _)</span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">) = do</span>
+<span class="lineno">  150 </span><span class="spaces">        </span><span class="istickedoff">case lookup (outNameF domain name) ctxt of</span>
+<span class="lineno">  151 </span><span class="spaces">          </span><span class="istickedoff">(Just (ConstantAbstract (AbsLitFunction f))) -&gt; do</span>
+<span class="lineno">  152 </span><span class="spaces">            </span><span class="istickedoff">case toCyclesCanonical &lt;$&gt; fromRelation f of</span>
+<span class="lineno">  153 </span><span class="spaces">              </span><span class="istickedoff">Right cycles -&gt;</span>
+<span class="lineno">  154 </span><span class="spaces">                </span><span class="istickedoff">return (<span class="nottickedoff">name</span>, ConstantAbstract (AbsLitPermutation cycles))</span>
+<span class="lineno">  155 </span><span class="spaces">              </span><span class="istickedoff">Left (PermutationError err) -&gt;</span>
+<span class="lineno">  156 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">failDoc</span></span>
+<span class="lineno">  157 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">  158 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">$ [ &quot;PermutationError: &quot; &lt;+&gt; stringToDoc err,</span></span>
+<span class="lineno">  159 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">&quot;No value for:&quot; &lt;+&gt; pretty (outNameF domain name),</span></span>
+<span class="lineno">  160 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">&quot;When working on:&quot; &lt;+&gt; pretty name,</span></span>
+<span class="lineno">  161 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">&quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  162 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  163 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">++ (&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">  164 </span><span class="spaces">          </span><span class="istickedoff">_ -&gt;</span>
+<span class="lineno">  165 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc</span></span>
+<span class="lineno">  166 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">  167 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">$ [ &quot;No value for:&quot; &lt;+&gt; pretty (outNameF domain name),</span></span>
+<span class="lineno">  168 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">&quot;When working on:&quot; &lt;+&gt; pretty name,</span></span>
+<span class="lineno">  169 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">&quot;With domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  170 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  171 </span><span class="spaces">              </span><span class="istickedoff"><span class="nottickedoff">++ (&quot;Bindings in context:&quot; : prettyContext ctxt)</span></span>
+<span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">up _ (name, domain) =</span>
+<span class="lineno">  173 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">na</span></span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">$ vcat</span></span>
+<span class="lineno">  175 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">[ &quot;{up} PermutationAsFunction&quot;,</span></span>
+<span class="lineno">  176 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;name:&quot; &lt;+&gt; pretty name,</span></span>
+<span class="lineno">  177 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">&quot;domain:&quot; &lt;+&gt; pretty domain</span></span>
+<span class="lineno">  178 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  179 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  180 </span><span class="spaces">    </span><span class="istickedoff">symmetryOrdering :: TypeOf_SymmetryOrdering m</span>
+<span class="lineno">  181 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">symmetryOrdering innerSO downX1 inp domain = do</span></span>
+<span class="lineno">  182 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">[x, y] &lt;- downX1 inp</span></span>
+<span class="lineno">  183 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">Just [(_, xDomain), (_, yDomain)] &lt;- downD (&quot;SO&quot;, domain)</span></span>
+<span class="lineno">  184 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">xs &lt;- innerSO downX1 x xDomain</span></span>
+<span class="lineno">  185 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">ys &lt;- innerSO downX1 y yDomain</span></span>
+<span class="lineno">  186 </span><span class="spaces">      </span><span class="istickedoff"><span class="nottickedoff">return [essence| concatenate([&amp;xs, &amp;ys]) |]</span></span></span>
+
+</pre>
+</body>
+</html>
