@@ -86,52 +86,53 @@ span.spaces    { background: white }
 <span class="lineno">   67 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation DomainSequence{}  = True</span>
 <span class="lineno">   68 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation DomainRelation{}  = True</span>
 <span class="lineno">   69 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation DomainPartition{} = True</span>
-<span class="lineno">   70 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation (DomainReference _ (Just _)) = True</span>
-<span class="lineno">   71 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation d = bug $ &quot;domainNeedsRepresentation:&quot; &lt;+&gt; pretty (show d)</span></span>
-<span class="lineno">   72 </span>
+<span class="lineno">   70 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation DomainPermutation{} = True</span>
+<span class="lineno">   71 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation (DomainReference _ (Just _)) = True</span>
+<span class="lineno">   72 </span><span class="spaces"></span><span class="nottickedoff">domainNeedsRepresentation d = bug $ &quot;domainNeedsRepresentation:&quot; &lt;+&gt; pretty (show d)</span></span>
 <span class="lineno">   73 </span>
-<span class="lineno">   74 </span>modelInfo :: Model -&gt; Doc
-<span class="lineno">   75 </span><span class="decl"><span class="nottickedoff">modelInfo m = vcat</span>
-<span class="lineno">   76 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Contains&quot; &lt;+&gt; pretty   (nbGivens m) &lt;+&gt; &quot;parameters        &quot;</span>
-<span class="lineno">   77 </span><span class="spaces">                 </span><span class="nottickedoff">&lt;+&gt; prParens (pretty (nbAbstractGivens m) &lt;+&gt; &quot;abstract&quot;)</span>
-<span class="lineno">   78 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;        &quot; &lt;+&gt; pretty   (nbFinds  m) &lt;+&gt; &quot;decision variables&quot;</span>
-<span class="lineno">   79 </span><span class="spaces">                 </span><span class="nottickedoff">&lt;+&gt; prParens (pretty (nbAbstractFinds m ) &lt;+&gt; &quot;abstract&quot;)</span>
-<span class="lineno">   80 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">   81 </span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>modelInfo :: Model -&gt; Doc
+<span class="lineno">   76 </span><span class="decl"><span class="nottickedoff">modelInfo m = vcat</span>
+<span class="lineno">   77 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;Contains&quot; &lt;+&gt; pretty   (nbGivens m) &lt;+&gt; &quot;parameters        &quot;</span>
+<span class="lineno">   78 </span><span class="spaces">                 </span><span class="nottickedoff">&lt;+&gt; prParens (pretty (nbAbstractGivens m) &lt;+&gt; &quot;abstract&quot;)</span>
+<span class="lineno">   79 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;        &quot; &lt;+&gt; pretty   (nbFinds  m) &lt;+&gt; &quot;decision variables&quot;</span>
+<span class="lineno">   80 </span><span class="spaces">                 </span><span class="nottickedoff">&lt;+&gt; prParens (pretty (nbAbstractFinds m ) &lt;+&gt; &quot;abstract&quot;)</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
 <span class="lineno">   82 </span>
-<span class="lineno">   83 </span>modelDeclarationsJSON :: Model -&gt; JSONValue
-<span class="lineno">   84 </span><span class="decl"><span class="nottickedoff">modelDeclarationsJSON m = toJSON</span>
-<span class="lineno">   85 </span><span class="spaces">    </span><span class="nottickedoff">[ M.fromList $ case d of</span>
-<span class="lineno">   86 </span><span class="spaces">        </span><span class="nottickedoff">FindOrGiven forg name dom -&gt;</span>
-<span class="lineno">   87 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ show forg</span>
-<span class="lineno">   88 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
-<span class="lineno">   89 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;domain&quot; ~~ r dom</span>
-<span class="lineno">   90 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">   91 </span><span class="spaces">        </span><span class="nottickedoff">Letting name x -&gt;</span>
-<span class="lineno">   92 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;letting&quot;</span>
-<span class="lineno">   93 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
-<span class="lineno">   94 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;value&quot;  ~~ r x</span>
-<span class="lineno">   95 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">   96 </span><span class="spaces">        </span><span class="nottickedoff">GivenDomainDefnEnum name -&gt;</span>
-<span class="lineno">   97 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;enumerated type&quot;</span>
-<span class="lineno">   98 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
-<span class="lineno">   99 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">  100 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomainDefnEnum name vals -&gt;</span>
-<span class="lineno">  101 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;enumerated type&quot;</span>
-<span class="lineno">  102 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
-<span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;values&quot; ~~ r (prettyList id &quot;,&quot; vals)</span>
-<span class="lineno">  104 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomainDefnUnnamed name size -&gt;</span>
-<span class="lineno">  106 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;unnamed type&quot;</span>
-<span class="lineno">  107 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
-<span class="lineno">  108 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;size&quot;   ~~ r size</span>
-<span class="lineno">  109 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
-<span class="lineno">  110 </span><span class="spaces">    </span><span class="nottickedoff">| Declaration d &lt;- mStatements m</span>
-<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">]</span>
-<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">(~~) :: String -&gt; String -&gt; (String, String)</span>
-<span class="lineno">  114 </span><span class="spaces">        </span><span class="nottickedoff">x ~~ y = (x, y)</span>
-<span class="lineno">  115 </span><span class="spaces">        </span><span class="nottickedoff">r s = render 100000 (pretty s)</span></span>
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>modelDeclarationsJSON :: Model -&gt; JSONValue
+<span class="lineno">   85 </span><span class="decl"><span class="nottickedoff">modelDeclarationsJSON m = toJSON</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="nottickedoff">[ M.fromList $ case d of</span>
+<span class="lineno">   87 </span><span class="spaces">        </span><span class="nottickedoff">FindOrGiven forg name dom -&gt;</span>
+<span class="lineno">   88 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ show forg</span>
+<span class="lineno">   89 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
+<span class="lineno">   90 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;domain&quot; ~~ r dom</span>
+<span class="lineno">   91 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">   92 </span><span class="spaces">        </span><span class="nottickedoff">Letting name x -&gt;</span>
+<span class="lineno">   93 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;letting&quot;</span>
+<span class="lineno">   94 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
+<span class="lineno">   95 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;value&quot;  ~~ r x</span>
+<span class="lineno">   96 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">   97 </span><span class="spaces">        </span><span class="nottickedoff">GivenDomainDefnEnum name -&gt;</span>
+<span class="lineno">   98 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;enumerated type&quot;</span>
+<span class="lineno">   99 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">  101 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomainDefnEnum name vals -&gt;</span>
+<span class="lineno">  102 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;enumerated type&quot;</span>
+<span class="lineno">  103 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
+<span class="lineno">  104 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;values&quot; ~~ r (prettyList id &quot;,&quot; vals)</span>
+<span class="lineno">  105 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="nottickedoff">LettingDomainDefnUnnamed name size -&gt;</span>
+<span class="lineno">  107 </span><span class="spaces">            </span><span class="nottickedoff">[ &quot;kind&quot;   ~~ &quot;unnamed type&quot;</span>
+<span class="lineno">  108 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;name&quot;   ~~ r name</span>
+<span class="lineno">  109 </span><span class="spaces">            </span><span class="nottickedoff">, &quot;size&quot;   ~~ r size</span>
+<span class="lineno">  110 </span><span class="spaces">            </span><span class="nottickedoff">]</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="nottickedoff">| Declaration d &lt;- mStatements m</span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="nottickedoff">]</span>
+<span class="lineno">  113 </span><span class="spaces">    </span><span class="nottickedoff">where</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="nottickedoff">(~~) :: String -&gt; String -&gt; (String, String)</span>
+<span class="lineno">  115 </span><span class="spaces">        </span><span class="nottickedoff">x ~~ y = (x, y)</span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="nottickedoff">r s = render 100000 (pretty s)</span></span>
 
 </pre>
 </body>

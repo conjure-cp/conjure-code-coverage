@@ -50,24 +50,25 @@ span.spaces    { background: white }
 <span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">]</span>
 <span class="lineno">   32 </span><span class="spaces">        </span><span class="istickedoff">(\ ty -&gt; case (?typeCheckerMode, ty) of</span>
 <span class="lineno">   33 </span><span class="spaces">                    </span><span class="istickedoff">(StronglyTyped, TypeInt TagInt) -&gt; True</span>
-<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">(RelaxedIntegerTags, TypeInt{}) -&gt; True</span>
-<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; False</span>
-<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
-<span class="lineno">   37 </span>
-<span class="lineno">   38 </span>instance SimplifyOp OpMinus x where
-<span class="lineno">   39 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpMinus}&quot;</span></span>
-<span class="lineno">   40 </span>
-<span class="lineno">   41 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpMinus x)</span></span> where
-<span class="lineno">   42 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpMinus a b) = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span></span>
-<span class="lineno">   43 </span>
-<span class="lineno">   44 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpMinus x) where
-<span class="lineno">   45 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpMinus a b) = JSON.Object $ KM.fromList</span>
-<span class="lineno">   46 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMinus&quot;)</span>
-<span class="lineno">   47 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
-<span class="lineno">   48 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
-<span class="lineno">   49 </span><span class="spaces">            </span><span class="nottickedoff">, varSymBreakingDescription b</span>
-<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
-<span class="lineno">   51 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   34 </span><span class="spaces">                    </span><span class="istickedoff">(StronglyTyped, TypeInt TaggedInt{}) -&gt; <span class="nottickedoff">True</span></span>
+<span class="lineno">   35 </span><span class="spaces">                    </span><span class="istickedoff">(RelaxedIntegerTags, TypeInt{}) -&gt; True</span>
+<span class="lineno">   36 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; False</span>
+<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">)</span></span>
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>instance SimplifyOp OpMinus x where
+<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpMinus}&quot;</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpMinus x)</span></span> where
+<span class="lineno">   43 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpMinus a b) = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpMinus x) where
+<span class="lineno">   46 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpMinus a b) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   47 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpMinus&quot;)</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">   49 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
+<span class="lineno">   50 </span><span class="spaces">            </span><span class="nottickedoff">, varSymBreakingDescription b</span>
+<span class="lineno">   51 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   52 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

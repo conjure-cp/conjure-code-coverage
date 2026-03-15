@@ -124,54 +124,54 @@ span.spaces    { background: white }
 <span class="lineno">  105 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  106 </span><span class="spaces">        </span><span class="istickedoff">readIfExists :: FilePath -&gt; IO String</span>
 <span class="lineno">  107 </span><span class="spaces">        </span><span class="istickedoff">readIfExists f = fromMaybe &quot;&quot; &lt;$&gt; readFileIfExists f</span>
-<span class="lineno">  108 </span><span class="spaces">    </span><span class="istickedoff">e &lt;- do</span>
-<span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">step &quot;Checking stderr&quot;</span>
-<span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">stderrG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;stderr&quot;)</span>
-<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">stderrE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stderr.expected&quot;)</span>
-<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">unless (stderrE == stderrG) $</span>
-<span class="lineno">  113 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
-<span class="lineno">  114 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
-<span class="lineno">  115 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
-<span class="lineno">  116 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stderr:&quot; &lt;++&gt; pretty stderrG</span></span>
-<span class="lineno">  117 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty stderrE</span></span>
-<span class="lineno">  118 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  119 </span><span class="spaces">        </span><span class="istickedoff">return stderrE</span>
-<span class="lineno">  120 </span><span class="spaces">    </span><span class="istickedoff">unless  (e /= &quot;&quot;) $ do</span>
-<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">do</span>
-<span class="lineno">  122 </span><span class="spaces">            </span><span class="istickedoff">step &quot;Checking Generated Representation&quot;</span>
-<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">stdoutG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;model.json&quot;)</span>
-<span class="lineno">  124 </span><span class="spaces">            </span><span class="istickedoff">stdoutE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;model.expected.json&quot;)</span>
-<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff">let diffs = do</span>
-<span class="lineno">  126 </span><span class="spaces">                    </span><span class="istickedoff">jGiven &lt;- stringToJson stdoutG</span>
-<span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff">jReference &lt;- stringToJson stdoutE</span>
-<span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff">let Patch ds = diff jGiven jReference</span>
-<span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff">return ds</span>
-<span class="lineno">  130 </span><span class="spaces">            </span><span class="istickedoff">case diffs of</span>
-<span class="lineno">  131 </span><span class="spaces">                </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">assertFailure $ &quot;JSON parser error in&quot; ++ stdoutE</span></span>
-<span class="lineno">  132 </span><span class="spaces">                </span><span class="istickedoff">Just [] -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  133 </span><span class="spaces">                </span><span class="istickedoff">Just ops -&gt; <span class="nottickedoff">assertFailure $ renderNormal $ vcat [&quot;Difference in json:&quot; &lt;++&gt; vcat (map (stringToDoc . show) ops)]</span></span>
-<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">do</span>
-<span class="lineno">  135 </span><span class="spaces">            </span><span class="istickedoff">step &quot;Checking stdout&quot;</span>
-<span class="lineno">  136 </span><span class="spaces">            </span><span class="istickedoff">stdoutG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;stdout&quot;)</span>
-<span class="lineno">  137 </span><span class="spaces">            </span><span class="istickedoff">stdoutE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stdout.expected&quot;)</span>
-<span class="lineno">  138 </span><span class="spaces">            </span><span class="istickedoff">unless (stdoutE == stdoutG) $</span>
-<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
-<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
-<span class="lineno">  141 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
-<span class="lineno">  142 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stdout:&quot; &lt;++&gt; pretty stdoutG</span></span>
-<span class="lineno">  143 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty stdoutE</span></span>
-<span class="lineno">  144 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">do</span>
-<span class="lineno">  146 </span><span class="spaces">            </span><span class="istickedoff">step &quot;Checking Types&quot;</span>
-<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">stdoutE &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;typecheck&quot;)</span>
-<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">stdoutG &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;typecheck.expected&quot;)</span>
-<span class="lineno">  149 </span><span class="spaces">            </span><span class="istickedoff">unless (stdoutE == stdoutG) $</span>
-<span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
-<span class="lineno">  151 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
-<span class="lineno">  152 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
-<span class="lineno">  153 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected typeError:&quot; &lt;++&gt; pretty stdoutG</span></span>
-<span class="lineno">  154 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty stdoutE</span></span>
-<span class="lineno">  155 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  108 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  109 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking stderr&quot;</span>
+<span class="lineno">  110 </span><span class="spaces">    </span><span class="istickedoff">stderrG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;stderr&quot;)</span>
+<span class="lineno">  111 </span><span class="spaces">    </span><span class="istickedoff">stderrE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stderr.expected&quot;)</span>
+<span class="lineno">  112 </span><span class="spaces">    </span><span class="istickedoff">unless (stderrE == stderrG) $</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
+<span class="lineno">  114 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
+<span class="lineno">  115 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
+<span class="lineno">  116 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stderr:&quot; &lt;++&gt; pretty stderrG</span></span>
+<span class="lineno">  117 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty stderrE</span></span>
+<span class="lineno">  118 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  119 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  120 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking stdout&quot;</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff">stdoutG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;stdout&quot;)</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">stdoutE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;stdout.expected&quot;)</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">unless (stdoutE == stdoutG) $</span>
+<span class="lineno">  124 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
+<span class="lineno">  125 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
+<span class="lineno">  126 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
+<span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected stdout:&quot; &lt;++&gt; pretty stdoutG</span></span>
+<span class="lineno">  128 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty stdoutE</span></span>
+<span class="lineno">  129 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  130 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  131 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking Generated Representation&quot;</span>
+<span class="lineno">  132 </span><span class="spaces">    </span><span class="istickedoff">modelG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;model.json&quot;)</span>
+<span class="lineno">  133 </span><span class="spaces">    </span><span class="istickedoff">unless (null modelG) $ do</span>
+<span class="lineno">  134 </span><span class="spaces">        </span><span class="istickedoff">modelE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;model.expected.json&quot;)</span>
+<span class="lineno">  135 </span><span class="spaces">        </span><span class="istickedoff">let diffs = do</span>
+<span class="lineno">  136 </span><span class="spaces">                </span><span class="istickedoff">jGiven &lt;- stringToJson modelG</span>
+<span class="lineno">  137 </span><span class="spaces">                </span><span class="istickedoff">jReference &lt;- stringToJson modelE</span>
+<span class="lineno">  138 </span><span class="spaces">                </span><span class="istickedoff">let Patch ds = diff jGiven jReference</span>
+<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff">return ds</span>
+<span class="lineno">  140 </span><span class="spaces">        </span><span class="istickedoff">case diffs of</span>
+<span class="lineno">  141 </span><span class="spaces">            </span><span class="istickedoff">Nothing -&gt; <span class="nottickedoff">assertFailure $ &quot;JSON parser error in&quot; ++ modelE</span></span>
+<span class="lineno">  142 </span><span class="spaces">            </span><span class="istickedoff">Just [] -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  143 </span><span class="spaces">            </span><span class="istickedoff">Just ops -&gt; <span class="nottickedoff">assertFailure $ renderNormal $ vcat [&quot;Difference in json:&quot; &lt;++&gt; vcat (map (stringToDoc . show) ops)]</span></span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">    </span><span class="istickedoff">step &quot;Checking Types&quot;</span>
+<span class="lineno">  146 </span><span class="spaces">    </span><span class="istickedoff">typecheckG &lt;- fixWindowsPaths &lt;$&gt; readIfExists (tBaseDir &lt;/&gt; &quot;typecheck&quot;)</span>
+<span class="lineno">  147 </span><span class="spaces">    </span><span class="istickedoff">unless (null typecheckG) $ do</span>
+<span class="lineno">  148 </span><span class="spaces">        </span><span class="istickedoff">typecheckE &lt;- readIfExists (tBaseDir &lt;/&gt; &quot;typecheck.expected&quot;)</span>
+<span class="lineno">  149 </span><span class="spaces">        </span><span class="istickedoff">unless (typecheckE == typecheckG) $</span>
+<span class="lineno">  150 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">assertFailure $</span></span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">renderNormal $</span></span>
+<span class="lineno">  152 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">vcat</span></span>
+<span class="lineno">  153 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;unexpected typeError:&quot; &lt;++&gt; pretty typecheckG</span></span>
+<span class="lineno">  154 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;was expecting:    &quot; &lt;++&gt; pretty typecheckE</span></span>
+<span class="lineno">  155 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
 <span class="lineno">  156 </span>
 <span class="lineno">  157 </span>stringToJson :: String -&gt; Maybe JSON.Value
 <span class="lineno">  158 </span><span class="decl"><span class="istickedoff">stringToJson &quot;&quot; = <span class="nottickedoff">Just JSON.emptyObject</span></span>

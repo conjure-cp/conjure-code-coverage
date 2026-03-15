@@ -45,24 +45,24 @@ span.spaces    { background: white }
 <span class="lineno">   26 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpMin x) | Just (dom :: Domain () x) &lt;- project x = do</span>
 <span class="lineno">   27 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOfDomain dom</span>
 <span class="lineno">   28 </span><span class="spaces">        </span><span class="istickedoff">case ty of</span>
-<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return ty</span>
-<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ty</span></span>
-<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">return ty</span></span>
-<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   33 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   34 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   35 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(OpMin x) = do</span>
-<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
-<span class="lineno">   37 </span><span class="spaces">        </span><span class="istickedoff">tyInner &lt;- case ty of</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
-<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
-<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
-<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
-<span class="lineno">   42 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
-<span class="lineno">   43 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
-<span class="lineno">   44 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">   45 </span><span class="spaces">        </span><span class="istickedoff">case tyInner of</span>
-<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt _ -&gt; return ty</span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">TypeEnum{} -&gt; <span class="nottickedoff">return ty</span></span>
+<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   32 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   33 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   34 </span><span class="spaces">    </span><span class="istickedoff">typeOf p@(OpMin x) = do</span>
+<span class="lineno">   35 </span><span class="spaces">        </span><span class="istickedoff">ty &lt;- typeOf x</span>
+<span class="lineno">   36 </span><span class="spaces">        </span><span class="istickedoff">tyInner &lt;- case ty of</span>
+<span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">TypeList tyInner -&gt; return tyInner</span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix _ tyInner -&gt; return tyInner</span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">TypeSet tyInner -&gt; return tyInner</span>
+<span class="lineno">   40 </span><span class="spaces">            </span><span class="istickedoff">TypeMSet tyInner -&gt; return tyInner</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
+<span class="lineno">   42 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>
+<span class="lineno">   43 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="istickedoff">case tyInner of</span>
+<span class="lineno">   45 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   46 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TaggedInt{} -&gt; <span class="nottickedoff">return ()</span> </span>
 <span class="lineno">   47 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ()</span></span>
 <span class="lineno">   48 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError $ vcat [ pretty p</span></span>
 <span class="lineno">   49 </span><span class="spaces">                                       </span><span class="istickedoff"><span class="nottickedoff">, &quot;Unexpected type inside min:&quot; &lt;+&gt; pretty ty</span></span>

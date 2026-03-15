@@ -224,7 +224,7 @@ span.spaces    { background: white }
 <span class="lineno">  205 </span>data DomainNode
 <span class="lineno">  206 </span>    = ParenDomainNode SToken DomainNode LToken
 <span class="lineno">  207 </span>    | BoolDomainNode SToken
-<span class="lineno">  208 </span>    | RangedIntDomainNode SToken (Maybe (ListNode RangeNode))
+<span class="lineno">  208 </span>    | RangedIntDomainNode SToken (Maybe (LToken, ETok)) (Maybe (ListNode RangeNode))
 <span class="lineno">  209 </span>    | RangedEnumNode NameNodeS (Maybe (ListNode RangeNode))
 <span class="lineno">  210 </span>    | MetaVarDomain SToken
 <span class="lineno">  211 </span>    | ShortTupleDomainNode (ListNode DomainNode)
@@ -236,463 +236,471 @@ span.spaces    { background: white }
 <span class="lineno">  217 </span>    | MSetDomainNode SToken MAttributes LToken DomainNode
 <span class="lineno">  218 </span>    | FunctionDomainNode SToken MAttributes DomainNode LToken DomainNode
 <span class="lineno">  219 </span>    | SequenceDomainNode SToken MAttributes LToken DomainNode
-<span class="lineno">  220 </span>    | RelationDomainNode SToken MAttributes LToken (ListNode DomainNode)
-<span class="lineno">  221 </span>    | PartitionDomainNode SToken MAttributes LToken DomainNode
-<span class="lineno">  222 </span>    | MissingDomainNode LToken
-<span class="lineno">  223 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  224 </span>
-<span class="lineno">  225 </span>instance <span class="decl"><span class="nottickedoff">Pretty DomainNode</span></span> where
-<span class="lineno">  226 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  227 </span><span class="spaces">        </span><span class="nottickedoff">ParenDomainNode op dom cl -&gt; pretty op &lt;&gt; pretty dom &lt;&gt; pretty cl</span>
-<span class="lineno">  228 </span><span class="spaces">        </span><span class="nottickedoff">BoolDomainNode lt -&gt; pretty lt</span>
-<span class="lineno">  229 </span><span class="spaces">        </span><span class="nottickedoff">RangedIntDomainNode lt m_ln -&gt; pretty lt &lt;&gt; pretty m_ln</span>
-<span class="lineno">  230 </span><span class="spaces">        </span><span class="nottickedoff">RangedEnumNode nn m_ln -&gt; pretty nn &lt;&gt; pretty m_ln</span>
-<span class="lineno">  231 </span><span class="spaces">        </span><span class="nottickedoff">MetaVarDomain lt -&gt; pretty lt</span>
-<span class="lineno">  232 </span><span class="spaces">        </span><span class="nottickedoff">ShortTupleDomainNode ln -&gt; pretty ln</span>
-<span class="lineno">  233 </span><span class="spaces">        </span><span class="nottickedoff">TupleDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  234 </span><span class="spaces">        </span><span class="nottickedoff">RecordDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  235 </span><span class="spaces">        </span><span class="nottickedoff">VariantDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  236 </span><span class="spaces">        </span><span class="nottickedoff">MatrixDomainNode lt m_ibn ln lt' dn -&gt;</span>
-<span class="lineno">  237 </span><span class="spaces">            </span><span class="nottickedoff">pretty lt</span>
-<span class="lineno">  238 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty m_ibn</span>
-<span class="lineno">  239 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty ln</span>
-<span class="lineno">  240 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty lt'</span>
-<span class="lineno">  241 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty dn</span>
-<span class="lineno">  242 </span><span class="spaces">        </span><span class="nottickedoff">SetDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="nottickedoff">MSetDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
-<span class="lineno">  244 </span><span class="spaces">        </span><span class="nottickedoff">FunctionDomainNode lt m_ln dn lt' dn' -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty dn &lt;+&gt; pretty lt' &lt;+&gt; pretty dn'</span>
-<span class="lineno">  245 </span><span class="spaces">        </span><span class="nottickedoff">SequenceDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
-<span class="lineno">  246 </span><span class="spaces">        </span><span class="nottickedoff">RelationDomainNode lt m_ln lt' ln -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty ln</span>
-<span class="lineno">  247 </span><span class="spaces">        </span><span class="nottickedoff">PartitionDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
-<span class="lineno">  248 </span><span class="spaces">        </span><span class="nottickedoff">MissingDomainNode _ -&gt; emptyDoc</span></span>
-<span class="lineno">  249 </span>instance Null DomainNode where
-<span class="lineno">  250 </span>    <span class="decl"><span class="istickedoff">isMissing (MissingDomainNode{}) = True</span>
-<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
-<span class="lineno">  252 </span>
-<span class="lineno">  253 </span>data IndexedByNode = IndexedByNode LToken LToken
-<span class="lineno">  254 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  255 </span>instance <span class="decl"><span class="nottickedoff">Pretty IndexedByNode</span></span> where
-<span class="lineno">  256 </span>    <span class="decl"><span class="nottickedoff">pretty (IndexedByNode a b) = pretty a &lt;+&gt; pretty b</span></span>
-<span class="lineno">  257 </span>data RangeNode
-<span class="lineno">  258 </span>    = SingleRangeNode ExpressionNode
-<span class="lineno">  259 </span>    | OpenRangeNode DoubleDotNode
-<span class="lineno">  260 </span>    | RightUnboundedRangeNode ExpressionNode DoubleDotNode
-<span class="lineno">  261 </span>    | LeftUnboundedRangeNode DoubleDotNode ExpressionNode
-<span class="lineno">  262 </span>    | BoundedRangeNode ExpressionNode DoubleDotNode ExpressionNode
-<span class="lineno">  263 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  264 </span>
-<span class="lineno">  265 </span>instance <span class="decl"><span class="nottickedoff">Pretty RangeNode</span></span> where
-<span class="lineno">  266 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  267 </span><span class="spaces">        </span><span class="nottickedoff">SingleRangeNode en -&gt; pretty en</span>
-<span class="lineno">  268 </span><span class="spaces">        </span><span class="nottickedoff">OpenRangeNode lt -&gt; pretty lt</span>
-<span class="lineno">  269 </span><span class="spaces">        </span><span class="nottickedoff">RightUnboundedRangeNode en lt -&gt; pretty en &lt;&gt; pretty lt</span>
-<span class="lineno">  270 </span><span class="spaces">        </span><span class="nottickedoff">LeftUnboundedRangeNode lt en -&gt; pretty lt &lt;&gt; pretty en</span>
-<span class="lineno">  271 </span><span class="spaces">        </span><span class="nottickedoff">BoundedRangeNode en lt en' -&gt; pretty en &lt;&gt; pretty lt &lt;&gt; pretty en'</span></span>
-<span class="lineno">  272 </span>instance Null RangeNode where
-<span class="lineno">  273 </span>    <span class="decl"><span class="istickedoff">isMissing (SingleRangeNode e) = isMissing e</span>
-<span class="lineno">  274 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
-<span class="lineno">  275 </span>
-<span class="lineno">  276 </span>type DoubleDotNode = SToken
-<span class="lineno">  277 </span>
-<span class="lineno">  278 </span>-- data DoubleDotNode = DoubleDotNode LToken LToken deriving (Show, Data)
-<span class="lineno">  279 </span>
-<span class="lineno">  280 </span>data AttributeNode
-<span class="lineno">  281 </span>    = NamedAttributeNode SToken (Maybe ExpressionNode)
-<span class="lineno">  282 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  283 </span>instance <span class="decl"><span class="nottickedoff">Pretty AttributeNode</span></span> where
-<span class="lineno">  284 </span>    <span class="decl"><span class="nottickedoff">pretty (NamedAttributeNode a m_e) = pretty a &lt;+&gt; pretty m_e</span></span>
-<span class="lineno">  285 </span>
-<span class="lineno">  286 </span>instance Null AttributeNode where
-<span class="lineno">  287 </span>    <span class="decl"><span class="istickedoff">isMissing _ = False</span></span>
+<span class="lineno">  220 </span>    | PermutationDomainNode SToken MAttributes LToken DomainNode
+<span class="lineno">  221 </span>    | RelationDomainNode SToken MAttributes LToken (ListNode DomainNode)
+<span class="lineno">  222 </span>    | PartitionDomainNode SToken MAttributes LToken DomainNode
+<span class="lineno">  223 </span>    | MissingDomainNode LToken
+<span class="lineno">  224 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  225 </span>
+<span class="lineno">  226 </span>instance <span class="decl"><span class="nottickedoff">Pretty DomainNode</span></span> where
+<span class="lineno">  227 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  228 </span><span class="spaces">        </span><span class="nottickedoff">ParenDomainNode op dom cl -&gt; pretty op &lt;&gt; pretty dom &lt;&gt; pretty cl</span>
+<span class="lineno">  229 </span><span class="spaces">        </span><span class="nottickedoff">BoolDomainNode lt -&gt; pretty lt</span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="nottickedoff">RangedIntDomainNode lt Nothing m_ln  -&gt; pretty lt &lt;&gt; pretty m_ln</span>
+<span class="lineno">  231 </span><span class="spaces">        </span><span class="nottickedoff">RangedIntDomainNode lt (Just (_, tag)) m_ln -&gt; pretty lt &lt;&gt; &quot;:&quot; &lt;&gt; pretty tag &lt;&gt; pretty m_ln</span>
+<span class="lineno">  232 </span><span class="spaces">        </span><span class="nottickedoff">RangedEnumNode nn m_ln -&gt; pretty nn &lt;&gt; pretty m_ln</span>
+<span class="lineno">  233 </span><span class="spaces">        </span><span class="nottickedoff">MetaVarDomain lt -&gt; pretty lt</span>
+<span class="lineno">  234 </span><span class="spaces">        </span><span class="nottickedoff">ShortTupleDomainNode ln -&gt; pretty ln</span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="nottickedoff">TupleDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  236 </span><span class="spaces">        </span><span class="nottickedoff">RecordDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  237 </span><span class="spaces">        </span><span class="nottickedoff">VariantDomainNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  238 </span><span class="spaces">        </span><span class="nottickedoff">MatrixDomainNode lt m_ibn ln lt' dn -&gt;</span>
+<span class="lineno">  239 </span><span class="spaces">            </span><span class="nottickedoff">pretty lt</span>
+<span class="lineno">  240 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty m_ibn</span>
+<span class="lineno">  241 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty ln</span>
+<span class="lineno">  242 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty lt'</span>
+<span class="lineno">  243 </span><span class="spaces">                </span><span class="nottickedoff">&lt;+&gt; pretty dn</span>
+<span class="lineno">  244 </span><span class="spaces">        </span><span class="nottickedoff">SetDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
+<span class="lineno">  245 </span><span class="spaces">        </span><span class="nottickedoff">MSetDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
+<span class="lineno">  246 </span><span class="spaces">        </span><span class="nottickedoff">FunctionDomainNode lt m_ln dn lt' dn' -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty dn &lt;+&gt; pretty lt' &lt;+&gt; pretty dn'</span>
+<span class="lineno">  247 </span><span class="spaces">        </span><span class="nottickedoff">SequenceDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
+<span class="lineno">  248 </span><span class="spaces">        </span><span class="nottickedoff">PermutationDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
+<span class="lineno">  249 </span><span class="spaces">        </span><span class="nottickedoff">RelationDomainNode lt m_ln lt' ln -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty ln</span>
+<span class="lineno">  250 </span><span class="spaces">        </span><span class="nottickedoff">PartitionDomainNode lt m_ln lt' dn -&gt; pretty lt &lt;+&gt; pretty m_ln &lt;+&gt; pretty lt' &lt;+&gt; pretty dn</span>
+<span class="lineno">  251 </span><span class="spaces">        </span><span class="nottickedoff">MissingDomainNode _ -&gt; emptyDoc</span></span>
+<span class="lineno">  252 </span>instance Null DomainNode where
+<span class="lineno">  253 </span>    <span class="decl"><span class="istickedoff">isMissing (MissingDomainNode{}) = True</span>
+<span class="lineno">  254 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
+<span class="lineno">  255 </span>
+<span class="lineno">  256 </span>data IndexedByNode = IndexedByNode LToken LToken
+<span class="lineno">  257 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  258 </span>instance <span class="decl"><span class="nottickedoff">Pretty IndexedByNode</span></span> where
+<span class="lineno">  259 </span>    <span class="decl"><span class="nottickedoff">pretty (IndexedByNode a b) = pretty a &lt;+&gt; pretty b</span></span>
+<span class="lineno">  260 </span>data RangeNode
+<span class="lineno">  261 </span>    = SingleRangeNode ExpressionNode
+<span class="lineno">  262 </span>    | OpenRangeNode DoubleDotNode
+<span class="lineno">  263 </span>    | RightUnboundedRangeNode ExpressionNode DoubleDotNode
+<span class="lineno">  264 </span>    | LeftUnboundedRangeNode DoubleDotNode ExpressionNode
+<span class="lineno">  265 </span>    | BoundedRangeNode ExpressionNode DoubleDotNode ExpressionNode
+<span class="lineno">  266 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  267 </span>
+<span class="lineno">  268 </span>instance <span class="decl"><span class="nottickedoff">Pretty RangeNode</span></span> where
+<span class="lineno">  269 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  270 </span><span class="spaces">        </span><span class="nottickedoff">SingleRangeNode en -&gt; pretty en</span>
+<span class="lineno">  271 </span><span class="spaces">        </span><span class="nottickedoff">OpenRangeNode lt -&gt; pretty lt</span>
+<span class="lineno">  272 </span><span class="spaces">        </span><span class="nottickedoff">RightUnboundedRangeNode en lt -&gt; pretty en &lt;&gt; pretty lt</span>
+<span class="lineno">  273 </span><span class="spaces">        </span><span class="nottickedoff">LeftUnboundedRangeNode lt en -&gt; pretty lt &lt;&gt; pretty en</span>
+<span class="lineno">  274 </span><span class="spaces">        </span><span class="nottickedoff">BoundedRangeNode en lt en' -&gt; pretty en &lt;&gt; pretty lt &lt;&gt; pretty en'</span></span>
+<span class="lineno">  275 </span>instance Null RangeNode where
+<span class="lineno">  276 </span>    <span class="decl"><span class="istickedoff">isMissing (SingleRangeNode e) = isMissing e</span>
+<span class="lineno">  277 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
+<span class="lineno">  278 </span>
+<span class="lineno">  279 </span>type DoubleDotNode = SToken
+<span class="lineno">  280 </span>
+<span class="lineno">  281 </span>-- data DoubleDotNode = DoubleDotNode LToken LToken deriving (Show, Data)
+<span class="lineno">  282 </span>
+<span class="lineno">  283 </span>data AttributeNode
+<span class="lineno">  284 </span>    = NamedAttributeNode SToken (Maybe ExpressionNode)
+<span class="lineno">  285 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  286 </span>instance <span class="decl"><span class="nottickedoff">Pretty AttributeNode</span></span> where
+<span class="lineno">  287 </span>    <span class="decl"><span class="nottickedoff">pretty (NamedAttributeNode a m_e) = pretty a &lt;+&gt; pretty m_e</span></span>
 <span class="lineno">  288 </span>
-<span class="lineno">  289 </span>
-<span class="lineno">  290 </span>data NamedDomainNode = NameDomainNode NameNode (Maybe (LToken, DomainNode))
-<span class="lineno">  291 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  292 </span>instance <span class="decl"><span class="nottickedoff">Pretty NamedDomainNode</span></span> where
-<span class="lineno">  293 </span>    <span class="decl"><span class="nottickedoff">pretty (NameDomainNode nn Nothing) = pretty nn</span>
-<span class="lineno">  294 </span><span class="spaces">    </span><span class="nottickedoff">pretty (NameDomainNode nn (Just (e, d))) = pretty nn &lt;&gt; pretty e &lt;&gt; pretty d</span></span>
-<span class="lineno">  295 </span>
-<span class="lineno">  296 </span>instance Null NamedDomainNode where
-<span class="lineno">  297 </span>    <span class="decl"><span class="istickedoff">isMissing (NameDomainNode (a) Nothing) = isMissing a</span>
-<span class="lineno">  298 </span><span class="spaces">    </span><span class="istickedoff">isMissing (NameDomainNode (a) (Just (b, c))) = isMissing a &amp;&amp; <span class="nottickedoff">isMissing b &amp;&amp; isMissing c</span></span></span>
-<span class="lineno">  299 </span>
-<span class="lineno">  300 </span>-- Common Statements
-<span class="lineno">  301 </span>data NameNodeS = NameNodeS SToken 
-<span class="lineno">  302 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  303 </span>instance <span class="decl"><span class="nottickedoff">Pretty NameNodeS</span></span> where
-<span class="lineno">  304 </span>    <span class="decl"><span class="nottickedoff">pretty (NameNodeS n) = pretty n</span></span>
-<span class="lineno">  305 </span>
-<span class="lineno">  306 </span>instance Null NameNodeS where
-<span class="lineno">  307 </span>    <span class="decl"><span class="nottickedoff">isMissing = const False</span></span>
-<span class="lineno">  308 </span>data NameNode = NameNode NameNodeS | MissingNameNode LToken
-<span class="lineno">  309 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  310 </span>
-<span class="lineno">  311 </span>
-<span class="lineno">  312 </span>instance <span class="decl"><span class="nottickedoff">Pretty NameNode</span></span> where
-<span class="lineno">  313 </span>    <span class="decl"><span class="nottickedoff">pretty (NameNode n) = pretty n</span>
-<span class="lineno">  314 </span><span class="spaces">    </span><span class="nottickedoff">pretty _ = emptyDoc</span></span>
-<span class="lineno">  315 </span>
-<span class="lineno">  316 </span>instance Null NameNode where
-<span class="lineno">  317 </span>    <span class="decl"><span class="istickedoff">isMissing (NameNode _) = False</span>
-<span class="lineno">  318 </span><span class="spaces">    </span><span class="istickedoff">isMissing (MissingNameNode _) = True</span></span>
-<span class="lineno">  319 </span>
-<span class="lineno">  320 </span>-- Expressions
-<span class="lineno">  321 </span>data ExpressionNode
-<span class="lineno">  322 </span>    = Literal LiteralNode
-<span class="lineno">  323 </span>    | IdentifierNode NameNodeS
-<span class="lineno">  324 </span>    | MetaVarExpr SToken
-<span class="lineno">  325 </span>    | QuantificationExpr QuantificationExpressionNode
-<span class="lineno">  326 </span>    | OperatorExpressionNode OperatorExpressionNode
-<span class="lineno">  327 </span>    | DomainExpression DomainExpressionNode
-<span class="lineno">  328 </span>    | ParenExpression ParenExpressionNode
-<span class="lineno">  329 </span>    | AbsExpression ParenExpressionNode
-<span class="lineno">  330 </span>    | FunctionalApplicationNode SToken (ListNode ExpressionNode)
-<span class="lineno">  331 </span>    | AttributeAsConstriant SToken (ListNode ExpressionNode)
-<span class="lineno">  332 </span>    | MissingExpressionNode LToken
-<span class="lineno">  333 </span>    | SpecialCase SpecialCaseNode
-<span class="lineno">  334 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  335 </span>
-<span class="lineno">  336 </span>instance <span class="decl"><span class="nottickedoff">Pretty ExpressionNode</span></span> where
-<span class="lineno">  337 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  338 </span><span class="spaces">        </span><span class="nottickedoff">Literal ln -&gt; pretty ln</span>
-<span class="lineno">  339 </span><span class="spaces">        </span><span class="nottickedoff">IdentifierNode nn -&gt; pretty nn</span>
-<span class="lineno">  340 </span><span class="spaces">        </span><span class="nottickedoff">MetaVarExpr lt -&gt; pretty lt</span>
-<span class="lineno">  341 </span><span class="spaces">        </span><span class="nottickedoff">QuantificationExpr qen -&gt; pretty qen</span>
-<span class="lineno">  342 </span><span class="spaces">        </span><span class="nottickedoff">OperatorExpressionNode oen -&gt; pretty oen</span>
-<span class="lineno">  343 </span><span class="spaces">        </span><span class="nottickedoff">DomainExpression den -&gt; pretty den</span>
-<span class="lineno">  344 </span><span class="spaces">        </span><span class="nottickedoff">ParenExpression (ParenExpressionNode l e r) -&gt; pretty l &lt;&gt; pretty e &lt;&gt; pretty r</span>
-<span class="lineno">  345 </span><span class="spaces">        </span><span class="nottickedoff">AbsExpression (ParenExpressionNode l e r) -&gt; pretty l &lt;&gt; pretty e &lt;&gt; pretty r</span>
-<span class="lineno">  346 </span><span class="spaces">        </span><span class="nottickedoff">FunctionalApplicationNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  347 </span><span class="spaces">        </span><span class="nottickedoff">AttributeAsConstriant lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  348 </span><span class="spaces">        </span><span class="nottickedoff">MissingExpressionNode _ -&gt; emptyDoc</span>
-<span class="lineno">  349 </span><span class="spaces">        </span><span class="nottickedoff">SpecialCase scn -&gt; pretty scn</span></span>
-<span class="lineno">  350 </span>instance Null ExpressionNode where
-<span class="lineno">  351 </span>    <span class="decl"><span class="istickedoff">isMissing (MissingExpressionNode _) = True</span>
-<span class="lineno">  352 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
-<span class="lineno">  353 </span>
-<span class="lineno">  354 </span>data SpecialCaseNode = ExprWithDecls SToken ExpressionNode SToken [StatementNode] SToken
-<span class="lineno">  355 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  356 </span>instance <span class="decl"><span class="nottickedoff">Pretty SpecialCaseNode</span></span> where
-<span class="lineno">  357 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  358 </span><span class="spaces">        </span><span class="nottickedoff">ExprWithDecls lt en lt' sns lt2 -&gt; group $ cat [pretty lt, pretty en, pretty lt', pretty sns, pretty lt2]</span></span>
-<span class="lineno">  359 </span>
-<span class="lineno">  360 </span>data DomainExpressionNode
-<span class="lineno">  361 </span>    = DomainExpressionNode LToken DomainNode LToken
-<span class="lineno">  362 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  363 </span>instance <span class="decl"><span class="nottickedoff">Pretty DomainExpressionNode</span></span> where
-<span class="lineno">  364 </span>    <span class="decl"><span class="nottickedoff">pretty (DomainExpressionNode l d r) = pretty l &lt;&gt; pretty d &lt;&gt; pretty r</span></span>
-<span class="lineno">  365 </span>data ParenExpressionNode = ParenExpressionNode LToken ExpressionNode LToken
-<span class="lineno">  366 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  367 </span>
-<span class="lineno">  368 </span>newtype ShortTuple = ShortTuple (ListNode ExpressionNode) deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  369 </span>instance <span class="decl"><span class="nottickedoff">Pretty ShortTuple</span></span> where
-<span class="lineno">  370 </span>    <span class="decl"><span class="nottickedoff">pretty (ShortTuple exps) = pretty exps</span></span>
-<span class="lineno">  371 </span>instance Null ShortTuple where
-<span class="lineno">  372 </span>    <span class="decl"><span class="istickedoff">isMissing (ShortTuple ls) = isMissing ls</span></span>
-<span class="lineno">  373 </span>
-<span class="lineno">  374 </span>data LongTuple = LongTuple SToken (ListNode ExpressionNode) deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  375 </span>instance <span class="decl"><span class="nottickedoff">Pretty LongTuple</span></span> where
-<span class="lineno">  376 </span>    <span class="decl"><span class="nottickedoff">pretty (LongTuple t exps) = pretty t &lt;&gt; pretty exps</span></span>
-<span class="lineno">  377 </span>
-<span class="lineno">  378 </span>instance Null LongTuple where
-<span class="lineno">  379 </span>    <span class="decl"><span class="istickedoff">isMissing (LongTuple s ls) = isMissing <span class="nottickedoff">s</span> &amp;&amp; <span class="nottickedoff">isMissing ls</span></span></span>
+<span class="lineno">  289 </span>instance Null AttributeNode where
+<span class="lineno">  290 </span>    <span class="decl"><span class="istickedoff">isMissing _ = False</span></span>
+<span class="lineno">  291 </span>
+<span class="lineno">  292 </span>
+<span class="lineno">  293 </span>data NamedDomainNode = NameDomainNode NameNode (Maybe (LToken, DomainNode))
+<span class="lineno">  294 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  295 </span>instance <span class="decl"><span class="nottickedoff">Pretty NamedDomainNode</span></span> where
+<span class="lineno">  296 </span>    <span class="decl"><span class="nottickedoff">pretty (NameDomainNode nn Nothing) = pretty nn</span>
+<span class="lineno">  297 </span><span class="spaces">    </span><span class="nottickedoff">pretty (NameDomainNode nn (Just (e, d))) = pretty nn &lt;&gt; pretty e &lt;&gt; pretty d</span></span>
+<span class="lineno">  298 </span>
+<span class="lineno">  299 </span>instance Null NamedDomainNode where
+<span class="lineno">  300 </span>    <span class="decl"><span class="istickedoff">isMissing (NameDomainNode (a) Nothing) = isMissing a</span>
+<span class="lineno">  301 </span><span class="spaces">    </span><span class="istickedoff">isMissing (NameDomainNode (a) (Just (b, c))) = isMissing a &amp;&amp; <span class="nottickedoff">isMissing b &amp;&amp; isMissing c</span></span></span>
+<span class="lineno">  302 </span>
+<span class="lineno">  303 </span>-- Common Statements
+<span class="lineno">  304 </span>data NameNodeS = NameNodeS SToken 
+<span class="lineno">  305 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  306 </span>instance <span class="decl"><span class="nottickedoff">Pretty NameNodeS</span></span> where
+<span class="lineno">  307 </span>    <span class="decl"><span class="nottickedoff">pretty (NameNodeS n) = pretty n</span></span>
+<span class="lineno">  308 </span>
+<span class="lineno">  309 </span>instance Null NameNodeS where
+<span class="lineno">  310 </span>    <span class="decl"><span class="nottickedoff">isMissing = const False</span></span>
+<span class="lineno">  311 </span>data NameNode = NameNode NameNodeS | MissingNameNode LToken
+<span class="lineno">  312 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  313 </span>
+<span class="lineno">  314 </span>
+<span class="lineno">  315 </span>instance <span class="decl"><span class="nottickedoff">Pretty NameNode</span></span> where
+<span class="lineno">  316 </span>    <span class="decl"><span class="nottickedoff">pretty (NameNode n) = pretty n</span>
+<span class="lineno">  317 </span><span class="spaces">    </span><span class="nottickedoff">pretty _ = emptyDoc</span></span>
+<span class="lineno">  318 </span>
+<span class="lineno">  319 </span>instance Null NameNode where
+<span class="lineno">  320 </span>    <span class="decl"><span class="istickedoff">isMissing (NameNode _) = False</span>
+<span class="lineno">  321 </span><span class="spaces">    </span><span class="istickedoff">isMissing (MissingNameNode _) = True</span></span>
+<span class="lineno">  322 </span>
+<span class="lineno">  323 </span>-- Expressions
+<span class="lineno">  324 </span>data ExpressionNode
+<span class="lineno">  325 </span>    = Literal LiteralNode
+<span class="lineno">  326 </span>    | IdentifierNode NameNodeS
+<span class="lineno">  327 </span>    | MetaVarExpr SToken
+<span class="lineno">  328 </span>    | QuantificationExpr QuantificationExpressionNode
+<span class="lineno">  329 </span>    | OperatorExpressionNode OperatorExpressionNode
+<span class="lineno">  330 </span>    | DomainExpression DomainExpressionNode
+<span class="lineno">  331 </span>    | ParenExpression ParenExpressionNode
+<span class="lineno">  332 </span>    | AbsExpression ParenExpressionNode
+<span class="lineno">  333 </span>    | FunctionalApplicationNode SToken (ListNode ExpressionNode)
+<span class="lineno">  334 </span>    | AttributeAsConstriant SToken (ListNode ExpressionNode)
+<span class="lineno">  335 </span>    | MissingExpressionNode LToken
+<span class="lineno">  336 </span>    | SpecialCase SpecialCaseNode
+<span class="lineno">  337 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  338 </span>
+<span class="lineno">  339 </span>instance <span class="decl"><span class="nottickedoff">Pretty ExpressionNode</span></span> where
+<span class="lineno">  340 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  341 </span><span class="spaces">        </span><span class="nottickedoff">Literal ln -&gt; pretty ln</span>
+<span class="lineno">  342 </span><span class="spaces">        </span><span class="nottickedoff">IdentifierNode nn -&gt; pretty nn</span>
+<span class="lineno">  343 </span><span class="spaces">        </span><span class="nottickedoff">MetaVarExpr lt -&gt; pretty lt</span>
+<span class="lineno">  344 </span><span class="spaces">        </span><span class="nottickedoff">QuantificationExpr qen -&gt; pretty qen</span>
+<span class="lineno">  345 </span><span class="spaces">        </span><span class="nottickedoff">OperatorExpressionNode oen -&gt; pretty oen</span>
+<span class="lineno">  346 </span><span class="spaces">        </span><span class="nottickedoff">DomainExpression den -&gt; pretty den</span>
+<span class="lineno">  347 </span><span class="spaces">        </span><span class="nottickedoff">ParenExpression (ParenExpressionNode l e r) -&gt; pretty l &lt;&gt; pretty e &lt;&gt; pretty r</span>
+<span class="lineno">  348 </span><span class="spaces">        </span><span class="nottickedoff">AbsExpression (ParenExpressionNode l e r) -&gt; pretty l &lt;&gt; pretty e &lt;&gt; pretty r</span>
+<span class="lineno">  349 </span><span class="spaces">        </span><span class="nottickedoff">FunctionalApplicationNode lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  350 </span><span class="spaces">        </span><span class="nottickedoff">AttributeAsConstriant lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  351 </span><span class="spaces">        </span><span class="nottickedoff">MissingExpressionNode _ -&gt; emptyDoc</span>
+<span class="lineno">  352 </span><span class="spaces">        </span><span class="nottickedoff">SpecialCase scn -&gt; pretty scn</span></span>
+<span class="lineno">  353 </span>instance Null ExpressionNode where
+<span class="lineno">  354 </span>    <span class="decl"><span class="istickedoff">isMissing (MissingExpressionNode _) = True</span>
+<span class="lineno">  355 </span><span class="spaces">    </span><span class="istickedoff">isMissing _ = False</span></span>
+<span class="lineno">  356 </span>
+<span class="lineno">  357 </span>data SpecialCaseNode = ExprWithDecls SToken ExpressionNode SToken [StatementNode] SToken
+<span class="lineno">  358 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  359 </span>instance <span class="decl"><span class="nottickedoff">Pretty SpecialCaseNode</span></span> where
+<span class="lineno">  360 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  361 </span><span class="spaces">        </span><span class="nottickedoff">ExprWithDecls lt en lt' sns lt2 -&gt; group $ cat [pretty lt, pretty en, pretty lt', pretty sns, pretty lt2]</span></span>
+<span class="lineno">  362 </span>
+<span class="lineno">  363 </span>data DomainExpressionNode
+<span class="lineno">  364 </span>    = DomainExpressionNode LToken DomainNode LToken
+<span class="lineno">  365 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  366 </span>instance <span class="decl"><span class="nottickedoff">Pretty DomainExpressionNode</span></span> where
+<span class="lineno">  367 </span>    <span class="decl"><span class="nottickedoff">pretty (DomainExpressionNode l d r) = pretty l &lt;&gt; pretty d &lt;&gt; pretty r</span></span>
+<span class="lineno">  368 </span>data ParenExpressionNode = ParenExpressionNode LToken ExpressionNode LToken
+<span class="lineno">  369 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  370 </span>
+<span class="lineno">  371 </span>newtype ShortTuple = ShortTuple (ListNode ExpressionNode) deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  372 </span>instance <span class="decl"><span class="nottickedoff">Pretty ShortTuple</span></span> where
+<span class="lineno">  373 </span>    <span class="decl"><span class="nottickedoff">pretty (ShortTuple exps) = pretty exps</span></span>
+<span class="lineno">  374 </span>instance Null ShortTuple where
+<span class="lineno">  375 </span>    <span class="decl"><span class="istickedoff">isMissing (ShortTuple ls) = isMissing ls</span></span>
+<span class="lineno">  376 </span>
+<span class="lineno">  377 </span>data LongTuple = LongTuple SToken (ListNode ExpressionNode) deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  378 </span>instance <span class="decl"><span class="nottickedoff">Pretty LongTuple</span></span> where
+<span class="lineno">  379 </span>    <span class="decl"><span class="nottickedoff">pretty (LongTuple t exps) = pretty t &lt;&gt; pretty exps</span></span>
 <span class="lineno">  380 </span>
-<span class="lineno">  381 </span>-- Literals
-<span class="lineno">  382 </span>data LiteralNode
-<span class="lineno">  383 </span>    = IntLiteral SToken
-<span class="lineno">  384 </span>    | BoolLiteral SToken
-<span class="lineno">  385 </span>    | MatrixLiteral MatrixLiteralNode
-<span class="lineno">  386 </span>    | TupleLiteralNode LongTuple
-<span class="lineno">  387 </span>    | TupleLiteralNodeShort ShortTuple
-<span class="lineno">  388 </span>    | RecordLiteral SToken (ListNode RecordMemberNode)
-<span class="lineno">  389 </span>    | VariantLiteral SToken (ListNode RecordMemberNode) -- catch later
-<span class="lineno">  390 </span>    | SetLiteral (ListNode ExpressionNode)
-<span class="lineno">  391 </span>    | MSetLiteral SToken (ListNode ExpressionNode)
-<span class="lineno">  392 </span>    | FunctionLiteral SToken (ListNode ArrowPairNode)
-<span class="lineno">  393 </span>    | SequenceLiteral SToken (ListNode ExpressionNode)
-<span class="lineno">  394 </span>    | RelationLiteral SToken (ListNode RelationElemNode)
-<span class="lineno">  395 </span>    | PartitionLiteral SToken (ListNode PartitionElemNode)
-<span class="lineno">  396 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  397 </span>
-<span class="lineno">  398 </span>instance <span class="decl"><span class="nottickedoff">Pretty LiteralNode</span></span> where
-<span class="lineno">  399 </span>    <span class="decl"><span class="nottickedoff">pretty l = case l of</span>
-<span class="lineno">  400 </span><span class="spaces">        </span><span class="nottickedoff">IntLiteral lt -&gt; pretty lt</span>
-<span class="lineno">  401 </span><span class="spaces">        </span><span class="nottickedoff">BoolLiteral lt -&gt; pretty lt</span>
-<span class="lineno">  402 </span><span class="spaces">        </span><span class="nottickedoff">MatrixLiteral mln -&gt; pretty mln</span>
-<span class="lineno">  403 </span><span class="spaces">        </span><span class="nottickedoff">TupleLiteralNode lt -&gt; pretty lt</span>
-<span class="lineno">  404 </span><span class="spaces">        </span><span class="nottickedoff">TupleLiteralNodeShort st -&gt; pretty st</span>
-<span class="lineno">  405 </span><span class="spaces">        </span><span class="nottickedoff">RecordLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  406 </span><span class="spaces">        </span><span class="nottickedoff">VariantLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  407 </span><span class="spaces">        </span><span class="nottickedoff">SetLiteral ln -&gt; pretty ln</span>
-<span class="lineno">  408 </span><span class="spaces">        </span><span class="nottickedoff">MSetLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  409 </span><span class="spaces">        </span><span class="nottickedoff">FunctionLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  410 </span><span class="spaces">        </span><span class="nottickedoff">SequenceLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  411 </span><span class="spaces">        </span><span class="nottickedoff">RelationLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
-<span class="lineno">  412 </span><span class="spaces">        </span><span class="nottickedoff">PartitionLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span></span>
-<span class="lineno">  413 </span>
-<span class="lineno">  414 </span>data MatrixLiteralNode
-<span class="lineno">  415 </span>    = MatrixLiteralNode
-<span class="lineno">  416 </span>        LToken -- openBracket
-<span class="lineno">  417 </span>        (Sequence ExpressionNode)
-<span class="lineno">  418 </span>        (Maybe OverDomainNode) -- explicitDomain
-<span class="lineno">  419 </span>        (Maybe ComprehensionNode) -- compBody
-<span class="lineno">  420 </span>        LToken -- close
-<span class="lineno">  421 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  422 </span>
-<span class="lineno">  423 </span>instance <span class="decl"><span class="nottickedoff">Pretty MatrixLiteralNode</span></span> where
-<span class="lineno">  424 </span>    <span class="decl"><span class="nottickedoff">pretty (MatrixLiteralNode bl es d c br) =</span>
-<span class="lineno">  425 </span><span class="spaces">        </span><span class="nottickedoff">group $</span>
-<span class="lineno">  426 </span><span class="spaces">            </span><span class="nottickedoff">align (cat (pretty bl : prettyElems es ++ catMaybes ((pretty &lt;$&gt; d) : comps) ++ [pretty br]))</span>
-<span class="lineno">  427 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
-<span class="lineno">  428 </span><span class="spaces">        </span><span class="nottickedoff">comps = case c of</span>
-<span class="lineno">  429 </span><span class="spaces">            </span><span class="nottickedoff">Nothing -&gt; []</span>
-<span class="lineno">  430 </span><span class="spaces">            </span><span class="nottickedoff">Just (ComprehensionNode l seq) -&gt; pure &lt;$&gt; pretty l : prettyElems seq</span></span>
-<span class="lineno">  431 </span>
-<span class="lineno">  432 </span>data ComprehensionNode
-<span class="lineno">  433 </span>    = ComprehensionNode
-<span class="lineno">  434 </span>        SToken
-<span class="lineno">  435 </span>        (Sequence ComprehensionBodyNode)
-<span class="lineno">  436 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  381 </span>instance Null LongTuple where
+<span class="lineno">  382 </span>    <span class="decl"><span class="istickedoff">isMissing (LongTuple s ls) = isMissing <span class="nottickedoff">s</span> &amp;&amp; <span class="nottickedoff">isMissing ls</span></span></span>
+<span class="lineno">  383 </span>
+<span class="lineno">  384 </span>-- Literals
+<span class="lineno">  385 </span>data LiteralNode
+<span class="lineno">  386 </span>    = IntLiteral SToken (Maybe (LToken, ETok)) -- the IntTag
+<span class="lineno">  387 </span>    | BoolLiteral SToken
+<span class="lineno">  388 </span>    | MatrixLiteral MatrixLiteralNode
+<span class="lineno">  389 </span>    | TupleLiteralNode LongTuple
+<span class="lineno">  390 </span>    | TupleLiteralNodeShort ShortTuple
+<span class="lineno">  391 </span>    | RecordLiteral SToken (ListNode RecordMemberNode)
+<span class="lineno">  392 </span>    | VariantLiteral SToken (ListNode RecordMemberNode) -- catch later
+<span class="lineno">  393 </span>    | SetLiteral (ListNode ExpressionNode)
+<span class="lineno">  394 </span>    | MSetLiteral SToken (ListNode ExpressionNode)
+<span class="lineno">  395 </span>    | FunctionLiteral SToken (ListNode ArrowPairNode)
+<span class="lineno">  396 </span>    | SequenceLiteral SToken (ListNode ExpressionNode)
+<span class="lineno">  397 </span>    | PermutationLiteral SToken (ListNode PermutationElemNode)
+<span class="lineno">  398 </span>    | RelationLiteral SToken (ListNode RelationElemNode)
+<span class="lineno">  399 </span>    | PartitionLiteral SToken (ListNode PartitionElemNode)
+<span class="lineno">  400 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  401 </span>
+<span class="lineno">  402 </span>instance <span class="decl"><span class="nottickedoff">Pretty LiteralNode</span></span> where
+<span class="lineno">  403 </span>    <span class="decl"><span class="nottickedoff">pretty l = case l of</span>
+<span class="lineno">  404 </span><span class="spaces">        </span><span class="nottickedoff">IntLiteral lt Nothing -&gt; pretty lt</span>
+<span class="lineno">  405 </span><span class="spaces">        </span><span class="nottickedoff">IntLiteral lt (Just (_, tag)) -&gt; pretty lt &lt;&gt; &quot;:&quot; &lt;&gt; pretty tag</span>
+<span class="lineno">  406 </span><span class="spaces">        </span><span class="nottickedoff">BoolLiteral lt -&gt; pretty lt</span>
+<span class="lineno">  407 </span><span class="spaces">        </span><span class="nottickedoff">MatrixLiteral mln -&gt; pretty mln</span>
+<span class="lineno">  408 </span><span class="spaces">        </span><span class="nottickedoff">TupleLiteralNode lt -&gt; pretty lt</span>
+<span class="lineno">  409 </span><span class="spaces">        </span><span class="nottickedoff">TupleLiteralNodeShort st -&gt; pretty st</span>
+<span class="lineno">  410 </span><span class="spaces">        </span><span class="nottickedoff">RecordLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  411 </span><span class="spaces">        </span><span class="nottickedoff">VariantLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  412 </span><span class="spaces">        </span><span class="nottickedoff">SetLiteral ln -&gt; pretty ln</span>
+<span class="lineno">  413 </span><span class="spaces">        </span><span class="nottickedoff">MSetLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  414 </span><span class="spaces">        </span><span class="nottickedoff">FunctionLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  415 </span><span class="spaces">        </span><span class="nottickedoff">SequenceLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  416 </span><span class="spaces">        </span><span class="nottickedoff">PermutationLiteral lt ln  -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  417 </span><span class="spaces">        </span><span class="nottickedoff">RelationLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span>
+<span class="lineno">  418 </span><span class="spaces">        </span><span class="nottickedoff">PartitionLiteral lt ln -&gt; pretty lt &lt;&gt; pretty ln</span></span>
+<span class="lineno">  419 </span>
+<span class="lineno">  420 </span>data MatrixLiteralNode
+<span class="lineno">  421 </span>    = MatrixLiteralNode
+<span class="lineno">  422 </span>        LToken -- openBracket
+<span class="lineno">  423 </span>        (Sequence ExpressionNode)
+<span class="lineno">  424 </span>        (Maybe OverDomainNode) -- explicitDomain
+<span class="lineno">  425 </span>        (Maybe ComprehensionNode) -- compBody
+<span class="lineno">  426 </span>        LToken -- close
+<span class="lineno">  427 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  428 </span>
+<span class="lineno">  429 </span>instance <span class="decl"><span class="nottickedoff">Pretty MatrixLiteralNode</span></span> where
+<span class="lineno">  430 </span>    <span class="decl"><span class="nottickedoff">pretty (MatrixLiteralNode bl es d c br) =</span>
+<span class="lineno">  431 </span><span class="spaces">        </span><span class="nottickedoff">group $</span>
+<span class="lineno">  432 </span><span class="spaces">            </span><span class="nottickedoff">align (cat (pretty bl : prettyElems es ++ catMaybes ((pretty &lt;$&gt; d) : comps) ++ [pretty br]))</span>
+<span class="lineno">  433 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
+<span class="lineno">  434 </span><span class="spaces">        </span><span class="nottickedoff">comps = case c of</span>
+<span class="lineno">  435 </span><span class="spaces">            </span><span class="nottickedoff">Nothing -&gt; []</span>
+<span class="lineno">  436 </span><span class="spaces">            </span><span class="nottickedoff">Just (ComprehensionNode l seq) -&gt; pure &lt;$&gt; pretty l : prettyElems seq</span></span>
 <span class="lineno">  437 </span>
-<span class="lineno">  438 </span>instance <span class="decl"><span class="nottickedoff">Pretty ComprehensionNode</span></span> where
-<span class="lineno">  439 </span>    <span class="decl"><span class="nottickedoff">pretty (ComprehensionNode bar es) = align $ pretty bar &lt;+&gt; pretty es</span></span>
-<span class="lineno">  440 </span>
-<span class="lineno">  441 </span>data RecordMemberNode = RecordMemberNode NameNode LToken ExpressionNode
+<span class="lineno">  438 </span>data ComprehensionNode
+<span class="lineno">  439 </span>    = ComprehensionNode
+<span class="lineno">  440 </span>        SToken
+<span class="lineno">  441 </span>        (Sequence ComprehensionBodyNode)
 <span class="lineno">  442 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  443 </span>instance <span class="decl"><span class="nottickedoff">Pretty RecordMemberNode</span></span> where
-<span class="lineno">  444 </span>    <span class="decl"><span class="nottickedoff">pretty (RecordMemberNode n t e) = pretty n &lt;&gt; pretty t &lt;&gt; pretty e</span></span>
-<span class="lineno">  445 </span>
-<span class="lineno">  446 </span>instance Null RecordMemberNode where
-<span class="lineno">  447 </span>    <span class="decl"><span class="istickedoff">isMissing (RecordMemberNode n t e) = isMissing n &amp;&amp; isMissing t &amp;&amp; isMissing e</span></span>
-<span class="lineno">  448 </span>
-<span class="lineno">  449 </span>data ArrowPairNode = ArrowPairNode ExpressionNode LToken ExpressionNode
-<span class="lineno">  450 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  451 </span>instance <span class="decl"><span class="nottickedoff">Pretty ArrowPairNode</span></span> where
-<span class="lineno">  452 </span>    <span class="decl"><span class="nottickedoff">pretty (ArrowPairNode l a r) = pretty l &lt;&gt; pretty a &lt;&gt; pretty r</span></span>
-<span class="lineno">  453 </span>instance Null ArrowPairNode where
-<span class="lineno">  454 </span>    <span class="decl"><span class="istickedoff">isMissing (ArrowPairNode l a b) = isMissing l &amp;&amp; isMissing a &amp;&amp; isMissing b</span></span>
-<span class="lineno">  455 </span>
-<span class="lineno">  456 </span>data RelationElemNode
-<span class="lineno">  457 </span>    = RelationElemNodeLabeled LongTuple
-<span class="lineno">  458 </span>    | RelationElemNodeShort ShortTuple
-<span class="lineno">  459 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  460 </span>instance <span class="decl"><span class="nottickedoff">Pretty RelationElemNode</span></span> where
-<span class="lineno">  461 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  462 </span><span class="spaces">        </span><span class="nottickedoff">RelationElemNodeLabeled lt -&gt; pretty lt</span>
-<span class="lineno">  463 </span><span class="spaces">        </span><span class="nottickedoff">RelationElemNodeShort st -&gt; pretty st</span></span>
-<span class="lineno">  464 </span>instance Null RelationElemNode where
-<span class="lineno">  465 </span>    <span class="decl"><span class="istickedoff">isMissing (RelationElemNodeLabeled lt) = isMissing lt</span>
-<span class="lineno">  466 </span><span class="spaces">    </span><span class="istickedoff">isMissing (RelationElemNodeShort st) = isMissing st</span></span>
-<span class="lineno">  467 </span>
-<span class="lineno">  468 </span>newtype PartitionElemNode = PartitionElemNode (ListNode ExpressionNode)
-<span class="lineno">  469 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  470 </span>instance <span class="decl"><span class="nottickedoff">Pretty PartitionElemNode</span></span> where
-<span class="lineno">  471 </span>    <span class="decl"><span class="nottickedoff">pretty (PartitionElemNode l) = pretty l</span></span>
-<span class="lineno">  472 </span>instance Null PartitionElemNode where
-<span class="lineno">  473 </span>    <span class="decl"><span class="istickedoff">isMissing (PartitionElemNode l) = isMissing l</span></span>
-<span class="lineno">  474 </span>
-<span class="lineno">  475 </span>data QuantificationExpressionNode
-<span class="lineno">  476 </span>    = QuantificationExpressionNode
-<span class="lineno">  477 </span>        SToken
-<span class="lineno">  478 </span>        (Sequence AbstractPatternNode)
-<span class="lineno">  479 </span>        QuantificationOverNode
-<span class="lineno">  480 </span>        (Maybe QuanticationGuard)
-<span class="lineno">  481 </span>        LToken -- dot
-<span class="lineno">  482 </span>        ExpressionNode
-<span class="lineno">  483 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>) -- MAYBE?
-<span class="lineno">  484 </span>
-<span class="lineno">  485 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuantificationExpressionNode</span></span> where
-<span class="lineno">  486 </span>    <span class="decl"><span class="nottickedoff">pretty (QuantificationExpressionNode q pats over m_guard lDot body) =</span>
-<span class="lineno">  487 </span><span class="spaces">        </span><span class="nottickedoff">group $ hd &lt;+&gt; flatIndent 4 (pretty body)</span>
-<span class="lineno">  488 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
-<span class="lineno">  489 </span><span class="spaces">        </span><span class="nottickedoff">hd = group $ pretty q &lt;+&gt; pretty pats &lt;+&gt; pretty over &lt;+&gt; pretty m_guard &lt;+&gt; pretty lDot</span></span>
-<span class="lineno">  490 </span>data QuantificationOverNode
-<span class="lineno">  491 </span>    = QuantifiedSubsetOfNode SToken ExpressionNode
-<span class="lineno">  492 </span>    | QuantifiedMemberOfNode SToken ExpressionNode
-<span class="lineno">  493 </span>    | QuantifiedDomainNode OverDomainNode
-<span class="lineno">  494 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  495 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuantificationOverNode</span></span> where
-<span class="lineno">  496 </span>    <span class="decl"><span class="nottickedoff">pretty q = case q of</span>
-<span class="lineno">  497 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedSubsetOfNode lt en -&gt; pretty lt &lt;+&gt; pretty en</span>
-<span class="lineno">  498 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedMemberOfNode lt en -&gt; pretty lt &lt;+&gt; pretty en</span>
-<span class="lineno">  499 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedDomainNode odn -&gt; pretty odn</span></span>
-<span class="lineno">  500 </span>
-<span class="lineno">  501 </span>data OverDomainNode = OverDomainNode LToken DomainNode
-<span class="lineno">  502 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  503 </span>instance <span class="decl"><span class="nottickedoff">Pretty OverDomainNode</span></span> where
-<span class="lineno">  504 </span>    <span class="decl"><span class="nottickedoff">pretty (OverDomainNode a b) = pretty a &lt;+&gt; pretty b</span></span>
-<span class="lineno">  505 </span>data AbstractPatternNode
-<span class="lineno">  506 </span>    = AbstractIdentifier NameNodeS
-<span class="lineno">  507 </span>    | AbstractMetaVar SToken
-<span class="lineno">  508 </span>    | AbstractPatternTuple (Maybe LToken) (ListNode AbstractPatternNode)
-<span class="lineno">  509 </span>    | AbstractPatternMatrix (ListNode AbstractPatternNode)
-<span class="lineno">  510 </span>    | AbstractPatternSet (ListNode AbstractPatternNode)
-<span class="lineno">  511 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  512 </span>instance <span class="decl"><span class="nottickedoff">Pretty AbstractPatternNode</span></span> where
-<span class="lineno">  513 </span>    <span class="decl"><span class="nottickedoff">pretty a = case a of</span>
-<span class="lineno">  514 </span><span class="spaces">        </span><span class="nottickedoff">AbstractIdentifier nn -&gt; pretty nn</span>
-<span class="lineno">  515 </span><span class="spaces">        </span><span class="nottickedoff">AbstractMetaVar lt -&gt; pretty lt</span>
-<span class="lineno">  516 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternTuple m_lt ln -&gt; pretty m_lt &lt;&gt; pretty ln</span>
-<span class="lineno">  517 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternMatrix ln -&gt; pretty ln</span>
-<span class="lineno">  518 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternSet ln -&gt; pretty ln</span></span>
-<span class="lineno">  519 </span>
-<span class="lineno">  520 </span>instance Null AbstractPatternNode where
-<span class="lineno">  521 </span>    <span class="decl"><span class="istickedoff">isMissing (_) = False</span></span>
-<span class="lineno">  522 </span>data QuanticationGuard = QuanticationGuard SToken ExpressionNode
-<span class="lineno">  523 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  524 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuanticationGuard</span></span> where
-<span class="lineno">  525 </span>    <span class="decl"><span class="nottickedoff">pretty (QuanticationGuard a e) = pretty a &lt;+&gt; pretty e</span></span>
-<span class="lineno">  526 </span>data QuantificationPattern
-<span class="lineno">  527 </span>    = QuantificationPattern ExpressionNode
-<span class="lineno">  528 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  529 </span>
-<span class="lineno">  530 </span>data ComprehensionExpressionNode
-<span class="lineno">  531 </span>    = ComprehensionExpressionNode
-<span class="lineno">  532 </span>        LToken
-<span class="lineno">  533 </span>        ExpressionNode
-<span class="lineno">  534 </span>        LToken
-<span class="lineno">  535 </span>        (Sequence ComprehensionBodyNode)
-<span class="lineno">  536 </span>        LToken
-<span class="lineno">  537 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  538 </span>
-<span class="lineno">  539 </span>data ComprehensionBodyNode
-<span class="lineno">  540 </span>    = CompBodyCondition ExpressionNode
-<span class="lineno">  541 </span>    | CompBodyDomain (Sequence AbstractPatternNode) SToken DomainNode
-<span class="lineno">  542 </span>    | CompBodyGenExpr (Sequence AbstractPatternNode) SToken ExpressionNode
-<span class="lineno">  543 </span>    | CompBodyLettingNode SToken AbstractPatternNode LToken ExpressionNode
-<span class="lineno">  544 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  545 </span>
-<span class="lineno">  546 </span>instance <span class="decl"><span class="nottickedoff">Pretty ComprehensionBodyNode</span></span> where
-<span class="lineno">  547 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  548 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyCondition en -&gt; pretty en</span>
-<span class="lineno">  549 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyDomain se lt dn -&gt; pretty se &lt;+&gt; pretty lt &lt;+&gt; pretty dn</span>
-<span class="lineno">  550 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyGenExpr se lt en -&gt; pretty se &lt;+&gt; pretty lt &lt;+&gt; pretty en</span>
-<span class="lineno">  551 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyLettingNode lt apn lt' en -&gt; pretty lt &lt;+&gt; pretty apn &lt;+&gt; pretty lt' &lt;+&gt; pretty en</span></span>
-<span class="lineno">  552 </span>
-<span class="lineno">  553 </span>instance Null ComprehensionBodyNode where
-<span class="lineno">  554 </span>    <span class="decl"><span class="istickedoff">isMissing (CompBodyCondition a) = isMissing a</span>
-<span class="lineno">  555 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyDomain a b c) = isMissing a &amp;&amp; <span class="nottickedoff">isMissing b &amp;&amp; isMissing c</span></span>
-<span class="lineno">  556 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyGenExpr s t e) = isMissing s &amp;&amp; <span class="nottickedoff">isMissing t &amp;&amp; isMissing e</span></span>
-<span class="lineno">  557 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyLettingNode t p l e) = isMissing <span class="nottickedoff">t</span> &amp;&amp; <span class="nottickedoff">isMissing p &amp;&amp; isMissing l &amp;&amp; isMissing e</span></span></span>
-<span class="lineno">  558 </span>data OperatorExpressionNode
-<span class="lineno">  559 </span>    = PostfixOpNode ExpressionNode PostfixOpNode
-<span class="lineno">  560 </span>    | PrefixOpNode SToken ExpressionNode
-<span class="lineno">  561 </span>    | BinaryOpNode ExpressionNode SToken ExpressionNode
-<span class="lineno">  562 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  563 </span>
-<span class="lineno">  564 </span>instance <span class="decl"><span class="nottickedoff">Pretty OperatorExpressionNode</span></span> where
-<span class="lineno">  565 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
-<span class="lineno">  566 </span><span class="spaces">        </span><span class="nottickedoff">PostfixOpNode en pon -&gt; pretty en &lt;&gt; pretty pon</span>
-<span class="lineno">  567 </span><span class="spaces">        </span><span class="nottickedoff">PrefixOpNode lt en -&gt; pretty lt &lt;&gt; pretty en</span>
-<span class="lineno">  568 </span><span class="spaces">        </span><span class="nottickedoff">BinaryOpNode en lt en' -&gt; group $ sep [pretty en, pretty lt, pretty en']</span></span>
-<span class="lineno">  569 </span>
-<span class="lineno">  570 </span>data PostfixOpNode
-<span class="lineno">  571 </span>    = IndexedNode (ListNode RangeNode)
-<span class="lineno">  572 </span>    | OpFactorial SToken
-<span class="lineno">  573 </span>    | ExplicitDomain SToken SToken DomainNode LToken
-<span class="lineno">  574 </span>    | ApplicationNode (ListNode ExpressionNode)
+<span class="lineno">  443 </span>
+<span class="lineno">  444 </span>instance <span class="decl"><span class="nottickedoff">Pretty ComprehensionNode</span></span> where
+<span class="lineno">  445 </span>    <span class="decl"><span class="nottickedoff">pretty (ComprehensionNode bar es) = align $ pretty bar &lt;+&gt; pretty es</span></span>
+<span class="lineno">  446 </span>
+<span class="lineno">  447 </span>data RecordMemberNode = RecordMemberNode NameNode LToken ExpressionNode
+<span class="lineno">  448 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  449 </span>instance <span class="decl"><span class="nottickedoff">Pretty RecordMemberNode</span></span> where
+<span class="lineno">  450 </span>    <span class="decl"><span class="nottickedoff">pretty (RecordMemberNode n t e) = pretty n &lt;&gt; pretty t &lt;&gt; pretty e</span></span>
+<span class="lineno">  451 </span>
+<span class="lineno">  452 </span>instance Null RecordMemberNode where
+<span class="lineno">  453 </span>    <span class="decl"><span class="istickedoff">isMissing (RecordMemberNode n t e) = isMissing n &amp;&amp; isMissing t &amp;&amp; isMissing e</span></span>
+<span class="lineno">  454 </span>
+<span class="lineno">  455 </span>data ArrowPairNode = ArrowPairNode ExpressionNode LToken ExpressionNode
+<span class="lineno">  456 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  457 </span>instance <span class="decl"><span class="nottickedoff">Pretty ArrowPairNode</span></span> where
+<span class="lineno">  458 </span>    <span class="decl"><span class="nottickedoff">pretty (ArrowPairNode l a r) = pretty l &lt;&gt; pretty a &lt;&gt; pretty r</span></span>
+<span class="lineno">  459 </span>instance Null ArrowPairNode where
+<span class="lineno">  460 </span>    <span class="decl"><span class="istickedoff">isMissing (ArrowPairNode l a b) = isMissing l &amp;&amp; isMissing a &amp;&amp; isMissing b</span></span>
+<span class="lineno">  461 </span>
+<span class="lineno">  462 </span>data RelationElemNode
+<span class="lineno">  463 </span>    = RelationElemNodeLabeled LongTuple
+<span class="lineno">  464 </span>    | RelationElemNodeShort ShortTuple
+<span class="lineno">  465 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  466 </span>instance <span class="decl"><span class="nottickedoff">Pretty RelationElemNode</span></span> where
+<span class="lineno">  467 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  468 </span><span class="spaces">        </span><span class="nottickedoff">RelationElemNodeLabeled lt -&gt; pretty lt</span>
+<span class="lineno">  469 </span><span class="spaces">        </span><span class="nottickedoff">RelationElemNodeShort st -&gt; pretty st</span></span>
+<span class="lineno">  470 </span>instance Null RelationElemNode where
+<span class="lineno">  471 </span>    <span class="decl"><span class="istickedoff">isMissing (RelationElemNodeLabeled lt) = isMissing lt</span>
+<span class="lineno">  472 </span><span class="spaces">    </span><span class="istickedoff">isMissing (RelationElemNodeShort st) = isMissing st</span></span>
+<span class="lineno">  473 </span>
+<span class="lineno">  474 </span>newtype PermutationElemNode = PermutationElemNode (ListNode ExpressionNode)
+<span class="lineno">  475 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  476 </span>instance <span class="decl"><span class="nottickedoff">Pretty PermutationElemNode</span></span> where
+<span class="lineno">  477 </span>    <span class="decl"><span class="nottickedoff">pretty (PermutationElemNode l) = pretty l</span></span>
+<span class="lineno">  478 </span>instance Null PermutationElemNode where
+<span class="lineno">  479 </span>    <span class="decl"><span class="istickedoff">isMissing (PermutationElemNode l) = isMissing l</span></span>
+<span class="lineno">  480 </span>
+<span class="lineno">  481 </span>newtype PartitionElemNode = PartitionElemNode (ListNode ExpressionNode)
+<span class="lineno">  482 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  483 </span>instance <span class="decl"><span class="nottickedoff">Pretty PartitionElemNode</span></span> where
+<span class="lineno">  484 </span>    <span class="decl"><span class="nottickedoff">pretty (PartitionElemNode l) = pretty l</span></span>
+<span class="lineno">  485 </span>instance Null PartitionElemNode where
+<span class="lineno">  486 </span>    <span class="decl"><span class="istickedoff">isMissing (PartitionElemNode l) = isMissing l</span></span>
+<span class="lineno">  487 </span>
+<span class="lineno">  488 </span>data QuantificationExpressionNode
+<span class="lineno">  489 </span>    = QuantificationExpressionNode
+<span class="lineno">  490 </span>        SToken
+<span class="lineno">  491 </span>        (Sequence AbstractPatternNode)
+<span class="lineno">  492 </span>        QuantificationOverNode
+<span class="lineno">  493 </span>        (Maybe QuanticationGuard)
+<span class="lineno">  494 </span>        LToken -- dot
+<span class="lineno">  495 </span>        ExpressionNode
+<span class="lineno">  496 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>) -- MAYBE?
+<span class="lineno">  497 </span>
+<span class="lineno">  498 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuantificationExpressionNode</span></span> where
+<span class="lineno">  499 </span>    <span class="decl"><span class="nottickedoff">pretty (QuantificationExpressionNode q pats over m_guard lDot body) =</span>
+<span class="lineno">  500 </span><span class="spaces">        </span><span class="nottickedoff">group $ hd &lt;+&gt; flatIndent 4 (pretty body)</span>
+<span class="lineno">  501 </span><span class="spaces">      </span><span class="nottickedoff">where</span>
+<span class="lineno">  502 </span><span class="spaces">        </span><span class="nottickedoff">hd = group $ pretty q &lt;+&gt; pretty pats &lt;+&gt; pretty over &lt;+&gt; pretty m_guard &lt;+&gt; pretty lDot</span></span>
+<span class="lineno">  503 </span>data QuantificationOverNode
+<span class="lineno">  504 </span>    = QuantifiedSubsetOfNode SToken ExpressionNode
+<span class="lineno">  505 </span>    | QuantifiedMemberOfNode SToken ExpressionNode
+<span class="lineno">  506 </span>    | QuantifiedDomainNode OverDomainNode
+<span class="lineno">  507 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  508 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuantificationOverNode</span></span> where
+<span class="lineno">  509 </span>    <span class="decl"><span class="nottickedoff">pretty q = case q of</span>
+<span class="lineno">  510 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedSubsetOfNode lt en -&gt; pretty lt &lt;+&gt; pretty en</span>
+<span class="lineno">  511 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedMemberOfNode lt en -&gt; pretty lt &lt;+&gt; pretty en</span>
+<span class="lineno">  512 </span><span class="spaces">        </span><span class="nottickedoff">QuantifiedDomainNode odn -&gt; pretty odn</span></span>
+<span class="lineno">  513 </span>
+<span class="lineno">  514 </span>data OverDomainNode = OverDomainNode LToken DomainNode
+<span class="lineno">  515 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  516 </span>instance <span class="decl"><span class="nottickedoff">Pretty OverDomainNode</span></span> where
+<span class="lineno">  517 </span>    <span class="decl"><span class="nottickedoff">pretty (OverDomainNode a b) = pretty a &lt;+&gt; pretty b</span></span>
+<span class="lineno">  518 </span>data AbstractPatternNode
+<span class="lineno">  519 </span>    = AbstractIdentifier NameNodeS
+<span class="lineno">  520 </span>    | AbstractMetaVar SToken
+<span class="lineno">  521 </span>    | AbstractPatternTuple (Maybe LToken) (ListNode AbstractPatternNode)
+<span class="lineno">  522 </span>    | AbstractPatternMatrix (ListNode AbstractPatternNode)
+<span class="lineno">  523 </span>    | AbstractPatternSet (ListNode AbstractPatternNode)
+<span class="lineno">  524 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  525 </span>instance <span class="decl"><span class="nottickedoff">Pretty AbstractPatternNode</span></span> where
+<span class="lineno">  526 </span>    <span class="decl"><span class="nottickedoff">pretty a = case a of</span>
+<span class="lineno">  527 </span><span class="spaces">        </span><span class="nottickedoff">AbstractIdentifier nn -&gt; pretty nn</span>
+<span class="lineno">  528 </span><span class="spaces">        </span><span class="nottickedoff">AbstractMetaVar lt -&gt; pretty lt</span>
+<span class="lineno">  529 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternTuple m_lt ln -&gt; pretty m_lt &lt;&gt; pretty ln</span>
+<span class="lineno">  530 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternMatrix ln -&gt; pretty ln</span>
+<span class="lineno">  531 </span><span class="spaces">        </span><span class="nottickedoff">AbstractPatternSet ln -&gt; pretty ln</span></span>
+<span class="lineno">  532 </span>
+<span class="lineno">  533 </span>instance Null AbstractPatternNode where
+<span class="lineno">  534 </span>    <span class="decl"><span class="istickedoff">isMissing (_) = False</span></span>
+<span class="lineno">  535 </span>data QuanticationGuard = QuanticationGuard SToken ExpressionNode
+<span class="lineno">  536 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  537 </span>instance <span class="decl"><span class="nottickedoff">Pretty QuanticationGuard</span></span> where
+<span class="lineno">  538 </span>    <span class="decl"><span class="nottickedoff">pretty (QuanticationGuard a e) = pretty a &lt;+&gt; pretty e</span></span>
+<span class="lineno">  539 </span>data QuantificationPattern
+<span class="lineno">  540 </span>    = QuantificationPattern ExpressionNode
+<span class="lineno">  541 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  542 </span>
+<span class="lineno">  543 </span>data ComprehensionExpressionNode
+<span class="lineno">  544 </span>    = ComprehensionExpressionNode
+<span class="lineno">  545 </span>        LToken
+<span class="lineno">  546 </span>        ExpressionNode
+<span class="lineno">  547 </span>        LToken
+<span class="lineno">  548 </span>        (Sequence ComprehensionBodyNode)
+<span class="lineno">  549 </span>        LToken
+<span class="lineno">  550 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  551 </span>
+<span class="lineno">  552 </span>data ComprehensionBodyNode
+<span class="lineno">  553 </span>    = CompBodyCondition ExpressionNode
+<span class="lineno">  554 </span>    | CompBodyDomain (Sequence AbstractPatternNode) SToken DomainNode
+<span class="lineno">  555 </span>    | CompBodyGenExpr (Sequence AbstractPatternNode) SToken ExpressionNode
+<span class="lineno">  556 </span>    | CompBodyLettingNode SToken AbstractPatternNode LToken ExpressionNode
+<span class="lineno">  557 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  558 </span>
+<span class="lineno">  559 </span>instance <span class="decl"><span class="nottickedoff">Pretty ComprehensionBodyNode</span></span> where
+<span class="lineno">  560 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  561 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyCondition en -&gt; pretty en</span>
+<span class="lineno">  562 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyDomain se lt dn -&gt; pretty se &lt;+&gt; pretty lt &lt;+&gt; pretty dn</span>
+<span class="lineno">  563 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyGenExpr se lt en -&gt; pretty se &lt;+&gt; pretty lt &lt;+&gt; pretty en</span>
+<span class="lineno">  564 </span><span class="spaces">        </span><span class="nottickedoff">CompBodyLettingNode lt apn lt' en -&gt; pretty lt &lt;+&gt; pretty apn &lt;+&gt; pretty lt' &lt;+&gt; pretty en</span></span>
+<span class="lineno">  565 </span>
+<span class="lineno">  566 </span>instance Null ComprehensionBodyNode where
+<span class="lineno">  567 </span>    <span class="decl"><span class="istickedoff">isMissing (CompBodyCondition a) = isMissing a</span>
+<span class="lineno">  568 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyDomain a b c) = isMissing a &amp;&amp; <span class="nottickedoff">isMissing b &amp;&amp; isMissing c</span></span>
+<span class="lineno">  569 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyGenExpr s t e) = isMissing s &amp;&amp; <span class="nottickedoff">isMissing t &amp;&amp; isMissing e</span></span>
+<span class="lineno">  570 </span><span class="spaces">    </span><span class="istickedoff">isMissing (CompBodyLettingNode t p l e) = isMissing <span class="nottickedoff">t</span> &amp;&amp; <span class="nottickedoff">isMissing p &amp;&amp; isMissing l &amp;&amp; isMissing e</span></span></span>
+<span class="lineno">  571 </span>data OperatorExpressionNode
+<span class="lineno">  572 </span>    = PostfixOpNode ExpressionNode PostfixOpNode
+<span class="lineno">  573 </span>    | PrefixOpNode SToken ExpressionNode
+<span class="lineno">  574 </span>    | BinaryOpNode ExpressionNode SToken ExpressionNode
 <span class="lineno">  575 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
 <span class="lineno">  576 </span>
-<span class="lineno">  577 </span>instance <span class="decl"><span class="nottickedoff">Pretty PostfixOpNode</span></span> where
-<span class="lineno">  578 </span>    <span class="decl"><span class="nottickedoff">pretty o = case o of</span>
-<span class="lineno">  579 </span><span class="spaces">        </span><span class="nottickedoff">IndexedNode ln -&gt; pretty ln</span>
-<span class="lineno">  580 </span><span class="spaces">        </span><span class="nottickedoff">OpFactorial lt -&gt; pretty lt</span>
-<span class="lineno">  581 </span><span class="spaces">        </span><span class="nottickedoff">ExplicitDomain lt lt' dn lt2 -&gt; pretty lt &lt;+&gt; pretty lt' &lt;&gt; pretty dn &lt;&gt; pretty lt2</span>
-<span class="lineno">  582 </span><span class="spaces">        </span><span class="nottickedoff">ApplicationNode ln -&gt; pretty ln</span></span>
-<span class="lineno">  583 </span>
-<span class="lineno">  584 </span>-- data FunctionApplicationNode
-<span class="lineno">  585 </span>--     = FunctionApplicationNode LToken (ListNode ExpressionNode)
-<span class="lineno">  586 </span>
-<span class="lineno">  587 </span>data IndexerNode
-<span class="lineno">  588 </span>    = Indexer
-<span class="lineno">  589 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  590 </span>data ListNode itemType = ListNode
-<span class="lineno">  591 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lOpBracket</span></span></span> :: LToken
-<span class="lineno">  592 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">items</span></span></span> :: Sequence itemType
-<span class="lineno">  593 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lClBracket</span></span></span> :: LToken
-<span class="lineno">  594 </span>    }
-<span class="lineno">  595 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  577 </span>instance <span class="decl"><span class="nottickedoff">Pretty OperatorExpressionNode</span></span> where
+<span class="lineno">  578 </span>    <span class="decl"><span class="nottickedoff">pretty x = case x of</span>
+<span class="lineno">  579 </span><span class="spaces">        </span><span class="nottickedoff">PostfixOpNode en pon -&gt; pretty en &lt;&gt; pretty pon</span>
+<span class="lineno">  580 </span><span class="spaces">        </span><span class="nottickedoff">PrefixOpNode lt en -&gt; pretty lt &lt;&gt; pretty en</span>
+<span class="lineno">  581 </span><span class="spaces">        </span><span class="nottickedoff">BinaryOpNode en lt en' -&gt; group $ sep [pretty en, pretty lt, pretty en']</span></span>
+<span class="lineno">  582 </span>
+<span class="lineno">  583 </span>data PostfixOpNode
+<span class="lineno">  584 </span>    = IndexedNode (ListNode RangeNode)
+<span class="lineno">  585 </span>    | OpFactorial SToken
+<span class="lineno">  586 </span>    | ExplicitDomain SToken SToken DomainNode LToken
+<span class="lineno">  587 </span>    | ApplicationNode (ListNode ExpressionNode)
+<span class="lineno">  588 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  589 </span>
+<span class="lineno">  590 </span>instance <span class="decl"><span class="nottickedoff">Pretty PostfixOpNode</span></span> where
+<span class="lineno">  591 </span>    <span class="decl"><span class="nottickedoff">pretty o = case o of</span>
+<span class="lineno">  592 </span><span class="spaces">        </span><span class="nottickedoff">IndexedNode ln -&gt; pretty ln</span>
+<span class="lineno">  593 </span><span class="spaces">        </span><span class="nottickedoff">OpFactorial lt -&gt; pretty lt</span>
+<span class="lineno">  594 </span><span class="spaces">        </span><span class="nottickedoff">ExplicitDomain lt lt' dn lt2 -&gt; pretty lt &lt;+&gt; pretty lt' &lt;&gt; pretty dn &lt;&gt; pretty lt2</span>
+<span class="lineno">  595 </span><span class="spaces">        </span><span class="nottickedoff">ApplicationNode ln -&gt; pretty ln</span></span>
 <span class="lineno">  596 </span>
-<span class="lineno">  597 </span>-- prettyList :: Pretty a =&gt; ListNode a &gt; Doc
-<span class="lineno">  598 </span>-- prettyList (ListNode start es end) = group $ align $ cat $
-<span class="lineno">  599 </span>--         [
-<span class="lineno">  600 </span>--             pretty start ,
-<span class="lineno">  601 </span>--             flatAlt (indent 4 $ pretty es) (pretty es) ,
-<span class="lineno">  602 </span>--             pretty end
-<span class="lineno">  603 </span>--         ]
-<span class="lineno">  604 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (ListNode a)</span></span> where
-<span class="lineno">  605 </span>    <span class="decl"><span class="nottickedoff">pretty (ListNode start es end) =</span>
-<span class="lineno">  606 </span><span class="spaces">        </span><span class="nottickedoff">group $</span>
-<span class="lineno">  607 </span><span class="spaces">            </span><span class="nottickedoff">align $</span>
-<span class="lineno">  608 </span><span class="spaces">                </span><span class="nottickedoff">cat $</span>
-<span class="lineno">  609 </span><span class="spaces">                    </span><span class="nottickedoff">[ pretty start</span>
-<span class="lineno">  610 </span><span class="spaces">                    </span><span class="nottickedoff">, flatAlt (indent 4 $ pretty es) (pretty es)</span>
-<span class="lineno">  611 </span><span class="spaces">                    </span><span class="nottickedoff">, pretty end</span>
-<span class="lineno">  612 </span><span class="spaces">                    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  613 </span>
-<span class="lineno">  614 </span>instance (Null a) =&gt; Null (ListNode a) where
-<span class="lineno">  615 </span>    <span class="decl"><span class="istickedoff">isMissing (ListNode l1 s l2) = isMissing l1 &amp;&amp; isMissing s &amp;&amp; isMissing l2</span></span>
-<span class="lineno">  616 </span>newtype Sequence itemType = Seq
-<span class="lineno">  617 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">elems</span></span></span> :: [SeqElem itemType]
-<span class="lineno">  618 </span>    }
-<span class="lineno">  619 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  597 </span>-- data FunctionApplicationNode
+<span class="lineno">  598 </span>--     = FunctionApplicationNode LToken (ListNode ExpressionNode)
+<span class="lineno">  599 </span>
+<span class="lineno">  600 </span>data IndexerNode
+<span class="lineno">  601 </span>    = Indexer
+<span class="lineno">  602 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  603 </span>
+<span class="lineno">  604 </span>data ListNode itemType = ListNode
+<span class="lineno">  605 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lOpBracket</span></span></span> :: LToken
+<span class="lineno">  606 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">items</span></span></span> :: Sequence itemType
+<span class="lineno">  607 </span>    , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">lClBracket</span></span></span> :: LToken
+<span class="lineno">  608 </span>    }
+<span class="lineno">  609 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  610 </span>
+<span class="lineno">  611 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (ListNode a)</span></span> where
+<span class="lineno">  612 </span>    <span class="decl"><span class="nottickedoff">pretty (ListNode start es end) =</span>
+<span class="lineno">  613 </span><span class="spaces">        </span><span class="nottickedoff">group $</span>
+<span class="lineno">  614 </span><span class="spaces">            </span><span class="nottickedoff">align $</span>
+<span class="lineno">  615 </span><span class="spaces">                </span><span class="nottickedoff">cat $</span>
+<span class="lineno">  616 </span><span class="spaces">                    </span><span class="nottickedoff">[ pretty start</span>
+<span class="lineno">  617 </span><span class="spaces">                    </span><span class="nottickedoff">, flatAlt (indent 4 $ pretty es) (pretty es)</span>
+<span class="lineno">  618 </span><span class="spaces">                    </span><span class="nottickedoff">, pretty end</span>
+<span class="lineno">  619 </span><span class="spaces">                    </span><span class="nottickedoff">]</span></span>
 <span class="lineno">  620 </span>
-<span class="lineno">  621 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (Sequence a)</span></span> where
-<span class="lineno">  622 </span>    <span class="decl"><span class="nottickedoff">pretty (Seq xs) = align $ sep $ map pretty xs</span></span>
+<span class="lineno">  621 </span>instance (Null a) =&gt; Null (ListNode a) where
+<span class="lineno">  622 </span>    <span class="decl"><span class="istickedoff">isMissing (ListNode l1 s l2) = isMissing l1 &amp;&amp; isMissing s &amp;&amp; isMissing l2</span></span>
 <span class="lineno">  623 </span>
-<span class="lineno">  624 </span>prettyElems :: (Pretty a) =&gt; Sequence a -&gt; [Doc ann]
-<span class="lineno">  625 </span><span class="decl"><span class="nottickedoff">prettyElems (Seq xs) = map pretty xs</span></span>
-<span class="lineno">  626 </span>
-<span class="lineno">  627 </span>instance (Null a) =&gt; Null (SeqElem a) where
-<span class="lineno">  628 </span>    <span class="decl"><span class="istickedoff">isMissing (SeqElem i Nothing) = isMissing i</span>
-<span class="lineno">  629 </span><span class="spaces">    </span><span class="istickedoff">isMissing (SeqElem i x) = <span class="nottickedoff">isMissing i &amp;&amp; isMissing x</span></span>
-<span class="lineno">  630 </span><span class="spaces">    </span><span class="istickedoff">isMissing (MissingSeqElem _ c) = isMissing c</span></span>
+<span class="lineno">  624 </span>newtype Sequence itemType = Seq
+<span class="lineno">  625 </span>    { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">elems</span></span></span> :: [SeqElem itemType]
+<span class="lineno">  626 </span>    }
+<span class="lineno">  627 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  628 </span>
+<span class="lineno">  629 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (Sequence a)</span></span> where
+<span class="lineno">  630 </span>    <span class="decl"><span class="nottickedoff">pretty (Seq xs) = align $ sep $ map pretty xs</span></span>
 <span class="lineno">  631 </span>
-<span class="lineno">  632 </span>instance (Null a) =&gt; Null (Sequence a) where
-<span class="lineno">  633 </span>    <span class="decl"><span class="istickedoff">isMissing (Seq []) = True</span>
-<span class="lineno">  634 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Seq [a]) = isMissing a</span>
-<span class="lineno">  635 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Seq _) = False</span></span>
-<span class="lineno">  636 </span>
-<span class="lineno">  637 </span>-- deriving (Show, Data)
-<span class="lineno">  638 </span>-- instance (Show a) =&gt; Show (Sequence a) where
-<span class="lineno">  639 </span>--     show (Seq e) = &quot;Seq:\n&quot; ++ intercalate &quot;\n\t&quot; (map show e) ++ &quot;\n&quot;
-<span class="lineno">  640 </span>
-<span class="lineno">  641 </span>data SeqElem itemType
-<span class="lineno">  642 </span>    = SeqElem
-<span class="lineno">  643 </span>        { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">item</span></span></span> :: itemType
-<span class="lineno">  644 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">separator</span></span></span> :: Maybe LToken
-<span class="lineno">  645 </span>        }
-<span class="lineno">  646 </span>    | MissingSeqElem LToken LToken
-<span class="lineno">  647 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
-<span class="lineno">  648 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (SeqElem a)</span></span> where
-<span class="lineno">  649 </span>    <span class="decl"><span class="nottickedoff">pretty (SeqElem i s) = pretty i &lt;&gt; pretty s</span>
-<span class="lineno">  650 </span><span class="spaces">    </span><span class="nottickedoff">pretty _ = emptyDoc</span></span>
-<span class="lineno">  651 </span>
-<span class="lineno">  652 </span>class Null a where
-<span class="lineno">  653 </span>    isMissing :: a -&gt; Bool
-<span class="lineno">  654 </span>
-<span class="lineno">  655 </span>instance (Null a) =&gt; Null (Maybe a) where
-<span class="lineno">  656 </span>    <span class="decl"><span class="istickedoff">isMissing Nothing = True</span>
-<span class="lineno">  657 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Just s) = isMissing s</span></span>
-<span class="lineno">  658 </span>
-<span class="lineno">  659 </span>prettyTokenAndComments :: LToken -&gt; (Doc ann, Doc ann)
-<span class="lineno">  660 </span><span class="decl"><span class="nottickedoff">prettyTokenAndComments (RealToken (StrictToken [] t)) = prettySplitComments t</span>
-<span class="lineno">  661 </span><span class="spaces"></span><span class="nottickedoff">prettyTokenAndComments (o) = (emptyDoc, pretty o)</span></span>
+<span class="lineno">  632 </span>prettyElems :: (Pretty a) =&gt; Sequence a -&gt; [Doc ann]
+<span class="lineno">  633 </span><span class="decl"><span class="nottickedoff">prettyElems (Seq xs) = map pretty xs</span></span>
+<span class="lineno">  634 </span>
+<span class="lineno">  635 </span>instance (Null a) =&gt; Null (SeqElem a) where
+<span class="lineno">  636 </span>    <span class="decl"><span class="istickedoff">isMissing (SeqElem i Nothing) = isMissing i</span>
+<span class="lineno">  637 </span><span class="spaces">    </span><span class="istickedoff">isMissing (SeqElem i x) = <span class="nottickedoff">isMissing i &amp;&amp; isMissing x</span></span>
+<span class="lineno">  638 </span><span class="spaces">    </span><span class="istickedoff">isMissing (MissingSeqElem _ c) = isMissing c</span></span>
+<span class="lineno">  639 </span>
+<span class="lineno">  640 </span>instance (Null a) =&gt; Null (Sequence a) where
+<span class="lineno">  641 </span>    <span class="decl"><span class="istickedoff">isMissing (Seq []) = True</span>
+<span class="lineno">  642 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Seq [a]) = isMissing a</span>
+<span class="lineno">  643 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Seq _) = False</span></span>
+<span class="lineno">  644 </span>
+<span class="lineno">  645 </span>-- deriving (Show, Data)
+<span class="lineno">  646 </span>-- instance (Show a) =&gt; Show (Sequence a) where
+<span class="lineno">  647 </span>--     show (Seq e) = &quot;Seq:\n&quot; ++ intercalate &quot;\n\t&quot; (map show e) ++ &quot;\n&quot;
+<span class="lineno">  648 </span>
+<span class="lineno">  649 </span>data SeqElem itemType
+<span class="lineno">  650 </span>    = SeqElem
+<span class="lineno">  651 </span>        { <span class="nottickedoff"><span class="decl"><span class="nottickedoff">item</span></span></span> :: itemType
+<span class="lineno">  652 </span>        , <span class="nottickedoff"><span class="decl"><span class="nottickedoff">separator</span></span></span> :: Maybe LToken
+<span class="lineno">  653 </span>        }
+<span class="lineno">  654 </span>    | MissingSeqElem LToken LToken
+<span class="lineno">  655 </span>    deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>)
+<span class="lineno">  656 </span>instance <span class="decl"><span class="nottickedoff">Pretty a =&gt; Pretty (SeqElem a)</span></span> where
+<span class="lineno">  657 </span>    <span class="decl"><span class="nottickedoff">pretty (SeqElem i s) = pretty i &lt;&gt; pretty s</span>
+<span class="lineno">  658 </span><span class="spaces">    </span><span class="nottickedoff">pretty _ = emptyDoc</span></span>
+<span class="lineno">  659 </span>
+<span class="lineno">  660 </span>class Null a where
+<span class="lineno">  661 </span>    isMissing :: a -&gt; Bool
 <span class="lineno">  662 </span>
-<span class="lineno">  663 </span>topLevelPretty :: [LToken] -&gt; Doc ann -&gt; Doc ann
-<span class="lineno">  664 </span><span class="decl"><span class="nottickedoff">topLevelPretty (t : (map pretty -&gt; xs)) exprs =</span>
-<span class="lineno">  665 </span><span class="spaces">    </span><span class="nottickedoff">let (cs, ps) = prettyTokenAndComments t</span>
-<span class="lineno">  666 </span><span class="spaces">        </span><span class="nottickedoff">dec = ps &lt;+&gt; hsep xs</span>
-<span class="lineno">  667 </span><span class="spaces">     </span><span class="nottickedoff">in cs &lt;&gt; group (fill 7 dec &lt;+&gt; flatIndent 4 exprs) &lt;&gt; line</span>
-<span class="lineno">  668 </span><span class="spaces"></span><span class="nottickedoff">topLevelPretty _ exprs = group (fill 7 emptyDoc &lt;+&gt; flatIndent 4 exprs) &lt;&gt; line</span></span>
-<span class="lineno">  669 </span>
-<span class="lineno">  670 </span>flatIndent :: Int -&gt; Doc ann -&gt; Doc ann
-<span class="lineno">  671 </span><span class="decl"><span class="nottickedoff">flatIndent amt d = flatAlt (line &lt;&gt; indent amt d) d</span></span>
-<span class="lineno">  672 </span>
-<span class="lineno">  673 </span>renderAST :: Int -&gt; ProgramTree -&gt; Text
-<span class="lineno">  674 </span><span class="decl"><span class="nottickedoff">renderAST n = renderStrict . layoutSmart (LayoutOptions $ AvailablePerLine n 0.8) . pretty</span></span>
-<span class="lineno">  675 </span>
-<span class="lineno">  676 </span>
+<span class="lineno">  663 </span>instance (Null a) =&gt; Null (Maybe a) where
+<span class="lineno">  664 </span>    <span class="decl"><span class="istickedoff">isMissing Nothing = True</span>
+<span class="lineno">  665 </span><span class="spaces">    </span><span class="istickedoff">isMissing (Just s) = isMissing s</span></span>
+<span class="lineno">  666 </span>
+<span class="lineno">  667 </span>prettyTokenAndComments :: LToken -&gt; (Doc ann, Doc ann)
+<span class="lineno">  668 </span><span class="decl"><span class="nottickedoff">prettyTokenAndComments (RealToken (StrictToken [] t)) = prettySplitComments t</span>
+<span class="lineno">  669 </span><span class="spaces"></span><span class="nottickedoff">prettyTokenAndComments (o) = (emptyDoc, pretty o)</span></span>
+<span class="lineno">  670 </span>
+<span class="lineno">  671 </span>topLevelPretty :: [LToken] -&gt; Doc ann -&gt; Doc ann
+<span class="lineno">  672 </span><span class="decl"><span class="nottickedoff">topLevelPretty (t : (map pretty -&gt; xs)) exprs =</span>
+<span class="lineno">  673 </span><span class="spaces">    </span><span class="nottickedoff">let (cs, ps) = prettyTokenAndComments t</span>
+<span class="lineno">  674 </span><span class="spaces">        </span><span class="nottickedoff">dec = ps &lt;+&gt; hsep xs</span>
+<span class="lineno">  675 </span><span class="spaces">     </span><span class="nottickedoff">in cs &lt;&gt; group (fill 7 dec &lt;+&gt; flatIndent 4 exprs) &lt;&gt; line</span>
+<span class="lineno">  676 </span><span class="spaces"></span><span class="nottickedoff">topLevelPretty _ exprs = group (fill 7 emptyDoc &lt;+&gt; flatIndent 4 exprs) &lt;&gt; line</span></span>
+<span class="lineno">  677 </span>
+<span class="lineno">  678 </span>flatIndent :: Int -&gt; Doc ann -&gt; Doc ann
+<span class="lineno">  679 </span><span class="decl"><span class="nottickedoff">flatIndent amt d = flatAlt (line &lt;&gt; indent amt d) d</span></span>
+<span class="lineno">  680 </span>
+<span class="lineno">  681 </span>renderAST :: Int -&gt; ProgramTree -&gt; Text
+<span class="lineno">  682 </span><span class="decl"><span class="nottickedoff">renderAST n = renderStrict . layoutSmart (LayoutOptions $ AvailablePerLine n 0.8) . pretty</span></span>
+<span class="lineno">  683 </span>
+<span class="lineno">  684 </span>
 
 </pre>
 </body>

@@ -117,7 +117,7 @@ span.spaces    { background: white }
 <span class="lineno">   98 </span><span class="spaces">        </span><span class="istickedoff">then <span class="nottickedoff">parseError &quot;Expected integer constant&quot; txt</span></span>
 <span class="lineno">   99 </span><span class="spaces">        </span><span class="istickedoff">else</span>
 <span class="lineno">  100 </span><span class="spaces">          </span><span class="istickedoff">let n = sign * parseInteger digits</span>
-<span class="lineno">  101 </span><span class="spaces">          </span><span class="istickedoff">in Right (ConstantInt <span class="nottickedoff">TagInt</span> n, rest)</span></span>
+<span class="lineno">  101 </span><span class="spaces">          </span><span class="istickedoff">in Right (ConstantInt TagInt n, rest)</span></span>
 <span class="lineno">  102 </span>
 <span class="lineno">  103 </span>
 <span class="lineno">  104 </span>parseMatrix :: Text -&gt; Either Doc (Constant, Text)
@@ -137,7 +137,7 @@ span.spaces    { background: white }
 <span class="lineno">  118 </span><span class="spaces">              </span><span class="istickedoff">Nothing -&gt;</span>
 <span class="lineno">  119 </span><span class="spaces">                </span><span class="istickedoff">if <span class="tickonlyfalse">null vals</span></span>
 <span class="lineno">  120 </span><span class="spaces">                  </span><span class="istickedoff">then <span class="nottickedoff">DomainInt TagInt []</span></span>
-<span class="lineno">  121 </span><span class="spaces">                  </span><span class="istickedoff">else DomainInt <span class="nottickedoff">TagInt</span> [RangeBounded (ConstantInt <span class="nottickedoff">TagInt</span> 1) (ConstantInt <span class="nottickedoff">TagInt</span> (genericLength vals))]</span>
+<span class="lineno">  121 </span><span class="spaces">                  </span><span class="istickedoff">else DomainInt TagInt [RangeBounded (ConstantInt TagInt 1) (ConstantInt TagInt (genericLength vals))]</span>
 <span class="lineno">  122 </span><span class="spaces">      </span><span class="istickedoff">return (ConstantAbstract (AbsLitMatrix dom vals), rest2)</span></span>
 <span class="lineno">  123 </span>
 <span class="lineno">  124 </span>
@@ -174,7 +174,7 @@ span.spaces    { background: white }
 <span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">_ -&gt; do</span>
 <span class="lineno">  156 </span><span class="spaces">      </span><span class="istickedoff">(ranges, rest) &lt;- parseRanges [] t1</span>
 <span class="lineno">  157 </span><span class="spaces">      </span><span class="istickedoff">rest' &lt;- expectChar ')' rest</span>
-<span class="lineno">  158 </span><span class="spaces">      </span><span class="istickedoff">return (DomainInt <span class="nottickedoff">TagInt</span> (reverse ranges), rest')</span></span>
+<span class="lineno">  158 </span><span class="spaces">      </span><span class="istickedoff">return (DomainInt TagInt (reverse ranges), rest')</span></span>
 <span class="lineno">  159 </span>
 <span class="lineno">  160 </span>
 <span class="lineno">  161 </span>parseRanges :: [Range Constant] -&gt; Text -&gt; Either Doc ([Range Constant], Text)

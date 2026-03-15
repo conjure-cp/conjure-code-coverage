@@ -41,23 +41,26 @@ span.spaces    { background: white }
 <span class="lineno">   22 </span>instance BinaryOperator (OpDiv x) where
 <span class="lineno">   23 </span>    <span class="decl"><span class="istickedoff">opLexeme _ = L_Div</span></span>
 <span class="lineno">   24 </span>
-<span class="lineno">   25 </span>instance (TypeOf x, Pretty x) =&gt; TypeOf (OpDiv x) where
-<span class="lineno">   26 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpDiv a b) = intToIntToInt <span class="nottickedoff">p</span> a b</span></span>
-<span class="lineno">   27 </span>
-<span class="lineno">   28 </span>instance SimplifyOp OpDiv x where
-<span class="lineno">   29 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpDiv}&quot;</span></span>
+<span class="lineno">   25 </span>instance (TypeOf x, Pretty x, Data x) =&gt; TypeOf (OpDiv x) where
+<span class="lineno">   26 </span>    <span class="decl"><span class="istickedoff">typeOf p@(OpDiv a b) =</span>
+<span class="lineno">   27 </span><span class="spaces">      </span><span class="istickedoff">if ?typeCheckerMode == RelaxedIntegerTags</span>
+<span class="lineno">   28 </span><span class="spaces">         </span><span class="istickedoff">then intToIntToInt <span class="nottickedoff">p</span> a b</span>
+<span class="lineno">   29 </span><span class="spaces">         </span><span class="istickedoff">else intToIntToIntStrict <span class="nottickedoff">p</span> a b</span></span>
 <span class="lineno">   30 </span>
-<span class="lineno">   31 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpDiv x)</span></span> where
-<span class="lineno">   32 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpDiv a b) = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span></span>
+<span class="lineno">   31 </span>instance SimplifyOp OpDiv x where
+<span class="lineno">   32 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpDiv}&quot;</span></span>
 <span class="lineno">   33 </span>
-<span class="lineno">   34 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpDiv x) where
-<span class="lineno">   35 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpDiv a b) = JSON.Object $ KM.fromList</span>
-<span class="lineno">   36 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpDiv&quot;)</span>
-<span class="lineno">   37 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
-<span class="lineno">   39 </span><span class="spaces">            </span><span class="nottickedoff">, varSymBreakingDescription b</span>
-<span class="lineno">   40 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
-<span class="lineno">   41 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   34 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpDiv x)</span></span> where
+<span class="lineno">   35 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpDiv a b) = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span></span>
+<span class="lineno">   36 </span>
+<span class="lineno">   37 </span>instance VarSymBreakingDescription x =&gt; VarSymBreakingDescription (OpDiv x) where
+<span class="lineno">   38 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpDiv a b) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   39 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpDiv&quot;)</span>
+<span class="lineno">   40 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList</span>
+<span class="lineno">   41 </span><span class="spaces">            </span><span class="nottickedoff">[ varSymBreakingDescription a</span>
+<span class="lineno">   42 </span><span class="spaces">            </span><span class="nottickedoff">, varSymBreakingDescription b</span>
+<span class="lineno">   43 </span><span class="spaces">            </span><span class="nottickedoff">])</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

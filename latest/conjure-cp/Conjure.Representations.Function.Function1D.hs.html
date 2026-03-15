@@ -140,7 +140,7 @@ span.spaces    { background: white }
 <span class="lineno">  121 </span><span class="spaces">                    </span><span class="istickedoff">[m] -&gt;</span>
 <span class="lineno">  122 </span><span class="spaces">                        </span><span class="istickedoff">concat &lt;$&gt; sequence</span>
 <span class="lineno">  123 </span><span class="spaces">                            </span><span class="istickedoff">[ jectivityCons m</span>
-<span class="lineno">  124 </span><span class="spaces">                            </span><span class="istickedoff">, return (mkSizeCons sizeAttr <span class="nottickedoff">cardinality</span>)</span>
+<span class="lineno">  124 </span><span class="spaces">                            </span><span class="istickedoff">, return (mkSizeCons sizeAttr cardinality)</span>
 <span class="lineno">  125 </span><span class="spaces">                            </span><span class="istickedoff">, innerStructuralCons m</span>
 <span class="lineno">  126 </span><span class="spaces">                            </span><span class="istickedoff">]</span>
 <span class="lineno">  127 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">na &quot;{structuralCons} Function1D&quot;</span></span>
@@ -189,7 +189,7 @@ span.spaces    { background: white }
 <span class="lineno">  170 </span><span class="spaces">                    </span><span class="istickedoff">case viewConstantMatrix constant of</span>
 <span class="lineno">  171 </span><span class="spaces">                        </span><span class="istickedoff">Just (_, vals) -&gt; do</span>
 <span class="lineno">  172 </span><span class="spaces">                            </span><span class="istickedoff">froms &lt;- domainValues innerDomainFr</span>
-<span class="lineno">  173 </span><span class="spaces">                            </span><span class="istickedoff">return ( <span class="nottickedoff">name</span></span>
+<span class="lineno">  173 </span><span class="spaces">                            </span><span class="istickedoff">return ( name</span>
 <span class="lineno">  174 </span><span class="spaces">                                   </span><span class="istickedoff">, ConstantAbstract $ AbsLitFunction $ zip froms vals</span>
 <span class="lineno">  175 </span><span class="spaces">                                   </span><span class="istickedoff">)</span>
 <span class="lineno">  176 </span><span class="spaces">                        </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">failDoc $ vcat</span></span>

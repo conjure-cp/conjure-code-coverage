@@ -44,26 +44,27 @@ span.spaces    { background: white }
 <span class="lineno">   25 </span><span class="spaces">        </span><span class="istickedoff">tyN &lt;- typeOf n</span>
 <span class="lineno">   26 </span><span class="spaces">        </span><span class="istickedoff">case tyN of</span>
 <span class="lineno">   27 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ()</span></span>
-<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError p</span></span>
-<span class="lineno">   30 </span><span class="spaces">        </span><span class="istickedoff">case tyX of</span>
-<span class="lineno">   31 </span><span class="spaces">            </span><span class="istickedoff">TypeList{} -&gt; return TypeBool</span>
-<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{} -&gt; return TypeBool</span>
-<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError p</span></span></span>
-<span class="lineno">   34 </span>
-<span class="lineno">   35 </span>instance SimplifyOp OpAllDiffExcept x where
-<span class="lineno">   36 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpAllDiffExcept}&quot;</span></span>
-<span class="lineno">   37 </span>
-<span class="lineno">   38 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpAllDiffExcept x)</span></span> where
-<span class="lineno">   39 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpAllDiffExcept a b) = &quot;alldifferent_except&quot; &lt;&gt; prettyList prParens &quot;,&quot; [a, b]</span></span>
-<span class="lineno">   40 </span>
-<span class="lineno">   41 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpAllDiffExcept x) where
-<span class="lineno">   42 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpAllDiffExcept x y) = JSON.Object $ KM.fromList</span>
-<span class="lineno">   43 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpAllDiffExcept&quot;)</span>
-<span class="lineno">   44 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList [ varSymBreakingDescription x</span>
-<span class="lineno">   45 </span><span class="spaces">                                               </span><span class="nottickedoff">, varSymBreakingDescription y</span>
-<span class="lineno">   46 </span><span class="spaces">                                               </span><span class="nottickedoff">])</span>
-<span class="lineno">   47 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   28 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TaggedInt{} -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   29 </span><span class="spaces">            </span><span class="istickedoff">TypeInt (TagEnum _) -&gt; <span class="nottickedoff">return ()</span></span>
+<span class="lineno">   30 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError p</span></span>
+<span class="lineno">   31 </span><span class="spaces">        </span><span class="istickedoff">case tyX of</span>
+<span class="lineno">   32 </span><span class="spaces">            </span><span class="istickedoff">TypeList{} -&gt; return TypeBool</span>
+<span class="lineno">   33 </span><span class="spaces">            </span><span class="istickedoff">TypeMatrix{} -&gt; return TypeBool</span>
+<span class="lineno">   34 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">raiseTypeError p</span></span></span>
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>instance SimplifyOp OpAllDiffExcept x where
+<span class="lineno">   37 </span>    <span class="decl"><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpAllDiffExcept}&quot;</span></span>
+<span class="lineno">   38 </span>
+<span class="lineno">   39 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpAllDiffExcept x)</span></span> where
+<span class="lineno">   40 </span>    <span class="decl"><span class="istickedoff">prettyPrec _ (OpAllDiffExcept a b) = &quot;alldifferent_except&quot; &lt;&gt; prettyList prParens &quot;,&quot; [a, b]</span></span>
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpAllDiffExcept x) where
+<span class="lineno">   43 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpAllDiffExcept x y) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   44 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpAllDiffExcept&quot;)</span>
+<span class="lineno">   45 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList [ varSymBreakingDescription x</span>
+<span class="lineno">   46 </span><span class="spaces">                                               </span><span class="nottickedoff">, varSymBreakingDescription y</span>
+<span class="lineno">   47 </span><span class="spaces">                                               </span><span class="nottickedoff">])</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

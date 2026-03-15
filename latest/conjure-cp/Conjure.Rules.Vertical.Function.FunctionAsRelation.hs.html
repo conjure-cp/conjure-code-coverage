@@ -175,23 +175,23 @@ span.spaces    { background: white }
 <span class="lineno">  156 </span>
 <span class="lineno">  157 </span>rule_InToSet :: Rule
 <span class="lineno">  158 </span><span class="decl"><span class="istickedoff">rule_InToSet = <span class="nottickedoff">&quot;function-inToSet{FunctionAsRelation}&quot;</span> `namedRule` theRule where</span>
-<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in toSet(&amp;func) |] = <span class="nottickedoff">do</span></span>
-<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">TypeFunction{} &lt;- typeOf func</span></span>
-<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Function_AsRelation (Relation_AsSet Set_Explicit) &lt;- representationOf func</span></span>
+<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">theRule [essence| &amp;x in toSet(&amp;func) |] = do</span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff">TypeFunction{} &lt;- typeOf func</span>
+<span class="lineno">  161 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Function_AsRelation (Relation_AsSet Set_Explicit)</span> &lt;- <span class="nottickedoff">representationOf func</span></span>
 <span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">tableCheck x func</span></span>
-<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[keyFrom, keyTo] &lt;- downX1 x</span></span>
-<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">keyFromParts &lt;- downX1 keyFrom</span></span>
-<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let vars = fromList (keyFromParts ++ [keyTo])</span></span>
-<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel] &lt;- downX1 func</span></span>
-<span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[set] &lt;- downX1 rel</span></span>
-<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[matrix] &lt;- downX1 set</span></span>
-<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[from, to] &lt;- downX1 matrix</span></span>
-<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">parts &lt;- downX1 from</span></span>
-<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(index:_) &lt;- indexDomainsOf from</span></span>
-<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(iPat, i) &lt;- quantifiedVar</span></span>
-<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let oneRow = fromList $ [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span></span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[keyFrom, keyTo]</span> &lt;- <span class="nottickedoff">downX1 x</span></span>
+<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff">keyFromParts &lt;- <span class="nottickedoff">downX1 keyFrom</span></span>
+<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">vars = fromList (keyFromParts ++ [keyTo])</span></span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[rel]</span> &lt;- <span class="nottickedoff">downX1 func</span></span>
+<span class="lineno">  167 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[set]</span> &lt;- <span class="nottickedoff">downX1 rel</span></span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[matrix]</span> &lt;- <span class="nottickedoff">downX1 set</span></span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">[from, to]</span> &lt;- <span class="nottickedoff">downX1 matrix</span></span>
+<span class="lineno">  170 </span><span class="spaces">        </span><span class="istickedoff">parts &lt;- <span class="nottickedoff">downX1 from</span></span>
+<span class="lineno">  171 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(index:_)</span> &lt;- <span class="nottickedoff">indexDomainsOf from</span></span>
+<span class="lineno">  172 </span><span class="spaces">        </span><span class="istickedoff">(iPat, i) &lt;- <span class="nottickedoff">quantifiedVar</span></span>
+<span class="lineno">  173 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">oneRow = fromList $ [ [essence| &amp;p[&amp;i] |] | p &lt;- parts ]</span></span>
 <span class="lineno">  174 </span><span class="spaces">                             </span><span class="istickedoff"><span class="nottickedoff">++ [ [essence| &amp;to[&amp;i] |] ]</span></span>
-<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span></span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">let <span class="nottickedoff">table = [essence| [ &amp;oneRow | &amp;iPat : &amp;index ] |]</span></span>
 <span class="lineno">  176 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
 <span class="lineno">  177 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;relation membership to table&quot;</span></span>
 <span class="lineno">  178 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| table(&amp;vars, &amp;table) |]</span></span>

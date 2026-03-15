@@ -54,38 +54,39 @@ span.spaces    { background: white }
 <span class="lineno">   35 </span><span class="spaces">            </span><span class="istickedoff">TypeAny | Just [] &lt;- listOut x -&gt; return (TypeInt TagInt)</span>
 <span class="lineno">   36 </span><span class="spaces">            </span><span class="istickedoff">TypeInt t | ?typeCheckerMode == RelaxedIntegerTags -&gt; return (TypeInt t)</span>
 <span class="lineno">   37 </span><span class="spaces">            </span><span class="istickedoff">TypeInt TagInt -&gt; return (TypeInt TagInt)</span>
-<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; raiseTypeError $ vcat [ pretty p</span>
-<span class="lineno">   39 </span><span class="spaces">                                       </span><span class="istickedoff">, &quot;The argument has type:&quot; &lt;+&gt; pretty ty</span>
-<span class="lineno">   40 </span><span class="spaces">                                       </span><span class="istickedoff">]</span></span>
-<span class="lineno">   41 </span>
-<span class="lineno">   42 </span>instance BinaryOperator (OpSum x) where
-<span class="lineno">   43 </span>    <span class="decl"><span class="istickedoff">opLexeme _ = L_Plus</span></span>
-<span class="lineno">   44 </span>
-<span class="lineno">   45 </span>instance (OpSum x :&lt; x) =&gt; SimplifyOp OpSum x where
-<span class="lineno">   46 </span>    <span class="decl"><span class="istickedoff">simplifyOp (OpSum x)</span>
-<span class="lineno">   47 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
-<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=0) xs</span>
-<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">, length filtered /= length xs      -- there were 0's</span>
-<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">= case filtered of</span>
-<span class="lineno">   51 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; <span class="nottickedoff">return 0</span></span>
-<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">[n] -&gt; return n</span>
-<span class="lineno">   53 </span><span class="spaces">            </span><span class="istickedoff">_   -&gt; <span class="nottickedoff">return $ inject $ OpSum $ fromList filtered</span></span>
-<span class="lineno">   54 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpSum}&quot;</span></span>
-<span class="lineno">   55 </span>
-<span class="lineno">   56 </span>instance <span class="decl"><span class="istickedoff">(Pretty x, ExpressionLike x) =&gt; Pretty (OpSum x)</span></span> where
-<span class="lineno">   57 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpSum x) | Just [a,b] &lt;- listOut x = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span>
-<span class="lineno">   58 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec _ (OpSum x) = &quot;sum&quot; &lt;&gt; prParens (pretty x)</span></span>
-<span class="lineno">   59 </span>
-<span class="lineno">   60 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpSum x) where
-<span class="lineno">   61 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpSum x) | Just xs &lt;- listOut x = JSON.Object $ KM.fromList</span>
-<span class="lineno">   62 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpSum&quot;)</span>
-<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">   65 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">   66 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (OpSum x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">   67 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpSum&quot;)</span>
-<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">   38 </span><span class="spaces">            </span><span class="istickedoff">TypeInt t@(TaggedInt _) -&gt; <span class="nottickedoff">return (TypeInt t)</span></span>
+<span class="lineno">   39 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; raiseTypeError $ vcat [ pretty p</span>
+<span class="lineno">   40 </span><span class="spaces">                                       </span><span class="istickedoff">, &quot;The argument has type:&quot; &lt;+&gt; pretty ty</span>
+<span class="lineno">   41 </span><span class="spaces">                                       </span><span class="istickedoff">]</span></span>
+<span class="lineno">   42 </span>
+<span class="lineno">   43 </span>instance BinaryOperator (OpSum x) where
+<span class="lineno">   44 </span>    <span class="decl"><span class="istickedoff">opLexeme _ = L_Plus</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>instance (OpSum x :&lt; x) =&gt; SimplifyOp OpSum x where
+<span class="lineno">   47 </span>    <span class="decl"><span class="istickedoff">simplifyOp (OpSum x)</span>
+<span class="lineno">   48 </span><span class="spaces">        </span><span class="istickedoff">| Just xs &lt;- listOut x</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">, let filtered = filter (/=0) xs</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">, length filtered /= length xs      -- there were 0's</span>
+<span class="lineno">   51 </span><span class="spaces">        </span><span class="istickedoff">= case filtered of</span>
+<span class="lineno">   52 </span><span class="spaces">            </span><span class="istickedoff">[]  -&gt; <span class="nottickedoff">return 0</span></span>
+<span class="lineno">   53 </span><span class="spaces">            </span><span class="istickedoff">[n] -&gt; return n</span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="istickedoff">_   -&gt; <span class="nottickedoff">return $ inject $ OpSum $ fromList filtered</span></span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">simplifyOp _ = na &quot;simplifyOp{OpSum}&quot;</span></span>
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>instance <span class="decl"><span class="istickedoff">(Pretty x, ExpressionLike x) =&gt; Pretty (OpSum x)</span></span> where
+<span class="lineno">   58 </span>    <span class="decl"><span class="istickedoff">prettyPrec prec op@(OpSum x) | Just [a,b] &lt;- listOut x = prettyPrecBinOp prec <span class="nottickedoff">[op]</span> a b</span>
+<span class="lineno">   59 </span><span class="spaces">    </span><span class="istickedoff">prettyPrec _ (OpSum x) = &quot;sum&quot; &lt;&gt; prParens (pretty x)</span></span>
+<span class="lineno">   60 </span>
+<span class="lineno">   61 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpSum x) where
+<span class="lineno">   62 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpSum x) | Just xs &lt;- listOut x = JSON.Object $ KM.fromList</span>
+<span class="lineno">   63 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpSum&quot;)</span>
+<span class="lineno">   64 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">   65 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">   66 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">   67 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (OpSum x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpSum&quot;)</span>
+<span class="lineno">   69 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">   70 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
 
 </pre>
 </body>

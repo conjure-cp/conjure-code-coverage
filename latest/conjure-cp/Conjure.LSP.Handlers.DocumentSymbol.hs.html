@@ -109,29 +109,30 @@ span.spaces    { background: white }
 <span class="lineno">   90 </span><span class="spaces">    </span><span class="nottickedoff">TypeBool -&gt; SymbolKind_Boolean</span>
 <span class="lineno">   91 </span><span class="spaces">    </span><span class="nottickedoff">TypeInt it -&gt; case it of</span>
 <span class="lineno">   92 </span><span class="spaces">      </span><span class="nottickedoff">TagInt -&gt; SymbolKind_Number</span>
-<span class="lineno">   93 </span><span class="spaces">      </span><span class="nottickedoff">TagEnum _ -&gt; SymbolKind_EnumMember</span>
-<span class="lineno">   94 </span><span class="spaces">      </span><span class="nottickedoff">TagUnnamed _ -&gt; SymbolKind_Number</span>
-<span class="lineno">   95 </span><span class="spaces">    </span><span class="nottickedoff">TypeEnum _ -&gt; SymbolKind_Enum</span>
-<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">TypeUnnamed _ -&gt; SymbolKind_Enum</span>
-<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">_ -&gt; SymbolKind_Constant</span>
-<span class="lineno">   98 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (Structural st) =</span>
-<span class="lineno">   99 </span><span class="spaces">  </span><span class="nottickedoff">Just</span>
-<span class="lineno">  100 </span><span class="spaces">    </span><span class="nottickedoff">( case st of</span>
-<span class="lineno">  101 </span><span class="spaces">        </span><span class="nottickedoff">SSuchThat -&gt; SymbolKind_Interface</span>
-<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">SGiven -&gt; SymbolKind_Property</span>
-<span class="lineno">  103 </span><span class="spaces">        </span><span class="nottickedoff">SFind -&gt; SymbolKind_Field</span>
-<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">SLetting -&gt; SymbolKind_Field</span>
-<span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">SBranching -&gt; SymbolKind_Class</span>
-<span class="lineno">  106 </span><span class="spaces">        </span><span class="nottickedoff">SEnum _ -&gt; SymbolKind_Enum</span>
-<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">SQuantification _ _ -&gt; SymbolKind_Operator</span>
-<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">SComprehension _ -&gt; SymbolKind_Array</span>
-<span class="lineno">  109 </span><span class="spaces">        </span><span class="nottickedoff">SGuard -&gt; SymbolKind_Boolean</span>
-<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">SGen -&gt; SymbolKind_Event</span>
-<span class="lineno">  111 </span><span class="spaces">        </span><span class="nottickedoff">SBody -&gt; SymbolKind_Namespace</span>
-<span class="lineno">  112 </span><span class="spaces">        </span><span class="nottickedoff">SGoal _ -&gt; SymbolKind_Variable</span>
-<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">SWhere -&gt; SymbolKind_Object</span>
-<span class="lineno">  114 </span><span class="spaces">    </span><span class="nottickedoff">)</span>
-<span class="lineno">  115 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration _ = Nothing</span></span>
+<span class="lineno">   93 </span><span class="spaces">      </span><span class="nottickedoff">TaggedInt{} -&gt; SymbolKind_Number</span>
+<span class="lineno">   94 </span><span class="spaces">      </span><span class="nottickedoff">TagEnum{} -&gt; SymbolKind_EnumMember</span>
+<span class="lineno">   95 </span><span class="spaces">      </span><span class="nottickedoff">TagUnnamed{} -&gt; SymbolKind_Number</span>
+<span class="lineno">   96 </span><span class="spaces">    </span><span class="nottickedoff">TypeEnum _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">   97 </span><span class="spaces">    </span><span class="nottickedoff">TypeUnnamed _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">   98 </span><span class="spaces">    </span><span class="nottickedoff">_ -&gt; SymbolKind_Constant</span>
+<span class="lineno">   99 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration (Structural st) =</span>
+<span class="lineno">  100 </span><span class="spaces">  </span><span class="nottickedoff">Just</span>
+<span class="lineno">  101 </span><span class="spaces">    </span><span class="nottickedoff">( case st of</span>
+<span class="lineno">  102 </span><span class="spaces">        </span><span class="nottickedoff">SSuchThat -&gt; SymbolKind_Interface</span>
+<span class="lineno">  103 </span><span class="spaces">        </span><span class="nottickedoff">SGiven -&gt; SymbolKind_Property</span>
+<span class="lineno">  104 </span><span class="spaces">        </span><span class="nottickedoff">SFind -&gt; SymbolKind_Field</span>
+<span class="lineno">  105 </span><span class="spaces">        </span><span class="nottickedoff">SLetting -&gt; SymbolKind_Field</span>
+<span class="lineno">  106 </span><span class="spaces">        </span><span class="nottickedoff">SBranching -&gt; SymbolKind_Class</span>
+<span class="lineno">  107 </span><span class="spaces">        </span><span class="nottickedoff">SEnum _ -&gt; SymbolKind_Enum</span>
+<span class="lineno">  108 </span><span class="spaces">        </span><span class="nottickedoff">SQuantification _ _ -&gt; SymbolKind_Operator</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="nottickedoff">SComprehension _ -&gt; SymbolKind_Array</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="nottickedoff">SGuard -&gt; SymbolKind_Boolean</span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="nottickedoff">SGen -&gt; SymbolKind_Event</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="nottickedoff">SBody -&gt; SymbolKind_Namespace</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="nottickedoff">SGoal _ -&gt; SymbolKind_Variable</span>
+<span class="lineno">  114 </span><span class="spaces">        </span><span class="nottickedoff">SWhere -&gt; SymbolKind_Object</span>
+<span class="lineno">  115 </span><span class="spaces">    </span><span class="nottickedoff">)</span>
+<span class="lineno">  116 </span><span class="spaces"></span><span class="nottickedoff">symbolKindFromDeclaration _ = Nothing</span></span>
 
 </pre>
 </body>

@@ -25,8 +25,8 @@ span.spaces    { background: white }
 <span class="lineno">    6 </span>import Conjure.Language.Constant
 <span class="lineno">    7 </span>import Conjure.Language.Definition
 <span class="lineno">    8 </span>import Conjure.Language.Domain
-<span class="lineno">    9 </span>import Conjure.Language.Type
-<span class="lineno">   10 </span>import Conjure.Language.Pretty 
+<span class="lineno">    9 </span>import Conjure.Language.Pretty 
+<span class="lineno">   10 </span>import Conjure.Language.Type
 <span class="lineno">   11 </span>import Conjure.Language.Instantiate ( instantiateExpression )
 <span class="lineno">   12 </span>import Conjure.Process.AttributeAsConstraints ( mkAttributeToConstraint )
 <span class="lineno">   13 </span>import Conjure.Process.Enumerate ( EnumerateDomain, enumerateDomain )
@@ -265,40 +265,43 @@ span.spaces    { background: white }
 <span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantPartition -&gt; Just valss)</span>
 <span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainPartition _ _ dInner) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $</span>
 <span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) (concat valss)</span>
-<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  250 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(TypedConstant c' _) d = <span class="nottickedoff">nested c d $ validateConstantForDomain name c' d</span></span>
-<span class="lineno">  251 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  252 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c d = <span class="nottickedoff">constantNotInDomain name c d</span></span></span>
-<span class="lineno">  253 </span>
-<span class="lineno">  254 </span>
-<span class="lineno">  255 </span>nested ::
-<span class="lineno">  256 </span>    MonadFailDoc m =&gt;
-<span class="lineno">  257 </span>    Pretty c =&gt;
-<span class="lineno">  258 </span>    Pretty d =&gt;
-<span class="lineno">  259 </span>    c -&gt; d -&gt; ExceptT m () -&gt; m ()
-<span class="lineno">  260 </span><span class="decl"><span class="istickedoff">nested c d inner = do</span>
-<span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">mres &lt;- runExceptT inner</span>
-<span class="lineno">  262 </span><span class="spaces">    </span><span class="istickedoff">case mres of</span>
-<span class="lineno">  263 </span><span class="spaces">        </span><span class="istickedoff">Right () -&gt; return ()</span>
-<span class="lineno">  264 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt;</span>
-<span class="lineno">  265 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat</span></span>
-<span class="lineno">  266 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
-<span class="lineno">  267 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
-<span class="lineno">  268 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
-<span class="lineno">  269 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Reason:&quot;</span></span>
-<span class="lineno">  270 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, nest 4 err</span></span>
-<span class="lineno">  271 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
-<span class="lineno">  272 </span>
-<span class="lineno">  273 </span>
-<span class="lineno">  274 </span>constantNotInDomain :: (MonadFailDoc m, Pretty r) =&gt; Name -&gt; Constant -&gt; Domain r Constant -&gt; m ()
-<span class="lineno">  275 </span><span class="decl"><span class="nottickedoff">constantNotInDomain n c d = failDoc $ vcat</span>
-<span class="lineno">  276 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span>
-<span class="lineno">  277 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Name  :&quot; &lt;+&gt; pretty n</span>
-<span class="lineno">  278 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span>
-<span class="lineno">  279 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span>
-<span class="lineno">  280 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  281 </span>
-<span class="lineno">  282 </span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name</span>
+<span class="lineno">  250 </span><span class="spaces">    </span><span class="istickedoff">c@(viewConstantPermutation -&gt; Just valss)</span>
+<span class="lineno">  251 </span><span class="spaces">    </span><span class="istickedoff">d@(DomainPermutation _ _ dInner) = nested <span class="nottickedoff">c</span> <span class="nottickedoff">d</span> $</span>
+<span class="lineno">  252 </span><span class="spaces">        </span><span class="istickedoff">mapM_ (\ val -&gt; validateConstantForDomain <span class="nottickedoff">name</span> val dInner ) (concat valss)</span>
+<span class="lineno">  253 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c@(TypedConstant c' _) d = <span class="nottickedoff">nested c d $ validateConstantForDomain name c' d</span></span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  255 </span><span class="spaces"></span><span class="istickedoff">validateConstantForDomain name c d = <span class="nottickedoff">constantNotInDomain name c d</span></span></span>
+<span class="lineno">  256 </span>
+<span class="lineno">  257 </span>
+<span class="lineno">  258 </span>nested ::
+<span class="lineno">  259 </span>    MonadFailDoc m =&gt;
+<span class="lineno">  260 </span>    Pretty c =&gt;
+<span class="lineno">  261 </span>    Pretty d =&gt;
+<span class="lineno">  262 </span>    c -&gt; d -&gt; ExceptT m () -&gt; m ()
+<span class="lineno">  263 </span><span class="decl"><span class="istickedoff">nested c d inner = do</span>
+<span class="lineno">  264 </span><span class="spaces">    </span><span class="istickedoff">mres &lt;- runExceptT inner</span>
+<span class="lineno">  265 </span><span class="spaces">    </span><span class="istickedoff">case mres of</span>
+<span class="lineno">  266 </span><span class="spaces">        </span><span class="istickedoff">Right () -&gt; return ()</span>
+<span class="lineno">  267 </span><span class="spaces">        </span><span class="istickedoff">Left err -&gt;</span>
+<span class="lineno">  268 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc $ vcat</span></span>
+<span class="lineno">  269 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span></span>
+<span class="lineno">  270 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span></span>
+<span class="lineno">  271 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span></span>
+<span class="lineno">  272 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Reason:&quot;</span></span>
+<span class="lineno">  273 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, nest 4 err</span></span>
+<span class="lineno">  274 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span></span>
+<span class="lineno">  275 </span>
+<span class="lineno">  276 </span>
+<span class="lineno">  277 </span>constantNotInDomain :: (MonadFailDoc m, Pretty r) =&gt; Name -&gt; Constant -&gt; Domain r Constant -&gt; m ()
+<span class="lineno">  278 </span><span class="decl"><span class="nottickedoff">constantNotInDomain n c d = failDoc $ vcat</span>
+<span class="lineno">  279 </span><span class="spaces">    </span><span class="nottickedoff">[ &quot;The value is not a member of the domain.&quot;</span>
+<span class="lineno">  280 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Name  :&quot; &lt;+&gt; pretty n</span>
+<span class="lineno">  281 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Value :&quot; &lt;+&gt; pretty c</span>
+<span class="lineno">  282 </span><span class="spaces">    </span><span class="nottickedoff">, &quot;Domain:&quot; &lt;+&gt; pretty d</span>
+<span class="lineno">  283 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  284 </span>
+<span class="lineno">  285 </span>
 
 </pre>
 </body>
