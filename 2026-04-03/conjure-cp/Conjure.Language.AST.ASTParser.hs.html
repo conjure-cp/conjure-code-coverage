@@ -318,9 +318,9 @@ span.spaces    { background: white }
 <span class="lineno">  299 </span><span class="decl"><span class="istickedoff">parseIntLiteral = do</span>
 <span class="lineno">  300 </span><span class="spaces">  </span><span class="istickedoff">lit &lt;- intLiteral</span>
 <span class="lineno">  301 </span><span class="spaces">  </span><span class="istickedoff">maybe_tag &lt;- optional $ do</span>
-<span class="lineno">  302 </span><span class="spaces">    </span><span class="istickedoff">cln &lt;- want L_Colon</span>
+<span class="lineno">  302 </span><span class="spaces">    </span><span class="istickedoff">cln &lt;- need L_Colon</span>
 <span class="lineno">  303 </span><span class="spaces">    </span><span class="istickedoff">idn &lt;- identifier</span>
-<span class="lineno">  304 </span><span class="spaces">    </span><span class="istickedoff">return (cln, idn)</span>
+<span class="lineno">  304 </span><span class="spaces">    </span><span class="istickedoff">return (RealToken cln, idn)</span>
 <span class="lineno">  305 </span><span class="spaces">  </span><span class="istickedoff">return $ IntLiteral (StrictToken [] lit) maybe_tag</span></span>
 <span class="lineno">  306 </span>
 <span class="lineno">  307 </span>parseBoolLiteral :: Parser LiteralNode
@@ -657,9 +657,9 @@ span.spaces    { background: white }
 <span class="lineno">  638 </span><span class="decl"><span class="istickedoff">parseIntDomain = do</span>
 <span class="lineno">  639 </span><span class="spaces">  </span><span class="istickedoff">lInt &lt;- need L_int</span>
 <span class="lineno">  640 </span><span class="spaces">  </span><span class="istickedoff">maybe_tag &lt;- optional $ do</span>
-<span class="lineno">  641 </span><span class="spaces">    </span><span class="istickedoff">cln &lt;- want L_Colon</span>
+<span class="lineno">  641 </span><span class="spaces">    </span><span class="istickedoff">cln &lt;- need L_Colon</span>
 <span class="lineno">  642 </span><span class="spaces">    </span><span class="istickedoff">idn &lt;- identifier</span>
-<span class="lineno">  643 </span><span class="spaces">    </span><span class="istickedoff">return (cln, idn)</span>
+<span class="lineno">  643 </span><span class="spaces">    </span><span class="istickedoff">return (RealToken cln, idn)</span>
 <span class="lineno">  644 </span><span class="spaces">  </span><span class="istickedoff">ranges &lt;- optional $ parenListStrict $ commaList parseRange</span>
 <span class="lineno">  645 </span><span class="spaces">  </span><span class="istickedoff">return $ RangedIntDomainNode lInt maybe_tag ranges</span></span>
 <span class="lineno">  646 </span>

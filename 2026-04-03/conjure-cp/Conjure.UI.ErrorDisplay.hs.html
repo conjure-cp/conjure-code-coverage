@@ -71,7 +71,7 @@ span.spaces    { background: white }
 <span class="lineno">   52 </span><span class="spaces">  </span><span class="istickedoff">SemanticError txt -&gt; &quot;Error: &quot; ++ T.unpack txt</span>
 <span class="lineno">   53 </span><span class="spaces">  </span><span class="istickedoff">CustomError txt -&gt; &quot;Error: &quot; ++ T.unpack txt</span>
 <span class="lineno">   54 </span><span class="spaces">  </span><span class="istickedoff">TypeError expected got -&gt; &quot;Type error:\n\tExpected: &quot; ++ show (pretty expected) ++ &quot;\n\tGot: &quot; ++ show (pretty got)</span>
-<span class="lineno">   55 </span><span class="spaces">  </span><span class="istickedoff">ComplexTypeError msg ty -&gt; &quot;Type error:\n\tExpected: &quot; ++ show msg ++ &quot;\n\tGot: &quot; ++ show (pretty ty)</span>
+<span class="lineno">   55 </span><span class="spaces">  </span><span class="istickedoff">ComplexTypeError msg ty -&gt; &quot;Type error:\n\tExpected: &quot; ++ textToString msg ++ &quot;\n\tGot: &quot; ++ show (pretty ty)</span>
 <span class="lineno">   56 </span><span class="spaces">  </span><span class="istickedoff">SkippedTokens -&gt; &quot;Skipped tokens&quot;</span>
 <span class="lineno">   57 </span><span class="spaces">  </span><span class="istickedoff">UnexpectedArg -&gt; &quot;Unexpected argument&quot;</span>
 <span class="lineno">   58 </span><span class="spaces">  </span><span class="istickedoff">MissingArgsError expected got -&gt; <span class="nottickedoff">&quot;Insufficient args, expected &quot; ++ show expected ++ &quot; got &quot; ++ show got</span></span>
