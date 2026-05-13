@@ -617,7 +617,7 @@ span.spaces    { background: white }
 <span class="lineno">  598 </span><span class="spaces">        </span><span class="istickedoff">(m, is, wasThereAnySlicing) &lt;- go p</span>
 <span class="lineno">  599 </span><span class="spaces">        </span><span class="istickedoff">if <span class="tickonlyfalse">not (null is) &amp;&amp; wasThereAnySlicing</span></span>
 <span class="lineno">  600 </span><span class="spaces">            </span><span class="istickedoff">then <span class="nottickedoff">return (m, is)</span></span>
-<span class="lineno">  601 </span><span class="spaces">            </span><span class="istickedoff">else na (&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  601 </span><span class="spaces">            </span><span class="istickedoff">else na <span class="nottickedoff">(&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno">  602 </span><span class="spaces">    </span><span class="istickedoff">)</span>
 <span class="lineno">  603 </span><span class="spaces">    </span><span class="istickedoff">where</span>
 <span class="lineno">  604 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">mk m [] = m</span></span>
@@ -630,7 +630,7 @@ span.spaces    { background: white }
 <span class="lineno">  611 </span><span class="spaces">                </span><span class="istickedoff">case ty of</span>
 <span class="lineno">  612 </span><span class="spaces">                    </span><span class="istickedoff">TypeMatrix{} -&gt; return <span class="nottickedoff">()</span></span>
 <span class="lineno">  613 </span><span class="spaces">                    </span><span class="istickedoff">TypeList{} -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno">  614 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; na (&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span>
+<span class="lineno">  614 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opMatrixIndexingSlicing:&quot; &lt;+&gt; pretty p)</span></span>
 <span class="lineno">  615 </span><span class="spaces">                </span><span class="istickedoff">(m, is, wasThereAnySlicing) &lt;- go x</span>
 <span class="lineno">  616 </span><span class="spaces">                </span><span class="istickedoff">return (<span class="nottickedoff">m</span>, is ++ [<span class="nottickedoff">Left i</span>], wasThereAnySlicing)</span>
 <span class="lineno">  617 </span><span class="spaces">            </span><span class="istickedoff">Just (MkOpSlicing (OpSlicing x lb ub)) -&gt; <span class="nottickedoff">do</span></span>

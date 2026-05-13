@@ -578,49 +578,63 @@ span.spaces    { background: white }
 <span class="lineno">  559 </span>rule_ExpandSlices :: Rule
 <span class="lineno">  560 </span><span class="decl"><span class="istickedoff">rule_ExpandSlices = <span class="nottickedoff">&quot;matrix-expand-slices&quot;</span> `namedRule` theRule where</span>
 <span class="lineno">  561 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff">(m, is) &lt;- match opMatrixIndexingSlicing p</span>
-<span class="lineno">  563 </span><span class="spaces">        </span><span class="istickedoff">indexDoms &lt;- <span class="nottickedoff">indexDomainsOf m</span></span>
-<span class="lineno">  564 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (length is == length indexDoms) $ na &quot;rule_ExpandSlices&quot;</span></span>
-<span class="lineno">  565 </span><span class="spaces">        </span><span class="istickedoff">(is', gocs) &lt;- <span class="nottickedoff">unzip &lt;$&gt; sequence</span></span>
-<span class="lineno">  566 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ case index of</span></span>
-<span class="lineno">  567 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Left i -&gt; -- indexing</span></span>
-<span class="lineno">  568 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  569 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">( Left i</span></span>
-<span class="lineno">  570 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, []</span></span>
-<span class="lineno">  571 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  572 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Right (mLowerBound, mUpperBound) -&gt; do -- slicing</span></span>
-<span class="lineno">  573 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
-<span class="lineno">  574 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  575 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">( Left j</span></span>
-<span class="lineno">  576 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat [ [ Generator (GenDomainNoRepr jPat indexDom) ]</span></span>
-<span class="lineno">  577 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ Condition [essence| &amp;j &gt;= &amp;lb |] | Just lb &lt;- [mLowerBound] ]</span></span>
-<span class="lineno">  578 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ Condition [essence| &amp;j &lt;= &amp;ub |] | Just ub &lt;- [mUpperBound] ]</span></span>
-<span class="lineno">  579 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  580 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno">  581 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (index, indexDom) &lt;- zip is indexDoms</span></span>
-<span class="lineno">  582 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  583 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (null gocs) $ na &quot;rule_ExpandSlices: this was all indexing and no slicing&quot;</span></span>
-<span class="lineno">  584 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Expanding a matrix slice&quot;</span></span>
-<span class="lineno">  585 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension (make opMatrixIndexingSlicing m is') (concat gocs)</span></span>
-<span class="lineno">  586 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
-<span class="lineno">  587 </span>
-<span class="lineno">  588 </span>
-<span class="lineno">  589 </span>-- freq(matrix,arg) ~~&gt; sum([ toInt(arg = i) | i in matrix ])
-<span class="lineno">  590 </span>rule_Freq :: Rule
-<span class="lineno">  591 </span><span class="decl"><span class="istickedoff">rule_Freq = &quot;matrix-freq&quot; `namedRule` theRule where</span>
-<span class="lineno">  592 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
-<span class="lineno">  593 </span><span class="spaces">        </span><span class="istickedoff">(m, arg) &lt;- match opFreq p</span>
-<span class="lineno">  594 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{}  &lt;- typeOf m</span>
-<span class="lineno">  595 </span><span class="spaces">        </span><span class="istickedoff">[indexDom] &lt;- indexDomainsOf m</span>
-<span class="lineno">  596 </span><span class="spaces">        </span><span class="istickedoff">return</span>
-<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for matrix-freq.&quot;</span></span>
-<span class="lineno">  598 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
-<span class="lineno">  599 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
-<span class="lineno">  600 </span><span class="spaces">                </span><span class="istickedoff">let mis = (make opMatrixIndexing m [i])</span>
-<span class="lineno">  601 </span><span class="spaces">                </span><span class="istickedoff">return $ make opSum $ Comprehension [essence| toInt(&amp;mis = &amp;arg) |]</span>
-<span class="lineno">  602 </span><span class="spaces">                            </span><span class="istickedoff">[Generator (GenDomainNoRepr iPat indexDom)]</span>
-<span class="lineno">  603 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
-<span class="lineno">  604 </span>
+<span class="lineno">  562 </span><span class="spaces">        </span><span class="istickedoff">let</span>
+<span class="lineno">  563 </span><span class="spaces">            </span><span class="istickedoff">flattenSlicingMultiD =</span>
+<span class="lineno">  564 </span><span class="spaces">                </span><span class="istickedoff">case match opFlatten p &gt;&gt;= match opMatrixIndexingSlicing of</span>
+<span class="lineno">  565 </span><span class="spaces">                    </span><span class="istickedoff">Just (m, is)</span>
+<span class="lineno">  566 </span><span class="spaces">                        </span><span class="istickedoff">| <span class="nottickedoff">countSlices is &gt; 1</span> -&gt; <span class="nottickedoff">return (m, is)</span></span>
+<span class="lineno">  567 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  568 </span><span class="spaces">            </span><span class="istickedoff">slicing1D =</span>
+<span class="lineno">  569 </span><span class="spaces">                </span><span class="istickedoff">case match opMatrixIndexingSlicing p of</span>
+<span class="lineno">  570 </span><span class="spaces">                    </span><span class="istickedoff">Just (m, is)</span>
+<span class="lineno">  571 </span><span class="spaces">                        </span><span class="istickedoff">| <span class="nottickedoff">countSlices is == 1</span> -&gt; <span class="nottickedoff">return (m, is)</span></span>
+<span class="lineno">  572 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; Nothing</span>
+<span class="lineno">  573 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">countSlices is =</span></span>
+<span class="lineno">  574 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">length [ () | Right _ &lt;- is ]</span></span>
+<span class="lineno">  575 </span><span class="spaces">        </span><span class="istickedoff">(m, is) &lt;- case flattenSlicingMultiD &lt;|&gt; slicing1D of</span>
+<span class="lineno">  576 </span><span class="spaces">                    </span><span class="istickedoff">Just (m, is) -&gt; <span class="nottickedoff">return (m, is)</span></span>
+<span class="lineno">  577 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; na &quot;rule_ExpandSlices&quot;</span>
+<span class="lineno">  578 </span><span class="spaces">        </span><span class="istickedoff">indexDoms &lt;- <span class="nottickedoff">indexDomainsOf m</span></span>
+<span class="lineno">  579 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unless (length is == length indexDoms) $ na &quot;rule_ExpandSlices&quot;</span></span>
+<span class="lineno">  580 </span><span class="spaces">        </span><span class="istickedoff">(is', gocs) &lt;- <span class="nottickedoff">unzip &lt;$&gt; sequence</span></span>
+<span class="lineno">  581 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">[ case index of</span></span>
+<span class="lineno">  582 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Left i -&gt; -- indexing</span></span>
+<span class="lineno">  583 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  584 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">( Left i</span></span>
+<span class="lineno">  585 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, []</span></span>
+<span class="lineno">  586 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  587 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Right (mLowerBound, mUpperBound) -&gt; do -- slicing</span></span>
+<span class="lineno">  588 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">(jPat, j) &lt;- quantifiedVar</span></span>
+<span class="lineno">  589 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  590 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">( Left j</span></span>
+<span class="lineno">  591 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, concat [ [ Generator (GenDomainNoRepr jPat indexDom) ]</span></span>
+<span class="lineno">  592 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ Condition [essence| &amp;j &gt;= &amp;lb |] | Just lb &lt;- [mLowerBound] ]</span></span>
+<span class="lineno">  593 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">, [ Condition [essence| &amp;j &lt;= &amp;ub |] | Just ub &lt;- [mUpperBound] ]</span></span>
+<span class="lineno">  594 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  595 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
+<span class="lineno">  596 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">| (index, indexDom) &lt;- zip is indexDoms</span></span>
+<span class="lineno">  597 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  598 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (null gocs) $ na &quot;rule_ExpandSlices: this was all indexing and no slicing&quot;</span></span>
+<span class="lineno">  599 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return ( &quot;Expanding a matrix slice&quot;</span></span>
+<span class="lineno">  600 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">, return $ Comprehension (make opMatrixIndexingSlicing m is') (concat gocs)</span></span>
+<span class="lineno">  601 </span><span class="spaces">               </span><span class="istickedoff"><span class="nottickedoff">)</span></span></span>
+<span class="lineno">  602 </span>
+<span class="lineno">  603 </span>
+<span class="lineno">  604 </span>-- freq(matrix,arg) ~~&gt; sum([ toInt(arg = i) | i in matrix ])
+<span class="lineno">  605 </span>rule_Freq :: Rule
+<span class="lineno">  606 </span><span class="decl"><span class="istickedoff">rule_Freq = &quot;matrix-freq&quot; `namedRule` theRule where</span>
+<span class="lineno">  607 </span><span class="spaces">    </span><span class="istickedoff">theRule p = do</span>
+<span class="lineno">  608 </span><span class="spaces">        </span><span class="istickedoff">(m, arg) &lt;- match opFreq p</span>
+<span class="lineno">  609 </span><span class="spaces">        </span><span class="istickedoff">TypeMatrix{}  &lt;- typeOf m</span>
+<span class="lineno">  610 </span><span class="spaces">        </span><span class="istickedoff">[indexDom] &lt;- indexDomainsOf m</span>
+<span class="lineno">  611 </span><span class="spaces">        </span><span class="istickedoff">return</span>
+<span class="lineno">  612 </span><span class="spaces">            </span><span class="istickedoff">( <span class="nottickedoff">&quot;Horizontal rule for matrix-freq.&quot;</span></span>
+<span class="lineno">  613 </span><span class="spaces">            </span><span class="istickedoff">, do</span>
+<span class="lineno">  614 </span><span class="spaces">                </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  615 </span><span class="spaces">                </span><span class="istickedoff">let mis = (make opMatrixIndexing m [i])</span>
+<span class="lineno">  616 </span><span class="spaces">                </span><span class="istickedoff">return $ make opSum $ Comprehension [essence| toInt(&amp;mis = &amp;arg) |]</span>
+<span class="lineno">  617 </span><span class="spaces">                            </span><span class="istickedoff">[Generator (GenDomainNoRepr iPat indexDom)]</span>
+<span class="lineno">  618 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 
 </pre>
 </body>
