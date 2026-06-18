@@ -695,298 +695,300 @@ span.spaces    { background: white }
 <span class="lineno">  676 </span>--   (Srsly: Can be useful after parsing a solution file, for example.)
 <span class="lineno">  677 </span>e2c :: MonadFailDoc m =&gt; Expression -&gt; m Constant
 <span class="lineno">  678 </span><span class="decl"><span class="istickedoff">e2c (Constant c) = return c</span>
-<span class="lineno">  679 </span><span class="spaces"></span><span class="istickedoff">e2c (AbstractLiteral c) = ConstantAbstract &lt;$&gt; mapM e2c c</span>
-<span class="lineno">  680 </span><span class="spaces"></span><span class="istickedoff">e2c (Op (MkOpNegate (OpNegate (Constant (ConstantInt t x))))) = return $ ConstantInt t $ negate x</span>
-<span class="lineno">  681 </span><span class="spaces"></span><span class="istickedoff">e2c x = failDoc <span class="nottickedoff">(&quot;e2c, not a constant:&quot; &lt;+&gt; pretty x)</span></span></span>
-<span class="lineno">  682 </span>
-<span class="lineno">  683 </span>-- | generate a fresh name for a quantified variable.
-<span class="lineno">  684 </span>--   fst: the pattern to be used inside a generator
-<span class="lineno">  685 </span>--   snd: the expression to be used everywhere else
-<span class="lineno">  686 </span>quantifiedVar :: NameGen m =&gt; m (AbstractPattern, Expression)
-<span class="lineno">  687 </span><span class="decl"><span class="istickedoff">quantifiedVar = do</span>
-<span class="lineno">  688 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;q&quot;</span>
-<span class="lineno">  689 </span><span class="spaces">    </span><span class="istickedoff">let pat = Single nm</span>
-<span class="lineno">  690 </span><span class="spaces">        </span><span class="istickedoff">ref = Reference nm Nothing</span>
-<span class="lineno">  691 </span><span class="spaces">    </span><span class="istickedoff">return (pat, ref)</span></span>
-<span class="lineno">  692 </span>
-<span class="lineno">  693 </span>-- | like `quantifiedVar`, but already name-resolved as a quantified variable over the given domain
-<span class="lineno">  694 </span>quantifiedVarOverDomain :: NameGen m =&gt; Domain () Expression -&gt; m (AbstractPattern, Expression)
-<span class="lineno">  695 </span><span class="decl"><span class="istickedoff">quantifiedVarOverDomain domain = do</span>
-<span class="lineno">  696 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;q&quot;</span>
-<span class="lineno">  697 </span><span class="spaces">    </span><span class="istickedoff">let pat = Single nm</span>
-<span class="lineno">  698 </span><span class="spaces">        </span><span class="istickedoff">ref = Reference nm (Just (InComprehension (GenDomainNoRepr (Single nm) domain)))</span>
-<span class="lineno">  699 </span><span class="spaces">    </span><span class="istickedoff">return (pat, ref)</span></span>
-<span class="lineno">  700 </span>
-<span class="lineno">  701 </span>-- | generate a fresh name for an auxiliary variable.
-<span class="lineno">  702 </span>--   fst: the name to be used when declaring the variable
-<span class="lineno">  703 </span>--   snd: the expression to be used everywhere else
-<span class="lineno">  704 </span>auxiliaryVar :: NameGen m =&gt; m (Name, Expression)
-<span class="lineno">  705 </span><span class="decl"><span class="istickedoff">auxiliaryVar = do</span>
-<span class="lineno">  706 </span><span class="spaces">    </span><span class="istickedoff">-- Savile Row has a bug which is triggered when there are variables with names of the form aux*</span>
-<span class="lineno">  707 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;conjure_aux&quot;</span>
-<span class="lineno">  708 </span><span class="spaces">    </span><span class="istickedoff">let ref = Reference nm Nothing</span>
-<span class="lineno">  709 </span><span class="spaces">    </span><span class="istickedoff">return (nm, ref)</span></span>
-<span class="lineno">  710 </span>
-<span class="lineno">  711 </span>
-<span class="lineno">  712 </span>-- | pattern, template, argument, result
-<span class="lineno">  713 </span>lambdaToFunction :: AbstractPattern -&gt; Expression -&gt; Expression -&gt; Expression
-<span class="lineno">  714 </span><span class="decl"><span class="istickedoff">lambdaToFunction (Single nm) body = \ p -&gt;</span>
-<span class="lineno">  715 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  716 </span><span class="spaces">        </span><span class="istickedoff">replacer :: Expression -&gt; Expression</span>
-<span class="lineno">  717 </span><span class="spaces">        </span><span class="istickedoff">replacer (Reference n _) | n == nm = p</span>
-<span class="lineno">  718 </span><span class="spaces">        </span><span class="istickedoff">replacer x = x</span>
-<span class="lineno">  719 </span><span class="spaces">    </span><span class="istickedoff">in</span>
-<span class="lineno">  720 </span><span class="spaces">        </span><span class="istickedoff">transform replacer body</span>
-<span class="lineno">  721 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatTuple ts) body = \ p -&gt;</span>
-<span class="lineno">  722 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  723 </span><span class="spaces">        </span><span class="istickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span>
-<span class="lineno">  724 </span><span class="spaces">        </span><span class="istickedoff">unroll [] [] b = b</span>
-<span class="lineno">  725 </span><span class="spaces">        </span><span class="istickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span>
-<span class="lineno">  726 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ _ = <span class="nottickedoff">bug &quot;lambdaToFunction, AbsPatTuple, unroll&quot;</span></span>
-<span class="lineno">  727 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  728 </span><span class="spaces">        </span><span class="istickedoff">ps :: [Expression]</span>
-<span class="lineno">  729 </span><span class="spaces">        </span><span class="istickedoff">ps = case p of</span>
-<span class="lineno">  730 </span><span class="spaces">            </span><span class="istickedoff">Constant (ConstantAbstract (AbsLitTuple xs)) -&gt; <span class="nottickedoff">map Constant xs</span></span>
-<span class="lineno">  731 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; <span class="nottickedoff">xs</span></span>
-<span class="lineno">  732 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; [ Op (MkOpIndexing (OpIndexing p i))</span>
-<span class="lineno">  733 </span><span class="spaces">                 </span><span class="istickedoff">| i' &lt;- [ 1 .. genericLength ts ]</span>
-<span class="lineno">  734 </span><span class="spaces">                 </span><span class="istickedoff">, let i = fromInt i'</span>
-<span class="lineno">  735 </span><span class="spaces">                 </span><span class="istickedoff">]</span>
-<span class="lineno">  736 </span><span class="spaces">    </span><span class="istickedoff">in</span>
-<span class="lineno">  737 </span><span class="spaces">        </span><span class="istickedoff">unroll ts ps body</span>
-<span class="lineno">  738 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatMatrix ts) body = <span class="nottickedoff">\ p -&gt;</span></span>
-<span class="lineno">  739 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
-<span class="lineno">  740 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span></span>
-<span class="lineno">  741 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll [] [] b = b</span></span>
-<span class="lineno">  742 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span></span>
-<span class="lineno">  743 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll _ _ _ = bug &quot;lambdaToFunction, AbsPatMatrix, unroll&quot;</span></span>
-<span class="lineno">  744 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  745 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ps :: [Expression]</span></span>
-<span class="lineno">  746 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ps = case p of</span></span>
-<span class="lineno">  747 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Constant (ConstantAbstract (AbsLitMatrix _ xs)) -&gt; map Constant xs</span></span>
-<span class="lineno">  748 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitMatrix _ xs) -&gt; xs</span></span>
-<span class="lineno">  749 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;lambdaToFunction, AbsPatMatrix&quot; &lt;++&gt; vcat [pretty p, pretty (show p)]</span></span>
-<span class="lineno">  750 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">in</span></span>
-<span class="lineno">  751 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll ts ps body</span></span>
-<span class="lineno">  752 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatSet ts) body = \ p -&gt;</span>
-<span class="lineno">  753 </span><span class="spaces">    </span><span class="istickedoff">let</span>
-<span class="lineno">  754 </span><span class="spaces">        </span><span class="istickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span>
-<span class="lineno">  755 </span><span class="spaces">        </span><span class="istickedoff">unroll [] [] b = b</span>
-<span class="lineno">  756 </span><span class="spaces">        </span><span class="istickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span>
-<span class="lineno">  757 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ _ = <span class="nottickedoff">bug &quot;lambdaToFunction, AbsPatSet, unroll&quot;</span></span>
-<span class="lineno">  758 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno">  759 </span><span class="spaces">        </span><span class="istickedoff">ps :: [Expression]</span>
-<span class="lineno">  760 </span><span class="spaces">        </span><span class="istickedoff">ps = case p of</span>
-<span class="lineno">  761 </span><span class="spaces">            </span><span class="istickedoff">Constant (viewConstantSet -&gt; Just xs) -&gt; <span class="nottickedoff">map Constant xs</span></span>
-<span class="lineno">  762 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitSet xs) -&gt; xs</span>
-<span class="lineno">  763 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;lambdaToFunction, AbsPatSet&quot; &lt;++&gt; vcat [pretty p, pretty (show p)]</span></span>
-<span class="lineno">  764 </span><span class="spaces">    </span><span class="istickedoff">in</span>
-<span class="lineno">  765 </span><span class="spaces">        </span><span class="istickedoff">unroll ts ps body</span>
-<span class="lineno">  766 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction p@AbstractPatternMetaVar{} _ = <span class="nottickedoff">bug $ &quot;Unsupported AbstractPattern, got&quot; &lt;+&gt; pretty (show p)</span></span></span>
-<span class="lineno">  767 </span>
-<span class="lineno">  768 </span>
-<span class="lineno">  769 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  770 </span>-- ReferenceTo ---------------------------------------------------------------------------------------------------------
+<span class="lineno">  679 </span><span class="spaces"></span><span class="istickedoff">e2c (AbstractLiteral (AbsLitMatrix (DomainReference _ Nothing) _)) =</span>
+<span class="lineno">  680 </span><span class="spaces">    </span><span class="istickedoff">failDoc <span class="nottickedoff">&quot;Cannot convert a matrix literal with an unresolved index domain to a constant.&quot;</span></span>
+<span class="lineno">  681 </span><span class="spaces"></span><span class="istickedoff">e2c (AbstractLiteral c) = ConstantAbstract &lt;$&gt; mapM e2c c</span>
+<span class="lineno">  682 </span><span class="spaces"></span><span class="istickedoff">e2c (Op (MkOpNegate (OpNegate (Constant (ConstantInt t x))))) = return $ ConstantInt t $ negate x</span>
+<span class="lineno">  683 </span><span class="spaces"></span><span class="istickedoff">e2c x = failDoc <span class="nottickedoff">(&quot;e2c, not a constant:&quot; &lt;+&gt; pretty x)</span></span></span>
+<span class="lineno">  684 </span>
+<span class="lineno">  685 </span>-- | generate a fresh name for a quantified variable.
+<span class="lineno">  686 </span>--   fst: the pattern to be used inside a generator
+<span class="lineno">  687 </span>--   snd: the expression to be used everywhere else
+<span class="lineno">  688 </span>quantifiedVar :: NameGen m =&gt; m (AbstractPattern, Expression)
+<span class="lineno">  689 </span><span class="decl"><span class="istickedoff">quantifiedVar = do</span>
+<span class="lineno">  690 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  691 </span><span class="spaces">    </span><span class="istickedoff">let pat = Single nm</span>
+<span class="lineno">  692 </span><span class="spaces">        </span><span class="istickedoff">ref = Reference nm Nothing</span>
+<span class="lineno">  693 </span><span class="spaces">    </span><span class="istickedoff">return (pat, ref)</span></span>
+<span class="lineno">  694 </span>
+<span class="lineno">  695 </span>-- | like `quantifiedVar`, but already name-resolved as a quantified variable over the given domain
+<span class="lineno">  696 </span>quantifiedVarOverDomain :: NameGen m =&gt; Domain () Expression -&gt; m (AbstractPattern, Expression)
+<span class="lineno">  697 </span><span class="decl"><span class="istickedoff">quantifiedVarOverDomain domain = do</span>
+<span class="lineno">  698 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;q&quot;</span>
+<span class="lineno">  699 </span><span class="spaces">    </span><span class="istickedoff">let pat = Single nm</span>
+<span class="lineno">  700 </span><span class="spaces">        </span><span class="istickedoff">ref = Reference nm (Just (InComprehension (GenDomainNoRepr (Single nm) domain)))</span>
+<span class="lineno">  701 </span><span class="spaces">    </span><span class="istickedoff">return (pat, ref)</span></span>
+<span class="lineno">  702 </span>
+<span class="lineno">  703 </span>-- | generate a fresh name for an auxiliary variable.
+<span class="lineno">  704 </span>--   fst: the name to be used when declaring the variable
+<span class="lineno">  705 </span>--   snd: the expression to be used everywhere else
+<span class="lineno">  706 </span>auxiliaryVar :: NameGen m =&gt; m (Name, Expression)
+<span class="lineno">  707 </span><span class="decl"><span class="istickedoff">auxiliaryVar = do</span>
+<span class="lineno">  708 </span><span class="spaces">    </span><span class="istickedoff">-- Savile Row has a bug which is triggered when there are variables with names of the form aux*</span>
+<span class="lineno">  709 </span><span class="spaces">    </span><span class="istickedoff">nm &lt;- nextName &quot;conjure_aux&quot;</span>
+<span class="lineno">  710 </span><span class="spaces">    </span><span class="istickedoff">let ref = Reference nm Nothing</span>
+<span class="lineno">  711 </span><span class="spaces">    </span><span class="istickedoff">return (nm, ref)</span></span>
+<span class="lineno">  712 </span>
+<span class="lineno">  713 </span>
+<span class="lineno">  714 </span>-- | pattern, template, argument, result
+<span class="lineno">  715 </span>lambdaToFunction :: AbstractPattern -&gt; Expression -&gt; Expression -&gt; Expression
+<span class="lineno">  716 </span><span class="decl"><span class="istickedoff">lambdaToFunction (Single nm) body = \ p -&gt;</span>
+<span class="lineno">  717 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  718 </span><span class="spaces">        </span><span class="istickedoff">replacer :: Expression -&gt; Expression</span>
+<span class="lineno">  719 </span><span class="spaces">        </span><span class="istickedoff">replacer (Reference n _) | n == nm = p</span>
+<span class="lineno">  720 </span><span class="spaces">        </span><span class="istickedoff">replacer x = x</span>
+<span class="lineno">  721 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">  722 </span><span class="spaces">        </span><span class="istickedoff">transform replacer body</span>
+<span class="lineno">  723 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatTuple ts) body = \ p -&gt;</span>
+<span class="lineno">  724 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  725 </span><span class="spaces">        </span><span class="istickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span>
+<span class="lineno">  726 </span><span class="spaces">        </span><span class="istickedoff">unroll [] [] b = b</span>
+<span class="lineno">  727 </span><span class="spaces">        </span><span class="istickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span>
+<span class="lineno">  728 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ _ = <span class="nottickedoff">bug &quot;lambdaToFunction, AbsPatTuple, unroll&quot;</span></span>
+<span class="lineno">  729 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  730 </span><span class="spaces">        </span><span class="istickedoff">ps :: [Expression]</span>
+<span class="lineno">  731 </span><span class="spaces">        </span><span class="istickedoff">ps = case p of</span>
+<span class="lineno">  732 </span><span class="spaces">            </span><span class="istickedoff">Constant (ConstantAbstract (AbsLitTuple xs)) -&gt; <span class="nottickedoff">map Constant xs</span></span>
+<span class="lineno">  733 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; <span class="nottickedoff">xs</span></span>
+<span class="lineno">  734 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; [ Op (MkOpIndexing (OpIndexing p i))</span>
+<span class="lineno">  735 </span><span class="spaces">                 </span><span class="istickedoff">| i' &lt;- [ 1 .. genericLength ts ]</span>
+<span class="lineno">  736 </span><span class="spaces">                 </span><span class="istickedoff">, let i = fromInt i'</span>
+<span class="lineno">  737 </span><span class="spaces">                 </span><span class="istickedoff">]</span>
+<span class="lineno">  738 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">  739 </span><span class="spaces">        </span><span class="istickedoff">unroll ts ps body</span>
+<span class="lineno">  740 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatMatrix ts) body = <span class="nottickedoff">\ p -&gt;</span></span>
+<span class="lineno">  741 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
+<span class="lineno">  742 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span></span>
+<span class="lineno">  743 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll [] [] b = b</span></span>
+<span class="lineno">  744 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span></span>
+<span class="lineno">  745 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll _ _ _ = bug &quot;lambdaToFunction, AbsPatMatrix, unroll&quot;</span></span>
+<span class="lineno">  746 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  747 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ps :: [Expression]</span></span>
+<span class="lineno">  748 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ps = case p of</span></span>
+<span class="lineno">  749 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Constant (ConstantAbstract (AbsLitMatrix _ xs)) -&gt; map Constant xs</span></span>
+<span class="lineno">  750 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitMatrix _ xs) -&gt; xs</span></span>
+<span class="lineno">  751 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; bug $ &quot;lambdaToFunction, AbsPatMatrix&quot; &lt;++&gt; vcat [pretty p, pretty (show p)]</span></span>
+<span class="lineno">  752 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">in</span></span>
+<span class="lineno">  753 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">unroll ts ps body</span></span>
+<span class="lineno">  754 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction (AbsPatSet ts) body = \ p -&gt;</span>
+<span class="lineno">  755 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">  756 </span><span class="spaces">        </span><span class="istickedoff">unroll :: [AbstractPattern] -&gt; [Expression] -&gt; Expression -&gt; Expression</span>
+<span class="lineno">  757 </span><span class="spaces">        </span><span class="istickedoff">unroll [] [] b = b</span>
+<span class="lineno">  758 </span><span class="spaces">        </span><span class="istickedoff">unroll (pat:pats) (val:vals) b = unroll pats vals (lambdaToFunction pat b val)</span>
+<span class="lineno">  759 </span><span class="spaces">        </span><span class="istickedoff">unroll _ _ _ = <span class="nottickedoff">bug &quot;lambdaToFunction, AbsPatSet, unroll&quot;</span></span>
+<span class="lineno">  760 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  761 </span><span class="spaces">        </span><span class="istickedoff">ps :: [Expression]</span>
+<span class="lineno">  762 </span><span class="spaces">        </span><span class="istickedoff">ps = case p of</span>
+<span class="lineno">  763 </span><span class="spaces">            </span><span class="istickedoff">Constant (viewConstantSet -&gt; Just xs) -&gt; <span class="nottickedoff">map Constant xs</span></span>
+<span class="lineno">  764 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitSet xs) -&gt; xs</span>
+<span class="lineno">  765 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">bug $ &quot;lambdaToFunction, AbsPatSet&quot; &lt;++&gt; vcat [pretty p, pretty (show p)]</span></span>
+<span class="lineno">  766 </span><span class="spaces">    </span><span class="istickedoff">in</span>
+<span class="lineno">  767 </span><span class="spaces">        </span><span class="istickedoff">unroll ts ps body</span>
+<span class="lineno">  768 </span><span class="spaces"></span><span class="istickedoff">lambdaToFunction p@AbstractPatternMetaVar{} _ = <span class="nottickedoff">bug $ &quot;Unsupported AbstractPattern, got&quot; &lt;+&gt; pretty (show p)</span></span></span>
+<span class="lineno">  769 </span>
+<span class="lineno">  770 </span>
 <span class="lineno">  771 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  772 </span>
-<span class="lineno">  773 </span>data ReferenceTo
-<span class="lineno">  774 </span>    = Alias           Expression
-<span class="lineno">  775 </span>    | InComprehension Generator
-<span class="lineno">  776 </span>    | DeclNoRepr      FindOrGiven Name (Domain () Expression)
-<span class="lineno">  777 </span>                      Region -- the region of this reference
-<span class="lineno">  778 </span>                             -- references with the same region identifier will get the same representation
-<span class="lineno">  779 </span>    | DeclHasRepr     FindOrGiven Name (Domain HasRepresentation Expression)
-<span class="lineno">  780 </span>    | RecordField     Name Type         -- the type of the field with this name
-<span class="lineno">  781 </span>    | VariantField    Name Type         -- the type of the variant with this name
-<span class="lineno">  782 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
-<span class="lineno">  783 </span>
-<span class="lineno">  784 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize ReferenceTo</span></span></span></span>
-<span class="lineno">  785 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  ReferenceTo</span></span></span></span>
-<span class="lineno">  786 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    ReferenceTo</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  787 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  ReferenceTo</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">  788 </span>
-<span class="lineno">  789 </span>instance <span class="decl"><span class="nottickedoff">Pretty ReferenceTo</span></span> where
-<span class="lineno">  790 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = &quot;an alias for&quot; &lt;++&gt; pretty x</span>
-<span class="lineno">  791 </span><span class="spaces">    </span><span class="istickedoff">pretty (InComprehension gen) = &quot;a comprehension generator&quot; &lt;++&gt; <span class="nottickedoff">pretty gen</span></span>
-<span class="lineno">  792 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclNoRepr  forg nm dom _) = &quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span>
-<span class="lineno">  793 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclHasRepr forg nm dom  ) = <span class="nottickedoff">&quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span></span>
-<span class="lineno">  794 </span><span class="spaces">    </span><span class="istickedoff">pretty (RecordField  nm ty) = <span class="nottickedoff">&quot;record field&quot;  &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span>
-<span class="lineno">  795 </span><span class="spaces">    </span><span class="istickedoff">pretty (VariantField nm ty) = <span class="nottickedoff">&quot;variant field&quot; &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span></span>
-<span class="lineno">  796 </span>
-<span class="lineno">  797 </span>data Region
-<span class="lineno">  798 </span>    = NoRegion
-<span class="lineno">  799 </span>    | Region Int
-<span class="lineno">  800 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
-<span class="lineno">  801 </span>
-<span class="lineno">  802 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Region</span></span></span></span>
-<span class="lineno">  803 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Region</span></span></span></span>
-<span class="lineno">  804 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Region</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  805 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Region</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">  806 </span>
-<span class="lineno">  807 </span>
-<span class="lineno">  808 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  809 </span>-- AbstractPattern -----------------------------------------------------------------------------------------------------
+<span class="lineno">  772 </span>-- ReferenceTo ---------------------------------------------------------------------------------------------------------
+<span class="lineno">  773 </span>------------------------------------------------------------------------------------------------------------------------
+<span class="lineno">  774 </span>
+<span class="lineno">  775 </span>data ReferenceTo
+<span class="lineno">  776 </span>    = Alias           Expression
+<span class="lineno">  777 </span>    | InComprehension Generator
+<span class="lineno">  778 </span>    | DeclNoRepr      FindOrGiven Name (Domain () Expression)
+<span class="lineno">  779 </span>                      Region -- the region of this reference
+<span class="lineno">  780 </span>                             -- references with the same region identifier will get the same representation
+<span class="lineno">  781 </span>    | DeclHasRepr     FindOrGiven Name (Domain HasRepresentation Expression)
+<span class="lineno">  782 </span>    | RecordField     Name Type         -- the type of the field with this name
+<span class="lineno">  783 </span>    | VariantField    Name Type         -- the type of the variant with this name
+<span class="lineno">  784 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
+<span class="lineno">  785 </span>
+<span class="lineno">  786 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize ReferenceTo</span></span></span></span>
+<span class="lineno">  787 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  ReferenceTo</span></span></span></span>
+<span class="lineno">  788 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    ReferenceTo</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  789 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  ReferenceTo</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  790 </span>
+<span class="lineno">  791 </span>instance <span class="decl"><span class="nottickedoff">Pretty ReferenceTo</span></span> where
+<span class="lineno">  792 </span>    <span class="decl"><span class="istickedoff">pretty (Alias x) = &quot;an alias for&quot; &lt;++&gt; pretty x</span>
+<span class="lineno">  793 </span><span class="spaces">    </span><span class="istickedoff">pretty (InComprehension gen) = &quot;a comprehension generator&quot; &lt;++&gt; <span class="nottickedoff">pretty gen</span></span>
+<span class="lineno">  794 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclNoRepr  forg nm dom _) = &quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span>
+<span class="lineno">  795 </span><span class="spaces">    </span><span class="istickedoff">pretty (DeclHasRepr forg nm dom  ) = <span class="nottickedoff">&quot;declaration of&quot; &lt;++&gt; pretty forg &lt;+&gt; pretty nm &lt;&gt; &quot;:&quot; &lt;+&gt; pretty dom</span></span>
+<span class="lineno">  796 </span><span class="spaces">    </span><span class="istickedoff">pretty (RecordField  nm ty) = <span class="nottickedoff">&quot;record field&quot;  &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span>
+<span class="lineno">  797 </span><span class="spaces">    </span><span class="istickedoff">pretty (VariantField nm ty) = <span class="nottickedoff">&quot;variant field&quot; &lt;++&gt; prParens (pretty nm &lt;+&gt; &quot;:&quot; &lt;+&gt; pretty ty)</span></span></span>
+<span class="lineno">  798 </span>
+<span class="lineno">  799 </span>data Region
+<span class="lineno">  800 </span>    = NoRegion
+<span class="lineno">  801 </span>    | Region Int
+<span class="lineno">  802 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">  803 </span>
+<span class="lineno">  804 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Region</span></span></span></span>
+<span class="lineno">  805 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Region</span></span></span></span>
+<span class="lineno">  806 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Region</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  807 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Region</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  808 </span>
+<span class="lineno">  809 </span>
 <span class="lineno">  810 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  811 </span>
-<span class="lineno">  812 </span>data AbstractPattern
-<span class="lineno">  813 </span>    = Single Name
-<span class="lineno">  814 </span>    | AbsPatTuple [AbstractPattern]
-<span class="lineno">  815 </span>    | AbsPatMatrix
-<span class="lineno">  816 </span>            -- (Domain () a)          -- TODO: Should there be a domain here?
-<span class="lineno">  817 </span>            [AbstractPattern]
-<span class="lineno">  818 </span>    | AbsPatSet [AbstractPattern]
-<span class="lineno">  819 </span>    -- | AbsPatMSet [a]
-<span class="lineno">  820 </span>    -- | AbsPatFunction [(a, a)]
-<span class="lineno">  821 </span>    -- | AbsPatRelation [[a]]
-<span class="lineno">  822 </span>    -- | AbsPatPartition [[a]]
-<span class="lineno">  823 </span>    -- TODO: Consider introducing the above as abstract patterns...
-<span class="lineno">  824 </span>    | AbstractPatternMetaVar String
-<span class="lineno">  825 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
-<span class="lineno">  826 </span>
-<span class="lineno">  827 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize AbstractPattern</span></span></span></span>
-<span class="lineno">  828 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  AbstractPattern</span></span></span></span>
-<span class="lineno">  829 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    AbstractPattern</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  830 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  AbstractPattern</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">  831 </span>
-<span class="lineno">  832 </span>instance <span class="decl"><span class="nottickedoff">Pretty AbstractPattern</span></span> where
-<span class="lineno">  833 </span>    <span class="decl"><span class="istickedoff">pretty (Single       nm) = pretty nm</span>
-<span class="lineno">  834 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatTuple  xs) = <span class="nottickedoff">(if length xs &lt;= 1 then &quot;tuple&quot; else prEmpty) &lt;&gt;</span></span>
-<span class="lineno">  835 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">prettyList prParens   &quot;,&quot; xs</span></span>
-<span class="lineno">  836 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatMatrix xs) = <span class="nottickedoff">prettyList prBrackets &quot;,&quot; xs</span></span>
-<span class="lineno">  837 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatSet    xs) = <span class="nottickedoff">prettyList prBraces &quot;,&quot; xs</span></span>
-<span class="lineno">  838 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbstractPatternMetaVar s) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty s</span></span></span>
-<span class="lineno">  839 </span>
-<span class="lineno">  840 </span>instance VarSymBreakingDescription AbstractPattern where
-<span class="lineno">  841 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (Single nm) = toJSON nm</span>
-<span class="lineno">  842 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatTuple xs) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  843 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatTuple&quot;)</span>
-<span class="lineno">  844 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">  845 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  846 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatMatrix xs) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  847 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatMatrix&quot;)</span>
-<span class="lineno">  848 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">  849 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  850 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatSet xs) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  851 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatSet&quot;)</span>
-<span class="lineno">  852 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
-<span class="lineno">  853 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
-<span class="lineno">  854 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  855 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbstractPatternMetaVar s) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  856 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbstractPatternMetaVar&quot;)</span>
-<span class="lineno">  857 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;name&quot;, JSON.String (stringToText s))</span>
-<span class="lineno">  858 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  859 </span>
-<span class="lineno">  860 </span>
-<span class="lineno">  861 </span>patternToExpr :: AbstractPattern -&gt; Expression
-<span class="lineno">  862 </span><span class="decl"><span class="nottickedoff">patternToExpr (Single nm) = Reference nm Nothing</span>
-<span class="lineno">  863 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatTuple  ts) = AbstractLiteral $ AbsLitTuple  $ map patternToExpr ts</span>
-<span class="lineno">  864 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatMatrix ts) = AbstractLiteral $ AbsLitMatrix</span>
-<span class="lineno">  865 </span><span class="spaces">                                    </span><span class="nottickedoff">(DomainInt TagInt [RangeBounded 1 (fromInt (genericLength ts))])</span>
-<span class="lineno">  866 </span><span class="spaces">                                                                 </span><span class="nottickedoff">$ map patternToExpr ts</span>
-<span class="lineno">  867 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatSet    ts) = AbstractLiteral $ AbsLitSet    $ map patternToExpr ts</span>
-<span class="lineno">  868 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr AbstractPatternMetaVar{} = bug &quot;patternToExpr&quot;</span></span>
-<span class="lineno">  869 </span>
-<span class="lineno">  870 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  871 </span>-- Generator -----------------------------------------------------------------------------------------------------------
+<span class="lineno">  811 </span>-- AbstractPattern -----------------------------------------------------------------------------------------------------
+<span class="lineno">  812 </span>------------------------------------------------------------------------------------------------------------------------
+<span class="lineno">  813 </span>
+<span class="lineno">  814 </span>data AbstractPattern
+<span class="lineno">  815 </span>    = Single Name
+<span class="lineno">  816 </span>    | AbsPatTuple [AbstractPattern]
+<span class="lineno">  817 </span>    | AbsPatMatrix
+<span class="lineno">  818 </span>            -- (Domain () a)          -- TODO: Should there be a domain here?
+<span class="lineno">  819 </span>            [AbstractPattern]
+<span class="lineno">  820 </span>    | AbsPatSet [AbstractPattern]
+<span class="lineno">  821 </span>    -- | AbsPatMSet [a]
+<span class="lineno">  822 </span>    -- | AbsPatFunction [(a, a)]
+<span class="lineno">  823 </span>    -- | AbsPatRelation [[a]]
+<span class="lineno">  824 </span>    -- | AbsPatPartition [[a]]
+<span class="lineno">  825 </span>    -- TODO: Consider introducing the above as abstract patterns...
+<span class="lineno">  826 </span>    | AbstractPatternMetaVar String
+<span class="lineno">  827 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
+<span class="lineno">  828 </span>
+<span class="lineno">  829 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize AbstractPattern</span></span></span></span>
+<span class="lineno">  830 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  AbstractPattern</span></span></span></span>
+<span class="lineno">  831 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    AbstractPattern</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  832 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  AbstractPattern</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  833 </span>
+<span class="lineno">  834 </span>instance <span class="decl"><span class="nottickedoff">Pretty AbstractPattern</span></span> where
+<span class="lineno">  835 </span>    <span class="decl"><span class="istickedoff">pretty (Single       nm) = pretty nm</span>
+<span class="lineno">  836 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatTuple  xs) = <span class="nottickedoff">(if length xs &lt;= 1 then &quot;tuple&quot; else prEmpty) &lt;&gt;</span></span>
+<span class="lineno">  837 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">prettyList prParens   &quot;,&quot; xs</span></span>
+<span class="lineno">  838 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatMatrix xs) = <span class="nottickedoff">prettyList prBrackets &quot;,&quot; xs</span></span>
+<span class="lineno">  839 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbsPatSet    xs) = <span class="nottickedoff">prettyList prBraces &quot;,&quot; xs</span></span>
+<span class="lineno">  840 </span><span class="spaces">    </span><span class="istickedoff">pretty (AbstractPatternMetaVar s) = <span class="nottickedoff">&quot;&amp;&quot; &lt;&gt; pretty s</span></span></span>
+<span class="lineno">  841 </span>
+<span class="lineno">  842 </span>instance VarSymBreakingDescription AbstractPattern where
+<span class="lineno">  843 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (Single nm) = toJSON nm</span>
+<span class="lineno">  844 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatTuple xs) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  845 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatTuple&quot;)</span>
+<span class="lineno">  846 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">  847 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  848 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatMatrix xs) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  849 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatMatrix&quot;)</span>
+<span class="lineno">  850 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">  851 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  852 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbsPatSet xs) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  853 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbsPatSet&quot;)</span>
+<span class="lineno">  854 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription xs)</span>
+<span class="lineno">  855 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;symmetricChildren&quot;, JSON.Bool True)</span>
+<span class="lineno">  856 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  857 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (AbstractPatternMetaVar s) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  858 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;AbstractPatternMetaVar&quot;)</span>
+<span class="lineno">  859 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;name&quot;, JSON.String (stringToText s))</span>
+<span class="lineno">  860 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  861 </span>
+<span class="lineno">  862 </span>
+<span class="lineno">  863 </span>patternToExpr :: AbstractPattern -&gt; Expression
+<span class="lineno">  864 </span><span class="decl"><span class="nottickedoff">patternToExpr (Single nm) = Reference nm Nothing</span>
+<span class="lineno">  865 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatTuple  ts) = AbstractLiteral $ AbsLitTuple  $ map patternToExpr ts</span>
+<span class="lineno">  866 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatMatrix ts) = AbstractLiteral $ AbsLitMatrix</span>
+<span class="lineno">  867 </span><span class="spaces">                                    </span><span class="nottickedoff">(DomainInt TagInt [RangeBounded 1 (fromInt (genericLength ts))])</span>
+<span class="lineno">  868 </span><span class="spaces">                                                                 </span><span class="nottickedoff">$ map patternToExpr ts</span>
+<span class="lineno">  869 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr (AbsPatSet    ts) = AbstractLiteral $ AbsLitSet    $ map patternToExpr ts</span>
+<span class="lineno">  870 </span><span class="spaces"></span><span class="nottickedoff">patternToExpr AbstractPatternMetaVar{} = bug &quot;patternToExpr&quot;</span></span>
+<span class="lineno">  871 </span>
 <span class="lineno">  872 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  873 </span>
-<span class="lineno">  874 </span>data GeneratorOrCondition
-<span class="lineno">  875 </span>    = Generator Generator
-<span class="lineno">  876 </span>    | Condition Expression
-<span class="lineno">  877 </span>    | ComprehensionLetting AbstractPattern Expression
-<span class="lineno">  878 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
-<span class="lineno">  879 </span>
-<span class="lineno">  880 </span>instance <span class="decl"><span class="nottickedoff">Pretty GeneratorOrCondition</span></span> where
-<span class="lineno">  881 </span>    <span class="decl"><span class="istickedoff">pretty (Generator x) = pretty x</span>
-<span class="lineno">  882 </span><span class="spaces">    </span><span class="istickedoff">pretty (Condition x) = pretty x</span>
-<span class="lineno">  883 </span><span class="spaces">    </span><span class="istickedoff">pretty (ComprehensionLetting n x) = &quot;letting&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">  884 </span>
-<span class="lineno">  885 </span>instance VarSymBreakingDescription GeneratorOrCondition where
-<span class="lineno">  886 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (Generator x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  887 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;Generator&quot;)</span>
-<span class="lineno">  888 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;child&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">  889 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  890 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (Condition x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  891 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;Condition&quot;)</span>
-<span class="lineno">  892 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;child&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">  893 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  894 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (ComprehensionLetting n x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  895 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;ComprehensionLetting&quot;)</span>
-<span class="lineno">  896 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList [toJSON n, varSymBreakingDescription x])</span>
-<span class="lineno">  897 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  898 </span>
-<span class="lineno">  899 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize GeneratorOrCondition</span></span></span></span>
-<span class="lineno">  900 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  GeneratorOrCondition</span></span></span></span>
-<span class="lineno">  901 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    GeneratorOrCondition</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  902 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">FromJSON  GeneratorOrCondition</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">  903 </span>
-<span class="lineno">  904 </span>
-<span class="lineno">  905 </span>data Generator
-<span class="lineno">  906 </span>     = GenDomainNoRepr  AbstractPattern (Domain () Expression)
-<span class="lineno">  907 </span>     | GenDomainHasRepr Name            (Domain HasRepresentation Expression)
-<span class="lineno">  908 </span>     | GenInExpr        AbstractPattern Expression
-<span class="lineno">  909 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
-<span class="lineno">  910 </span>
-<span class="lineno">  911 </span>instance <span class="decl"><span class="nottickedoff">Pretty Generator</span></span> where
-<span class="lineno">  912 </span>    <span class="decl"><span class="istickedoff">pretty (GenDomainNoRepr  pat x) = pretty pat &lt;+&gt; &quot;:&quot;  &lt;+&gt; pretty x</span>
-<span class="lineno">  913 </span><span class="spaces">    </span><span class="istickedoff">pretty (GenDomainHasRepr pat x) = pretty pat &lt;+&gt; &quot;:&quot;  &lt;+&gt; pretty x</span>
-<span class="lineno">  914 </span><span class="spaces">    </span><span class="istickedoff">pretty (GenInExpr        pat x) = pretty pat &lt;+&gt; &quot;&lt;-&quot; &lt;+&gt; pretty x</span></span>
-<span class="lineno">  915 </span>
-<span class="lineno">  916 </span>instance VarSymBreakingDescription Generator where
-<span class="lineno">  917 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (GenDomainNoRepr  pat x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  918 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenDomainNoRepr&quot;)</span>
-<span class="lineno">  919 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, varSymBreakingDescription pat)</span>
-<span class="lineno">  920 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">  921 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  922 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (GenDomainHasRepr pat x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  923 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenDomainHasRepr&quot;)</span>
-<span class="lineno">  924 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, toJSON pat)</span>
-<span class="lineno">  925 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">  926 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
-<span class="lineno">  927 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (GenInExpr        pat x) = JSON.Object $ KM.fromList</span>
-<span class="lineno">  928 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenInExpr&quot;)</span>
-<span class="lineno">  929 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, varSymBreakingDescription pat)</span>
-<span class="lineno">  930 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
-<span class="lineno">  931 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
-<span class="lineno">  932 </span>
-<span class="lineno">  933 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Generator</span></span></span></span>
-<span class="lineno">  934 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Generator</span></span></span></span>
-<span class="lineno">  935 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Generator</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
-<span class="lineno">  936 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Generator</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
-<span class="lineno">  937 </span>
-<span class="lineno">  938 </span>generatorPat :: Generator -&gt; AbstractPattern
-<span class="lineno">  939 </span><span class="decl"><span class="istickedoff">generatorPat (GenDomainNoRepr  pat _) = pat</span>
-<span class="lineno">  940 </span><span class="spaces"></span><span class="istickedoff">generatorPat (GenDomainHasRepr pat _) = Single pat</span>
-<span class="lineno">  941 </span><span class="spaces"></span><span class="istickedoff">generatorPat (GenInExpr        pat _) = pat</span></span>
-<span class="lineno">  942 </span>
-<span class="lineno">  943 </span>
-<span class="lineno">  944 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  945 </span>-- Misc ---------------------------------------------------------------------------------------------------------------
+<span class="lineno">  873 </span>-- Generator -----------------------------------------------------------------------------------------------------------
+<span class="lineno">  874 </span>------------------------------------------------------------------------------------------------------------------------
+<span class="lineno">  875 </span>
+<span class="lineno">  876 </span>data GeneratorOrCondition
+<span class="lineno">  877 </span>    = Generator Generator
+<span class="lineno">  878 </span>    | Condition Expression
+<span class="lineno">  879 </span>    | ComprehensionLetting AbstractPattern Expression
+<span class="lineno">  880 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
+<span class="lineno">  881 </span>
+<span class="lineno">  882 </span>instance <span class="decl"><span class="nottickedoff">Pretty GeneratorOrCondition</span></span> where
+<span class="lineno">  883 </span>    <span class="decl"><span class="istickedoff">pretty (Generator x) = pretty x</span>
+<span class="lineno">  884 </span><span class="spaces">    </span><span class="istickedoff">pretty (Condition x) = pretty x</span>
+<span class="lineno">  885 </span><span class="spaces">    </span><span class="istickedoff">pretty (ComprehensionLetting n x) = &quot;letting&quot; &lt;+&gt; pretty n &lt;+&gt; &quot;be&quot; &lt;+&gt; pretty x</span></span>
+<span class="lineno">  886 </span>
+<span class="lineno">  887 </span>instance VarSymBreakingDescription GeneratorOrCondition where
+<span class="lineno">  888 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (Generator x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  889 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;Generator&quot;)</span>
+<span class="lineno">  890 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;child&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">  891 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  892 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (Condition x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  893 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;Condition&quot;)</span>
+<span class="lineno">  894 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;child&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">  895 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  896 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (ComprehensionLetting n x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  897 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;ComprehensionLetting&quot;)</span>
+<span class="lineno">  898 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList [toJSON n, varSymBreakingDescription x])</span>
+<span class="lineno">  899 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  900 </span>
+<span class="lineno">  901 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize GeneratorOrCondition</span></span></span></span>
+<span class="lineno">  902 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  GeneratorOrCondition</span></span></span></span>
+<span class="lineno">  903 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    GeneratorOrCondition</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  904 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">FromJSON  GeneratorOrCondition</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  905 </span>
+<span class="lineno">  906 </span>
+<span class="lineno">  907 </span>data Generator
+<span class="lineno">  908 </span>     = GenDomainNoRepr  AbstractPattern (Domain () Expression)
+<span class="lineno">  909 </span>     | GenDomainHasRepr Name            (Domain HasRepresentation Expression)
+<span class="lineno">  910 </span>     | GenInExpr        AbstractPattern Expression
+<span class="lineno">  911 </span>    deriving (<span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff">Generic</span></span></span></span>)
+<span class="lineno">  912 </span>
+<span class="lineno">  913 </span>instance <span class="decl"><span class="nottickedoff">Pretty Generator</span></span> where
+<span class="lineno">  914 </span>    <span class="decl"><span class="istickedoff">pretty (GenDomainNoRepr  pat x) = pretty pat &lt;+&gt; &quot;:&quot;  &lt;+&gt; pretty x</span>
+<span class="lineno">  915 </span><span class="spaces">    </span><span class="istickedoff">pretty (GenDomainHasRepr pat x) = pretty pat &lt;+&gt; &quot;:&quot;  &lt;+&gt; pretty x</span>
+<span class="lineno">  916 </span><span class="spaces">    </span><span class="istickedoff">pretty (GenInExpr        pat x) = pretty pat &lt;+&gt; &quot;&lt;-&quot; &lt;+&gt; pretty x</span></span>
+<span class="lineno">  917 </span>
+<span class="lineno">  918 </span>instance VarSymBreakingDescription Generator where
+<span class="lineno">  919 </span>    <span class="decl"><span class="nottickedoff">varSymBreakingDescription (GenDomainNoRepr  pat x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  920 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenDomainNoRepr&quot;)</span>
+<span class="lineno">  921 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, varSymBreakingDescription pat)</span>
+<span class="lineno">  922 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">  923 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  924 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (GenDomainHasRepr pat x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  925 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenDomainHasRepr&quot;)</span>
+<span class="lineno">  926 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, toJSON pat)</span>
+<span class="lineno">  927 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">  928 </span><span class="spaces">        </span><span class="nottickedoff">]</span>
+<span class="lineno">  929 </span><span class="spaces">    </span><span class="nottickedoff">varSymBreakingDescription (GenInExpr        pat x) = JSON.Object $ KM.fromList</span>
+<span class="lineno">  930 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;GenInExpr&quot;)</span>
+<span class="lineno">  931 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;pattern&quot;, varSymBreakingDescription pat)</span>
+<span class="lineno">  932 </span><span class="spaces">        </span><span class="nottickedoff">, (&quot;generator&quot;, varSymBreakingDescription x)</span>
+<span class="lineno">  933 </span><span class="spaces">        </span><span class="nottickedoff">]</span></span>
+<span class="lineno">  934 </span>
+<span class="lineno">  935 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Serialize Generator</span></span></span></span>
+<span class="lineno">  936 </span>instance <span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff">Hashable  Generator</span></span></span></span>
+<span class="lineno">  937 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">ToJSON    Generator</span></span></span></span></span></span></span></span> where <span class="decl"><span class="istickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">  938 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">FromJSON  Generator</span></span></span></span> where <span class="decl"><span class="istickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">  939 </span>
+<span class="lineno">  940 </span>generatorPat :: Generator -&gt; AbstractPattern
+<span class="lineno">  941 </span><span class="decl"><span class="istickedoff">generatorPat (GenDomainNoRepr  pat _) = pat</span>
+<span class="lineno">  942 </span><span class="spaces"></span><span class="istickedoff">generatorPat (GenDomainHasRepr pat _) = Single pat</span>
+<span class="lineno">  943 </span><span class="spaces"></span><span class="istickedoff">generatorPat (GenInExpr        pat _) = pat</span></span>
+<span class="lineno">  944 </span>
+<span class="lineno">  945 </span>
 <span class="lineno">  946 </span>------------------------------------------------------------------------------------------------------------------------
-<span class="lineno">  947 </span>
-<span class="lineno">  948 </span>tupleLitIfNeeded :: [Expression] -&gt; Expression
-<span class="lineno">  949 </span><span class="decl"><span class="nottickedoff">tupleLitIfNeeded [] = bug &quot;tupleLitIfNeeded []&quot;</span>
-<span class="lineno">  950 </span><span class="spaces"></span><span class="nottickedoff">tupleLitIfNeeded [x] = x</span>
-<span class="lineno">  951 </span><span class="spaces"></span><span class="nottickedoff">tupleLitIfNeeded xs = AbstractLiteral (AbsLitTuple xs)</span></span>
-<span class="lineno">  952 </span>
-<span class="lineno">  953 </span>nbUses :: Data x =&gt; Name -&gt; x -&gt; Int
-<span class="lineno">  954 </span><span class="decl"><span class="istickedoff">nbUses nm here = length [ <span class="nottickedoff">()</span> | Reference nm2 _ &lt;- universeBi here, nm == nm2 ]</span></span>
-<span class="lineno">  955 </span>
-<span class="lineno">  956 </span>emptyCollectionX :: Expression -&gt; Bool
-<span class="lineno">  957 </span><span class="decl"><span class="istickedoff">emptyCollectionX (Constant x) = emptyCollection x</span>
-<span class="lineno">  958 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (AbstractLiteral x) = emptyCollectionAbsLit x</span>
-<span class="lineno">  959 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (Typed x _) = <span class="nottickedoff">emptyCollectionX x</span></span>
-<span class="lineno">  960 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX _ = False</span></span>
-<span class="lineno">  961 </span>
-<span class="lineno">  962 </span>
-<span class="lineno">  963 </span>reDomExp :: Domain () Expression -&gt; Domain () Expression 
-<span class="lineno">  964 </span><span class="decl"><span class="istickedoff">reDomExp exp = case exp of</span>
-<span class="lineno">  965 </span><span class="spaces">                 </span><span class="istickedoff">DomainInt t _ -&gt; reTag t exp</span>
-<span class="lineno">  966 </span><span class="spaces">                 </span><span class="istickedoff">_ -&gt; exp</span></span>
-<span class="lineno">  967 </span>
-<span class="lineno">  968 </span>isDomainExpr :: MonadFailDoc m =&gt; Expression -&gt; m ()
-<span class="lineno">  969 </span><span class="decl"><span class="istickedoff">isDomainExpr Domain{} = <span class="nottickedoff">return ()</span></span>
-<span class="lineno">  970 </span><span class="spaces"></span><span class="istickedoff">isDomainExpr x = na (&quot;Not a domain expression: &quot; &lt;+&gt; pretty x)</span></span>
+<span class="lineno">  947 </span>-- Misc ---------------------------------------------------------------------------------------------------------------
+<span class="lineno">  948 </span>------------------------------------------------------------------------------------------------------------------------
+<span class="lineno">  949 </span>
+<span class="lineno">  950 </span>tupleLitIfNeeded :: [Expression] -&gt; Expression
+<span class="lineno">  951 </span><span class="decl"><span class="nottickedoff">tupleLitIfNeeded [] = bug &quot;tupleLitIfNeeded []&quot;</span>
+<span class="lineno">  952 </span><span class="spaces"></span><span class="nottickedoff">tupleLitIfNeeded [x] = x</span>
+<span class="lineno">  953 </span><span class="spaces"></span><span class="nottickedoff">tupleLitIfNeeded xs = AbstractLiteral (AbsLitTuple xs)</span></span>
+<span class="lineno">  954 </span>
+<span class="lineno">  955 </span>nbUses :: Data x =&gt; Name -&gt; x -&gt; Int
+<span class="lineno">  956 </span><span class="decl"><span class="istickedoff">nbUses nm here = length [ <span class="nottickedoff">()</span> | Reference nm2 _ &lt;- universeBi here, nm == nm2 ]</span></span>
+<span class="lineno">  957 </span>
+<span class="lineno">  958 </span>emptyCollectionX :: Expression -&gt; Bool
+<span class="lineno">  959 </span><span class="decl"><span class="istickedoff">emptyCollectionX (Constant x) = emptyCollection x</span>
+<span class="lineno">  960 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (AbstractLiteral x) = emptyCollectionAbsLit x</span>
+<span class="lineno">  961 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX (Typed x _) = <span class="nottickedoff">emptyCollectionX x</span></span>
+<span class="lineno">  962 </span><span class="spaces"></span><span class="istickedoff">emptyCollectionX _ = False</span></span>
+<span class="lineno">  963 </span>
+<span class="lineno">  964 </span>
+<span class="lineno">  965 </span>reDomExp :: Domain () Expression -&gt; Domain () Expression 
+<span class="lineno">  966 </span><span class="decl"><span class="istickedoff">reDomExp exp = case exp of</span>
+<span class="lineno">  967 </span><span class="spaces">                 </span><span class="istickedoff">DomainInt t _ -&gt; reTag t exp</span>
+<span class="lineno">  968 </span><span class="spaces">                 </span><span class="istickedoff">_ -&gt; exp</span></span>
+<span class="lineno">  969 </span>
+<span class="lineno">  970 </span>isDomainExpr :: MonadFailDoc m =&gt; Expression -&gt; m ()
+<span class="lineno">  971 </span><span class="decl"><span class="istickedoff">isDomainExpr Domain{} = <span class="nottickedoff">return ()</span></span>
+<span class="lineno">  972 </span><span class="spaces"></span><span class="istickedoff">isDomainExpr x = na (&quot;Not a domain expression: &quot; &lt;+&gt; pretty x)</span></span>
 
 </pre>
 </body>
