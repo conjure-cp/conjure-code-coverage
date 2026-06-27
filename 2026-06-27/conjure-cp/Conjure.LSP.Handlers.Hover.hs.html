@@ -1,0 +1,55 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.LSP.Handlers.Hover where
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>import Conjure.LSP.Documentation (getDocsForBuiltin)
+<span class="lineno">    4 </span>import Conjure.LSP.Util (ProcessedFile (ProcessedFile), getRelevantRegions, snippet, withProcessedDoc)
+<span class="lineno">    5 </span>import Conjure.Language.Pretty qualified as CPr
+<span class="lineno">    6 </span>import Conjure.Language.Validator (RegionInfo (..), RegionType (..))
+<span class="lineno">    7 </span>import Conjure.Prelude
+<span class="lineno">    8 </span>import Data.Text as T (pack)
+<span class="lineno">    9 </span>import Language.LSP.Protocol.Message
+<span class="lineno">   10 </span>import Language.LSP.Protocol.Types hiding (Definition)
+<span class="lineno">   11 </span>import Language.LSP.Server (Handlers, LspM, requestHandler)
+<span class="lineno">   12 </span>import Prettyprinter
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>hoverHandler :: Handlers (LspM ())
+<span class="lineno">   15 </span><span class="decl"><span class="nottickedoff">hoverHandler = requestHandler SMethod_TextDocumentHover $ \req res -&gt; do</span>
+<span class="lineno">   16 </span><span class="spaces">  </span><span class="nottickedoff">let TRequestMessage _ _ _ (HoverParams _doc pos _workDone) = req</span>
+<span class="lineno">   17 </span><span class="spaces">  </span><span class="nottickedoff">let Position _l _c' = pos</span>
+<span class="lineno">   18 </span><span class="spaces">  </span><span class="nottickedoff">withProcessedDoc _doc $ \(ProcessedFile _ _ st _) -&gt; do</span>
+<span class="lineno">   19 </span><span class="spaces">    </span><span class="nottickedoff">let ranges = getRelevantRegions st pos</span>
+<span class="lineno">   20 </span><span class="spaces">    </span><span class="nottickedoff">texts &lt;- mapM prettySymbol ranges</span>
+<span class="lineno">   21 </span><span class="spaces">    </span><span class="nottickedoff">let ms = InL $ mconcat (catMaybes texts)</span>
+<span class="lineno">   22 </span><span class="spaces">    </span><span class="nottickedoff">let range = Range pos pos</span>
+<span class="lineno">   23 </span><span class="spaces">    </span><span class="nottickedoff">let rsp = Hover ms (Just range)</span>
+<span class="lineno">   24 </span><span class="spaces">    </span><span class="nottickedoff">res (Right $ InL rsp)</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>prettySymbol :: RegionInfo -&gt; LspM () (Maybe MarkupContent)
+<span class="lineno">   27 </span><span class="decl"><span class="nottickedoff">prettySymbol (RegionInfo _ _ dt _ _) = case dt of</span>
+<span class="lineno">   28 </span><span class="spaces">  </span><span class="nottickedoff">Definition nm ty -&gt; return $ Just . snippet . pack . show $ hcat [pretty nm, &quot; : &quot;, pretty . show $ CPr.pretty ty]</span>
+<span class="lineno">   29 </span><span class="spaces">  </span><span class="nottickedoff">LiteralDecl {} -&gt; return Nothing</span>
+<span class="lineno">   30 </span><span class="spaces">  </span><span class="nottickedoff">Ref nm k _ -&gt; return . Just . snippet . pack . show $ hcat [pretty nm, &quot; : &quot;, pretty . show $ CPr.pretty k]</span>
+<span class="lineno">   31 </span><span class="spaces">  </span><span class="nottickedoff">Documentation {} -&gt; liftIO $ getDocsForBuiltin dt</span>
+<span class="lineno">   32 </span><span class="spaces">  </span><span class="nottickedoff">_ -&gt; return Nothing</span></span>
+
+</pre>
+</body>
+</html>
