@@ -206,75 +206,75 @@ span.spaces    { background: white }
 <span class="lineno">  187 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let decls = [ (nm,dom) | Declaration (FindOrGiven LocalFind nm dom) &lt;- locals ]</span></span>
 <span class="lineno">  188 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let cons  = concat [ xs | SuchThat xs &lt;- locals ]</span></span>
 <span class="lineno">  189 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(_conditions, generators) &lt;- fmap mconcat $ forM gensOrConds $ \ goc -&gt; case goc of</span></span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">(conditions, generators) &lt;- fmap mconcat $ forM gensOrConds $ \ goc -&gt; case goc of</span></span>
 <span class="lineno">  191 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Condition{} -&gt; return ([goc], [])</span></span>
 <span class="lineno">  192 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">ComprehensionLetting{} -&gt; return ([], [goc])</span></span>
 <span class="lineno">  193 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">Generator (GenDomainHasRepr _ _) -&gt; return ([], [goc])</span></span>
 <span class="lineno">  194 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;rule_LiftVars&quot;</span></span>
 <span class="lineno">  195 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let gensOrConds_dontCare = [ case goc of</span></span>
-<span class="lineno">  197 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">Condition c -&gt; Condition (make opNot c)</span></span>
-<span class="lineno">  198 </span><span class="spaces">                                        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; goc</span></span>
-<span class="lineno">  199 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">| goc &lt;- gensOrConds</span></span>
-<span class="lineno">  200 </span><span class="spaces">                                   </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  201 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  202 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let patRefs = [ Reference patName Nothing | Generator (GenDomainHasRepr patName _domain) &lt;- generators ]</span></span>
-<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let indexDomains = [domain | Generator (GenDomainHasRepr _patName domain) &lt;- generators ]</span></span>
-<span class="lineno">  204 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  205 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upd (Reference nm _) | nm `elem` map fst decls</span></span>
-<span class="lineno">  206 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">= let r = Reference nm Nothing</span></span>
-<span class="lineno">  207 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">in  make opMatrixIndexing r patRefs</span></span>
-<span class="lineno">  208 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">upd r = r</span></span>
-<span class="lineno">  209 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  210 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let declsLifted =</span></span>
-<span class="lineno">  211 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind nm domLifted)</span></span>
-<span class="lineno">  212 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| (nm, dom) &lt;- decls</span></span>
-<span class="lineno">  213 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, let domLifted = foldr (DomainMatrix . forgetRepr) dom indexDomains</span></span>
-<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  215 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let declsLiftedNames =</span></span>
-<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ nm</span></span>
-<span class="lineno">  217 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| (nm, _dom) &lt;- decls</span></span>
-<span class="lineno">  218 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  196 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let conditionsExprs = [ c | Condition c &lt;- conditions ]</span></span>
+<span class="lineno">  197 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let gensOrConds_dontCare =</span></span>
+<span class="lineno">  198 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">generators ++ [ Condition (make opNot (make opAnd (fromList conditionsExprs))) | not (null conditionsExprs) ]</span></span>
+<span class="lineno">  199 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  200 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let patRefs = [ Reference patName Nothing | Generator (GenDomainHasRepr patName _domain) &lt;- generators ]</span></span>
+<span class="lineno">  201 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let indexDomains = [domain | Generator (GenDomainHasRepr _patName domain) &lt;- generators ]</span></span>
+<span class="lineno">  202 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  203 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let upd (Reference nm _) | nm `elem` map fst decls</span></span>
+<span class="lineno">  204 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">= let r = Reference nm Nothing</span></span>
+<span class="lineno">  205 </span><span class="spaces">                  </span><span class="istickedoff"><span class="nottickedoff">in  make opMatrixIndexing r patRefs</span></span>
+<span class="lineno">  206 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">upd r = r</span></span>
+<span class="lineno">  207 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  208 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let declsLifted =</span></span>
+<span class="lineno">  209 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ Declaration (FindOrGiven LocalFind nm domLifted)</span></span>
+<span class="lineno">  210 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| (nm, dom) &lt;- decls</span></span>
+<span class="lineno">  211 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, let domLifted = foldr (DomainMatrix . forgetRepr) dom indexDomains</span></span>
+<span class="lineno">  212 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let declsLiftedNames =</span></span>
+<span class="lineno">  214 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ nm</span></span>
+<span class="lineno">  215 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| (nm, _dom) &lt;- decls</span></span>
+<span class="lineno">  216 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  217 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  218 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;declsLifted&quot; &lt;+&gt; vcat (map pretty declsLifted)</span></span>
 <span class="lineno">  219 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;declsLifted&quot; &lt;+&gt; vcat (map pretty declsLifted)</span></span>
-<span class="lineno">  221 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  222 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let consLifted =</span></span>
-<span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension c gensOrConds</span></span>
-<span class="lineno">  224 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| c &lt;- transformBi upd cons</span></span>
-<span class="lineno">  225 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  226 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  227 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;consLifted&quot; &lt;+&gt; vcat (map pretty consLifted)</span></span>
-<span class="lineno">  228 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;head lifted 1&quot; &lt;+&gt; pretty body</span></span>
-<span class="lineno">  229 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;head lifted 2&quot; &lt;+&gt; pretty (transform upd body)</span></span>
-<span class="lineno">  230 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let referencesInCons = nub [ r | r@(Reference _ (Just (DeclHasRepr {}))) &lt;- concatMap universe cons]</span></span>
-<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let referencesInBody = nub [ r | r@(Reference _ (Just (DeclHasRepr {}))) &lt;- universe body]</span></span>
-<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;referencesInBody&quot; &lt;+&gt; vcat (map pretty referencesInBody)</span></span>
+<span class="lineno">  220 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let consLifted =</span></span>
+<span class="lineno">  221 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension c gensOrConds</span></span>
+<span class="lineno">  222 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| c &lt;- transformBi upd cons</span></span>
+<span class="lineno">  223 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  224 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  225 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;consLifted&quot; &lt;+&gt; vcat (map pretty consLifted)</span></span>
+<span class="lineno">  226 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;head lifted 1&quot; &lt;+&gt; pretty body</span></span>
+<span class="lineno">  227 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;head lifted 2&quot; &lt;+&gt; pretty (transform upd body)</span></span>
+<span class="lineno">  228 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  229 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let referencesInCons = nub [ r | r@(Reference _ (Just (DeclHasRepr {}))) &lt;- concatMap universe cons]</span></span>
+<span class="lineno">  230 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let referencesInBody = nub [ r | r@(Reference _ (Just (DeclHasRepr {}))) &lt;- universe body]</span></span>
+<span class="lineno">  231 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;referencesInBody&quot; &lt;+&gt; vcat (map pretty referencesInBody)</span></span>
+<span class="lineno">  232 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let pr :: Name -&gt; String = show . pretty</span></span>
 <span class="lineno">  234 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let pr :: Name -&gt; String = show . pretty</span></span>
-<span class="lineno">  236 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- the name is a prefix of a name that's defined in the decls, but not identical</span></span>
-<span class="lineno">  238 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let unrefinedInBody = [ name | Reference name _ &lt;- referencesInBody</span></span>
-<span class="lineno">  239 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, or [ pr name `isPrefixOf` pr declName &amp;&amp; pr declName /= pr name | declName &lt;- declsLiftedNames ]</span></span>
-<span class="lineno">  240 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  241 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  242 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let unrefinedInCons = [ name | Reference name _ &lt;- referencesInCons</span></span>
-<span class="lineno">  243 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, or [ pr name `isPrefixOf` pr declName &amp;&amp; pr declName /= pr name | declName &lt;- declsLiftedNames ]</span></span>
-<span class="lineno">  244 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
-<span class="lineno">  245 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  246 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let dontCareCons = make opAnd $ fromList [ make opDontCare (Reference r Nothing) | r &lt;- declsLiftedNames ]</span></span>
-<span class="lineno">  247 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;unrefinedInBody&quot; &lt;+&gt; vcat (map pretty unrefinedInBody)</span></span>
-<span class="lineno">  249 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;unrefinedInCons&quot; &lt;+&gt; vcat (map pretty unrefinedInCons)</span></span>
-<span class="lineno">  250 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  251 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (not (null unrefinedInBody) || not (null unrefinedInCons)) $ na &quot;rule_LiftVars&quot;</span></span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- the name is a prefix of a name that's defined in the decls, but not identical</span></span>
+<span class="lineno">  236 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let unrefinedInBody = [ name | Reference name _ &lt;- referencesInBody</span></span>
+<span class="lineno">  237 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, or [ pr name `isPrefixOf` pr declName &amp;&amp; pr declName /= pr name | declName &lt;- declsLiftedNames ]</span></span>
+<span class="lineno">  238 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  239 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  240 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let unrefinedInCons = [ name | Reference name _ &lt;- referencesInCons</span></span>
+<span class="lineno">  241 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">, or [ pr name `isPrefixOf` pr declName &amp;&amp; pr declName /= pr name | declName &lt;- declsLiftedNames ]</span></span>
+<span class="lineno">  242 </span><span class="spaces">                                     </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  243 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  244 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let dontCareCons = make opAnd $ fromList [ make opDontCare (Reference r Nothing) | r &lt;- declsLiftedNames ]</span></span>
+<span class="lineno">  245 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let dontCareConsLifted =</span></span>
+<span class="lineno">  246 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ make opAnd $ Comprehension (transform upd dontCareCons) (transformBi upd gensOrConds_dontCare)</span></span>
+<span class="lineno">  247 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">| not (null conditionsExprs)</span></span>
+<span class="lineno">  248 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;unrefinedInBody&quot; &lt;+&gt; vcat (map pretty unrefinedInBody)</span></span>
+<span class="lineno">  251 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- traceM $ show $ &quot;unrefinedInCons&quot; &lt;+&gt; vcat (map pretty unrefinedInCons)</span></span>
 <span class="lineno">  252 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
-<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno">  254 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up auxiliary variables through a comprehension.&quot;</span></span>
-<span class="lineno">  255 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ WithLocals (make opConcatenate $ fromList [ Comprehension (transform upd body) (transformBi upd gensOrConds)</span></span>
-<span class="lineno">  256 </span><span class="spaces">                                                                 </span><span class="istickedoff"><span class="nottickedoff">, Comprehension (transform upd dontCareCons) (transformBi upd gensOrConds_dontCare)</span></span>
-<span class="lineno">  257 </span><span class="spaces">                                                                 </span><span class="istickedoff"><span class="nottickedoff">])</span></span>
-<span class="lineno">  258 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">(AuxiliaryVars (declsLifted ++ [SuchThat consLifted]))</span></span>
+<span class="lineno">  253 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (not (null unrefinedInBody) || not (null unrefinedInCons)) $ na &quot;rule_LiftVars&quot;</span></span>
+<span class="lineno">  254 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
+<span class="lineno">  255 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
+<span class="lineno">  256 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Bubbling up auxiliary variables through a comprehension.&quot;</span></span>
+<span class="lineno">  257 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return $ WithLocals (Comprehension (transform upd body) (transformBi upd gensOrConds))</span></span>
+<span class="lineno">  258 </span><span class="spaces">                                  </span><span class="istickedoff"><span class="nottickedoff">(AuxiliaryVars (declsLifted ++ [SuchThat (consLifted ++ dontCareConsLifted)]))</span></span>
 <span class="lineno">  259 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
 <span class="lineno">  260 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  261 </span><span class="spaces">    </span><span class="istickedoff">-- this is to deal with when an AuxiliaryVars expression is in the generator</span>
