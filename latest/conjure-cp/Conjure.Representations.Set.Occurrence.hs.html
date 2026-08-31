@@ -117,7 +117,7 @@ span.spaces    { background: white }
 <span class="lineno">   98 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering :: (MonadFail m) =&gt; TypeOf_SymmetryOrdering m</span>
 <span class="lineno">   99 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering _innerSO downX1 inp (DomainSet Set_Occurrence _attrs innerDomain) = do</span>
 <span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">[m] &lt;- downX1 inp</span>
-<span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  101 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain <span class="nottickedoff">(forgetRepr innerDomain)</span></span>
 <span class="lineno">  102 </span><span class="spaces">            </span><span class="istickedoff">return [essence| [ -toInt(&amp;m[&amp;i]) | &amp;iPat : &amp;innerDomain ] |]</span>
 <span class="lineno">  103 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering _ _ _ _ = <span class="nottickedoff">na &quot;{symmetryOrdering} Occurrence&quot;</span></span></span>
 

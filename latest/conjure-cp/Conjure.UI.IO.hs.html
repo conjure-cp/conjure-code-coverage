@@ -247,46 +247,48 @@ span.spaces    { background: white }
 <span class="lineno">  228 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span>                            = liftIO $    writeFile fp (render lnWidth (toJSON spec))</span>
 <span class="lineno">  229 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth fmt Nothing spec | <span class="nottickedoff">fmt `elem` [JSON, JSONStream]</span> = <span class="nottickedoff">do</span></span>
 <span class="lineno">  230 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
-<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
-<span class="lineno">  232 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (show spec')</span></span>
-<span class="lineno">  233 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
-<span class="lineno">  234 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth fmt (Just fp) spec | <span class="nottickedoff">fmt `elem` [JSON, JSONStream]</span> = <span class="nottickedoff">do</span></span>
-<span class="lineno">  235 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
-<span class="lineno">  236 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
-<span class="lineno">  237 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
-<span class="lineno">  238 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span>
-<span class="lineno">  239 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc Nothing spec = <span class="nottickedoff">do</span></span>
-<span class="lineno">  240 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
-<span class="lineno">  241 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
-<span class="lineno">  242 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (show spec')</span></span>
-<span class="lineno">  243 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
-<span class="lineno">  244 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc (Just fp) spec = <span class="nottickedoff">do</span></span>
-<span class="lineno">  245 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
-<span class="lineno">  246 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
-<span class="lineno">  247 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
-<span class="lineno">  248 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span>
-<span class="lineno">  249 </span><span class="spaces"></span><span class="istickedoff">writeModel _ _ _ _ = <span class="nottickedoff">bug &quot;writeModels&quot;</span></span></span>
-<span class="lineno">  250 </span>
-<span class="lineno">  251 </span>
-<span class="lineno">  252 </span>writeModels ::
-<span class="lineno">  253 </span>    MonadFail m =&gt;
-<span class="lineno">  254 </span>    MonadIO m =&gt;
-<span class="lineno">  255 </span>    MonadUserError m =&gt;
-<span class="lineno">  256 </span>    Int -&gt;
-<span class="lineno">  257 </span>    OutputFormat -&gt;
-<span class="lineno">  258 </span>    FilePath -&gt;
-<span class="lineno">  259 </span>    String -&gt;
-<span class="lineno">  260 </span>    [Model] -&gt;
-<span class="lineno">  261 </span>    m ()
-<span class="lineno">  262 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
-<span class="lineno">  263 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
-<span class="lineno">  264 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
-<span class="lineno">  265 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
-<span class="lineno">  266 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
-<span class="lineno">  267 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
-<span class="lineno">  268 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
-<span class="lineno">  269 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
-<span class="lineno">  270 </span>
+<span class="lineno">  231 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">-- a line width of 0 means &quot;do not wrap&quot;. It must still be rendered as JSON:</span></span>
+<span class="lineno">  232 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">-- show would give the Haskell representation of the value instead.</span></span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  234 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (render maxBound spec')</span></span>
+<span class="lineno">  235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
+<span class="lineno">  236 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth fmt (Just fp) spec | <span class="nottickedoff">fmt `elem` [JSON, JSONStream]</span> = <span class="nottickedoff">do</span></span>
+<span class="lineno">  237 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toSimpleJSON spec</span></span>
+<span class="lineno">  238 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  239 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (render maxBound spec')</span></span>
+<span class="lineno">  240 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span>
+<span class="lineno">  241 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc Nothing spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  242 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
+<span class="lineno">  243 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  244 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ putStrLn (show spec')</span></span>
+<span class="lineno">  245 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ putStrLn (render lnWidth spec')</span></span>
+<span class="lineno">  246 </span><span class="spaces"></span><span class="istickedoff">writeModel lnWidth MiniZinc (Just fp) spec = <span class="nottickedoff">do</span></span>
+<span class="lineno">  247 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">spec' &lt;- toMiniZinc spec</span></span>
+<span class="lineno">  248 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">if lnWidth == 0</span></span>
+<span class="lineno">  249 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">then liftIO $ writeFile fp (show spec')</span></span>
+<span class="lineno">  250 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">else liftIO $ writeFile fp (render lnWidth spec')</span></span>
+<span class="lineno">  251 </span><span class="spaces"></span><span class="istickedoff">writeModel _ _ _ _ = <span class="nottickedoff">bug &quot;writeModels&quot;</span></span></span>
+<span class="lineno">  252 </span>
+<span class="lineno">  253 </span>
+<span class="lineno">  254 </span>writeModels ::
+<span class="lineno">  255 </span>    MonadFail m =&gt;
+<span class="lineno">  256 </span>    MonadIO m =&gt;
+<span class="lineno">  257 </span>    MonadUserError m =&gt;
+<span class="lineno">  258 </span>    Int -&gt;
+<span class="lineno">  259 </span>    OutputFormat -&gt;
+<span class="lineno">  260 </span>    FilePath -&gt;
+<span class="lineno">  261 </span>    String -&gt;
+<span class="lineno">  262 </span>    [Model] -&gt;
+<span class="lineno">  263 </span>    m ()
+<span class="lineno">  264 </span><span class="decl"><span class="nottickedoff">writeModels lnWidth mode base tag specs = do</span>
+<span class="lineno">  265 </span><span class="spaces">    </span><span class="nottickedoff">let numbers = map (padShowInt 4) [ (1 :: Int) .. ]</span>
+<span class="lineno">  266 </span><span class="spaces">    </span><span class="nottickedoff">let outDirname  = base ++ &quot;-&quot; ++ tag</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="nottickedoff">liftIO $ createDirectoryIfMissing True outDirname</span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="nottickedoff">forM_ (zip numbers specs) $ \ (i, spec) -&gt; do</span>
+<span class="lineno">  269 </span><span class="spaces">        </span><span class="nottickedoff">let outFilename = base ++ &quot;-&quot; ++ tag ++ &quot;/&quot; ++ i ++ &quot;.essence&quot;</span>
+<span class="lineno">  270 </span><span class="spaces">        </span><span class="nottickedoff">writeModel lnWidth mode (Just outFilename) spec</span>
+<span class="lineno">  271 </span><span class="spaces">        </span><span class="nottickedoff">liftIO $ putStrLn $ &quot;[created file] &quot; ++ outFilename</span></span>
+<span class="lineno">  272 </span>
 
 </pre>
 </body>

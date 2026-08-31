@@ -232,7 +232,7 @@ span.spaces    { background: white }
 <span class="lineno">  213 </span><span class="spaces">        </span><span class="istickedoff">symmetryOrdering innerSO downX1 inp domain = do</span>
 <span class="lineno">  214 </span><span class="spaces">            </span><span class="istickedoff">[flags, values] &lt;- downX1 inp</span>
 <span class="lineno">  215 </span><span class="spaces">            </span><span class="istickedoff">Just [_, (_, DomainMatrix innerDomainFr innerDomainTo)] &lt;- downD (<span class="nottickedoff">&quot;SO&quot;</span>, domain)</span>
-<span class="lineno">  216 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVar</span>
+<span class="lineno">  216 </span><span class="spaces">            </span><span class="istickedoff">(iPat, i) &lt;- quantifiedVarOverDomain <span class="nottickedoff">(forgetRepr innerDomainFr)</span></span>
 <span class="lineno">  217 </span><span class="spaces">            </span><span class="istickedoff">soValues &lt;- innerSO <span class="nottickedoff">downX1</span> [essence| &amp;values[&amp;i] |] innerDomainTo</span>
 <span class="lineno">  218 </span><span class="spaces">            </span><span class="istickedoff">return</span>
 <span class="lineno">  219 </span><span class="spaces">                </span><span class="istickedoff">[essence|</span>

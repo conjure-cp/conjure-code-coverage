@@ -1195,127 +1195,132 @@ span.spaces    { background: white }
 <span class="lineno"> 1176 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">appendFile filenameEssenceSol (render lineWidth essenceSol ++ &quot;\n\n&quot;)</span></span>
 <span class="lineno"> 1177 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">when (outputFormat `elem` [JSON, JSONStream]) $ do</span></span>
 <span class="lineno"> 1178 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">essenceSol' &lt;- toSimpleJSON essenceSol</span></span>
-<span class="lineno"> 1179 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">appendFile filenameEssenceSolJSON (render lineWidth essenceSol')</span></span>
-<span class="lineno"> 1180 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">appendFile filenameEssenceSolJSON  (&quot;\n&quot;)</span></span>
-<span class="lineno"> 1181 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">fmap (Right (modelPath, paramPath, Nothing) :)</span></span>
-<span class="lineno"> 1182 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">(srStdoutHandler args tr (solutionNumber+1) h)</span></span>
-<span class="lineno"> 1183 </span><span class="spaces"></span><span class="istickedoff">srStdoutHandler _ _ _ _ = <span class="nottickedoff">bug &quot;srStdoutHandler&quot;</span></span></span>
-<span class="lineno"> 1184 </span>
-<span class="lineno"> 1185 </span>
-<span class="lineno"> 1186 </span>srCleanUp :: FilePath -&gt; FilePath -&gt; UI -&gt; Text -&gt; [sols] -&gt; Sh (Either [Doc] [sols])
-<span class="lineno"> 1187 </span><span class="decl"><span class="istickedoff">srCleanUp outBase statsDestBase ui@Solve{..} stdoutSR solutions = do</span>
-<span class="lineno"> 1188 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1189 </span><span class="spaces">    </span><span class="istickedoff">let mkFilename ext = outputDirectory &lt;/&gt; outBase ++ ext</span>
-<span class="lineno"> 1190 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1191 </span><span class="spaces">    </span><span class="istickedoff">-- closing the array in the all solutions json file</span>
-<span class="lineno"> 1192 </span><span class="spaces">    </span><span class="istickedoff">case outputFormat of</span>
-<span class="lineno"> 1193 </span><span class="spaces">        </span><span class="istickedoff">JSON | <span class="nottickedoff">printSolutions</span> -&gt; <span class="nottickedoff">case solutionsInOneFile of</span></span>
-<span class="lineno"> 1194 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">False -&gt; return ()</span></span>
-<span class="lineno"> 1195 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">True -&gt; do</span></span>
-<span class="lineno"> 1196 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let filenameEssenceSolJSON = mkFilename &quot;.solutions.json&quot;</span></span>
-<span class="lineno"> 1197 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case solutions of</span></span>
-<span class="lineno"> 1198 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[] -&gt; liftIO $ writeFile  filenameEssenceSolJSON &quot;[]\n&quot;</span></span>
-<span class="lineno"> 1199 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_  -&gt; liftIO $ appendFile filenameEssenceSolJSON &quot;]\n&quot;</span></span>
-<span class="lineno"> 1200 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
-<span class="lineno"> 1201 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1202 </span><span class="spaces">    </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
-<span class="lineno"> 1203 </span><span class="spaces">    </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
-<span class="lineno"> 1204 </span><span class="spaces">    </span><span class="istickedoff">let combinedSR = T.unlines [stdoutSR, stderrSR]</span>
-<span class="lineno"> 1205 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1206 </span><span class="spaces">    </span><span class="istickedoff">liftIO $ do</span>
-<span class="lineno"> 1207 </span><span class="spaces">        </span><span class="istickedoff">let savilerowInfoFilename = mkFilename &quot;.eprime-info&quot;</span>
-<span class="lineno"> 1208 </span><span class="spaces">        </span><span class="istickedoff">let runsolverInfoFilename = mkFilename &quot;.runsolver-info&quot;</span>
-<span class="lineno"> 1209 </span><span class="spaces">        </span><span class="istickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span>
-<span class="lineno"> 1210 </span><span class="spaces">        </span><span class="istickedoff">savilerowInfoContent &lt;- liftIO $ readFileIfExists savilerowInfoFilename</span>
-<span class="lineno"> 1211 </span><span class="spaces">        </span><span class="istickedoff">runsolverInfoContent &lt;- liftIO $ readFileIfExists runsolverInfoFilename</span>
-<span class="lineno"> 1212 </span><span class="spaces">        </span><span class="istickedoff">stats &lt;- mkSolveStats ui (exitCodeSR, stdoutSR, stderrSR) (fromMaybe <span class="nottickedoff">&quot;&quot;</span> savilerowInfoContent) (fromMaybe &quot;&quot; runsolverInfoContent)</span>
-<span class="lineno"> 1213 </span><span class="spaces">        </span><span class="istickedoff">writeFile statsFilename (render lineWidth (toJSON stats))</span>
-<span class="lineno"> 1214 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1215 </span><span class="spaces">    </span><span class="istickedoff">when copySolutions $ <span class="nottickedoff">do</span></span>
-<span class="lineno"> 1216 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let (essenceDir, _essenceFilename) = splitFileName essence</span></span>
-<span class="lineno"> 1217 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span></span>
-<span class="lineno"> 1218 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let statsDest = normalise (essenceDir &lt;/&gt; statsDestBase ++ &quot;.stats.json&quot;)</span></span>
-<span class="lineno"> 1219 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">exists &lt;- liftIO $ doesFileExist statsFilename</span></span>
-<span class="lineno"> 1220 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when exists $ do</span></span>
-<span class="lineno"> 1221 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">pp logLevel (&quot;Copying stats to:&quot; &lt;+&gt; pretty statsDest)</span></span>
-<span class="lineno"> 1222 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">liftIO $ copyFile statsFilename statsDest</span></span>
-<span class="lineno"> 1223 </span><span class="spaces"></span><span class="istickedoff"></span>
-<span class="lineno"> 1224 </span><span class="spaces">    </span><span class="istickedoff">if  | <span class="tickonlyfalse">T.isInfixOf &quot;Savile Row timed out.&quot; combinedSR</span> -&gt;</span>
-<span class="lineno"> 1225 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [&quot;Savile Row timed out.&quot;])</span></span>
-<span class="lineno"> 1226 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;where false&quot; combinedSR</span> -&gt;</span>
-<span class="lineno"> 1227 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Invalid instance, a where statement evaluated to false.&quot;</span></span>
-<span class="lineno"> 1228 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;(It can be an implicit where statement added by Conjure.)&quot;</span></span>
-<span class="lineno"> 1229 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
-<span class="lineno"> 1230 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">or [ T.isInfixOf &quot;Exception in thread&quot; combinedSR</span></span>
-<span class="lineno"> 1231 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;ERROR&quot; combinedSR</span></span>
-<span class="lineno"> 1232 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;Sub-process exited with error code&quot; combinedSR</span></span>
-<span class="lineno"> 1233 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">]</span> -&gt;</span>
-<span class="lineno"> 1234 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
-<span class="lineno"> 1235 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
-<span class="lineno"> 1236 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
-<span class="lineno"> 1237 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
-<span class="lineno"> 1238 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">exitCodeSR == 0</span> -&gt; return (Right solutions)</span>
-<span class="lineno"> 1239 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt;</span>
-<span class="lineno"> 1240 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
-<span class="lineno"> 1241 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
-<span class="lineno"> 1242 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
-<span class="lineno"> 1243 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
-<span class="lineno"> 1244 </span><span class="spaces"></span><span class="istickedoff">srCleanUp _ _ _ _ _ = <span class="nottickedoff">bug &quot;srCleanUp&quot;</span></span></span>
-<span class="lineno"> 1245 </span>
-<span class="lineno"> 1246 </span>
-<span class="lineno"> 1247 </span>validateSolutionNoParam ::
-<span class="lineno"> 1248 </span>    MonadIO m =&gt;
-<span class="lineno"> 1249 </span>    MonadLog m =&gt;
-<span class="lineno"> 1250 </span>    MonadFailDoc m =&gt;
-<span class="lineno"> 1251 </span>    EnumerateDomain m =&gt;
-<span class="lineno"> 1252 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno"> 1253 </span>    UI -&gt; FilePath -&gt; m ()
-<span class="lineno"> 1254 </span><span class="decl"><span class="nottickedoff">validateSolutionNoParam Solve{..} solutionPath = do</span>
-<span class="lineno"> 1255 </span><span class="spaces">    </span><span class="nottickedoff">pp logLevel $ hsep [&quot;Validating solution:&quot;, pretty solutionPath]</span>
-<span class="lineno"> 1256 </span><span class="spaces">    </span><span class="nottickedoff">essenceM &lt;- readModelFromFile essence</span>
-<span class="lineno"> 1257 </span><span class="spaces">    </span><span class="nottickedoff">solution &lt;- readParamOrSolutionFromFile essenceM solutionPath</span>
-<span class="lineno"> 1258 </span><span class="spaces">    </span><span class="nottickedoff">[essenceM2, solution2] &lt;- ignoreLogs $ runNameGen () $ resolveNamesMulti [essenceM, solution]</span>
-<span class="lineno"> 1259 </span><span class="spaces">    </span><span class="nottickedoff">failToUserError $ ignoreLogs $ runNameGen () $ validateSolution essenceM2 def solution2</span>
-<span class="lineno"> 1260 </span><span class="spaces"></span><span class="nottickedoff">validateSolutionNoParam _ _ = bug &quot;validateSolutionNoParam&quot;</span></span>
-<span class="lineno"> 1261 </span>
-<span class="lineno"> 1262 </span>
-<span class="lineno"> 1263 </span>validateSolutionWithParams ::
-<span class="lineno"> 1264 </span>    MonadIO m =&gt;
-<span class="lineno"> 1265 </span>    MonadLog m =&gt;
-<span class="lineno"> 1266 </span>    MonadFailDoc m =&gt;
-<span class="lineno"> 1267 </span>    EnumerateDomain m =&gt;
-<span class="lineno"> 1268 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
-<span class="lineno"> 1269 </span>    UI -&gt; FilePath -&gt; FilePath -&gt; m ()
-<span class="lineno"> 1270 </span><span class="decl"><span class="nottickedoff">validateSolutionWithParams Solve{..} solutionPath paramPath = do</span>
-<span class="lineno"> 1271 </span><span class="spaces">    </span><span class="nottickedoff">pp logLevel $ hsep [&quot;Validating solution:&quot;, pretty paramPath, pretty solutionPath]</span>
-<span class="lineno"> 1272 </span><span class="spaces">    </span><span class="nottickedoff">essenceM &lt;- readModelFromFile essence</span>
-<span class="lineno"> 1273 </span><span class="spaces">    </span><span class="nottickedoff">param    &lt;- readParamOrSolutionFromFile essenceM paramPath</span>
-<span class="lineno"> 1274 </span><span class="spaces">    </span><span class="nottickedoff">solution &lt;- readParamOrSolutionFromFile essenceM solutionPath</span>
-<span class="lineno"> 1275 </span><span class="spaces">    </span><span class="nottickedoff">[essenceM2, param2, solution2] &lt;- ignoreLogs $ runNameGen () $ resolveNamesMulti [essenceM, param, solution]</span>
-<span class="lineno"> 1276 </span><span class="spaces">    </span><span class="nottickedoff">failToUserError $ ignoreLogs $ runNameGen () $ validateSolution essenceM2 param2 solution2</span>
-<span class="lineno"> 1277 </span><span class="spaces"></span><span class="nottickedoff">validateSolutionWithParams _ _ _ = bug &quot;validateSolutionWithParams&quot;</span></span>
-<span class="lineno"> 1278 </span>
-<span class="lineno"> 1279 </span>
-<span class="lineno"> 1280 </span>doIfNotCached
-<span class="lineno"> 1281 </span>    :: (MonadIO m, Hashable h)
-<span class="lineno"> 1282 </span>    =&gt; h                        -- thing to hash
-<span class="lineno"> 1283 </span>    -&gt; FilePath                 -- saved hashes file
-<span class="lineno"> 1284 </span>    -&gt; m a                      -- the result from cache
-<span class="lineno"> 1285 </span>    -&gt; m a                      -- the action
-<span class="lineno"> 1286 </span>    -&gt; m a                      -- the results and writing the new hashes in the file
-<span class="lineno"> 1287 </span><span class="decl"><span class="istickedoff">doIfNotCached (show . hash -&gt; h) savedHashesFile getResult act = do</span>
-<span class="lineno"> 1288 </span><span class="spaces">    </span><span class="istickedoff">savedHashes &lt;- liftIO $ readFileIfExists savedHashesFile</span>
-<span class="lineno"> 1289 </span><span class="spaces">    </span><span class="istickedoff">let skip = Just <span class="nottickedoff">h</span> == savedHashes                -- skip if h was the hash in the file</span>
-<span class="lineno"> 1290 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlyfalse">skip</span></span>
-<span class="lineno"> 1291 </span><span class="spaces">        </span><span class="istickedoff">then <span class="nottickedoff">getResult</span></span>
-<span class="lineno"> 1292 </span><span class="spaces">        </span><span class="istickedoff">else do</span>
-<span class="lineno"> 1293 </span><span class="spaces">            </span><span class="istickedoff">res &lt;- act</span>
-<span class="lineno"> 1294 </span><span class="spaces">            </span><span class="istickedoff">liftIO $ writeFile savedHashesFile h</span>
-<span class="lineno"> 1295 </span><span class="spaces">            </span><span class="istickedoff">return res</span></span>
-<span class="lineno"> 1296 </span>
-<span class="lineno"> 1297 </span>
-<span class="lineno"> 1298 </span>autoParallel :: [IO a] -&gt; IO [a]
-<span class="lineno"> 1299 </span><span class="decl"><span class="istickedoff">autoParallel = if <span class="tickonlyfalse">numCapabilities &gt; 1</span> then <span class="nottickedoff">parallel</span> else sequence</span></span>
+<span class="lineno"> 1179 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">-- jsonstream prints one solution per line, so it must not be</span></span>
+<span class="lineno"> 1180 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">-- wrapped at lineWidth. json stays pretty printed.</span></span>
+<span class="lineno"> 1181 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">let solWidth = case outputFormat of</span></span>
+<span class="lineno"> 1182 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">JSONStream -&gt; maxBound</span></span>
+<span class="lineno"> 1183 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">_          -&gt; lineWidth</span></span>
+<span class="lineno"> 1184 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">appendFile filenameEssenceSolJSON (render solWidth essenceSol')</span></span>
+<span class="lineno"> 1185 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">appendFile filenameEssenceSolJSON  (&quot;\n&quot;)</span></span>
+<span class="lineno"> 1186 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">fmap (Right (modelPath, paramPath, Nothing) :)</span></span>
+<span class="lineno"> 1187 </span><span class="spaces">                                 </span><span class="istickedoff"><span class="nottickedoff">(srStdoutHandler args tr (solutionNumber+1) h)</span></span>
+<span class="lineno"> 1188 </span><span class="spaces"></span><span class="istickedoff">srStdoutHandler _ _ _ _ = <span class="nottickedoff">bug &quot;srStdoutHandler&quot;</span></span></span>
+<span class="lineno"> 1189 </span>
+<span class="lineno"> 1190 </span>
+<span class="lineno"> 1191 </span>srCleanUp :: FilePath -&gt; FilePath -&gt; UI -&gt; Text -&gt; [sols] -&gt; Sh (Either [Doc] [sols])
+<span class="lineno"> 1192 </span><span class="decl"><span class="istickedoff">srCleanUp outBase statsDestBase ui@Solve{..} stdoutSR solutions = do</span>
+<span class="lineno"> 1193 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1194 </span><span class="spaces">    </span><span class="istickedoff">let mkFilename ext = outputDirectory &lt;/&gt; outBase ++ ext</span>
+<span class="lineno"> 1195 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1196 </span><span class="spaces">    </span><span class="istickedoff">-- closing the array in the all solutions json file</span>
+<span class="lineno"> 1197 </span><span class="spaces">    </span><span class="istickedoff">case outputFormat of</span>
+<span class="lineno"> 1198 </span><span class="spaces">        </span><span class="istickedoff">JSON | <span class="nottickedoff">printSolutions</span> -&gt; <span class="nottickedoff">case solutionsInOneFile of</span></span>
+<span class="lineno"> 1199 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">False -&gt; return ()</span></span>
+<span class="lineno"> 1200 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">True -&gt; do</span></span>
+<span class="lineno"> 1201 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">let filenameEssenceSolJSON = mkFilename &quot;.solutions.json&quot;</span></span>
+<span class="lineno"> 1202 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">case solutions of</span></span>
+<span class="lineno"> 1203 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">[] -&gt; liftIO $ writeFile  filenameEssenceSolJSON &quot;[]\n&quot;</span></span>
+<span class="lineno"> 1204 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">_  -&gt; liftIO $ appendFile filenameEssenceSolJSON &quot;]\n&quot;</span></span>
+<span class="lineno"> 1205 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno"> 1206 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1207 </span><span class="spaces">    </span><span class="istickedoff">stderrSR   &lt;- lastStderr</span>
+<span class="lineno"> 1208 </span><span class="spaces">    </span><span class="istickedoff">exitCodeSR &lt;- lastExitCode</span>
+<span class="lineno"> 1209 </span><span class="spaces">    </span><span class="istickedoff">let combinedSR = T.unlines [stdoutSR, stderrSR]</span>
+<span class="lineno"> 1210 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1211 </span><span class="spaces">    </span><span class="istickedoff">liftIO $ do</span>
+<span class="lineno"> 1212 </span><span class="spaces">        </span><span class="istickedoff">let savilerowInfoFilename = mkFilename &quot;.eprime-info&quot;</span>
+<span class="lineno"> 1213 </span><span class="spaces">        </span><span class="istickedoff">let runsolverInfoFilename = mkFilename &quot;.runsolver-info&quot;</span>
+<span class="lineno"> 1214 </span><span class="spaces">        </span><span class="istickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span>
+<span class="lineno"> 1215 </span><span class="spaces">        </span><span class="istickedoff">savilerowInfoContent &lt;- liftIO $ readFileIfExists savilerowInfoFilename</span>
+<span class="lineno"> 1216 </span><span class="spaces">        </span><span class="istickedoff">runsolverInfoContent &lt;- liftIO $ readFileIfExists runsolverInfoFilename</span>
+<span class="lineno"> 1217 </span><span class="spaces">        </span><span class="istickedoff">stats &lt;- mkSolveStats ui (exitCodeSR, stdoutSR, stderrSR) (fromMaybe <span class="nottickedoff">&quot;&quot;</span> savilerowInfoContent) (fromMaybe &quot;&quot; runsolverInfoContent)</span>
+<span class="lineno"> 1218 </span><span class="spaces">        </span><span class="istickedoff">writeFile statsFilename (render lineWidth (toJSON stats))</span>
+<span class="lineno"> 1219 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1220 </span><span class="spaces">    </span><span class="istickedoff">when copySolutions $ <span class="nottickedoff">do</span></span>
+<span class="lineno"> 1221 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let (essenceDir, _essenceFilename) = splitFileName essence</span></span>
+<span class="lineno"> 1222 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let statsFilename = mkFilename &quot;.stats.json&quot;</span></span>
+<span class="lineno"> 1223 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let statsDest = normalise (essenceDir &lt;/&gt; statsDestBase ++ &quot;.stats.json&quot;)</span></span>
+<span class="lineno"> 1224 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">exists &lt;- liftIO $ doesFileExist statsFilename</span></span>
+<span class="lineno"> 1225 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when exists $ do</span></span>
+<span class="lineno"> 1226 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">pp logLevel (&quot;Copying stats to:&quot; &lt;+&gt; pretty statsDest)</span></span>
+<span class="lineno"> 1227 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">liftIO $ copyFile statsFilename statsDest</span></span>
+<span class="lineno"> 1228 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno"> 1229 </span><span class="spaces">    </span><span class="istickedoff">if  | <span class="tickonlyfalse">T.isInfixOf &quot;Savile Row timed out.&quot; combinedSR</span> -&gt;</span>
+<span class="lineno"> 1230 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [&quot;Savile Row timed out.&quot;])</span></span>
+<span class="lineno"> 1231 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">T.isInfixOf &quot;where false&quot; combinedSR</span> -&gt;</span>
+<span class="lineno"> 1232 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Invalid instance, a where statement evaluated to false.&quot;</span></span>
+<span class="lineno"> 1233 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;(It can be an implicit where statement added by Conjure.)&quot;</span></span>
+<span class="lineno"> 1234 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
+<span class="lineno"> 1235 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlyfalse">or [ T.isInfixOf &quot;Exception in thread&quot; combinedSR</span></span>
+<span class="lineno"> 1236 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;ERROR&quot; combinedSR</span></span>
+<span class="lineno"> 1237 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">, T.isInfixOf &quot;Sub-process exited with error code&quot; combinedSR</span></span>
+<span class="lineno"> 1238 </span><span class="spaces">             </span><span class="istickedoff"><span class="tickonlyfalse">]</span> -&gt;</span>
+<span class="lineno"> 1239 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
+<span class="lineno"> 1240 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
+<span class="lineno"> 1241 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
+<span class="lineno"> 1242 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
+<span class="lineno"> 1243 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">exitCodeSR == 0</span> -&gt; return (Right solutions)</span>
+<span class="lineno"> 1244 </span><span class="spaces">        </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt;</span>
+<span class="lineno"> 1245 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return (Left [vcat [ &quot;Savile Row stdout:&quot;    &lt;+&gt; pretty stdoutSR</span></span>
+<span class="lineno"> 1246 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row stderr:&quot;    &lt;+&gt; pretty stderrSR</span></span>
+<span class="lineno"> 1247 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">, &quot;Savile Row exit-code:&quot; &lt;+&gt; pretty exitCodeSR</span></span>
+<span class="lineno"> 1248 </span><span class="spaces">                               </span><span class="istickedoff"><span class="nottickedoff">]])</span></span>
+<span class="lineno"> 1249 </span><span class="spaces"></span><span class="istickedoff">srCleanUp _ _ _ _ _ = <span class="nottickedoff">bug &quot;srCleanUp&quot;</span></span></span>
+<span class="lineno"> 1250 </span>
+<span class="lineno"> 1251 </span>
+<span class="lineno"> 1252 </span>validateSolutionNoParam ::
+<span class="lineno"> 1253 </span>    MonadIO m =&gt;
+<span class="lineno"> 1254 </span>    MonadLog m =&gt;
+<span class="lineno"> 1255 </span>    MonadFailDoc m =&gt;
+<span class="lineno"> 1256 </span>    EnumerateDomain m =&gt;
+<span class="lineno"> 1257 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno"> 1258 </span>    UI -&gt; FilePath -&gt; m ()
+<span class="lineno"> 1259 </span><span class="decl"><span class="nottickedoff">validateSolutionNoParam Solve{..} solutionPath = do</span>
+<span class="lineno"> 1260 </span><span class="spaces">    </span><span class="nottickedoff">pp logLevel $ hsep [&quot;Validating solution:&quot;, pretty solutionPath]</span>
+<span class="lineno"> 1261 </span><span class="spaces">    </span><span class="nottickedoff">essenceM &lt;- readModelFromFile essence</span>
+<span class="lineno"> 1262 </span><span class="spaces">    </span><span class="nottickedoff">solution &lt;- readParamOrSolutionFromFile essenceM solutionPath</span>
+<span class="lineno"> 1263 </span><span class="spaces">    </span><span class="nottickedoff">[essenceM2, solution2] &lt;- ignoreLogs $ runNameGen () $ resolveNamesMulti [essenceM, solution]</span>
+<span class="lineno"> 1264 </span><span class="spaces">    </span><span class="nottickedoff">failToUserError $ ignoreLogs $ runNameGen () $ validateSolution essenceM2 def solution2</span>
+<span class="lineno"> 1265 </span><span class="spaces"></span><span class="nottickedoff">validateSolutionNoParam _ _ = bug &quot;validateSolutionNoParam&quot;</span></span>
+<span class="lineno"> 1266 </span>
+<span class="lineno"> 1267 </span>
+<span class="lineno"> 1268 </span>validateSolutionWithParams ::
+<span class="lineno"> 1269 </span>    MonadIO m =&gt;
+<span class="lineno"> 1270 </span>    MonadLog m =&gt;
+<span class="lineno"> 1271 </span>    MonadFailDoc m =&gt;
+<span class="lineno"> 1272 </span>    EnumerateDomain m =&gt;
+<span class="lineno"> 1273 </span>    (?typeCheckerMode :: TypeCheckerMode) =&gt;
+<span class="lineno"> 1274 </span>    UI -&gt; FilePath -&gt; FilePath -&gt; m ()
+<span class="lineno"> 1275 </span><span class="decl"><span class="nottickedoff">validateSolutionWithParams Solve{..} solutionPath paramPath = do</span>
+<span class="lineno"> 1276 </span><span class="spaces">    </span><span class="nottickedoff">pp logLevel $ hsep [&quot;Validating solution:&quot;, pretty paramPath, pretty solutionPath]</span>
+<span class="lineno"> 1277 </span><span class="spaces">    </span><span class="nottickedoff">essenceM &lt;- readModelFromFile essence</span>
+<span class="lineno"> 1278 </span><span class="spaces">    </span><span class="nottickedoff">param    &lt;- readParamOrSolutionFromFile essenceM paramPath</span>
+<span class="lineno"> 1279 </span><span class="spaces">    </span><span class="nottickedoff">solution &lt;- readParamOrSolutionFromFile essenceM solutionPath</span>
+<span class="lineno"> 1280 </span><span class="spaces">    </span><span class="nottickedoff">[essenceM2, param2, solution2] &lt;- ignoreLogs $ runNameGen () $ resolveNamesMulti [essenceM, param, solution]</span>
+<span class="lineno"> 1281 </span><span class="spaces">    </span><span class="nottickedoff">failToUserError $ ignoreLogs $ runNameGen () $ validateSolution essenceM2 param2 solution2</span>
+<span class="lineno"> 1282 </span><span class="spaces"></span><span class="nottickedoff">validateSolutionWithParams _ _ _ = bug &quot;validateSolutionWithParams&quot;</span></span>
+<span class="lineno"> 1283 </span>
+<span class="lineno"> 1284 </span>
+<span class="lineno"> 1285 </span>doIfNotCached
+<span class="lineno"> 1286 </span>    :: (MonadIO m, Hashable h)
+<span class="lineno"> 1287 </span>    =&gt; h                        -- thing to hash
+<span class="lineno"> 1288 </span>    -&gt; FilePath                 -- saved hashes file
+<span class="lineno"> 1289 </span>    -&gt; m a                      -- the result from cache
+<span class="lineno"> 1290 </span>    -&gt; m a                      -- the action
+<span class="lineno"> 1291 </span>    -&gt; m a                      -- the results and writing the new hashes in the file
+<span class="lineno"> 1292 </span><span class="decl"><span class="istickedoff">doIfNotCached (show . hash -&gt; h) savedHashesFile getResult act = do</span>
+<span class="lineno"> 1293 </span><span class="spaces">    </span><span class="istickedoff">savedHashes &lt;- liftIO $ readFileIfExists savedHashesFile</span>
+<span class="lineno"> 1294 </span><span class="spaces">    </span><span class="istickedoff">let skip = Just <span class="nottickedoff">h</span> == savedHashes                -- skip if h was the hash in the file</span>
+<span class="lineno"> 1295 </span><span class="spaces">    </span><span class="istickedoff">if <span class="tickonlyfalse">skip</span></span>
+<span class="lineno"> 1296 </span><span class="spaces">        </span><span class="istickedoff">then <span class="nottickedoff">getResult</span></span>
+<span class="lineno"> 1297 </span><span class="spaces">        </span><span class="istickedoff">else do</span>
+<span class="lineno"> 1298 </span><span class="spaces">            </span><span class="istickedoff">res &lt;- act</span>
+<span class="lineno"> 1299 </span><span class="spaces">            </span><span class="istickedoff">liftIO $ writeFile savedHashesFile h</span>
+<span class="lineno"> 1300 </span><span class="spaces">            </span><span class="istickedoff">return res</span></span>
+<span class="lineno"> 1301 </span>
+<span class="lineno"> 1302 </span>
+<span class="lineno"> 1303 </span>autoParallel :: [IO a] -&gt; IO [a]
+<span class="lineno"> 1304 </span><span class="decl"><span class="istickedoff">autoParallel = if <span class="tickonlyfalse">numCapabilities &gt; 1</span> then <span class="nottickedoff">parallel</span> else sequence</span></span>
 
 </pre>
 </body>
