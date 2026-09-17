@@ -50,7 +50,7 @@ span.spaces    { background: white }
 <span class="lineno">   31 </span>import Conjure.Language.ModelDiff ( modelDiffIO )
 <span class="lineno">   32 </span>import Conjure.Rules.Definition ( viewAuto, Strategy(..)
 <span class="lineno">   33 </span>                                , UnnamedSymmetryBreaking(..)
-<span class="lineno">   34 </span>                                , USBQuickOrComplete(..), USBScope(..), USBIndependentlyOrAltogether(..)
+<span class="lineno">   34 </span>                                , USBDelayedOrEager(..), USBScope(..), USBIndependentlyOrAltogether(..)
 <span class="lineno">   35 </span>                                )
 <span class="lineno">   36 </span>import Conjure.Process.Enumerate ( EnumerateDomain )
 <span class="lineno">   37 </span>import Conjure.Process.Streamlining ( streamlining, streamliningToStdout )
@@ -743,27 +743,27 @@ span.spaces    { background: white }
 <span class="lineno">  724 </span><span class="spaces">                                                 </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  725 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno">  726 </span><span class="spaces">            </span><span class="istickedoff">unnamedSymmetryBreakingParsed &lt;-</span>
-<span class="lineno">  727 </span><span class="spaces">            </span><span class="istickedoff">-- 1. Quick/Complete. Quick is x .&lt;= p(x)</span>
-<span class="lineno">  728 </span><span class="spaces">            </span><span class="istickedoff">--                    Complete is x .&lt;= y /\ y = p(x)</span>
+<span class="lineno">  727 </span><span class="spaces">            </span><span class="istickedoff">-- 1. Delayed/Eager. Delayed is x .&lt;= p(x)</span>
+<span class="lineno">  728 </span><span class="spaces">            </span><span class="istickedoff">--                    Eager is x .&lt;= y /\ y = p(x)</span>
 <span class="lineno">  729 </span><span class="spaces">            </span><span class="istickedoff">-- 2. Scope.          Consecutive</span>
 <span class="lineno">  730 </span><span class="spaces">            </span><span class="istickedoff">--                    AllPairs</span>
 <span class="lineno">  731 </span><span class="spaces">            </span><span class="istickedoff">--                    AllPermutations</span>
 <span class="lineno">  732 </span><span class="spaces">            </span><span class="istickedoff">-- 3. Independently/Altogether</span>
 <span class="lineno">  733 </span><span class="spaces">            </span><span class="istickedoff">-- in addition, we have</span>
 <span class="lineno">  734 </span><span class="spaces">            </span><span class="istickedoff">--      none</span>
-<span class="lineno">  735 </span><span class="spaces">            </span><span class="istickedoff">--      fast: Quick-Consecutive-Independently</span>
-<span class="lineno">  736 </span><span class="spaces">            </span><span class="istickedoff">--      full: Complete-AllPermutations-Altogether</span>
+<span class="lineno">  735 </span><span class="spaces">            </span><span class="istickedoff">--      fast: Delayed-Consecutive-Independently</span>
+<span class="lineno">  736 </span><span class="spaces">            </span><span class="istickedoff">--      full: Eager-AllPermutations-Altogether</span>
 <span class="lineno">  737 </span><span class="spaces">                </span><span class="istickedoff">case (unnamedSymmetryBreaking, <span class="nottickedoff">splitOn &quot;-&quot; unnamedSymmetryBreaking</span>) of</span>
 <span class="lineno">  738 </span><span class="spaces">                    </span><span class="istickedoff">(&quot;none&quot;, _)  -&gt; return Nothing</span>
-<span class="lineno">  739 </span><span class="spaces">                    </span><span class="istickedoff">(&quot;fast&quot;, _)  -&gt; <span class="nottickedoff">return $ Just $ UnnamedSymmetryBreaking USBQuick USBConsecutive USBIndependently</span></span>
-<span class="lineno">  740 </span><span class="spaces">                    </span><span class="istickedoff">(&quot;full&quot;, _)  -&gt; <span class="nottickedoff">return $ Just $ UnnamedSymmetryBreaking USBComplete USBAllPermutations USBAltogether</span></span>
+<span class="lineno">  739 </span><span class="spaces">                    </span><span class="istickedoff">(&quot;fast&quot;, _)  -&gt; <span class="nottickedoff">return $ Just $ UnnamedSymmetryBreaking USBDelayed USBConsecutive USBIndependently</span></span>
+<span class="lineno">  740 </span><span class="spaces">                    </span><span class="istickedoff">(&quot;full&quot;, _)  -&gt; <span class="nottickedoff">return $ Just $ UnnamedSymmetryBreaking USBEager USBAllPermutations USBAltogether</span></span>
 <span class="lineno">  741 </span><span class="spaces">                    </span><span class="istickedoff">(_, [a,b,c]) -&gt; <span class="nottickedoff">do</span></span>
 <span class="lineno">  742 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">a' &lt;- case a of</span></span>
-<span class="lineno">  743 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">&quot;Quick&quot; -&gt; return USBQuick</span></span>
-<span class="lineno">  744 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">&quot;Complete&quot; -&gt; return USBComplete</span></span>
+<span class="lineno">  743 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">&quot;Delayed&quot; -&gt; return USBDelayed</span></span>
+<span class="lineno">  744 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">&quot;Eager&quot; -&gt; return USBEager</span></span>
 <span class="lineno">  745 </span><span class="spaces">                            </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; userErr1 $ vcat</span></span>
 <span class="lineno">  746 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Unrecognised value for the first component of --unnamed-symmetry-breaking&quot;</span></span>
-<span class="lineno">  747 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected one of: Quick / Complete&quot;</span></span>
+<span class="lineno">  747 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;Expected one of: Delayed / Eager&quot;</span></span>
 <span class="lineno">  748 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">, &quot;But got:&quot; &lt;+&gt; pretty a</span></span>
 <span class="lineno">  749 </span><span class="spaces">                                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
 <span class="lineno">  750 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">b' &lt;- case b of</span></span>

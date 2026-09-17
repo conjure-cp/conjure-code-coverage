@@ -884,11 +884,11 @@ span.spaces    { background: white }
 <span class="lineno">  865 </span>    <span class="decl"><span class="nottickedoff">evaluateOp (OpXor x) = ConstantBool . xor &lt;$&gt; boolsOut x</span>
 <span class="lineno">  866 </span><span class="spaces">        </span><span class="nottickedoff">where xor xs = odd (length [ () | True &lt;- xs ])</span></span>
 <span class="lineno">  867 </span>
-<span class="lineno">  868 </span>instance EvaluateOp OpQuickPermutationOrder where
-<span class="lineno">  869 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpQuickPermutationOrder}:&quot; &lt;++&gt; pretty (show op)</span></span>
+<span class="lineno">  868 </span>instance EvaluateOp OpPermutationOrderDelayed where
+<span class="lineno">  869 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpPermutationOrderDelayed}:&quot; &lt;++&gt; pretty (show op)</span></span>
 <span class="lineno">  870 </span>
-<span class="lineno">  871 </span>instance EvaluateOp OpCompletePermutationOrder where
-<span class="lineno">  872 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpCompletePermutationOrder}:&quot; &lt;++&gt; pretty (show op)</span></span>
+<span class="lineno">  871 </span>instance EvaluateOp OpPermutationOrderEager where
+<span class="lineno">  872 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpPermutationOrderEager}:&quot; &lt;++&gt; pretty (show op)</span></span>
 <span class="lineno">  873 </span>
 <span class="lineno">  874 </span>instance EvaluateOp OpApplySymmetries where
 <span class="lineno">  875 </span>    <span class="decl"><span class="nottickedoff">evaluateOp op = na $ &quot;evaluateOp{OpApplySymmetries}:&quot; &lt;++&gt; pretty (show op)</span></span>
@@ -1087,8 +1087,8 @@ span.spaces    { background: white }
 <span class="lineno"> 1068 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpTwoBars x) = evaluateOp x</span>
 <span class="lineno"> 1069 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpUnion x) = evaluateOp x</span>
 <span class="lineno"> 1070 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpXor x) = <span class="nottickedoff">evaluateOp x</span></span>
-<span class="lineno"> 1071 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpQuickPermutationOrder x) = <span class="nottickedoff">evaluateOp x</span></span>
-<span class="lineno"> 1072 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpCompletePermutationOrder x) = <span class="nottickedoff">evaluateOp x</span></span>
+<span class="lineno"> 1071 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpPermutationOrderDelayed x) = <span class="nottickedoff">evaluateOp x</span></span>
+<span class="lineno"> 1072 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpPermutationOrderEager x) = <span class="nottickedoff">evaluateOp x</span></span>
 <span class="lineno"> 1073 </span><span class="spaces">    </span><span class="istickedoff">evaluateOp (MkOpApplySymmetries x) = <span class="nottickedoff">evaluateOp x</span></span></span>
 
 </pre>

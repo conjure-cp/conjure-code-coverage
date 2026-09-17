@@ -2242,10 +2242,10 @@ span.spaces    { background: white }
 <span class="lineno"> 2223 </span><span class="spaces">  </span><span class="istickedoff">L_allDiff -&gt; unFuncV listOrMatrix (const $ pure TypeBool)</span>
 <span class="lineno"> 2224 </span><span class="spaces">  </span><span class="istickedoff">L_alldifferent_except -&gt; biFuncV (indep listOrMatrix enumerable) (const2 TypeBool)</span>
 <span class="lineno"> 2225 </span><span class="spaces">  </span><span class="istickedoff">L_catchUndef -&gt; <span class="nottickedoff">biFuncV unifies (\a b -&gt; pure $ mostDefinedS $ catMaybes [a, b])</span></span>
-<span class="lineno"> 2226 </span><span class="spaces">  </span><span class="istickedoff">L_applySymmetries -&gt; <span class="nottickedoff">biFunc quickPermutationOrderArgs quickPermutationOrderTypes</span></span>
-<span class="lineno"> 2227 </span><span class="spaces">  </span><span class="istickedoff">L_applySymmetriesQuick -&gt; <span class="nottickedoff">biFunc quickPermutationOrderArgs quickPermutationOrderTypes</span></span>
-<span class="lineno"> 2228 </span><span class="spaces">  </span><span class="istickedoff">L_completePermutationOrder -&gt; <span class="nottickedoff">biFunc quickPermutationOrderArgs quickPermutationOrderTypes</span></span>
-<span class="lineno"> 2229 </span><span class="spaces">  </span><span class="istickedoff">L_quickPermutationOrder -&gt; <span class="nottickedoff">biFunc quickPermutationOrderArgs quickPermutationOrderTypes</span></span>
+<span class="lineno"> 2226 </span><span class="spaces">  </span><span class="istickedoff">L_applySymmetriesEager -&gt; <span class="nottickedoff">biFunc permutationOrderDelayedArgs permutationOrderDelayedTypes</span></span>
+<span class="lineno"> 2227 </span><span class="spaces">  </span><span class="istickedoff">L_applySymmetriesDelayed -&gt; <span class="nottickedoff">biFunc permutationOrderDelayedArgs permutationOrderDelayedTypes</span></span>
+<span class="lineno"> 2228 </span><span class="spaces">  </span><span class="istickedoff">L_permutationOrderEager -&gt; <span class="nottickedoff">biFunc permutationOrderDelayedArgs permutationOrderDelayedTypes</span></span>
+<span class="lineno"> 2229 </span><span class="spaces">  </span><span class="istickedoff">L_permutationOrderDelayed -&gt; <span class="nottickedoff">biFunc permutationOrderDelayedArgs permutationOrderDelayedTypes</span></span>
 <span class="lineno"> 2230 </span><span class="spaces">  </span><span class="istickedoff">L_dontCare -&gt; unFunc anyType (const $ pure TypeBool)</span>
 <span class="lineno"> 2231 </span><span class="spaces">  </span><span class="istickedoff">L_toSet -&gt; unFuncV toSetArgs typeToSet</span>
 <span class="lineno"> 2232 </span><span class="spaces">  </span><span class="istickedoff">L_toMSet -&gt; unFuncV toMSetArgs typeToMSet</span>
@@ -2488,16 +2488,16 @@ span.spaces    { background: white }
 <span class="lineno"> 2469 </span><span class="spaces">          </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; TypeAny</span></span>
 <span class="lineno"> 2470 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2471 </span><span class="spaces">    </span><span class="istickedoff">-- TODO: validate</span>
-<span class="lineno"> 2472 </span><span class="spaces">    </span><span class="istickedoff">quickPermutationOrderArgs :: Arg -&gt; Arg -&gt; Validator ()</span>
-<span class="lineno"> 2473 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">quickPermutationOrderArgs _ _ = return (pure ())</span></span>
+<span class="lineno"> 2472 </span><span class="spaces">    </span><span class="istickedoff">permutationOrderDelayedArgs :: Arg -&gt; Arg -&gt; Validator ()</span>
+<span class="lineno"> 2473 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">permutationOrderDelayedArgs _ _ = return (pure ())</span></span>
 <span class="lineno"> 2474 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2475 </span><span class="spaces">    </span><span class="istickedoff">-- TODO</span>
 <span class="lineno"> 2476 </span><span class="spaces">    </span><span class="istickedoff">permInverseArgs :: SArg -&gt; Validator ()</span>
 <span class="lineno"> 2477 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">permInverseArgs _ = return (pure ())</span></span>
 <span class="lineno"> 2478 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2479 </span><span class="spaces">    </span><span class="istickedoff">-- TODO</span>
-<span class="lineno"> 2480 </span><span class="spaces">    </span><span class="istickedoff">quickPermutationOrderTypes :: Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type</span>
-<span class="lineno"> 2481 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">quickPermutationOrderTypes _ _ = Just TypeBool</span></span>
+<span class="lineno"> 2480 </span><span class="spaces">    </span><span class="istickedoff">permutationOrderDelayedTypes :: Maybe (Kind, Expression) -&gt; Maybe (Kind, Expression) -&gt; Maybe Type</span>
+<span class="lineno"> 2481 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">permutationOrderDelayedTypes _ _ = Just TypeBool</span></span>
 <span class="lineno"> 2482 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2483 </span><span class="spaces">    </span><span class="istickedoff">imSetArgs :: SArg -&gt; SArg -&gt; Validator ()</span>
 <span class="lineno"> 2484 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">imSetArgs (r1, a) (r2, b) = do</span></span>
