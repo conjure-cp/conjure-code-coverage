@@ -201,8 +201,8 @@ span.spaces    { background: white }
 <span class="lineno">  182 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpTwoBars x) = domainOf x</span>
 <span class="lineno">  183 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpUnion x) = domainOf x</span>
 <span class="lineno">  184 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpXor x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpQuickPermutationOrder x) = <span class="nottickedoff">domainOf x</span></span>
-<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpCompletePermutationOrder x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  185 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPermutationOrderDelayed x) = <span class="nottickedoff">domainOf x</span></span>
+<span class="lineno">  186 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpPermutationOrderEager x) = <span class="nottickedoff">domainOf x</span></span>
 <span class="lineno">  187 </span><span class="spaces">    </span><span class="istickedoff">domainOf (MkOpApplySymmetries x) = <span class="nottickedoff">domainOf x</span></span></span>
 <span class="lineno">  188 </span>
 <span class="lineno">  189 </span>    <span class="decl"><span class="istickedoff">indexDomainsOf (MkOpActive x) = <span class="nottickedoff">indexDomainsOf x</span></span>
@@ -284,8 +284,8 @@ span.spaces    { background: white }
 <span class="lineno">  265 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpTwoBars x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  266 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpUnion x) = indexDomainsOf x</span>
 <span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpXor x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpQuickPermutationOrder x) = <span class="nottickedoff">indexDomainsOf x</span></span>
-<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpCompletePermutationOrder x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPermutationOrderDelayed x) = <span class="nottickedoff">indexDomainsOf x</span></span>
+<span class="lineno">  269 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpPermutationOrderEager x) = <span class="nottickedoff">indexDomainsOf x</span></span>
 <span class="lineno">  270 </span><span class="spaces">    </span><span class="istickedoff">indexDomainsOf (MkOpApplySymmetries x) = <span class="nottickedoff">indexDomainsOf x</span></span></span>
 <span class="lineno">  271 </span>
 <span class="lineno">  272 </span>instance DomainOf Constant where
@@ -760,10 +760,10 @@ span.spaces    { background: white }
 <span class="lineno">  741 </span>instance <span class="decl"><span class="istickedoff">(Pretty x, TypeOf x) =&gt; DomainOf (OpUnion x)</span></span> where
 <span class="lineno">  742 </span>    <span class="decl"><span class="istickedoff">domainOf op = mkDomainAny (&quot;OpUnion:&quot; &lt;++&gt; pretty op) &lt;$&gt; typeOf op</span></span>
 <span class="lineno">  743 </span>
-<span class="lineno">  744 </span>instance <span class="decl"><span class="nottickedoff">DomainOf (OpQuickPermutationOrder x)</span></span> where
+<span class="lineno">  744 </span>instance <span class="decl"><span class="nottickedoff">DomainOf (OpPermutationOrderDelayed x)</span></span> where
 <span class="lineno">  745 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
 <span class="lineno">  746 </span>
-<span class="lineno">  747 </span>instance <span class="decl"><span class="nottickedoff">DomainOf (OpCompletePermutationOrder x)</span></span> where
+<span class="lineno">  747 </span>instance <span class="decl"><span class="nottickedoff">DomainOf (OpPermutationOrderEager x)</span></span> where
 <span class="lineno">  748 </span>    <span class="decl"><span class="nottickedoff">domainOf _ = return DomainBool</span></span>
 <span class="lineno">  749 </span>
 <span class="lineno">  750 </span>

@@ -1779,8 +1779,8 @@ span.spaces    { background: white }
 <span class="lineno"> 1760 </span><span class="spaces">    </span><span class="istickedoff">,   [ rule_ReducerToComprehension</span>
 <span class="lineno"> 1761 </span><span class="spaces">        </span><span class="istickedoff">]</span>
 <span class="lineno"> 1762 </span><span class="spaces">    </span><span class="istickedoff">,   [ rule_ApplySymmetries</span>
-<span class="lineno"> 1763 </span><span class="spaces">        </span><span class="istickedoff">, rule_CompletePermutationOrder</span>
-<span class="lineno"> 1764 </span><span class="spaces">        </span><span class="istickedoff">, rule_QuickPermutationOrder</span>
+<span class="lineno"> 1763 </span><span class="spaces">        </span><span class="istickedoff">, rule_PermutationOrderEager</span>
+<span class="lineno"> 1764 </span><span class="spaces">        </span><span class="istickedoff">, rule_PermutationOrderDelayed</span>
 <span class="lineno"> 1765 </span><span class="spaces">        </span><span class="istickedoff">, rule_DotLtLeq</span>
 <span class="lineno"> 1766 </span><span class="spaces">        </span><span class="istickedoff">, rule_Flatten_Lex</span>
 <span class="lineno"> 1767 </span><span class="spaces">        </span><span class="istickedoff">]</span>
@@ -1904,12 +1904,12 @@ span.spaces    { background: white }
 <span class="lineno"> 1885 </span><span class="spaces">                </span><span class="istickedoff">let <span class="nottickedoff">pin (Reference nm (Just DeclNoRepr{})) | nm == name =</span></span>
 <span class="lineno"> 1886 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">Reference nm (Just (DeclHasRepr forg name domain))</span></span>
 <span class="lineno"> 1887 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">pin x = x</span></span>
-<span class="lineno"> 1888 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpApplySymmetries (OpApplySymmetries quick values syms))) =</span>
-<span class="lineno"> 1889 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">Op (MkOpApplySymmetries (OpApplySymmetries quick (transformBi pin values) syms))</span></span>
-<span class="lineno"> 1890 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpQuickPermutationOrder (OpQuickPermutationOrder ps values))) =</span>
-<span class="lineno"> 1891 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">make opQuickPermutationOrder ps (transformBi pin values)</span></span>
-<span class="lineno"> 1892 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpCompletePermutationOrder (OpCompletePermutationOrder ps values))) =</span>
-<span class="lineno"> 1893 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">make opCompletePermutationOrder ps (transformBi pin values)</span></span>
+<span class="lineno"> 1888 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpApplySymmetries (OpApplySymmetries delayed values syms))) =</span>
+<span class="lineno"> 1889 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">Op (MkOpApplySymmetries (OpApplySymmetries delayed (transformBi pin values) syms))</span></span>
+<span class="lineno"> 1890 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpPermutationOrderDelayed (OpPermutationOrderDelayed ps values))) =</span>
+<span class="lineno"> 1891 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">make opPermutationOrderDelayed ps (transformBi pin values)</span></span>
+<span class="lineno"> 1892 </span><span class="spaces">                    </span><span class="istickedoff">onOp (Op (MkOpPermutationOrderEager (OpPermutationOrderEager ps values))) =</span>
+<span class="lineno"> 1893 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">make opPermutationOrderEager ps (transformBi pin values)</span></span>
 <span class="lineno"> 1894 </span><span class="spaces">                    </span><span class="istickedoff">onOp x = x</span>
 <span class="lineno"> 1895 </span><span class="spaces">                </span><span class="istickedoff">in return m { mStatements = transformBi onOp (mStatements m) }</span>
 <span class="lineno"> 1896 </span><span class="spaces"></span><span class="istickedoff"></span>
@@ -2139,54 +2139,54 @@ span.spaces    { background: white }
 <span class="lineno"> 2120 </span><span class="spaces">            </span><span class="istickedoff">)</span></span>
 <span class="lineno"> 2121 </span>
 <span class="lineno"> 2122 </span>
-<span class="lineno"> 2123 </span>-- The public operators expand a parameter matrix; the internal operation keeps
-<span class="lineno"> 2124 </span>-- Complete intact until the source representation has been selected.
+<span class="lineno"> 2123 </span>-- The public operators expand a parameter sequence; the internal operation keeps
+<span class="lineno"> 2124 </span>-- Eager intact until the source representation has been selected.
 <span class="lineno"> 2125 </span>rule_ApplySymmetries :: Rule
 <span class="lineno"> 2126 </span><span class="decl"><span class="istickedoff">rule_ApplySymmetries = <span class="nottickedoff">&quot;apply-symmetries&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2127 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpApplySymmetries op@(OpApplySymmetries quick values symmetries))) = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2127 </span><span class="spaces">    </span><span class="istickedoff">theRule (Op (MkOpApplySymmetries op@(OpApplySymmetries delayed values symmetries))) = <span class="nottickedoff">do</span></span>
 <span class="lineno"> 2128 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">void $ typeOf op</span></span>
 <span class="lineno"> 2129 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (categoryOf symmetries &gt; CatParameter) $</span></span>
-<span class="lineno"> 2130 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetries: symmetries must be constant or given&quot;</span></span>
+<span class="lineno"> 2130 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetriesEager: symmetries must be constant or given&quot;</span></span>
 <span class="lineno"> 2131 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let checkValue v = case followAliases id v of</span></span>
 <span class="lineno"> 2132 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; mapM_ checkValue xs</span></span>
 <span class="lineno"> 2133 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Reference _ (Just DeclNoRepr{}) -&gt; return ()</span></span>
 <span class="lineno"> 2134 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">Reference _ (Just DeclHasRepr{}) -&gt; return ()</span></span>
-<span class="lineno"> 2135 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc &quot;applySymmetries: values must be a tuple of variable references&quot;</span></span>
+<span class="lineno"> 2135 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc &quot;applySymmetriesEager: values must be a tuple of variable references&quot;</span></span>
 <span class="lineno"> 2136 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">checkValue values</span></span>
 <span class="lineno"> 2137 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ts &lt;- typeOf symmetries</span></span>
 <span class="lineno"> 2138 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let entries = case ts of</span></span>
-<span class="lineno"> 2139 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeMatrix _ (TypeTuple xs) -&gt; xs</span></span>
-<span class="lineno"> 2140 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeList (TypeTuple xs) -&gt; xs</span></span>
-<span class="lineno"> 2141 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; [] -- rejected by typeOf above</span></span>
-<span class="lineno"> 2142 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (&quot;Apply the supplied symmetry tuples&quot;, do</span></span>
-<span class="lineno"> 2143 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(pPat, permTuple) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2139 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">TypeSequence (TypeTuple xs) -&gt; xs</span></span>
+<span class="lineno"> 2140 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; [] -- rejected by typeOf above</span></span>
+<span class="lineno"> 2141 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (&quot;Apply the supplied symmetry tuples&quot;, do</span></span>
+<span class="lineno"> 2142 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(pPat, entry) &lt;- quantifiedVar</span></span>
+<span class="lineno"> 2143 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let permTuple = make opIndexing entry (fromInt 2)</span></span>
 <span class="lineno"> 2144 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let perms = [ make opIndexing permTuple (fromInt i)</span></span>
 <span class="lineno"> 2145 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">| i &lt;- [1 .. genericLength entries] ]</span></span>
-<span class="lineno"> 2146 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">applied = if quick</span></span>
-<span class="lineno"> 2147 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">then make opQuickPermutationOrder perms values</span></span>
-<span class="lineno"> 2148 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">else make opCompletePermutationOrder perms values</span></span>
+<span class="lineno"> 2146 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">applied = if delayed</span></span>
+<span class="lineno"> 2147 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">then make opPermutationOrderDelayed perms values</span></span>
+<span class="lineno"> 2148 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">else make opPermutationOrderEager perms values</span></span>
 <span class="lineno"> 2149 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ make opAnd $ Comprehension applied</span></span>
 <span class="lineno"> 2150 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[Generator (GenInExpr pPat symmetries)])</span></span>
 <span class="lineno"> 2151 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_ApplySymmetries&quot;</span></span>
 <span class="lineno"> 2152 </span>
 <span class="lineno"> 2153 </span>
-<span class="lineno"> 2154 </span>rule_CompletePermutationOrder :: Rule
-<span class="lineno"> 2155 </span><span class="decl"><span class="istickedoff">rule_CompletePermutationOrder = <span class="nottickedoff">&quot;complete-permutation-order&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2156 </span><span class="spaces">    </span><span class="istickedoff">theRule (match opCompletePermutationOrder -&gt; Just (perms, value0)) = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2154 </span>rule_PermutationOrderEager :: Rule
+<span class="lineno"> 2155 </span><span class="decl"><span class="istickedoff">rule_PermutationOrderEager = <span class="nottickedoff">&quot;permutation-order-eager&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2156 </span><span class="spaces">    </span><span class="istickedoff">theRule (match opPermutationOrderEager -&gt; Just (perms, value0)) = <span class="nottickedoff">do</span></span>
 <span class="lineno"> 2157 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let value = followAliases id value0</span></span>
 <span class="lineno"> 2158 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- Wait for all representation choices before creating the image. This</span></span>
 <span class="lineno"> 2159 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">-- also checks nested tuple literals, which have no representation tree.</span></span>
 <span class="lineno"> 2160 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let ready x = case followAliases id x of</span></span>
 <span class="lineno"> 2161 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; mapM_ ready xs</span></span>
 <span class="lineno"> 2162 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">r@Reference{} -&gt; void $ domainOfR r</span></span>
-<span class="lineno"> 2163 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;completePermutationOrder: expected represented variables&quot;</span></span>
+<span class="lineno"> 2163 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; na &quot;permutationOrderEager: expected represented variables&quot;</span></span>
 <span class="lineno"> 2164 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">ready value</span></span>
-<span class="lineno"> 2165 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (&quot;Complete symmetry comparison in the source representation&quot;, do</span></span>
+<span class="lineno"> 2165 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return (&quot;Eager symmetry comparison in the source representation&quot;, do</span></span>
 <span class="lineno"> 2166 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">(lhs, rhs, locals) &lt;- keys perms value</span></span>
 <span class="lineno"> 2167 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let comparison = [essence| &amp;lhs &lt;=lex &amp;rhs |]</span></span>
 <span class="lineno"> 2168 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">return $ if null locals then comparison</span></span>
 <span class="lineno"> 2169 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">else WithLocals comparison (AuxiliaryVars locals))</span></span>
-<span class="lineno"> 2170 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_CompletePermutationOrder&quot;</span>
+<span class="lineno"> 2170 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PermutationOrderEager&quot;</span>
 <span class="lineno"> 2171 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 2172 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">keys perms x0 = case followAliases id x0 of</span></span>
 <span class="lineno"> 2173 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; do</span></span>
@@ -2231,7 +2231,7 @@ span.spaces    { background: white }
 <span class="lineno"> 2212 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return [essence| [-toInt(&amp;imageValue)] |]</span></span>
 <span class="lineno"> 2213 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">primitiveImageKey perms x DomainInt{} =</span></span>
 <span class="lineno"> 2214 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return $ fromList [make opTransform perms x]</span></span>
-<span class="lineno"> 2215 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">primitiveImageKey _ _ _ = na &quot;completePermutationOrder: expected a primitive domain&quot;</span></span></span>
+<span class="lineno"> 2215 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">primitiveImageKey _ _ _ = na &quot;permutationOrderEager: expected a primitive domain&quot;</span></span></span>
 <span class="lineno"> 2216 </span>
 <span class="lineno"> 2217 </span>
 <span class="lineno"> 2218 </span>symmetryOrderingVector ::
@@ -2248,16 +2248,16 @@ span.spaces    { background: white }
 <span class="lineno"> 2229 </span><span class="spaces">    </span><span class="istickedoff">tupleLitToMatrixLit v = return v</span></span>
 <span class="lineno"> 2230 </span>
 <span class="lineno"> 2231 </span>
-<span class="lineno"> 2232 </span>rule_QuickPermutationOrder :: Rule
-<span class="lineno"> 2233 </span><span class="decl"><span class="istickedoff">rule_QuickPermutationOrder = <span class="nottickedoff">&quot;generic-QuickPermutationOrder&quot;</span> `namedRule` theRule where</span>
-<span class="lineno"> 2234 </span><span class="spaces">    </span><span class="istickedoff">theRule p@(match opQuickPermutationOrder -&gt; Just (ps, x)) = <span class="nottickedoff">do</span></span>
+<span class="lineno"> 2232 </span>rule_PermutationOrderDelayed :: Rule
+<span class="lineno"> 2233 </span><span class="decl"><span class="istickedoff">rule_PermutationOrderDelayed = <span class="nottickedoff">&quot;generic-PermutationOrderDelayed&quot;</span> `namedRule` theRule where</span>
+<span class="lineno"> 2234 </span><span class="spaces">    </span><span class="istickedoff">theRule p@(match opPermutationOrderDelayed -&gt; Just (ps, x)) = <span class="nottickedoff">do</span></span>
 <span class="lineno"> 2235 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">x_ord &lt;- symmetryOrdering x</span></span>
 <span class="lineno"> 2236 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">let rhs = make opTransform ps x_ord</span></span>
 <span class="lineno"> 2237 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">return</span></span>
-<span class="lineno"> 2238 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Generic vertical rule for quickPermutationOrder:&quot; &lt;+&gt; pretty p</span></span>
+<span class="lineno"> 2238 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">( &quot;Generic vertical rule for permutationOrderDelayed:&quot; &lt;+&gt; pretty p</span></span>
 <span class="lineno"> 2239 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">, return [essence| &amp;x_ord .&lt;= &amp;rhs |]</span></span>
 <span class="lineno"> 2240 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">)</span></span>
-<span class="lineno"> 2241 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_QuickPermutationOrder&quot;</span></span>
+<span class="lineno"> 2241 </span><span class="spaces">    </span><span class="istickedoff">theRule _ = na &quot;rule_PermutationOrderDelayed&quot;</span></span>
 <span class="lineno"> 2242 </span>
 <span class="lineno"> 2243 </span>
 <span class="lineno"> 2244 </span>rule_DotLtLeq :: Rule
@@ -2995,20 +2995,20 @@ span.spaces    { background: white }
 <span class="lineno"> 2976 </span><span class="spaces">    </span><span class="istickedoff">return model</span>
 <span class="lineno"> 2977 </span><span class="spaces">  </span><span class="istickedoff">where</span>
 <span class="lineno"> 2978 </span><span class="spaces">    </span><span class="istickedoff">rejectNested xs = when (any isCustom xs) $</span>
-<span class="lineno"> 2979 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetries and applySymmetriesQuick must be top-level such-that assertions&quot;</span></span>
+<span class="lineno"> 2979 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetriesEager and applySymmetriesDelayed must be top-level such-that assertions&quot;</span></span>
 <span class="lineno"> 2980 </span><span class="spaces">    </span><span class="istickedoff">isCustom (Op MkOpApplySymmetries{}) = <span class="nottickedoff">True</span></span>
 <span class="lineno"> 2981 </span><span class="spaces">    </span><span class="istickedoff">isCustom _ = False</span>
 <span class="lineno"> 2982 </span><span class="spaces">    </span><span class="istickedoff">checkAssertion (Op (MkOpApplySymmetries (OpApplySymmetries _ values syms))) = <span class="nottickedoff">do</span></span>
 <span class="lineno"> 2983 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">rejectNested (universe values ++ universe syms)</span></span>
 <span class="lineno"> 2984 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">when (categoryOf syms &gt; CatParameter) $</span></span>
-<span class="lineno"> 2985 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetries: symmetries must be constant or given&quot;</span></span>
+<span class="lineno"> 2985 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">failDoc &quot;applySymmetriesEager: symmetries must be constant or given&quot;</span></span>
 <span class="lineno"> 2986 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">checkValues values</span></span>
 <span class="lineno"> 2987 </span><span class="spaces">    </span><span class="istickedoff">checkAssertion x = rejectNested (universe x)</span>
 <span class="lineno"> 2988 </span><span class="spaces">    </span><span class="istickedoff"><span class="nottickedoff">checkValues x = case followAliases id x of</span></span>
 <span class="lineno"> 2989 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">AbstractLiteral (AbsLitTuple xs) -&gt; mapM_ checkValues xs</span></span>
 <span class="lineno"> 2990 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Reference _ (Just DeclNoRepr{}) -&gt; return ()</span></span>
 <span class="lineno"> 2991 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">Reference _ (Just DeclHasRepr{}) -&gt; return ()</span></span>
-<span class="lineno"> 2992 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc &quot;applySymmetries: values must be a tuple of variable references&quot;</span></span></span>
+<span class="lineno"> 2992 </span><span class="spaces">        </span><span class="istickedoff"><span class="nottickedoff">_ -&gt; failDoc &quot;applySymmetriesEager: values must be a tuple of variable references&quot;</span></span></span>
 <span class="lineno"> 2993 </span>
 <span class="lineno"> 2994 </span>
 <span class="lineno"> 2995 </span>enforceTagConsistency :: MonadFail m =&gt; Model -&gt; m Model
@@ -3050,8 +3050,8 @@ span.spaces    { background: white }
 <span class="lineno"> 3031 </span><span class="spaces"></span><span class="istickedoff">--    traceM $ show $ &quot;Unnamed decision variables in this model:&quot; &lt;++&gt; prettyList id &quot;,&quot; allDecVars</span>
 <span class="lineno"> 3032 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 3033 </span><span class="spaces">    </span><span class="istickedoff">-- 3 axis of doom</span>
-<span class="lineno"> 3034 </span><span class="spaces">    </span><span class="istickedoff">-- 1. Quick/Complete. Quick is quickPermutationOrder(x, p)   -- this is an efficient subset of x .&lt;= p(x)</span>
-<span class="lineno"> 3035 </span><span class="spaces">    </span><span class="istickedoff">--                    Complete is x .&lt;= p(x)</span>
+<span class="lineno"> 3034 </span><span class="spaces">    </span><span class="istickedoff">-- 1. Delayed/Eager. Delayed is permutationOrderDelayed(x, p)   -- this is an efficient subset of x .&lt;= p(x)</span>
+<span class="lineno"> 3035 </span><span class="spaces">    </span><span class="istickedoff">--                    Eager is x .&lt;= p(x)</span>
 <span class="lineno"> 3036 </span><span class="spaces">    </span><span class="istickedoff">-- 2. Scope.          Consecutive</span>
 <span class="lineno"> 3037 </span><span class="spaces">    </span><span class="istickedoff">--                    AllPairs</span>
 <span class="lineno"> 3038 </span><span class="spaces">    </span><span class="istickedoff">--                    AllPermutations</span>
@@ -3059,11 +3059,11 @@ span.spaces    { background: white }
 <span class="lineno"> 3040 </span><span class="spaces"></span><span class="istickedoff"></span>
 <span class="lineno"> 3041 </span><span class="spaces">    </span><span class="istickedoff">case mode of</span>
 <span class="lineno"> 3042 </span><span class="spaces">        </span><span class="istickedoff">Nothing -&gt; return model</span>
-<span class="lineno"> 3043 </span><span class="spaces">        </span><span class="istickedoff">Just (UnnamedSymmetryBreaking quickOrComplete usbScope independentlyOrAltogether) -&gt; <span class="nottickedoff">do</span></span>
+<span class="lineno"> 3043 </span><span class="spaces">        </span><span class="istickedoff">Just (UnnamedSymmetryBreaking delayedOrEager usbScope independentlyOrAltogether) -&gt; <span class="nottickedoff">do</span></span>
 <span class="lineno"> 3044 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">-- let newDecls =</span></span>
-<span class="lineno"> 3045 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--         case quickOrComplete of</span></span>
-<span class="lineno"> 3046 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--             USBQuick -&gt; []</span></span>
-<span class="lineno"> 3047 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--             USBComplete -&gt;</span></span>
+<span class="lineno"> 3045 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--         case delayedOrEager of</span></span>
+<span class="lineno"> 3046 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--             USBDelayed -&gt; []</span></span>
+<span class="lineno"> 3047 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--             USBEager -&gt;</span></span>
 <span class="lineno"> 3048 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--                 case independentlyOrAltogether of</span></span>
 <span class="lineno"> 3049 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--                     USBIndependently -&gt;</span></span>
 <span class="lineno"> 3050 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">--                         [ Declaration (FindOrGiven LocalFind nm' domain)</span></span>
@@ -3080,9 +3080,9 @@ span.spaces    { background: white }
 <span class="lineno"> 3061 </span><span class="spaces">            </span><span class="istickedoff"><span class="nottickedoff">let</span></span>
 <span class="lineno"> 3062 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno"> 3063 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">combinedPermApply perms =</span></span>
-<span class="lineno"> 3064 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case quickOrComplete of</span></span>
-<span class="lineno"> 3065 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">USBQuick -&gt; make opQuickPermutationOrder perms varsTuple</span></span>
-<span class="lineno"> 3066 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">USBComplete -&gt; make opCompletePermutationOrder perms varsTuple</span></span>
+<span class="lineno"> 3064 </span><span class="spaces">                    </span><span class="istickedoff"><span class="nottickedoff">case delayedOrEager of</span></span>
+<span class="lineno"> 3065 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">USBDelayed -&gt; make opPermutationOrderDelayed perms varsTuple</span></span>
+<span class="lineno"> 3066 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">USBEager -&gt; make opPermutationOrderEager perms varsTuple</span></span>
 <span class="lineno"> 3067 </span><span class="spaces"></span><span class="istickedoff"><span class="nottickedoff"></span></span>
 <span class="lineno"> 3068 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">mkGenerator_Consecutive _ [] = bug &quot;must have at least one unnamed type&quot;</span></span>
 <span class="lineno"> 3069 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">mkGenerator_Consecutive perms [(u, uSize)] = do</span></span>

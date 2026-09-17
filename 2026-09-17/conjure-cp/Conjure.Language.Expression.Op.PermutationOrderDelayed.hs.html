@@ -22,7 +22,7 @@ span.spaces    { background: white }
 <span class="lineno">    3 </span>{-# LANGUAGE DeriveTraversable #-}
 <span class="lineno">    4 </span>{-# LANGUAGE InstanceSigs #-}
 <span class="lineno">    5 </span>
-<span class="lineno">    6 </span>module Conjure.Language.Expression.Op.CompletePermutationOrder where
+<span class="lineno">    6 </span>module Conjure.Language.Expression.Op.PermutationOrderDelayed where
 <span class="lineno">    7 </span>
 <span class="lineno">    8 </span>import Conjure.Language.Expression.Op.Internal.Common
 <span class="lineno">    9 </span>import Conjure.Prelude
@@ -32,22 +32,22 @@ span.spaces    { background: white }
 <span class="lineno">   13 </span>
 <span class="lineno">   14 </span>-- first argument: the tuple of permutations to apply (ps)
 <span class="lineno">   15 </span>-- second argument: the value (x)
-<span class="lineno">   16 </span>-- Compare x and its image using exactly the same representation tree.
-<span class="lineno">   17 </span>data OpCompletePermutationOrder x = OpCompletePermutationOrder [x] x
+<span class="lineno">   16 </span>-- the effect is a subset of: x .&lt;= transform(ps, x)
+<span class="lineno">   17 </span>data OpPermutationOrderDelayed x = OpPermutationOrderDelayed [x] x
 <span class="lineno">   18 </span>  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Traversable</span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
 <span class="lineno">   19 </span>
-<span class="lineno">   20 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Serialize x) =&gt; Serialize (OpCompletePermutationOrder x)</span></span></span></span>
+<span class="lineno">   20 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Serialize x) =&gt; Serialize (OpPermutationOrderDelayed x)</span></span></span></span>
 <span class="lineno">   21 </span>
-<span class="lineno">   22 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Hashable x) =&gt; Hashable (OpCompletePermutationOrder x)</span></span></span></span>
+<span class="lineno">   22 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Hashable x) =&gt; Hashable (OpPermutationOrderDelayed x)</span></span></span></span>
 <span class="lineno">   23 </span>
-<span class="lineno">   24 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(ToJSON x) =&gt; ToJSON (OpCompletePermutationOrder x)</span></span></span></span></span></span></span></span> where
-<span class="lineno">   25 </span>  toJSON :: (ToJSON x) =&gt; OpCompletePermutationOrder x -&gt; JSON.Value
+<span class="lineno">   24 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(ToJSON x) =&gt; ToJSON (OpPermutationOrderDelayed x)</span></span></span></span></span></span></span></span> where
+<span class="lineno">   25 </span>  toJSON :: (ToJSON x) =&gt; OpPermutationOrderDelayed x -&gt; JSON.Value
 <span class="lineno">   26 </span>  <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
 <span class="lineno">   27 </span>
-<span class="lineno">   28 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(FromJSON x) =&gt; FromJSON (OpCompletePermutationOrder x)</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   28 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(FromJSON x) =&gt; FromJSON (OpPermutationOrderDelayed x)</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
 <span class="lineno">   29 </span>
-<span class="lineno">   30 </span>instance (TypeOf x, Pretty x, ExpressionLike x) =&gt; TypeOf (OpCompletePermutationOrder x) where
-<span class="lineno">   31 </span>  <span class="decl"><span class="nottickedoff">typeOf p@(OpCompletePermutationOrder perms x) = do</span>
+<span class="lineno">   30 </span>instance (TypeOf x, Pretty x, ExpressionLike x) =&gt; TypeOf (OpPermutationOrderDelayed x) where
+<span class="lineno">   31 </span>  <span class="decl"><span class="nottickedoff">typeOf p@(OpPermutationOrderDelayed perms x) = do</span>
 <span class="lineno">   32 </span><span class="spaces">    </span><span class="nottickedoff">_tyX &lt;- typeOf x</span>
 <span class="lineno">   33 </span><span class="spaces">    </span><span class="nottickedoff">forM_ perms $ \pe -&gt; do</span>
 <span class="lineno">   34 </span><span class="spaces">      </span><span class="nottickedoff">tyP &lt;- typeOf pe</span>
@@ -56,17 +56,17 @@ span.spaces    { background: white }
 <span class="lineno">   37 </span><span class="spaces">        </span><span class="nottickedoff">_ -&gt; raiseTypeError p</span>
 <span class="lineno">   38 </span><span class="spaces">    </span><span class="nottickedoff">return TypeBool</span></span>
 <span class="lineno">   39 </span>
-<span class="lineno">   40 </span>instance SimplifyOp OpCompletePermutationOrder x where
-<span class="lineno">   41 </span>  <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpCompletePermutationOrder}&quot;</span></span>
+<span class="lineno">   40 </span>instance SimplifyOp OpPermutationOrderDelayed x where
+<span class="lineno">   41 </span>  <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpPermutationOrderDelayed}&quot;</span></span>
 <span class="lineno">   42 </span>
-<span class="lineno">   43 </span>instance <span class="decl"><span class="nottickedoff">(Pretty x) =&gt; Pretty (OpCompletePermutationOrder x)</span></span> where
-<span class="lineno">   44 </span>  <span class="decl"><span class="nottickedoff">prettyPrec _ (OpCompletePermutationOrder as b) = &quot;completePermutationOrder&quot; &lt;&gt; prettyListDoc prParens &quot;,&quot; [prettyList prBrackets &quot;,&quot; as, pretty b]</span></span>
+<span class="lineno">   43 </span>instance <span class="decl"><span class="nottickedoff">(Pretty x) =&gt; Pretty (OpPermutationOrderDelayed x)</span></span> where
+<span class="lineno">   44 </span>  <span class="decl"><span class="nottickedoff">prettyPrec _ (OpPermutationOrderDelayed as b) = &quot;permutationOrderDelayed&quot; &lt;&gt; prettyListDoc prParens &quot;,&quot; [prettyList prBrackets &quot;,&quot; as, pretty b]</span></span>
 <span class="lineno">   45 </span>
-<span class="lineno">   46 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpCompletePermutationOrder x) where
-<span class="lineno">   47 </span>  <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpCompletePermutationOrder xs y) =</span>
+<span class="lineno">   46 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpPermutationOrderDelayed x) where
+<span class="lineno">   47 </span>  <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpPermutationOrderDelayed xs y) =</span>
 <span class="lineno">   48 </span><span class="spaces">    </span><span class="nottickedoff">JSON.Object</span>
 <span class="lineno">   49 </span><span class="spaces">      </span><span class="nottickedoff">$ KM.fromList</span>
-<span class="lineno">   50 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpCompletePermutationOrder&quot;),</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String &quot;OpPermutationOrderDelayed&quot;),</span>
 <span class="lineno">   51 </span><span class="spaces">          </span><span class="nottickedoff">( &quot;children&quot;,</span>
 <span class="lineno">   52 </span><span class="spaces">            </span><span class="nottickedoff">JSON.Array $ V.fromList (map varSymBreakingDescription xs ++ [varSymBreakingDescription y])</span>
 <span class="lineno">   53 </span><span class="spaces">          </span><span class="nottickedoff">)</span>

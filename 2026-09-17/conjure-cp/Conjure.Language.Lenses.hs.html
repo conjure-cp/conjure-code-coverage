@@ -471,7 +471,7 @@ span.spaces    { background: white }
 <span class="lineno">  452 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  453 </span>
 <span class="lineno">  454 </span>
-<span class="lineno">  455 </span>opQuickPermutationOrder
+<span class="lineno">  455 </span>opPermutationOrderDelayed
 <span class="lineno">  456 </span>    :: ( Op x :&lt; x
 <span class="lineno">  457 </span>       , Pretty x
 <span class="lineno">  458 </span>       , MonadFailDoc m
@@ -480,16 +480,16 @@ span.spaces    { background: white }
 <span class="lineno">  461 </span>    -&gt; ( [x] -&gt; x -&gt; x
 <span class="lineno">  462 </span>       , x -&gt; m ([x], x)
 <span class="lineno">  463 </span>       )
-<span class="lineno">  464 </span><span class="decl"><span class="istickedoff">opQuickPermutationOrder _ =</span>
-<span class="lineno">  465 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpQuickPermutationOrder $ OpQuickPermutationOrder x y</span></span>
+<span class="lineno">  464 </span><span class="decl"><span class="istickedoff">opPermutationOrderDelayed _ =</span>
+<span class="lineno">  465 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpPermutationOrderDelayed $ OpPermutationOrderDelayed x y</span></span>
 <span class="lineno">  466 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  467 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  468 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  469 </span><span class="spaces">                </span><span class="istickedoff">MkOpQuickPermutationOrder (OpQuickPermutationOrder x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  469 </span><span class="spaces">                </span><span class="istickedoff">MkOpPermutationOrderDelayed (OpPermutationOrderDelayed x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
 <span class="lineno">  470 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opTransform:&quot; &lt;++&gt; pretty p)</span></span>
 <span class="lineno">  471 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  472 </span>
-<span class="lineno">  473 </span>opCompletePermutationOrder
+<span class="lineno">  473 </span>opPermutationOrderEager
 <span class="lineno">  474 </span>    :: ( Op x :&lt; x
 <span class="lineno">  475 </span>       , Pretty x
 <span class="lineno">  476 </span>       , MonadFailDoc m
@@ -498,12 +498,12 @@ span.spaces    { background: white }
 <span class="lineno">  479 </span>    -&gt; ( [x] -&gt; x -&gt; x
 <span class="lineno">  480 </span>       , x -&gt; m ([x], x)
 <span class="lineno">  481 </span>       )
-<span class="lineno">  482 </span><span class="decl"><span class="istickedoff">opCompletePermutationOrder _ =</span>
-<span class="lineno">  483 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpCompletePermutationOrder $ OpCompletePermutationOrder x y</span></span>
+<span class="lineno">  482 </span><span class="decl"><span class="istickedoff">opPermutationOrderEager _ =</span>
+<span class="lineno">  483 </span><span class="spaces">    </span><span class="istickedoff">( <span class="nottickedoff">\ x y -&gt; inject $ MkOpPermutationOrderEager $ OpPermutationOrderEager x y</span></span>
 <span class="lineno">  484 </span><span class="spaces">    </span><span class="istickedoff">, \ p -&gt; do</span>
 <span class="lineno">  485 </span><span class="spaces">            </span><span class="istickedoff">op &lt;- project p</span>
 <span class="lineno">  486 </span><span class="spaces">            </span><span class="istickedoff">case op of</span>
-<span class="lineno">  487 </span><span class="spaces">                </span><span class="istickedoff">MkOpCompletePermutationOrder (OpCompletePermutationOrder x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
+<span class="lineno">  487 </span><span class="spaces">                </span><span class="istickedoff">MkOpPermutationOrderEager (OpPermutationOrderEager x y) -&gt; <span class="nottickedoff">return (x,y)</span></span>
 <span class="lineno">  488 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; na <span class="nottickedoff">(&quot;Lenses.opTransform:&quot; &lt;++&gt; pretty p)</span></span>
 <span class="lineno">  489 </span><span class="spaces">    </span><span class="istickedoff">)</span></span>
 <span class="lineno">  490 </span>
