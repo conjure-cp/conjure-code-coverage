@@ -1,0 +1,81 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE DeriveDataTypeable #-}
+<span class="lineno">    2 </span>{-# LANGUAGE DeriveGeneric #-}
+<span class="lineno">    3 </span>{-# LANGUAGE DeriveTraversable #-}
+<span class="lineno">    4 </span>{-# LANGUAGE InstanceSigs #-}
+<span class="lineno">    5 </span>
+<span class="lineno">    6 </span>module Conjure.Language.Expression.Op.ApplySymmetries where
+<span class="lineno">    7 </span>
+<span class="lineno">    8 </span>import Conjure.Language.Expression.Op.Internal.Common
+<span class="lineno">    9 </span>import Conjure.Prelude
+<span class="lineno">   10 </span>import Data.Aeson qualified as JSON -- aeson
+<span class="lineno">   11 </span>import Data.Aeson.KeyMap qualified as KM
+<span class="lineno">   12 </span>import Data.Vector qualified as V -- vector
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>-- Quick flag, ordered values, and a parameter matrix of permutation tuples.
+<span class="lineno">   15 </span>data OpApplySymmetries x = OpApplySymmetries Bool x x
+<span class="lineno">   16 </span>  deriving (<span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Eq</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Ord</span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Show</span></span></span></span></span></span>, <span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="istickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Data</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Functor</span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Traversable</span></span></span></span></span></span></span></span>, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>, Typeable, <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">Generic</span></span></span></span>)
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Serialize x) =&gt; Serialize (OpApplySymmetries x)</span></span></span></span>
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(Hashable x) =&gt; Hashable (OpApplySymmetries x)</span></span></span></span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(ToJSON x) =&gt; ToJSON (OpApplySymmetries x)</span></span></span></span></span></span></span></span> where
+<span class="lineno">   23 </span>  toJSON :: (ToJSON x) =&gt; OpApplySymmetries x -&gt; JSON.Value
+<span class="lineno">   24 </span>  <span class="decl"><span class="nottickedoff">toJSON = genericToJSON jsonOptions</span></span>
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>instance <span class="decl"><span class="nottickedoff"><span class="decl"><span class="nottickedoff">(FromJSON x) =&gt; FromJSON (OpApplySymmetries x)</span></span></span></span> where <span class="decl"><span class="nottickedoff">parseJSON = genericParseJSON jsonOptions</span></span>
+<span class="lineno">   27 </span>
+<span class="lineno">   28 </span>instance (TypeOf x, Pretty x, ExpressionLike x) =&gt; TypeOf (OpApplySymmetries x) where
+<span class="lineno">   29 </span>  <span class="decl"><span class="nottickedoff">typeOf p@(OpApplySymmetries _ values symmetries) = do</span>
+<span class="lineno">   30 </span><span class="spaces">    </span><span class="nottickedoff">tv &lt;- typeOf values</span>
+<span class="lineno">   31 </span><span class="spaces">    </span><span class="nottickedoff">ts &lt;- typeOf symmetries</span>
+<span class="lineno">   32 </span><span class="spaces">    </span><span class="nottickedoff">case tv of</span>
+<span class="lineno">   33 </span><span class="spaces">      </span><span class="nottickedoff">TypeTuple _ -&gt; return ()</span>
+<span class="lineno">   34 </span><span class="spaces">      </span><span class="nottickedoff">_ -&gt; raiseTypeError $ &quot;applySymmetries expects a tuple of values:&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">   35 </span><span class="spaces">    </span><span class="nottickedoff">entries &lt;- case ts of</span>
+<span class="lineno">   36 </span><span class="spaces">      </span><span class="nottickedoff">TypeMatrix TypeInt{} (TypeTuple xs) -&gt; return xs</span>
+<span class="lineno">   37 </span><span class="spaces">      </span><span class="nottickedoff">TypeList (TypeTuple xs) -&gt; return xs</span>
+<span class="lineno">   38 </span><span class="spaces">      </span><span class="nottickedoff">_ -&gt; raiseTypeError $ &quot;applySymmetries expects a matrix of permutation tuples:&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">   39 </span><span class="spaces">    </span><span class="nottickedoff">domains &lt;- forM entries $ \t -&gt; case t of</span>
+<span class="lineno">   40 </span><span class="spaces">      </span><span class="nottickedoff">TypePermutation d -&gt; return d</span>
+<span class="lineno">   41 </span><span class="spaces">      </span><span class="nottickedoff">_ -&gt; raiseTypeError $ &quot;applySymmetries entry is not a permutation:&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">   42 </span><span class="spaces">    </span><span class="nottickedoff">unless (length domains == length (nub domains)) $</span>
+<span class="lineno">   43 </span><span class="spaces">      </span><span class="nottickedoff">raiseTypeError $ &quot;applySymmetries has multiple permutations for the same type:&quot; &lt;+&gt; pretty p</span>
+<span class="lineno">   44 </span><span class="spaces">    </span><span class="nottickedoff">return TypeBool</span></span>
+<span class="lineno">   45 </span>
+<span class="lineno">   46 </span>instance SimplifyOp OpApplySymmetries x where
+<span class="lineno">   47 </span>  <span class="decl"><span class="nottickedoff">simplifyOp _ = na &quot;simplifyOp{OpApplySymmetries}&quot;</span></span>
+<span class="lineno">   48 </span>
+<span class="lineno">   49 </span>instance <span class="decl"><span class="nottickedoff">Pretty x =&gt; Pretty (OpApplySymmetries x)</span></span> where
+<span class="lineno">   50 </span>  <span class="decl"><span class="nottickedoff">prettyPrec _ (OpApplySymmetries quick values symmetries) =</span>
+<span class="lineno">   51 </span><span class="spaces">    </span><span class="nottickedoff">(if quick then &quot;applySymmetriesQuick&quot; else &quot;applySymmetries&quot;) &lt;&gt;</span>
+<span class="lineno">   52 </span><span class="spaces">      </span><span class="nottickedoff">prettyList prParens &quot;,&quot; [values, symmetries]</span></span>
+<span class="lineno">   53 </span>
+<span class="lineno">   54 </span>instance (VarSymBreakingDescription x, ExpressionLike x) =&gt; VarSymBreakingDescription (OpApplySymmetries x) where
+<span class="lineno">   55 </span>  <span class="decl"><span class="nottickedoff">varSymBreakingDescription (OpApplySymmetries quick values symmetries) = JSON.Object $ KM.fromList</span>
+<span class="lineno">   56 </span><span class="spaces">    </span><span class="nottickedoff">[ (&quot;type&quot;, JSON.String (if quick then &quot;OpApplySymmetriesQuick&quot; else &quot;OpApplySymmetries&quot;))</span>
+<span class="lineno">   57 </span><span class="spaces">    </span><span class="nottickedoff">, (&quot;children&quot;, JSON.Array $ V.fromList $ map varSymBreakingDescription [values, symmetries])</span>
+<span class="lineno">   58 </span><span class="spaces">    </span><span class="nottickedoff">]</span></span>
+
+</pre>
+</body>
+</html>
