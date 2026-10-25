@@ -1,0 +1,213 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# LANGUAGE QuasiQuotes #-}
+<span class="lineno">    2 </span>
+<span class="lineno">    3 </span>module Conjure.Process.Sanity ( sanityChecks, isInfinite ) where
+<span class="lineno">    4 </span>
+<span class="lineno">    5 </span>import Conjure.Prelude
+<span class="lineno">    6 </span>import Conjure.UserError
+<span class="lineno">    7 </span>import Conjure.Language
+<span class="lineno">    8 </span>import Conjure.Language.CategoryOf
+<span class="lineno">    9 </span>
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>sanityChecks :: (MonadFailDoc m, MonadUserError m) =&gt; Model -&gt; m Model
+<span class="lineno">   12 </span><span class="decl"><span class="istickedoff">sanityChecks model = do</span>
+<span class="lineno">   13 </span><span class="spaces">    </span><span class="istickedoff">let</span>
+<span class="lineno">   14 </span><span class="spaces">        </span><span class="istickedoff">recordErr :: MonadWriter [Doc] m =&gt; [Doc] -&gt; m ()</span>
+<span class="lineno">   15 </span><span class="spaces">        </span><span class="istickedoff">recordErr = tell . return . vcat</span>
+<span class="lineno">   16 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   17 </span><span class="spaces">        </span><span class="istickedoff">check :: (MonadFailDoc m, MonadWriter [Doc] m) =&gt; Model -&gt; m Model</span>
+<span class="lineno">   18 </span><span class="spaces">        </span><span class="istickedoff">check m = do</span>
+<span class="lineno">   19 </span><span class="spaces">            </span><span class="istickedoff">upToOneObjective m</span>
+<span class="lineno">   20 </span><span class="spaces">            </span><span class="istickedoff">upToOneHeuristic m</span>
+<span class="lineno">   21 </span><span class="spaces">            </span><span class="istickedoff">upToOneBranchingOn m</span>
+<span class="lineno">   22 </span><span class="spaces">            </span><span class="istickedoff">forM_ (mStatements m) $ \ st -&gt; case st of</span>
+<span class="lineno">   23 </span><span class="spaces">                </span><span class="istickedoff">Declaration (FindOrGiven Given _ _) -&gt; return <span class="nottickedoff">()</span> -- skip</span>
+<span class="lineno">   24 </span><span class="spaces">                </span><span class="istickedoff">Declaration FindOrGiven{}           -&gt; mapM_ (checkDomain True  (Just st)) (universeBi (forgetRefs st))</span>
+<span class="lineno">   25 </span><span class="spaces">                </span><span class="istickedoff">_                                   -&gt; mapM_ (checkDomain False (Just st)) (universeBi (forgetRefs st))</span>
+<span class="lineno">   26 </span><span class="spaces">            </span><span class="istickedoff">forM_ (mStatements m) $ \ st -&gt; case st of</span>
+<span class="lineno">   27 </span><span class="spaces">                </span><span class="istickedoff">SuchThat{} -&gt;</span>
+<span class="lineno">   28 </span><span class="spaces">                    </span><span class="istickedoff">forM_ (universeBi st) $ \ x -&gt; do</span>
+<span class="lineno">   29 </span><span class="spaces">                        </span><span class="istickedoff">case x of</span>
+<span class="lineno">   30 </span><span class="spaces">                            </span><span class="istickedoff">Comprehension{} -&gt;</span>
+<span class="lineno">   31 </span><span class="spaces">                                </span><span class="istickedoff">forM_ (universeBi x) $ \case</span>
+<span class="lineno">   32 </span><span class="spaces">                                    </span><span class="istickedoff">GenDomainNoRepr _ dom -&gt; checkDomain True <span class="nottickedoff">(Just st)</span> dom</span>
+<span class="lineno">   33 </span><span class="spaces">                                    </span><span class="istickedoff">_                     -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   34 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   35 </span><span class="spaces">                        </span><span class="istickedoff">let mab = case x of</span>
+<span class="lineno">   36 </span><span class="spaces">                                    </span><span class="istickedoff">[essence| &amp;a  = &amp;b |] -&gt; Just (a,b)</span>
+<span class="lineno">   37 </span><span class="spaces">                                    </span><span class="istickedoff">[essence| &amp;a != &amp;b |] -&gt; Just (a,b)</span>
+<span class="lineno">   38 </span><span class="spaces">                                    </span><span class="istickedoff">_ -&gt; Nothing</span>
+<span class="lineno">   39 </span><span class="spaces">                        </span><span class="istickedoff">case mab of</span>
+<span class="lineno">   40 </span><span class="spaces">                            </span><span class="istickedoff">Just (a,b) -&gt; do</span>
+<span class="lineno">   41 </span><span class="spaces">                                </span><span class="istickedoff">let</span>
+<span class="lineno">   42 </span><span class="spaces">                                    </span><span class="istickedoff">disallowed (Comprehension _ gocs) =</span>
+<span class="lineno">   43 </span><span class="spaces">                                        </span><span class="istickedoff">or [ not $ null [ <span class="nottickedoff">()</span> | Generator (GenInExpr {}) &lt;- gocs ]</span>
+<span class="lineno">   44 </span><span class="spaces">                                           </span><span class="istickedoff">, not $ null [ <span class="nottickedoff">()</span> | Condition c &lt;- gocs, <span class="tickonlyfalse">categoryOf c == CatDecision</span> ]</span>
+<span class="lineno">   45 </span><span class="spaces">                                           </span><span class="istickedoff">]</span>
+<span class="lineno">   46 </span><span class="spaces">                                    </span><span class="istickedoff">disallowed _ = False</span>
+<span class="lineno">   47 </span><span class="spaces">                                </span><span class="istickedoff">when (disallowed a || disallowed b) $</span>
+<span class="lineno">   48 </span><span class="spaces">                                    </span><span class="istickedoff"><span class="nottickedoff">recordErr [ &quot;Type error in&quot; &lt;+&gt; vcat</span></span>
+<span class="lineno">   49 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">[ pretty x</span></span>
+<span class="lineno">   50 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">, &quot;Cannot use a comprehension in an equality expression.&quot;</span></span>
+<span class="lineno">   51 </span><span class="spaces">                                                    </span><span class="istickedoff"><span class="nottickedoff">] ]</span></span>
+<span class="lineno">   52 </span><span class="spaces">                            </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   53 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   54 </span><span class="spaces">            </span><span class="istickedoff">mapM_ checkFactorial (universeBi $ mStatements m)</span>
+<span class="lineno">   55 </span><span class="spaces">            </span><span class="istickedoff">statements2 &lt;- transformBiM updateSizeAttr =&lt;&lt; transformBiM checkLit (mStatements m)</span>
+<span class="lineno">   56 </span><span class="spaces">            </span><span class="istickedoff">return m { mStatements = statements2 }</span>
+<span class="lineno">   57 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">   58 </span><span class="spaces">        </span><span class="istickedoff">-- check for mset attributes</span>
+<span class="lineno">   59 </span><span class="spaces">        </span><span class="istickedoff">-- check for binary relation attrobutes</span>
+<span class="lineno">   60 </span><span class="spaces">        </span><span class="istickedoff">checkDomain :: MonadWriter [Doc] m =&gt; Bool -&gt; Maybe Statement -&gt; Domain () Expression -&gt; m ()</span>
+<span class="lineno">   61 </span><span class="spaces">        </span><span class="istickedoff">checkDomain checkForInfinity mstmt domain = case domain of</span>
+<span class="lineno">   62 </span><span class="spaces">            </span><span class="istickedoff">DomainInt _ rs | checkForInfinity &amp;&amp; isInfinite rs -&gt; recordErr</span>
+<span class="lineno">   63 </span><span class="spaces">                        </span><span class="istickedoff">[ &quot;Infinite integer domain.&quot;</span>
+<span class="lineno">   64 </span><span class="spaces">                        </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; maybe <span class="nottickedoff">(pretty domain)</span> pretty mstmt</span>
+<span class="lineno">   65 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   66 </span><span class="spaces">            </span><span class="istickedoff">DomainMatrix index _</span>
+<span class="lineno">   67 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlytrue">domainCanIndexMatrix index</span> -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   68 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> -&gt; <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">   69 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;A matrix cannot be indexed with this domain:&quot; &lt;++&gt; pretty index</span></span>
+<span class="lineno">   70 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Context:&quot; &lt;++&gt; maybe (pretty domain) pretty mstmt</span></span>
+<span class="lineno">   71 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">   72 </span><span class="spaces">            </span><span class="istickedoff">DomainSequence _ (SequenceAttr size _) _ -&gt;</span>
+<span class="lineno">   73 </span><span class="spaces">                </span><span class="istickedoff">case size of</span>
+<span class="lineno">   74 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_Size{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   75 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MaxSize{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   76 </span><span class="spaces">                    </span><span class="istickedoff">SizeAttr_MinMaxSize{} -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   77 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; recordErr</span>
+<span class="lineno">   78 </span><span class="spaces">                        </span><span class="istickedoff">[ &quot;sequence requires (at least) one of the following attributes: size, maxSize&quot;</span>
+<span class="lineno">   79 </span><span class="spaces">                        </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; maybe <span class="nottickedoff">(pretty domain)</span> pretty mstmt</span>
+<span class="lineno">   80 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">DomainMSet _ (MSetAttr size occur) _ -&gt;</span>
+<span class="lineno">   82 </span><span class="spaces">                </span><span class="istickedoff">case (size, occur) of</span>
+<span class="lineno">   83 </span><span class="spaces">                    </span><span class="istickedoff">(SizeAttr_Size{}, _) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   84 </span><span class="spaces">                    </span><span class="istickedoff">(SizeAttr_MaxSize{}, _) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   85 </span><span class="spaces">                    </span><span class="istickedoff">(SizeAttr_MinMaxSize{}, _) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   86 </span><span class="spaces">                    </span><span class="istickedoff">(_, OccurAttr_MaxOccur{}) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   87 </span><span class="spaces">                    </span><span class="istickedoff">(_, OccurAttr_MinMaxOccur{}) -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">   88 </span><span class="spaces">                    </span><span class="istickedoff">_ -&gt; recordErr</span>
+<span class="lineno">   89 </span><span class="spaces">                        </span><span class="istickedoff">[ &quot;mset requires (at least) one of the following attributes: size, maxSize, maxOccur&quot;</span>
+<span class="lineno">   90 </span><span class="spaces">                        </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; maybe <span class="nottickedoff">(pretty domain)</span> pretty mstmt</span>
+<span class="lineno">   91 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">   92 </span><span class="spaces">            </span><span class="istickedoff">DomainRelation _ (RelationAttr _ binRelAttr) [a,b]</span>
+<span class="lineno">   93 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlyfalse">binRelAttr /= def &amp;&amp; a /= b</span></span>
+<span class="lineno">   94 </span><span class="spaces">                </span><span class="istickedoff">-&gt; <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">   95 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Binary relation attributes can only be used for binary relation between identical domains.&quot;</span></span>
+<span class="lineno">   96 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Either remove these attributes:&quot; &lt;+&gt; pretty binRelAttr</span></span>
+<span class="lineno">   97 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Or make sure that the relation is between identical domains.&quot;</span></span>
+<span class="lineno">   98 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Context:&quot; &lt;++&gt; maybe (pretty domain) pretty mstmt</span></span>
+<span class="lineno">   99 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  100 </span><span class="spaces">            </span><span class="istickedoff">DomainRelation _ (RelationAttr _ binRelAttr) innerDoms</span>
+<span class="lineno">  101 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlyfalse">binRelAttr /= def &amp;&amp; length innerDoms /= 2</span></span>
+<span class="lineno">  102 </span><span class="spaces">                </span><span class="istickedoff">-&gt; <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">  103 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Binary relation attributes can only be used on binary relations.&quot;</span></span>
+<span class="lineno">  104 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Either remove these attributes:&quot; &lt;+&gt; pretty binRelAttr</span></span>
+<span class="lineno">  105 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Or make sure that the relation is binary.&quot;</span></span>
+<span class="lineno">  106 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">, &quot;Context:&quot; &lt;++&gt; maybe (pretty domain) pretty mstmt</span></span>
+<span class="lineno">  107 </span><span class="spaces">                        </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  108 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return <span class="nottickedoff">()</span></span>
+<span class="lineno">  109 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  110 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  111 </span><span class="spaces">        </span><span class="istickedoff">updateSizeAttr :: Monad m =&gt; SizeAttr Expression -&gt; m (SizeAttr Expression)</span>
+<span class="lineno">  112 </span><span class="spaces">        </span><span class="istickedoff">updateSizeAttr (SizeAttr_MinMaxSize a b) | a == b = return (SizeAttr_Size a)</span>
+<span class="lineno">  113 </span><span class="spaces">        </span><span class="istickedoff">updateSizeAttr s = return s</span>
+<span class="lineno">  114 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  115 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  116 </span><span class="spaces">        </span><span class="istickedoff">-- check for function literals</span>
+<span class="lineno">  117 </span><span class="spaces">        </span><span class="istickedoff">--     they cannot map the same element to multiple range elemnets</span>
+<span class="lineno">  118 </span><span class="spaces">        </span><span class="istickedoff">-- check for partition literals</span>
+<span class="lineno">  119 </span><span class="spaces">        </span><span class="istickedoff">--     the parts have to be disjoint</span>
+<span class="lineno">  120 </span><span class="spaces">        </span><span class="istickedoff">-- TODO: Generate where clauses for when they contain parameters.</span>
+<span class="lineno">  121 </span><span class="spaces">        </span><span class="istickedoff">checkLit :: MonadFailDoc m =&gt; Expression -&gt; m Expression</span>
+<span class="lineno">  122 </span><span class="spaces">        </span><span class="istickedoff">checkLit lit = case lit of</span>
+<span class="lineno">  123 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitSet xs) -&gt; do</span>
+<span class="lineno">  124 </span><span class="spaces">                </span><span class="istickedoff">let ys = fromList xs</span>
+<span class="lineno">  125 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals lit (DefinednessConstraints [ [essence| allDiff(&amp;ys) |] ])</span>
+<span class="lineno">  126 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitFunction mappings) -&gt; do</span>
+<span class="lineno">  127 </span><span class="spaces">                </span><span class="istickedoff">let defineds = fromList $ map fst mappings</span>
+<span class="lineno">  128 </span><span class="spaces">                </span><span class="istickedoff">return $ WithLocals lit (DefinednessConstraints [ [essence| allDiff(&amp;defineds) |] ])</span>
+<span class="lineno">  129 </span><span class="spaces">            </span><span class="istickedoff">AbstractLiteral (AbsLitPartition parts) -&gt; do</span>
+<span class="lineno">  130 </span><span class="spaces">                </span><span class="istickedoff">let disjoint = concat</span>
+<span class="lineno">  131 </span><span class="spaces">                        </span><span class="istickedoff">[ checks</span>
+<span class="lineno">  132 </span><span class="spaces">                        </span><span class="istickedoff">| (part1, after) &lt;- withAfter parts</span>
+<span class="lineno">  133 </span><span class="spaces">                        </span><span class="istickedoff">, part2 &lt;- after</span>
+<span class="lineno">  134 </span><span class="spaces">                        </span><span class="istickedoff">, let checks = [ [essence| &amp;el1 != &amp;el2 |]</span>
+<span class="lineno">  135 </span><span class="spaces">                                       </span><span class="istickedoff">| el1 &lt;- part1</span>
+<span class="lineno">  136 </span><span class="spaces">                                       </span><span class="istickedoff">, el2 &lt;- part2</span>
+<span class="lineno">  137 </span><span class="spaces">                                       </span><span class="istickedoff">]</span>
+<span class="lineno">  138 </span><span class="spaces">                        </span><span class="istickedoff">]</span>
+<span class="lineno">  139 </span><span class="spaces">                </span><span class="istickedoff">return $</span>
+<span class="lineno">  140 </span><span class="spaces">                    </span><span class="istickedoff">if null disjoint</span>
+<span class="lineno">  141 </span><span class="spaces">                        </span><span class="istickedoff">then lit</span>
+<span class="lineno">  142 </span><span class="spaces">                        </span><span class="istickedoff">else WithLocals lit (DefinednessConstraints disjoint)</span>
+<span class="lineno">  143 </span><span class="spaces">            </span><span class="istickedoff">_ -&gt; return lit</span>
+<span class="lineno">  144 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  145 </span><span class="spaces">        </span><span class="istickedoff">checkFactorial :: MonadWriter [Doc] m =&gt; Expression -&gt; m ()</span>
+<span class="lineno">  146 </span><span class="spaces">        </span><span class="istickedoff">checkFactorial p@[essence| factorial(&amp;x) |]</span>
+<span class="lineno">  147 </span><span class="spaces">            </span><span class="istickedoff">| categoryOf x &gt;= CatDecision</span>
+<span class="lineno">  148 </span><span class="spaces">            </span><span class="istickedoff">= recordErr</span>
+<span class="lineno">  149 </span><span class="spaces">                </span><span class="istickedoff">[ &quot;The factorial function does not work on decision expressions.&quot;</span>
+<span class="lineno">  150 </span><span class="spaces">                </span><span class="istickedoff">, &quot;Context:&quot; &lt;++&gt; pretty p</span>
+<span class="lineno">  151 </span><span class="spaces">                </span><span class="istickedoff">]</span>
+<span class="lineno">  152 </span><span class="spaces">        </span><span class="istickedoff">checkFactorial _ = return <span class="nottickedoff">()</span></span>
+<span class="lineno">  153 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  154 </span><span class="spaces">        </span><span class="istickedoff">upToOne :: MonadWriter [Doc] m =&gt; (Statement -&gt; Bool) -&gt; Doc -&gt; Model -&gt; m ()</span>
+<span class="lineno">  155 </span><span class="spaces">        </span><span class="istickedoff">upToOne f message m = do</span>
+<span class="lineno">  156 </span><span class="spaces">            </span><span class="istickedoff">let found = [ <span class="nottickedoff">st</span> | st &lt;- mStatements m, f st ]</span>
+<span class="lineno">  157 </span><span class="spaces">            </span><span class="istickedoff">unless (length found &lt;= 1) $ <span class="nottickedoff">recordErr</span></span>
+<span class="lineno">  158 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">[ &quot;Expected at most one \'&quot; &lt;&gt; message &lt;&gt; &quot;\' statement, but got&quot; &lt;+&gt; pretty (length found) &lt;&gt; &quot;.&quot;</span></span>
+<span class="lineno">  159 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">, vcat $ map (nest 4 . (&quot;-&quot; &lt;+&gt;) . pretty) found</span></span>
+<span class="lineno">  160 </span><span class="spaces">                </span><span class="istickedoff"><span class="nottickedoff">]</span></span>
+<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  162 </span><span class="spaces">        </span><span class="istickedoff">upToOneObjective :: MonadWriter [Doc] m =&gt; Model -&gt; m ()</span>
+<span class="lineno">  163 </span><span class="spaces">        </span><span class="istickedoff">upToOneObjective = upToOne (\ st -&gt; case st of Objective{} -&gt; True; _ -&gt; False) <span class="nottickedoff">&quot;objective&quot;</span></span>
+<span class="lineno">  164 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  165 </span><span class="spaces">        </span><span class="istickedoff">upToOneHeuristic :: MonadWriter [Doc] m =&gt; Model -&gt; m ()</span>
+<span class="lineno">  166 </span><span class="spaces">        </span><span class="istickedoff">upToOneHeuristic = upToOne (\ st -&gt; case st of SearchHeuristic{} -&gt; True; _ -&gt; False) <span class="nottickedoff">&quot;heuristic&quot;</span></span>
+<span class="lineno">  167 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">upToOneBranchingOn :: MonadWriter [Doc] m =&gt; Model -&gt; m ()</span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff">upToOneBranchingOn = upToOne (\ st -&gt; case st of SearchOrder{} -&gt; True; _ -&gt; False) <span class="nottickedoff">&quot;branching on&quot;</span></span>
+<span class="lineno">  170 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  171 </span><span class="spaces"></span><span class="istickedoff"></span>
+<span class="lineno">  172 </span><span class="spaces">    </span><span class="istickedoff">(model', errs) &lt;- runWriterT (check model)</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">if null errs</span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">then return model'</span>
+<span class="lineno">  175 </span><span class="spaces">        </span><span class="istickedoff">else userErr errs</span></span>
+<span class="lineno">  176 </span>
+<span class="lineno">  177 </span>-- | return True if a bunch of ranges represent an infinite domain.
+<span class="lineno">  178 </span>--   return False if finite. also, return false if unsure.
+<span class="lineno">  179 </span>isInfinite :: [Range a] -&gt; Bool
+<span class="lineno">  180 </span><span class="decl"><span class="istickedoff">isInfinite [] = True</span>
+<span class="lineno">  181 </span><span class="spaces"></span><span class="istickedoff">isInfinite [RangeOpen{}] = <span class="nottickedoff">True</span></span>
+<span class="lineno">  182 </span><span class="spaces"></span><span class="istickedoff">isInfinite [RangeLowerBounded{}] = <span class="nottickedoff">True</span></span>
+<span class="lineno">  183 </span><span class="spaces"></span><span class="istickedoff">isInfinite [RangeUpperBounded{}] = <span class="nottickedoff">True</span></span>
+<span class="lineno">  184 </span><span class="spaces"></span><span class="istickedoff">isInfinite _ = False</span></span>
+<span class="lineno">  185 </span>
+<span class="lineno">  186 </span>forgetRefs :: Statement -&gt; Statement
+<span class="lineno">  187 </span><span class="decl"><span class="istickedoff">forgetRefs = transformBi f</span>
+<span class="lineno">  188 </span><span class="spaces">    </span><span class="istickedoff">where</span>
+<span class="lineno">  189 </span><span class="spaces">        </span><span class="istickedoff">f (Reference nm _) = Reference <span class="nottickedoff">nm</span> Nothing</span>
+<span class="lineno">  190 </span><span class="spaces">        </span><span class="istickedoff">f x = x</span></span>
+
+</pre>
+</body>
+</html>
