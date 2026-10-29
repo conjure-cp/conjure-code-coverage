@@ -1,0 +1,208 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>module Conjure.Language.AST.Helpers (
+<span class="lineno">    2 </span>    Parser,
+<span class="lineno">    3 </span>    makeUnexpected,
+<span class="lineno">    4 </span>    makeMissing,
+<span class="lineno">    5 </span>    eSymbol,
+<span class="lineno">    6 </span>    identifier,
+<span class="lineno">    7 </span>    need,
+<span class="lineno">    8 </span>    want,
+<span class="lineno">    9 </span>    needWeak,
+<span class="lineno">   10 </span>    commaList,
+<span class="lineno">   11 </span>    commaList1,
+<span class="lineno">   12 </span>    parseIdentifier,
+<span class="lineno">   13 </span>    parseIdentifierStrict,
+<span class="lineno">   14 </span>    parseMetaVar,
+<span class="lineno">   15 </span>    intLiteral,
+<span class="lineno">   16 </span>    parseSequence,
+<span class="lineno">   17 </span>    parseSequence1,
+<span class="lineno">   18 </span>    parseList,
+<span class="lineno">   19 </span>    curlyBracketList,
+<span class="lineno">   20 </span>    squareBracketList,
+<span class="lineno">   21 </span>    parenListStrict,
+<span class="lineno">   22 </span>    parenList,
+<span class="lineno">   23 </span>    parensPair,
+<span class="lineno">   24 </span>    parseAttributeLexeme
+<span class="lineno">   25 </span>) where
+<span class="lineno">   26 </span>
+<span class="lineno">   27 </span>import Conjure.Language.AST.Syntax
+<span class="lineno">   28 </span>import Conjure.Language.Attributes (allAttributLexemes)
+<span class="lineno">   29 </span>import Conjure.Language.Lexemes
+<span class="lineno">   30 </span>import Conjure.Language.Lexer
+<span class="lineno">   31 </span>import Conjure.Prelude hiding (many)
+<span class="lineno">   32 </span>import qualified Data.Set as Set
+<span class="lineno">   33 </span>import Data.Void
+<span class="lineno">   34 </span>import Text.Megaparsec
+<span class="lineno">   35 </span>
+<span class="lineno">   36 </span>type Parser = (Parsec Void ETokenStream)
+<span class="lineno">   37 </span>
+<span class="lineno">   38 </span>eSymbol :: Lexeme -&gt; Parser ETok
+<span class="lineno">   39 </span><span class="decl"><span class="istickedoff">eSymbol lx = token test <span class="nottickedoff">Set.empty</span> &lt;?&gt; &quot;Symbol &quot; ++ <span class="nottickedoff">show lx</span></span>
+<span class="lineno">   40 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   41 </span><span class="spaces">    </span><span class="istickedoff">test x</span>
+<span class="lineno">   42 </span><span class="spaces">        </span><span class="istickedoff">| lexeme x == lx = Just x</span>
+<span class="lineno">   43 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = Nothing</span></span>
+<span class="lineno">   44 </span>
+<span class="lineno">   45 </span>identifier :: Parser ETok
+<span class="lineno">   46 </span><span class="decl"><span class="istickedoff">identifier = token test <span class="nottickedoff">Set.empty</span> &lt;?&gt; &quot;Identifier&quot;</span>
+<span class="lineno">   47 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   48 </span><span class="spaces">    </span><span class="istickedoff">test x = case x of</span>
+<span class="lineno">   49 </span><span class="spaces">        </span><span class="istickedoff">ETok{lexeme = (LIdentifier _)} -&gt; Just x</span>
+<span class="lineno">   50 </span><span class="spaces">        </span><span class="istickedoff">ETok{} -&gt; Nothing</span></span>
+<span class="lineno">   51 </span>
+<span class="lineno">   52 </span>metaVar :: Parser ETok
+<span class="lineno">   53 </span><span class="decl"><span class="istickedoff">metaVar = token test <span class="nottickedoff">Set.empty</span> &lt;?&gt; &quot;Metavar&quot;</span>
+<span class="lineno">   54 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   55 </span><span class="spaces">    </span><span class="istickedoff">test x = case x of</span>
+<span class="lineno">   56 </span><span class="spaces">        </span><span class="istickedoff">ETok{lexeme = (LMetaVar _)} -&gt; Just x</span>
+<span class="lineno">   57 </span><span class="spaces">        </span><span class="istickedoff">ETok{} -&gt; Nothing</span></span>
+<span class="lineno">   58 </span>
+<span class="lineno">   59 </span>anIdent :: Lexeme
+<span class="lineno">   60 </span><span class="decl"><span class="istickedoff">anIdent = LIdentifier <span class="nottickedoff">&quot;&quot;</span></span></span>
+<span class="lineno">   61 </span>
+<span class="lineno">   62 </span>
+<span class="lineno">   63 </span>intLiteral :: Parser ETok
+<span class="lineno">   64 </span><span class="decl"><span class="istickedoff">intLiteral = token test <span class="nottickedoff">Set.empty</span> &lt;?&gt; &quot;Int Literal&quot;</span>
+<span class="lineno">   65 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">   66 </span><span class="spaces">    </span><span class="istickedoff">test x = case x of</span>
+<span class="lineno">   67 </span><span class="spaces">        </span><span class="istickedoff">ETok{lexeme = (LIntLiteral _)} -&gt; Just x</span>
+<span class="lineno">   68 </span><span class="spaces">        </span><span class="istickedoff">ETok{} -&gt; Nothing</span></span>
+<span class="lineno">   69 </span>
+<span class="lineno">   70 </span>makeMissing :: Lexeme -&gt; Parser LToken
+<span class="lineno">   71 </span><span class="decl"><span class="istickedoff">makeMissing l = do</span>
+<span class="lineno">   72 </span><span class="spaces">    </span><span class="istickedoff">dummyToken &lt;- lookAhead anySingle</span>
+<span class="lineno">   73 </span><span class="spaces">    </span><span class="istickedoff">return . MissingToken $ nullBefore l dummyToken</span></span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>makeUnexpected :: Parser LToken
+<span class="lineno">   76 </span><span class="decl"><span class="istickedoff">makeUnexpected = SkippedToken &lt;$&gt; anySingle</span></span>
+<span class="lineno">   77 </span>
+<span class="lineno">   78 </span>-- try to get a token from the stream but allow failiure
+<span class="lineno">   79 </span>want :: Lexeme -&gt; Parser LToken
+<span class="lineno">   80 </span><span class="decl"><span class="istickedoff">want (LIdentifier _) = do</span>
+<span class="lineno">   81 </span><span class="spaces">    </span><span class="istickedoff">tok@(ETok _ _ lex _) &lt;- lookAhead anySingle</span>
+<span class="lineno">   82 </span><span class="spaces">    </span><span class="istickedoff">case lex of</span>
+<span class="lineno">   83 </span><span class="spaces">        </span><span class="istickedoff">(LIdentifier _) -&gt; <span class="nottickedoff">makeStrict &lt;$&gt; anySingle</span></span>
+<span class="lineno">   84 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; return $ MissingToken $ nullBefore LMissingIdentifier tok</span>
+<span class="lineno">   85 </span><span class="spaces"></span><span class="istickedoff">want a = do</span>
+<span class="lineno">   86 </span><span class="spaces">    </span><span class="istickedoff">tok@(ETok _ _ lex _) &lt;- lookAhead anySingle</span>
+<span class="lineno">   87 </span><span class="spaces">    </span><span class="istickedoff">if lex == a</span>
+<span class="lineno">   88 </span><span class="spaces">        </span><span class="istickedoff">then makeStrict &lt;$&gt; anySingle</span>
+<span class="lineno">   89 </span><span class="spaces">        </span><span class="istickedoff">else return $ MissingToken $ nullBefore a tok</span></span>
+<span class="lineno">   90 </span>
+<span class="lineno">   91 </span>-- get a symbol from the stream with no fallback
+<span class="lineno">   92 </span>need :: Lexeme -&gt; Parser SToken
+<span class="lineno">   93 </span><span class="decl"><span class="istickedoff">need a = StrictToken [] &lt;$&gt; eSymbol a &lt;?&gt; &quot;\&quot;&quot; ++ <span class="nottickedoff">lexemeFace a ++ &quot;\&quot;&quot;</span></span></span>
+<span class="lineno">   94 </span>
+<span class="lineno">   95 </span>-- get a symbol from the stream where it is required but the underlying
+<span class="lineno">   96 </span>-- structure does not (e.g. disambiguating a list)
+<span class="lineno">   97 </span>needWeak :: Lexeme -&gt; Parser LToken
+<span class="lineno">   98 </span><span class="decl"><span class="istickedoff">needWeak a = RealToken &lt;$&gt; need a</span></span>
+<span class="lineno">   99 </span>
+<span class="lineno">  100 </span>
+<span class="lineno">  101 </span>
+<span class="lineno">  102 </span>parseIdentifier :: Parser NameNode
+<span class="lineno">  103 </span><span class="decl"><span class="istickedoff">parseIdentifier = do NameNode &lt;$&gt; parseIdentifierStrict &lt;|&gt; MissingNameNode &lt;$&gt; want anIdent</span></span>
+<span class="lineno">  104 </span>
+<span class="lineno">  105 </span>parseAttributeLexeme :: Parser SToken
+<span class="lineno">  106 </span><span class="decl"><span class="istickedoff">parseAttributeLexeme = StrictToken [] &lt;$&gt; token isValid <span class="nottickedoff">Set.empty</span></span>
+<span class="lineno">  107 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">  108 </span><span class="spaces">    </span><span class="istickedoff">isValid t@(lexeme -&gt; l)</span>
+<span class="lineno">  109 </span><span class="spaces">        </span><span class="istickedoff">| l `elem` allAttributLexemes = Just t</span>
+<span class="lineno">  110 </span><span class="spaces">        </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = Nothing</span></span>
+<span class="lineno">  111 </span>
+<span class="lineno">  112 </span>parseMetaVar :: Parser SToken
+<span class="lineno">  113 </span><span class="decl"><span class="istickedoff">parseMetaVar = StrictToken [] &lt;$&gt; metaVar</span></span>
+<span class="lineno">  114 </span>
+<span class="lineno">  115 </span>parseIdentifierStrict :: Parser NameNodeS
+<span class="lineno">  116 </span><span class="decl"><span class="istickedoff">parseIdentifierStrict = do</span>
+<span class="lineno">  117 </span><span class="spaces">    </span><span class="istickedoff">NameNodeS . StrictToken [] &lt;$&gt; identifier</span></span>
+<span class="lineno">  118 </span>
+<span class="lineno">  119 </span>-- List helpers
+<span class="lineno">  120 </span>
+<span class="lineno">  121 </span>commaList :: (Null a, Show a) =&gt; Parser a -&gt; Parser (Sequence a)
+<span class="lineno">  122 </span><span class="decl"><span class="istickedoff">commaList = parseSequence L_Comma</span></span>
+<span class="lineno">  123 </span>
+<span class="lineno">  124 </span>commaList1 :: (Null a, Show a) =&gt; Parser a -&gt; Parser (Sequence a)
+<span class="lineno">  125 </span><span class="decl"><span class="istickedoff">commaList1 = parseSequence1 L_Comma</span></span>
+<span class="lineno">  126 </span>
+<span class="lineno">  127 </span>squareBracketList :: Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  128 </span><span class="decl"><span class="istickedoff">squareBracketList = parseList L_OpenBracket L_CloseBracket</span></span>
+<span class="lineno">  129 </span>
+<span class="lineno">  130 </span>curlyBracketList :: Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  131 </span><span class="decl"><span class="istickedoff">curlyBracketList = parseList L_OpenCurly L_CloseCurly</span></span>
+<span class="lineno">  132 </span>
+<span class="lineno">  133 </span>parenList :: Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  134 </span><span class="decl"><span class="istickedoff">parenList = parseList L_OpenParen L_CloseParen</span></span>
+<span class="lineno">  135 </span>
+<span class="lineno">  136 </span>parenListStrict :: Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  137 </span><span class="decl"><span class="istickedoff">parenListStrict = parseListStrict L_OpenParen L_CloseParen</span></span>
+<span class="lineno">  138 </span>
+<span class="lineno">  139 </span>parseList :: Lexeme -&gt; Lexeme -&gt; Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  140 </span><span class="decl"><span class="istickedoff">parseList startB endB seq = do</span>
+<span class="lineno">  141 </span><span class="spaces">    </span><span class="istickedoff">startB' &lt;- want startB</span>
+<span class="lineno">  142 </span><span class="spaces">    </span><span class="istickedoff">vals &lt;- seq</span>
+<span class="lineno">  143 </span><span class="spaces">    </span><span class="istickedoff">endB' &lt;- want endB</span>
+<span class="lineno">  144 </span><span class="spaces">    </span><span class="istickedoff">return $ ListNode startB' vals endB'</span></span>
+<span class="lineno">  145 </span>
+<span class="lineno">  146 </span>parseListStrict :: Lexeme -&gt; Lexeme -&gt; Parser (Sequence a) -&gt; Parser (ListNode a)
+<span class="lineno">  147 </span><span class="decl"><span class="istickedoff">parseListStrict startB endB seq = do</span>
+<span class="lineno">  148 </span><span class="spaces">    </span><span class="istickedoff">startB' &lt;- need startB</span>
+<span class="lineno">  149 </span><span class="spaces">    </span><span class="istickedoff">vals &lt;- seq</span>
+<span class="lineno">  150 </span><span class="spaces">    </span><span class="istickedoff">endB' &lt;- want endB</span>
+<span class="lineno">  151 </span><span class="spaces">    </span><span class="istickedoff">return $ ListNode (RealToken startB') vals endB'</span></span>
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>parseSequence1 :: (Null a, Show a) =&gt; Lexeme -&gt; Parser a -&gt; Parser (Sequence a)
+<span class="lineno">  154 </span><span class="decl"><span class="istickedoff">parseSequence1 divider pElem = do</span>
+<span class="lineno">  155 </span><span class="spaces">    </span><span class="istickedoff">s &lt;- parseSequence divider pElem</span>
+<span class="lineno">  156 </span><span class="spaces">    </span><span class="istickedoff">case s of</span>
+<span class="lineno">  157 </span><span class="spaces">        </span><span class="istickedoff">Seq [] -&gt; try $ do</span>
+<span class="lineno">  158 </span><span class="spaces">            </span><span class="istickedoff">q &lt;- pElem</span>
+<span class="lineno">  159 </span><span class="spaces">            </span><span class="istickedoff">return $ Seq [SeqElem q Nothing]</span>
+<span class="lineno">  160 </span><span class="spaces">        </span><span class="istickedoff">Seq _ -&gt; return s</span></span>
+<span class="lineno">  161 </span>
+<span class="lineno">  162 </span>parseSequence :: (Null a, Show a) =&gt; Lexeme -&gt; Parser a -&gt; Parser (Sequence a)
+<span class="lineno">  163 </span><span class="decl"><span class="istickedoff">parseSequence divider pElem = try $ do</span>
+<span class="lineno">  164 </span><span class="spaces">    </span><span class="istickedoff">missingPlaceholder &lt;- makeMissing $ <span class="nottickedoff">L_Missing MissingUnknown</span></span>
+<span class="lineno">  165 </span><span class="spaces">    </span><span class="istickedoff">sElem &lt;- optional pElem</span>
+<span class="lineno">  166 </span><span class="spaces">    </span><span class="istickedoff">sep &lt;- want divider</span>
+<span class="lineno">  167 </span><span class="spaces">    </span><span class="istickedoff">case (sElem, isMissing sep) of</span>
+<span class="lineno">  168 </span><span class="spaces">        </span><span class="istickedoff">(a, True) | isMissing a -&gt; return $ Seq []</span>
+<span class="lineno">  169 </span><span class="spaces">        </span><span class="istickedoff">_ -&gt; do</span>
+<span class="lineno">  170 </span><span class="spaces">            </span><span class="istickedoff">Seq rest &lt;- parseSequence divider pElem</span>
+<span class="lineno">  171 </span><span class="spaces">            </span><span class="istickedoff">makeElem rest sElem sep missingPlaceholder</span>
+<span class="lineno">  172 </span><span class="spaces">  </span><span class="istickedoff">where</span>
+<span class="lineno">  173 </span><span class="spaces">    </span><span class="istickedoff">makeElem rest el sep plc = do</span>
+<span class="lineno">  174 </span><span class="spaces">        </span><span class="istickedoff">let newElem = case (el, isMissing sep) of</span>
+<span class="lineno">  175 </span><span class="spaces">                </span><span class="istickedoff">(Just a, True) -&gt; [SeqElem a $ if null rest then Nothing else Just sep]</span>
+<span class="lineno">  176 </span><span class="spaces">                </span><span class="istickedoff">(a, False) | isMissing a -&gt; [MissingSeqElem plc sep]</span>
+<span class="lineno">  177 </span><span class="spaces">                </span><span class="istickedoff">(Just a, _) -&gt; [SeqElem a $ Just sep]</span>
+<span class="lineno">  178 </span><span class="spaces">                </span><span class="istickedoff">_ -&gt; <span class="nottickedoff">[]</span></span>
+<span class="lineno">  179 </span><span class="spaces">        </span><span class="istickedoff">return $ Seq $ newElem ++ rest</span></span>
+<span class="lineno">  180 </span>
+<span class="lineno">  181 </span>
+<span class="lineno">  182 </span>
+<span class="lineno">  183 </span>parensPair :: (Lexeme, Lexeme)
+<span class="lineno">  184 </span><span class="decl"><span class="istickedoff">parensPair = (L_OpenParen, L_CloseParen)</span></span>
+<span class="lineno">  185 </span>
+
+</pre>
+</body>
+</html>
